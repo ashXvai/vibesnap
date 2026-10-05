@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VibeSnap</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    overflow:hidden;
+}
+
+.app{
+    width:100%;
+    max-width:500px;
+    height:100vh;
+    margin:auto;
+    position:relative;
+    background:#090909;
+    overflow:hidden;
+}
+
+/* ================= SCREENS ================= */
+
+.screen{
+    position:absolute;
+    inset:0;
+    display:none;
+    background:#090909;
+    padding-bottom:80px;
+    overflow-y:auto;
+}
+
+.screen.active{
+    display:block;
+}
+
+/* ================= CAMERA ================= */
+
+.camera{
+    padding:0;
+    background:#000;
+    overflow:hidden;
+}
+
+#video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.camera-top{
+    position:absolute;
+    top:20px;
+    left:18px;
+    right:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:5;
+}
+
+.logo{
+    font-size:23px;
+    font-weight:900;
+}
+
+.logo span{
+    color:#ffe600;
+}
+
+.circle{
+    width:44px;
+    height:44px;
+    border:1px solid #ffffff33;
+    border-radius:50%;
+    background:#0009;
+    color:white;
+    font-size:19px;
+    cursor:pointer;
+}
+
+.camera-tools{
+    position:absolute;
+    top:95px;
+    right:15px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    z-index:5;
+}
+
+.tool{
+    width:45px;
+    height:45px;
+    border:1px solid #ffffff33;
+    border-radius:50%;
+    background:#0009;
+    color:#fff;
+    font-size:19px;
+    cursor:pointer;
+}
+
+.filters{
+    position:absolute;
+    bottom:145px;
+    left:0;
+    width:100%;
+    display:flex;
+    gap:8px;
+    padding:10px 15px;
+    overflow-x:auto;
+    z-index:5;
+}
+
+.filters::-webkit-scrollbar{
+    display:none;
+}
+
+.filter{
+    flex-shrink:0;
+    border:1px solid #ffffff44;
+    background:#0009;
+    color:#fff;
+    padding:10px 16px;
+    border-radius:25px;
+    cursor:pointer;
+}
+
+.filter.active{
+    background:#fff;
+    color:#000;
+}
+
+.camera-bottom{
+    position:absolute;
+    bottom:28px;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:35px;
+    z-index:5;
+}
+
+.capture{
+    width:78px;
+    height:78px;
+    border-radius:50%;
+    background:white;
+    border:6px solid #ffffff66;
+    cursor:pointer;
+}
+
+.small-camera{
+    width:48px;
+    height:48px;
+    border:0;
+    border-radius:50%;
+    background:#0009;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    padding:25px 20px 15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header h1{
+    font-size:28px;
+}
+
+.subtitle{
+    color:#777;
+    font-size:13px;
+    margin-top:5px;
+}
+
+.search{
+    width:calc(100% - 36px);
+    margin:5px 18px 15px;
+    padding:15px;
+    border:1px solid #ffffff15;
+    border-radius:17px;
+    background:#ffffff08;
+    color:#fff;
+    outline:none;
+}
+
+/* ================= CHATS ================= */
+
+.chat{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    margin:5px 12px;
+    padding:14px;
+    border-radius:18px;
+    cursor:pointer;
+}
+
+.chat:hover{
+    background:#ffffff08;
+}
+
+.avatar{
+    width:53px;
+    height:53px;
+    flex-shrink:0;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#111;
+    font-weight:bold;
+    background:linear-gradient(135deg,#ffe600,#ff7a00);
+}
+
+.pink{
+    background:linear-gradient(135deg,#ff4d9d,#8b5cf6);
+}
+
+.blue{
+    background:linear-gradient(135deg,#38bdf8,#6366f1);
+}
+
+.chat-info{
+    flex:1;
+}
+
+.chat-info strong{
+    display:block;
+    margin-bottom:5px;
+}
+
+.chat-info span{
+    color:#777;
+    font-size:13px;
+}
+
+/* ================= FRIENDS ================= */
+
+.friend{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:10px 15px;
+    padding:16px;
+    border-radius:20px;
+    background:#ffffff08;
+    border:1px solid #ffffff10;
+    cursor:pointer;
+}
+
+.friend-info{
+    flex:1;
+}
+
+.friend-info strong{
+    display:block;
+}
+
+.friend-info small{
+    color:#777;
+}
+
+.add{
+    border:0;
+    background:#ffe600;
+    color:#111;
+    padding:9px 17px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+/* ================= PROFILE ================= */
+
+.profile{
+    text-align:center;
+    padding:45px 20px;
+}
+
+.profile-avatar{
+    width:105px;
+    height:105px;
+    margin:auto;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:38px;
+    font-weight:bold;
+    color:#111;
+    background:linear-gradient(135deg,#ffe600,#ff4d9d,#8b5cf6);
+}
+
+.profile h2{
+    margin-top:18px;
+}
+
+.handle{
+    color:#777;
+    margin-top:6px;
+}
+
+.stats{
+    display:flex;
+    justify-content:center;
+    gap:45px;
+    margin:30px 0;
+}
+
+.stat strong{
+    display:block;
+    font-size:20px;
+}
+
+.stat small{
+    color:#777;
+}
+
+.profile-button{
+    width:100%;
+    padding:15px;
+    margin:6px 0;
+    border:1px solid #ffffff15;
+    border-radius:16px;
+    background:#ffffff08;
+    color:#fff;
+    font-weight:bold;
+}
+
+/* ================= NAV ================= */
+
+.nav{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    height:75px;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    background:#101010ee;
+    backdrop-filter:blur(20px);
+    border-top:1px solid #ffffff10;
+    z-index:20;
+}
+
+.nav button{
+    border:0;
+    background:none;
+    color:#777;
+    font-size:11px;
+    cursor:pointer;
+}
+
+.nav button div{
+    font-size:22px;
+    margin-bottom:4px;
+}
+
+.camera-button{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    background:#ffe600 !important;
+    color:#111 !important;
+    font-size:22px !important;
+}
+
+/* ================= PHOTO PREVIEW ================= */
+
+.preview{
+    position:absolute;
+    inset:0;
+    background:#000;
+    display:none;
+    z-index:40;
+}
+
+.preview.show{
+    display:block;
+}
+
+#photoPreview{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+.preview-top{
+    position:absolute;
+    top:20px;
+    left:20px;
+    right:20px;
+    display:flex;
+    justify-content:space-between;
+    z-index:2;
+}
+
+.preview-title{
+    background:#0008;
+    padding:10px 15px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.preview-bottom{
+    position:absolute;
+    bottom:30px;
+    left:20px;
+    right:20px;
+    display:flex;
+    gap:12px;
+    z-index:2;
+}
+
+.preview-button{
+    flex:1;
+    padding:16px;
+    border:0;
+    border-radius:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.retake{
+    background:#ffffff18;
+    color:white;
+    border:1px solid #ffffff22;
+}
+
+.send{
+    background:#ffe600;
+    color:#111;
+}
+
+/* ================= SEND FRIENDS ================= */
+
+.send-panel{
+    position:absolute;
+    inset:0;
+    background:#090909;
+    display:none;
+    z-index:50;
+    padding-bottom:20px;
+    overflow-y:auto;
+}
+
+.send-panel.show{
+    display:block;
+}
+
+.send-header{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:25px 20px;
+}
+
+.send-header h2{
+    font-size:24px;
+}
+
+.back{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:1px solid #ffffff20;
+    background:#ffffff08;
+    color:white;
+    font-size:18px;
+}
+
+.send-subtitle{
+    color:#777;
+    padding:0 20px 15px;
+}
+
+.select-friend{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:8px 15px;
+    padding:14px;
+    border-radius:18px;
+    background:#ffffff08;
+    border:1px solid transparent;
+    cursor:pointer;
+}
+
+.select-friend.selected{
+    border-color:#ffe600;
+    background:#ffe60012;
+}
+
+.check{
+    margin-left:auto;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    border:2px solid #555;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.selected .check{
+    background:#ffe600;
+    border-color:#ffe600;
+    color:#111;
+}
+
+.send-selected{
+    position:sticky;
+    bottom:0;
+    width:calc(100% - 30px);
+    margin:20px 15px;
+    padding:16px;
+    border:0;
+    border-radius:18px;
+    background:#ffe600;
+    color:#111;
+    font-weight:800;
+    font-size:16px;
+    cursor:pointer;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+    position:absolute;
+    top:75px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#222;
+    padding:12px 18px;
+    border-radius:30px;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    z-index:100;
+    white-space:nowrap;
+}
+
+.toast.show{
+    opacity:1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- CAMERA -->
+
+<section id="camera" class="screen camera active">
+
+    <video id="video"
+           autoplay
+           muted
+           playsinline>
+    </video>
+
+    <div class="camera-top">
+
+        <button class="circle"
+                onclick="showToast('Flash')">
+            ⚡
+        </button>
+
+        <div class="logo">
+            Vibe<span>Snap</span>
+        </div>
+
+        <button class="circle"
+                onclick="openScreen('profile')">
+            👤
+        </button>
+
+    </div>
+
+    <div class="camera-tools">
+
+        <button class="tool"
+                onclick="switchCamera()">
+            🔄
+        </button>
+
+        <button class="tool"
+                onclick="chooseMedia()">
+            🖼️
+        </button>
+
+        <button class="tool"
+                onclick="showToast('Effects coming soon ✨')">
+            ✨
+        </button>
+
+    </div>
+
+    <div class="filters">
+
+        <button class="filter active"
+                onclick="setFilter(this,'none')">
+            Normal
+        </button>
+
+        <button class="filter"
+                onclick="setFilter(this,'grayscale(1)')">
+            B&W
+        </button>
+
+        <button class="filter"
+                onclick="setFilter(this,'sepia(.8)')">
+            Retro
+        </button>
+
+        <button class="filter"
+                onclick="setFilter(this,'saturate(2)')">
+            Vivid
+        </button>
+
+        <button class="filter"
+                onclick="setFilter(this,'contrast(1.5)')">
+            Drama
+        </button>
+
+    </div>
+
+    <div class="camera-bottom">
+
+        <button class="small-camera"
+                onclick="chooseMedia()">
+            🖼️
+        </button>
+
+        <button class="capture"
+                onclick="takePhoto()">
+        </button>
+
+        <button class="small-camera"
+                onclick="showToast('Video mode coming next 🎥')">
+            🎥
+        </button>
+
+    </div>
+
+    <input id="mediaInput"
+           type="file"
+           accept="image/*,video/*"
+           hidden
+           onchange="mediaSelected(event)">
+
+</section>
+
+
+<!-- CHATS -->
+
+<section id="chats" class="screen">
+
+    <div class="header">
+
+        <div>
+            <h1>Chats</h1>
+            <div class="subtitle">
+                Your conversations
+            </div>
+        </div>
+
+        <button class="circle"
+                onclick="showToast('New chat')">
+            ✏️
+        </button>
+
+    </div>
+
+    <input class="search"
+           placeholder="Search chats">
+
+    <div class="chat"
+         onclick="showToast('Chat with Alex')">
+
+        <div class="avatar">A</div>
+
+        <div class="chat-info">
+            <strong>Alex</strong>
+            <span>Hey! 👋</span>
+        </div>
+
+        <small>2m</small>
+
+    </div>
+
+    <div class="chat"
+         onclick="showToast('Chat with Mia')">
+
+        <div class="avatar pink">M</div>
+
+        <div class="chat-info">
+            <strong>Mia</strong>
+            <span>Sent a photo 📷</span>
+        </div>
+
+        <small>8m</small>
+
+    </div>
+
+    <div class="chat"
+         onclick="showToast('Chat with Jay')">
+
+        <div class="avatar blue">J</div>
+
+        <div class="chat-info">
+            <strong>Jay</strong>
+            <span>See you tomorrow!</span>
+        </div>
+
+        <small>1h</small>
+
+    </div>
+
+</section>
+
+
+<!-- FRIENDS -->
+
+<section id="friends" class="screen">
+
+    <div class="header">
+
+        <div>
+            <h1>Friends</h1>
+            <div class="subtitle">
+                Your friends
+            </div>
+        </div>
+
+        <button class="circle"
+                onclick="showToast('Add friend')">
+            +
+        </button>
+
+    </div>
+
+    <input class="search"
+           placeholder="Search people">
+
+    <div class="friend">
+
+        <div class="avatar">A</div>
+
+        <div class="friend-info">
+            <strong>Alex</strong>
+            <small>Online</small>
+        </div>
+
+        <button class="add"
+                onclick="showToast('Alex selected')">
+            Chat
+        </button>
+
+    </div>
+
+    <div class="friend">
+
+        <div class="avatar pink">M</div>
+
+        <div class="friend-info">
+            <strong>Mia</strong>
+            <small>Online</small>
+        </div>
+
+        <button class="add"
+                onclick="showToast('Mia selected')">
+            Chat
+        </button>
+
+    </div>
+
+    <div class="friend">
+
+        <div class="avatar blue">J</div>
+
+        <div class="friend-info">
+            <strong>Jay</strong>
+            <small>Offline</small>
+        </div>
+
+        <button class="add"
+                onclick="showToast('Jay selected')">
+            Chat
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- PROFILE -->
+
+<section id="profile" class="screen">
+
+    <div class="profile">
+
+        <div class="profile-avatar">
+            U
+        </div>
+
+        <h2>Your Profile</h2>
+
+        <div class="handle">
+            @username
+        </div>
+
+        <div class="stats">
+
+            <div class="stat">
+                <strong>128</strong>
+                <small>Friends</small>
+            </div>
+
+            <div class="stat">
+                <strong>42</strong>
+                <small>Posts</small>
+            </div>
+
+            <div class="stat">
+                <strong>890</strong>
+                <small>Likes</small>
+            </div>
+
+        </div>
+
+        <button class="profile-button"
+                onclick="showToast('Edit profile')">
+            ✏️ Edit Profile
+        </button>
+
+        <button class="profile-button"
+                onclick="showToast('Settings')">
+            ⚙️ Settings
+        </button>
+
+        <button class="profile-button"
+                onclick="showToast('Privacy')">
+            🔒 Privacy
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- PHOTO PREVIEW -->
+
+<div id="preview"
+     class="preview">
+
+    <img id="photoPreview">
+
+    <div class="preview-top">
+
+        <div class="preview-title">
+            Your Photo
+        </div>
+
+        <button class="circle"
+                onclick="retakePhoto()">
+            ✕
+        </button>
+
+    </div>
+
+    <div class="preview-bottom">
+
+        <button class="preview-button retake"
+                onclick="retakePhoto()">
+            🔄 Retake
+        </button>
+
+        <button class="preview-button send"
+                onclick="openSendPanel()">
+            ➡️ Send
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- SEND PANEL -->
+
+<div id="sendPanel"
+     class="send-panel">
+
+    <div class="send-header">
+
+        <button class="back"
+                onclick="closeSendPanel()">
+            ←
+        </button>
+
+        <h2>Send to...</h2>
+
+    </div>
+
+    <div class="send-subtitle">
+        Select one or more friends
+    </div>
+
+    <div class="select-friend"
+         onclick="toggleFriend(this,'Alex')">
+
+        <div class="avatar">
+            A
+        </div>
+
+        <div class="friend-info">
+            <strong>Alex</strong>
+            <small>Online</small>
+        </div>
+
+        <div class="check">✓</div>
+
+    </div>
+
+    <div class="select-friend"
+         onclick="toggleFriend(this,'Mia')">
+
+        <div class="avatar pink">
+            M
+        </div>
+
+        <div class="friend-info">
+            <strong>Mia</strong>
+            <small>Online</small>
+        </div>
+
+        <div class="check">✓</div>
+
+    </div>
+
+    <div class="select-friend"
+         onclick="toggleFriend(this,'Jay')">
+
+        <div class="avatar blue">
+            J
+        </div>
+
+        <div class="friend-info">
+            <strong>Jay</strong>
+            <small>Offline</small>
+        </div>
+
+        <div class="check">✓</div>
+
+    </div>
+
+    <button class="send-selected"
+            onclick="sendPhoto()">
+        Send Photo
+    </button>
+
+</div>
+
+
+<!-- NAVIGATION -->
+
+<nav class="nav">
+
+    <button onclick="openScreen('friends',this)">
+        <div>👥</div>
+        Friends
+    </button>
+
+    <button onclick="openScreen('chats',this)">
+        <div>💬</div>
+        Chats
+    </button>
+
+    <button class="camera-button"
+            onclick="openScreen('camera',this)">
+        📸
+    </button>
+
+    <button onclick="openScreen('profile',this)">
+        <div>👤</div>
+        Profile
+    </button>
+
+</nav>
+
+
+<div id="toast"
+     class="toast"></div>
+
+</div>
+
+
+<script>
+
+let stream=null;
+let facingMode="user";
+let currentFilter="none";
+let capturedPhoto=null;
+let selectedFriends=[];
+
+
+/* ================= CAMERA ================= */
+
+async function startCamera(){
+
+    if(stream)return;
+
+    if(!navigator.mediaDevices ||
+       !navigator.mediaDevices.getUserMedia){
+
+        showToast("Camera unavailable");
+        return;
+    }
+
+    try{
+
+        stream=
+            await navigator.mediaDevices.getUserMedia({
+                video:{
+                    facingMode:facingMode
+                },
+                audio:false
+            });
+
+        document
+            .getElementById("video")
+            .srcObject=stream;
+
+    }catch(error){
+
+        console.log(error);
+
+        showToast("Please allow camera access");
+
+    }
+
+}
+
+
+function stopCamera(){
+
+    if(stream){
+
+        stream
+            .getTracks()
+            .forEach(track=>track.stop());
+
+        stream=null;
+    }
+
+}
+
+
+async function switchCamera(){
+
+    facingMode=
+        facingMode==="user"
+        ?"environment"
+        :"user";
+
+    stopCamera();
+
+    await startCamera();
+
+}
+
+
+/* ================= PHOTO ================= */
+
+function takePhoto(){
+
+    if(!stream){
+
+        showToast("Camera isn't available");
+        return;
+    }
+
+    const video=
+        document.getElementById("video");
+
+    const canvas=
+        document.createElement("canvas");
+
+    canvas.width=video.videoWidth;
+    canvas.height=video.videoHeight;
+
+    const ctx=
+        canvas.getContext("2d");
+
+    ctx.filter=currentFilter;
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    /*
+       IMPORTANT:
+       The photo is kept in memory.
+       It is NOT downloaded.
+    */
+
+    capturedPhoto=
+        canvas.toDataURL("image/jpeg",0.9);
+
+    document
+        .getElementById("photoPreview")
+        .src=capturedPhoto;
+
+    document
+        .getElementById("preview")
+        .classList.add("show");
+
+}
+
+
+/* ================= PREVIEW ================= */
+
+function retakePhoto(){
+
+    capturedPhoto=null;
+
+    document
+        .getElementById("preview")
+        .classList.remove("show");
+
+}
+
+
+function openSendPanel(){
+
+    if(!capturedPhoto){
+
+        showToast("Take a photo first");
+        return;
+    }
+
+    selectedFriends=[];
+
+    document
+        .querySelectorAll(".select-friend")
+        .forEach(friend=>{
+            friend.classList.remove("selected");
+        });
+
+    document
+        .getElementById("sendPanel")
+        .classList.add("show");
+
+}
+
+
+function closeSendPanel(){
+
+    document
+        .getElementById("sendPanel")
+        .classList.remove("show");
+
+}
+
+
+/* ================= FRIEND SELECTION ================= */
+
+function toggleFriend(element,name){
+
+    element.classList.toggle("selected");
+
+    if(element.classList.contains("selected")){
+
+        selectedFriends.push(name);
+
+    }else{
+
+        selectedFriends=
+            selectedFriends.filter(
+                friend=>friend!==name
+            );
+
+    }
+
+}
+
+
+/* ================= SEND ================= */
+
+function sendPhoto(){
+
+    if(selectedFriends.length===0){
+
+        showToast("Select a friend first");
+        return;
+    }
+
+    /*
+       Prototype simulation.
+
+       In the real version, this is where
+       the photo will be uploaded securely
+       and delivered to the selected users.
+    */
+
+    const names=
+        selectedFriends.join(", ");
+
+    closeSendPanel();
+
+    document
+        .getElementById("preview")
+        .classList.remove("show");
+
+    capturedPhoto=null;
+
+    showToast("Photo sent to "+names+" 📸");
+
+}
+
+
+/* ================= FILTERS ================= */
+
+function setFilter(button,value){
+
+    currentFilter=value;
+
+    document
+        .querySelectorAll(".filter")
+        .forEach(filter=>{
+            filter.classList.remove("active");
+        });
+
+    button.classList.add("active");
+
+    document
+        .getElementById("video")
+        .style.filter=value;
+
+}
+
+
+/* ================= MEDIA ================= */
+
+function chooseMedia(){
+
+    document
+        .getElementById("mediaInput")
+        .click();
+
+}
+
+
+function mediaSelected(event){
+
+    const file=
+        event.target.files[0];
+
+    if(!file)return;
+
+    if(file.type.startsWith("image/")){
+
+        const reader=
+            new FileReader();
+
+        reader.onload=function(e){
+
+            capturedPhoto=e.target.result;
+
+            document
+                .getElementById("photoPreview")
+                .src=capturedPhoto;
+
+            document
+                .getElementById("preview")
+                .classList.add("show");
+
+        };
+
+        reader.readAsDataURL(file);
+
+    }else{
+
+        showToast("Video selected 🎥");
+
+    }
+
+}
+
+
+/* ================= NAVIGATION ================= */
+
+function openScreen(id){
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen=>{
+            screen.classList.remove("active");
+        });
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+    if(id==="camera"){
+
+        startCamera();
+
+    }else{
+
+        stopCamera();
+
+    }
+
+}
+
+
+/* ================= TOAST ================= */
+
+let toastTimer;
+
+function showToast(message){
+
+    const toast=
+        document.getElementById("toast");
+
+    toast.textContent=message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer=
+        setTimeout(()=>{
+            toast.classList.remove("show");
+        },2500);
+
+}
+
+
+/* ================= START ================= */
+
+startCamera();
+
+</script>
+
+</body>
+</html>
