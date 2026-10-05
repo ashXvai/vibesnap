@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VibeSnap</title>
 
 <style>
@@ -10,33 +10,116 @@
     box-sizing:border-box;
     margin:0;
     padding:0;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
     background:#000;
     color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
     overflow:hidden;
 }
 
 .app{
     width:100%;
-    max-width:500px;
+    max-width:480px;
     height:100vh;
     margin:auto;
-    position:relative;
     background:#090909;
+    position:relative;
     overflow:hidden;
 }
 
-/* ================= SCREENS ================= */
+/* ================= AUTH ================= */
+
+.auth-screen{
+    position:absolute;
+    inset:0;
+    z-index:200;
+    background:#090909;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+}
+
+.auth-screen.hidden{
+    display:none;
+}
+
+.auth-box{
+    width:100%;
+    max-width:380px;
+    text-align:center;
+}
+
+.auth-logo{
+    font-size:42px;
+    font-weight:900;
+    letter-spacing:-2px;
+}
+
+.auth-logo span{
+    color:#ffe600;
+}
+
+.auth-subtitle{
+    color:#777;
+    margin:10px 0 35px;
+}
+
+.auth-input{
+    width:100%;
+    padding:16px 17px;
+    margin:7px 0;
+    border:1px solid #ffffff18;
+    border-radius:16px;
+    background:#ffffff08;
+    color:#fff;
+    outline:none;
+    font-size:16px;
+}
+
+.auth-input:focus{
+    border-color:#ffe60066;
+}
+
+.auth-button,
+.auth-login-button{
+    width:100%;
+    padding:16px;
+    margin-top:10px;
+    border:0;
+    border-radius:16px;
+    font-weight:800;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.auth-button{
+    background:#ffe600;
+    color:#111;
+}
+
+.auth-login-button{
+    background:#ffffff10;
+    color:#fff;
+    border:1px solid #ffffff18;
+}
+
+.auth-message{
+    min-height:22px;
+    margin-top:15px;
+    color:#ff7676;
+    font-size:13px;
+}
+
+/* ================= COMMON ================= */
 
 .screen{
     position:absolute;
     inset:0;
     display:none;
-    background:#090909;
-    padding-bottom:80px;
+    padding-bottom:75px;
     overflow-y:auto;
 }
 
@@ -44,33 +127,42 @@ body{
     display:block;
 }
 
+button{
+    cursor:pointer;
+}
+
 /* ================= CAMERA ================= */
 
-.camera{
-    padding:0;
+.camera-screen{
     background:#000;
-    overflow:hidden;
 }
 
 #video{
     width:100%;
     height:100%;
     object-fit:cover;
+    position:absolute;
+    inset:0;
+}
+
+.camera-overlay{
+    position:absolute;
+    inset:0;
+    z-index:5;
 }
 
 .camera-top{
     position:absolute;
     top:20px;
-    left:18px;
-    right:18px;
+    left:20px;
+    right:20px;
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    z-index:5;
+    justify-content:space-between;
 }
 
 .logo{
-    font-size:23px;
+    font-size:25px;
     font-weight:900;
 }
 
@@ -78,245 +170,174 @@ body{
     color:#ffe600;
 }
 
-.circle{
-    width:44px;
-    height:44px;
-    border:1px solid #ffffff33;
+.profile-small{
+    width:40px;
+    height:40px;
     border-radius:50%;
-    background:#0009;
-    color:white;
-    font-size:19px;
-    cursor:pointer;
+    background:#ffe600;
+    color:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
 }
 
 .camera-tools{
     position:absolute;
-    top:95px;
     right:15px;
+    top:90px;
     display:flex;
     flex-direction:column;
     gap:12px;
-    z-index:5;
 }
 
-.tool{
-    width:45px;
-    height:45px;
-    border:1px solid #ffffff33;
+.tool-button{
+    width:48px;
+    height:48px;
     border-radius:50%;
-    background:#0009;
+    border:1px solid #ffffff33;
+    background:#00000066;
     color:#fff;
-    font-size:19px;
-    cursor:pointer;
+    font-size:20px;
 }
 
 .filters{
     position:absolute;
     bottom:145px;
     left:0;
-    width:100%;
+    right:0;
     display:flex;
     gap:8px;
-    padding:10px 15px;
+    padding:10px;
     overflow-x:auto;
-    z-index:5;
+    justify-content:center;
 }
 
-.filters::-webkit-scrollbar{
-    display:none;
-}
-
-.filter{
-    flex-shrink:0;
-    border:1px solid #ffffff44;
-    background:#0009;
+.filter-button{
+    background:#00000099;
     color:#fff;
-    padding:10px 16px;
-    border-radius:25px;
-    cursor:pointer;
+    border:1px solid #ffffff33;
+    padding:8px 13px;
+    border-radius:20px;
+    font-size:12px;
 }
 
-.filter.active{
-    background:#fff;
-    color:#000;
+.filter-button.active{
+    background:#ffe600;
+    color:#111;
+    border-color:#ffe600;
 }
 
-.camera-bottom{
+.capture-area{
     position:absolute;
-    bottom:28px;
+    bottom:70px;
     left:0;
-    width:100%;
+    right:0;
     display:flex;
     justify-content:center;
-    align-items:center;
-    gap:35px;
-    z-index:5;
 }
 
-.capture{
-    width:78px;
-    height:78px;
+.capture-button{
+    width:72px;
+    height:72px;
     border-radius:50%;
-    background:white;
-    border:6px solid #ffffff66;
-    cursor:pointer;
+    border:6px solid #fff;
+    background:#ffffff44;
 }
 
-.small-camera{
-    width:48px;
-    height:48px;
-    border:0;
-    border-radius:50%;
-    background:#0009;
-    color:white;
-    font-size:20px;
-    cursor:pointer;
-}
-
-/* ================= HEADER ================= */
+/* ================= CHAT ================= */
 
 .header{
-    padding:25px 20px 15px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    padding:22px 18px;
+    font-size:27px;
+    font-weight:900;
 }
 
-.header h1{
-    font-size:28px;
-}
-
-.subtitle{
-    color:#777;
-    font-size:13px;
-    margin-top:5px;
-}
-
-.search{
-    width:calc(100% - 36px);
-    margin:5px 18px 15px;
-    padding:15px;
+.search-box{
+    margin:0 15px 15px;
+    width:calc(100% - 30px);
+    padding:14px;
+    border-radius:15px;
     border:1px solid #ffffff15;
-    border-radius:17px;
     background:#ffffff08;
     color:#fff;
     outline:none;
 }
 
-/* ================= CHATS ================= */
-
-.chat{
+.user-item{
     display:flex;
     align-items:center;
     gap:13px;
-    margin:5px 12px;
-    padding:14px;
-    border-radius:18px;
-    cursor:pointer;
-}
-
-.chat:hover{
-    background:#ffffff08;
+    padding:14px 18px;
+    border-bottom:1px solid #ffffff0c;
 }
 
 .avatar{
-    width:53px;
-    height:53px;
-    flex-shrink:0;
+    width:48px;
+    height:48px;
     border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    background:#ffe600;
     color:#111;
-    font-weight:bold;
-    background:linear-gradient(135deg,#ffe600,#ff7a00);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
 }
 
-.pink{
-    background:linear-gradient(135deg,#ff4d9d,#8b5cf6);
-}
-
-.blue{
-    background:linear-gradient(135deg,#38bdf8,#6366f1);
-}
-
-.chat-info{
+.user-info{
     flex:1;
 }
 
-.chat-info strong{
-    display:block;
-    margin-bottom:5px;
+.user-name{
+    font-weight:800;
 }
 
-.chat-info span{
+.user-status{
     color:#777;
     font-size:13px;
+    margin-top:4px;
 }
 
 /* ================= FRIENDS ================= */
 
-.friend{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin:10px 15px;
-    padding:16px;
-    border-radius:20px;
-    background:#ffffff08;
-    border:1px solid #ffffff10;
-    cursor:pointer;
-}
-
-.friend-info{
-    flex:1;
-}
-
-.friend-info strong{
-    display:block;
-}
-
-.friend-info small{
-    color:#777;
-}
-
-.add{
+.friend-button{
+    padding:9px 14px;
     border:0;
+    border-radius:20px;
     background:#ffe600;
     color:#111;
-    padding:9px 17px;
-    border-radius:20px;
-    font-weight:bold;
+    font-weight:800;
 }
 
 /* ================= PROFILE ================= */
 
 .profile{
     text-align:center;
-    padding:45px 20px;
+    padding:30px 20px;
 }
 
 .profile-avatar{
-    width:105px;
-    height:105px;
-    margin:auto;
+    width:100px;
+    height:100px;
     border-radius:50%;
+    margin:10px auto 15px;
+    background:#ffe600;
+    color:#111;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:38px;
-    font-weight:bold;
-    color:#111;
-    background:linear-gradient(135deg,#ffe600,#ff4d9d,#8b5cf6);
+    font-size:40px;
+    font-weight:900;
 }
 
-.profile h2{
-    margin-top:18px;
+.profile-name{
+    font-size:25px;
+    font-weight:900;
 }
 
-.handle{
+.profile-email{
     color:#777;
-    margin-top:6px;
+    margin-top:5px;
 }
 
 .stats{
@@ -328,240 +349,182 @@ body{
 
 .stat strong{
     display:block;
-    font-size:20px;
+    font-size:22px;
 }
 
-.stat small{
+.stat span{
     color:#777;
+    font-size:12px;
 }
 
-.profile-button{
+.profile-option{
     width:100%;
     padding:15px;
-    margin:6px 0;
-    border:1px solid #ffffff15;
-    border-radius:16px;
+    margin-top:10px;
+    border-radius:15px;
+    border:1px solid #ffffff12;
     background:#ffffff08;
     color:#fff;
-    font-weight:bold;
+    text-align:left;
 }
 
-/* ================= NAV ================= */
+.logout-button{
+    background:#ff444420;
+    color:#ff7777;
+}
 
-.nav{
+/* ================= BOTTOM NAV ================= */
+
+.bottom-nav{
     position:absolute;
     bottom:0;
     left:0;
     right:0;
-    height:75px;
+    height:70px;
+    background:#090909ee;
+    border-top:1px solid #ffffff12;
     display:flex;
-    justify-content:space-around;
-    align-items:center;
-    background:#101010ee;
-    backdrop-filter:blur(20px);
-    border-top:1px solid #ffffff10;
-    z-index:20;
+    z-index:50;
 }
 
-.nav button{
-    border:0;
+.nav-button{
+    flex:1;
     background:none;
+    border:0;
     color:#777;
-    font-size:11px;
-    cursor:pointer;
+    font-size:12px;
 }
 
-.nav button div{
+.nav-button.active{
+    color:#ffe600;
+}
+
+.nav-icon{
+    display:block;
     font-size:22px;
-    margin-bottom:4px;
+    margin-bottom:3px;
 }
 
-.camera-button{
-    width:55px;
-    height:55px;
-    border-radius:50%;
-    background:#ffe600 !important;
-    color:#111 !important;
-    font-size:22px !important;
-}
+/* ================= PREVIEW ================= */
 
-/* ================= PHOTO PREVIEW ================= */
-
-.preview{
+.preview-overlay{
     position:absolute;
     inset:0;
     background:#000;
+    z-index:100;
     display:none;
-    z-index:40;
 }
 
-.preview.show{
+.preview-overlay.active{
     display:block;
 }
 
-#photoPreview{
+#previewImage{
     width:100%;
     height:100%;
     object-fit:contain;
 }
 
-.preview-top{
+.preview-actions{
     position:absolute;
-    top:20px;
-    left:20px;
-    right:20px;
+    bottom:25px;
+    left:15px;
+    right:15px;
     display:flex;
-    justify-content:space-between;
-    z-index:2;
-}
-
-.preview-title{
-    background:#0008;
-    padding:10px 15px;
-    border-radius:20px;
-    font-weight:bold;
-}
-
-.preview-bottom{
-    position:absolute;
-    bottom:30px;
-    left:20px;
-    right:20px;
-    display:flex;
-    gap:12px;
-    z-index:2;
+    gap:10px;
 }
 
 .preview-button{
     flex:1;
-    padding:16px;
+    padding:15px;
+    border-radius:15px;
     border:0;
-    border-radius:18px;
-    font-weight:bold;
-    cursor:pointer;
+    font-weight:900;
 }
 
-.retake{
+.retake-button{
     background:#ffffff18;
-    color:white;
-    border:1px solid #ffffff22;
+    color:#fff;
 }
 
-.send{
+.send-button{
     background:#ffe600;
     color:#111;
 }
 
-/* ================= SEND FRIENDS ================= */
+/* ================= SEND PANEL ================= */
 
 .send-panel{
     position:absolute;
-    inset:0;
-    background:#090909;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#151515;
+    border-radius:25px 25px 0 0;
+    padding:20px;
+    z-index:110;
     display:none;
-    z-index:50;
-    padding-bottom:20px;
-    overflow-y:auto;
 }
 
-.send-panel.show{
+.send-panel.active{
     display:block;
 }
 
-.send-header{
+.send-title{
+    font-size:20px;
+    font-weight:900;
+    margin-bottom:15px;
+}
+
+.send-friend{
     display:flex;
     align-items:center;
-    gap:15px;
-    padding:25px 20px;
+    padding:10px 0;
 }
 
-.send-header h2{
-    font-size:24px;
-}
-
-.back{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    border:1px solid #ffffff20;
-    background:#ffffff08;
-    color:white;
-    font-size:18px;
-}
-
-.send-subtitle{
-    color:#777;
-    padding:0 20px 15px;
-}
-
-.select-friend{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin:8px 15px;
-    padding:14px;
-    border-radius:18px;
-    background:#ffffff08;
-    border:1px solid transparent;
-    cursor:pointer;
-}
-
-.select-friend.selected{
-    border-color:#ffe600;
-    background:#ffe60012;
-}
-
-.check{
+.send-check{
     margin-left:auto;
-    width:28px;
-    height:28px;
-    border-radius:50%;
-    border:2px solid #555;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    width:22px;
+    height:22px;
 }
 
-.selected .check{
-    background:#ffe600;
-    border-color:#ffe600;
-    color:#111;
-}
-
-.send-selected{
-    position:sticky;
-    bottom:0;
-    width:calc(100% - 30px);
-    margin:20px 15px;
-    padding:16px;
+.confirm-send{
+    width:100%;
+    padding:15px;
+    margin-top:15px;
     border:0;
-    border-radius:18px;
+    border-radius:15px;
     background:#ffe600;
-    color:#111;
-    font-weight:800;
-    font-size:16px;
-    cursor:pointer;
+    font-weight:900;
 }
 
 /* ================= TOAST ================= */
 
 .toast{
     position:absolute;
-    top:75px;
     left:50%;
+    bottom:85px;
     transform:translateX(-50%);
-    background:#222;
+    background:#fff;
+    color:#111;
     padding:12px 18px;
-    border-radius:30px;
-    opacity:0;
-    pointer-events:none;
-    transition:.3s;
-    z-index:100;
-    white-space:nowrap;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:700;
+    z-index:300;
+    display:none;
 }
 
 .toast.show{
-    opacity:1;
+    display:block;
+}
+
+/* ================= MEDIA ================= */
+
+@media(max-width:480px){
+    .app{
+        max-width:none;
+    }
 }
 </style>
 </head>
@@ -570,299 +533,371 @@ body{
 
 <div class="app">
 
-<!-- CAMERA -->
+<!-- ================= AUTH SCREEN ================= -->
 
-<section id="camera" class="screen camera active">
+<section id="authScreen" class="auth-screen">
 
-    <video id="video"
-           autoplay
-           muted
-           playsinline>
-    </video>
+    <div class="auth-box">
 
-    <div class="camera-top">
-
-        <button class="circle"
-                onclick="showToast('Flash')">
-            ⚡
-        </button>
-
-        <div class="logo">
+        <div class="auth-logo">
             Vibe<span>Snap</span>
         </div>
 
-        <button class="circle"
-                onclick="openScreen('profile')">
-            👤
+        <p class="auth-subtitle">
+            Connect. Share. Vibe.
+        </p>
+
+        <input
+            id="emailInput"
+            class="auth-input"
+            type="email"
+            placeholder="Email"
+            autocomplete="email"
+        >
+
+        <input
+            id="passwordInput"
+            class="auth-input"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
+
+        <button class="auth-button" onclick="createAccount()">
+            Create Account
         </button>
+
+        <button class="auth-login-button" onclick="loginAccount()">
+            Log In
+        </button>
+
+        <p id="authMessage" class="auth-message"></p>
 
     </div>
-
-    <div class="camera-tools">
-
-        <button class="tool"
-                onclick="switchCamera()">
-            🔄
-        </button>
-
-        <button class="tool"
-                onclick="chooseMedia()">
-            🖼️
-        </button>
-
-        <button class="tool"
-                onclick="showToast('Effects coming soon ✨')">
-            ✨
-        </button>
-
-    </div>
-
-    <div class="filters">
-
-        <button class="filter active"
-                onclick="setFilter(this,'none')">
-            Normal
-        </button>
-
-        <button class="filter"
-                onclick="setFilter(this,'grayscale(1)')">
-            B&W
-        </button>
-
-        <button class="filter"
-                onclick="setFilter(this,'sepia(.8)')">
-            Retro
-        </button>
-
-        <button class="filter"
-                onclick="setFilter(this,'saturate(2)')">
-            Vivid
-        </button>
-
-        <button class="filter"
-                onclick="setFilter(this,'contrast(1.5)')">
-            Drama
-        </button>
-
-    </div>
-
-    <div class="camera-bottom">
-
-        <button class="small-camera"
-                onclick="chooseMedia()">
-            🖼️
-        </button>
-
-        <button class="capture"
-                onclick="takePhoto()">
-        </button>
-
-        <button class="small-camera"
-                onclick="showToast('Video mode coming next 🎥')">
-            🎥
-        </button>
-
-    </div>
-
-    <input id="mediaInput"
-           type="file"
-           accept="image/*,video/*"
-           hidden
-           onchange="mediaSelected(event)">
 
 </section>
 
 
-<!-- CHATS -->
+<!-- ================= CAMERA ================= -->
 
-<section id="chats" class="screen">
+<section id="cameraScreen" class="screen camera-screen">
+
+    <video id="video" autoplay playsinline></video>
+
+    <div class="camera-overlay">
+
+        <div class="camera-top">
+
+            <div class="logo">
+                Vibe<span>Snap</span>
+            </div>
+
+            <div class="profile-small" onclick="openScreen('profile')">
+                U
+            </div>
+
+        </div>
+
+        <div class="camera-tools">
+
+            <button class="tool-button" onclick="switchCamera()">
+                🔄
+            </button>
+
+            <button class="tool-button" onclick="openMediaPicker()">
+                🖼️
+            </button>
+
+            <button class="tool-button" onclick="showToast('Effects coming soon')">
+                ✨
+            </button>
+
+        </div>
+
+        <div class="filters">
+
+            <button class="filter-button active"
+                    onclick="setFilter('none',this)">
+                Normal
+            </button>
+
+            <button class="filter-button"
+                    onclick="setFilter('grayscale(1)',this)">
+                B&W
+            </button>
+
+            <button class="filter-button"
+                    onclick="setFilter('sepia(0.7)',this)">
+                Retro
+            </button>
+
+            <button class="filter-button"
+                    onclick="setFilter('saturate(1.8)',this)">
+                Vivid
+            </button>
+
+            <button class="filter-button"
+                    onclick="setFilter('contrast(1.5)',this)">
+                Drama
+            </button>
+
+        </div>
+
+        <div class="capture-area">
+
+            <button
+                class="capture-button"
+                onclick="capturePhoto()">
+            </button>
+
+        </div>
+
+    </div>
+
+    <input
+        id="mediaInput"
+        type="file"
+        accept="image/*"
+        style="display:none"
+        onchange="handleMediaPicker(event)"
+    >
+
+</section>
+
+
+<!-- ================= CHATS ================= -->
+
+<section id="chatsScreen" class="screen">
 
     <div class="header">
+        Chats
+    </div>
 
-        <div>
-            <h1>Chats</h1>
-            <div class="subtitle">
-                Your conversations
+    <input
+        class="search-box"
+        placeholder="Search chats..."
+        oninput="searchUsers(this.value)"
+    >
+
+    <div id="chatList">
+
+        <div class="user-item">
+
+            <div class="avatar">A</div>
+
+            <div class="user-info">
+
+                <div class="user-name">
+                    Alex
+                </div>
+
+                <div class="user-status">
+                    Hey! What's up?
+                </div>
+
             </div>
+
         </div>
 
-        <button class="circle"
-                onclick="showToast('New chat')">
-            ✏️
-        </button>
 
-    </div>
+        <div class="user-item">
 
-    <input class="search"
-           placeholder="Search chats">
+            <div class="avatar">M</div>
 
-    <div class="chat"
-         onclick="showToast('Chat with Alex')">
+            <div class="user-info">
 
-        <div class="avatar">A</div>
+                <div class="user-name">
+                    Mia
+                </div>
 
-        <div class="chat-info">
-            <strong>Alex</strong>
-            <span>Hey! 👋</span>
+                <div class="user-status">
+                    Photo received
+                </div>
+
+            </div>
+
         </div>
 
-        <small>2m</small>
 
-    </div>
+        <div class="user-item">
 
-    <div class="chat"
-         onclick="showToast('Chat with Mia')">
+            <div class="avatar">J</div>
 
-        <div class="avatar pink">M</div>
+            <div class="user-info">
 
-        <div class="chat-info">
-            <strong>Mia</strong>
-            <span>Sent a photo 📷</span>
+                <div class="user-name">
+                    Jay
+                </div>
+
+                <div class="user-status">
+                    Let's chat!
+                </div>
+
+            </div>
+
         </div>
-
-        <small>8m</small>
-
-    </div>
-
-    <div class="chat"
-         onclick="showToast('Chat with Jay')">
-
-        <div class="avatar blue">J</div>
-
-        <div class="chat-info">
-            <strong>Jay</strong>
-            <span>See you tomorrow!</span>
-        </div>
-
-        <small>1h</small>
 
     </div>
 
 </section>
 
 
-<!-- FRIENDS -->
+<!-- ================= FRIENDS ================= -->
 
-<section id="friends" class="screen">
+<section id="friendsScreen" class="screen">
 
     <div class="header">
+        Friends
+    </div>
 
-        <div>
-            <h1>Friends</h1>
-            <div class="subtitle">
-                Your friends
+    <input
+        class="search-box"
+        placeholder="Search people..."
+        oninput="searchFriends(this.value)"
+    >
+
+    <div id="friendList">
+
+        <div class="user-item">
+
+            <div class="avatar">A</div>
+
+            <div class="user-info">
+
+                <div class="user-name">
+                    Alex
+                </div>
+
+                <div class="user-status">
+                    Friend
+                </div>
+
             </div>
+
+            <button
+                class="friend-button"
+                onclick="showToast('Alex is already your friend')">
+                Friend
+            </button>
+
         </div>
 
-        <button class="circle"
-                onclick="showToast('Add friend')">
-            +
-        </button>
 
-    </div>
+        <div class="user-item">
 
-    <input class="search"
-           placeholder="Search people">
+            <div class="avatar">M</div>
 
-    <div class="friend">
+            <div class="user-info">
 
-        <div class="avatar">A</div>
+                <div class="user-name">
+                    Mia
+                </div>
 
-        <div class="friend-info">
-            <strong>Alex</strong>
-            <small>Online</small>
+                <div class="user-status">
+                    Friend
+                </div>
+
+            </div>
+
+            <button
+                class="friend-button"
+                onclick="showToast('Mia is already your friend')">
+                Friend
+            </button>
+
         </div>
 
-        <button class="add"
-                onclick="showToast('Alex selected')">
-            Chat
-        </button>
 
-    </div>
+        <div class="user-item">
 
-    <div class="friend">
+            <div class="avatar">J</div>
 
-        <div class="avatar pink">M</div>
+            <div class="user-info">
 
-        <div class="friend-info">
-            <strong>Mia</strong>
-            <small>Online</small>
+                <div class="user-name">
+                    Jay
+                </div>
+
+                <div class="user-status">
+                    Friend
+                </div>
+
+            </div>
+
+            <button
+                class="friend-button"
+                onclick="showToast('Jay is already your friend')">
+                Friend
+            </button>
+
         </div>
-
-        <button class="add"
-                onclick="showToast('Mia selected')">
-            Chat
-        </button>
-
-    </div>
-
-    <div class="friend">
-
-        <div class="avatar blue">J</div>
-
-        <div class="friend-info">
-            <strong>Jay</strong>
-            <small>Offline</small>
-        </div>
-
-        <button class="add"
-                onclick="showToast('Jay selected')">
-            Chat
-        </button>
 
     </div>
 
 </section>
 
 
-<!-- PROFILE -->
+<!-- ================= PROFILE ================= -->
 
-<section id="profile" class="screen">
+<section id="profileScreen" class="screen">
+
+    <div class="header">
+        Your Profile
+    </div>
 
     <div class="profile">
 
-        <div class="profile-avatar">
+        <div id="profileAvatar" class="profile-avatar">
             U
         </div>
 
-        <h2>Your Profile</h2>
+        <div id="profileName" class="profile-name">
+            Your Profile
+        </div>
 
-        <div class="handle">
+        <div id="profileEmail" class="profile-email">
             @username
         </div>
+
 
         <div class="stats">
 
             <div class="stat">
                 <strong>128</strong>
-                <small>Friends</small>
+                <span>Friends</span>
             </div>
 
             <div class="stat">
                 <strong>42</strong>
-                <small>Posts</small>
+                <span>Photos</span>
             </div>
 
             <div class="stat">
                 <strong>890</strong>
-                <small>Likes</small>
+                <span>Vibes</span>
             </div>
 
         </div>
 
-        <button class="profile-button"
-                onclick="showToast('Edit profile')">
+
+        <button class="profile-option"
+                onclick="showToast('Edit profile coming soon')">
             ✏️ Edit Profile
         </button>
 
-        <button class="profile-button"
-                onclick="showToast('Settings')">
+        <button class="profile-option"
+                onclick="showToast('Settings coming soon')">
             ⚙️ Settings
         </button>
 
-        <button class="profile-button"
-                onclick="showToast('Privacy')">
+        <button class="profile-option"
+                onclick="showToast('Privacy settings coming soon')">
             🔒 Privacy
+        </button>
+
+        <button class="profile-option logout-button"
+                onclick="logoutAccount()">
+            🚪 Log Out
         </button>
 
     </div>
@@ -870,36 +905,74 @@ body{
 </section>
 
 
-<!-- PHOTO PREVIEW -->
+<!-- ================= BOTTOM NAV ================= -->
 
-<div id="preview"
-     class="preview">
+<nav class="bottom-nav">
 
-    <img id="photoPreview">
+    <button
+        id="navCamera"
+        class="nav-button active"
+        onclick="openScreen('camera')">
 
-    <div class="preview-top">
+        <span class="nav-icon">📷</span>
+        Camera
 
-        <div class="preview-title">
-            Your Photo
-        </div>
+    </button>
 
-        <button class="circle"
-                onclick="retakePhoto()">
-            ✕
+
+    <button
+        id="navChats"
+        class="nav-button"
+        onclick="openScreen('chats')">
+
+        <span class="nav-icon">💬</span>
+        Chats
+
+    </button>
+
+
+    <button
+        id="navFriends"
+        class="nav-button"
+        onclick="openScreen('friends')">
+
+        <span class="nav-icon">👥</span>
+        Friends
+
+    </button>
+
+
+    <button
+        id="navProfile"
+        class="nav-button"
+        onclick="openScreen('profile')">
+
+        <span class="nav-icon">👤</span>
+        Profile
+
+    </button>
+
+</nav>
+
+
+<!-- ================= PHOTO PREVIEW ================= -->
+
+<div id="previewOverlay" class="preview-overlay">
+
+    <img id="previewImage">
+
+    <div class="preview-actions">
+
+        <button
+            class="preview-button retake-button"
+            onclick="retakePhoto()">
+            Retake
         </button>
 
-    </div>
-
-    <div class="preview-bottom">
-
-        <button class="preview-button retake"
-                onclick="retakePhoto()">
-            🔄 Retake
-        </button>
-
-        <button class="preview-button send"
-                onclick="openSendPanel()">
-            ➡️ Send
+        <button
+            class="preview-button send-button"
+            onclick="openSendPanel()">
+            Send
         </button>
 
     </div>
@@ -907,156 +980,493 @@ body{
 </div>
 
 
-<!-- SEND PANEL -->
+<!-- ================= SEND PANEL ================= -->
 
-<div id="sendPanel"
-     class="send-panel">
+<div id="sendPanel" class="send-panel">
 
-    <div class="send-header">
+    <div class="send-title">
+        Send Photo To
+    </div>
 
-        <button class="back"
-                onclick="closeSendPanel()">
-            ←
-        </button>
 
-        <h2>Send to...</h2>
+    <div class="send-friend">
+
+        <div class="avatar">A</div>
+
+        <div class="user-info">
+            <div class="user-name">Alex</div>
+        </div>
+
+        <input
+            class="send-check"
+            type="checkbox"
+            value="Alex"
+            onchange="toggleFriend(this)"
+        >
 
     </div>
 
-    <div class="send-subtitle">
-        Select one or more friends
-    </div>
 
-    <div class="select-friend"
-         onclick="toggleFriend(this,'Alex')">
+    <div class="send-friend">
 
-        <div class="avatar">
-            A
+        <div class="avatar">M</div>
+
+        <div class="user-info">
+            <div class="user-name">Mia</div>
         </div>
 
-        <div class="friend-info">
-            <strong>Alex</strong>
-            <small>Online</small>
-        </div>
-
-        <div class="check">✓</div>
-
-    </div>
-
-    <div class="select-friend"
-         onclick="toggleFriend(this,'Mia')">
-
-        <div class="avatar pink">
-            M
-        </div>
-
-        <div class="friend-info">
-            <strong>Mia</strong>
-            <small>Online</small>
-        </div>
-
-        <div class="check">✓</div>
+        <input
+            class="send-check"
+            type="checkbox"
+            value="Mia"
+            onchange="toggleFriend(this)"
+        >
 
     </div>
 
-    <div class="select-friend"
-         onclick="toggleFriend(this,'Jay')">
 
-        <div class="avatar blue">
-            J
+    <div class="send-friend">
+
+        <div class="avatar">J</div>
+
+        <div class="user-info">
+            <div class="user-name">Jay</div>
         </div>
 
-        <div class="friend-info">
-            <strong>Jay</strong>
-            <small>Offline</small>
-        </div>
-
-        <div class="check">✓</div>
+        <input
+            class="send-check"
+            type="checkbox"
+            value="Jay"
+            onchange="toggleFriend(this)"
+        >
 
     </div>
 
-    <button class="send-selected"
-            onclick="sendPhoto()">
+
+    <button
+        class="confirm-send"
+        onclick="sendPhoto()">
         Send Photo
     </button>
 
 </div>
 
 
-<!-- NAVIGATION -->
+<!-- ================= TOAST ================= -->
 
-<nav class="nav">
-
-    <button onclick="openScreen('friends',this)">
-        <div>👥</div>
-        Friends
-    </button>
-
-    <button onclick="openScreen('chats',this)">
-        <div>💬</div>
-        Chats
-    </button>
-
-    <button class="camera-button"
-            onclick="openScreen('camera',this)">
-        📸
-    </button>
-
-    <button onclick="openScreen('profile',this)">
-        <div>👤</div>
-        Profile
-    </button>
-
-</nav>
-
-
-<div id="toast"
-     class="toast"></div>
+<div id="toast" class="toast"></div>
 
 </div>
 
 
+<!-- ================= FIREBASE ================= -->
+
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
+
+
 <script>
 
-let stream=null;
-let facingMode="user";
-let currentFilter="none";
-let capturedPhoto=null;
-let selectedFriends=[];
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
+
+    authDomain:
+        "vibesnap-213d4.firebaseapp.com",
+
+    projectId:
+        "vibesnap-213d4",
+
+    storageBucket:
+        "vibesnap-213d4.firebasestorage.app",
+
+    messagingSenderId:
+        "933479938239",
+
+    appId:
+        "1:933479938239:web:d120d7ba99f5665987ae0a",
+
+    measurementId:
+        "G-HP0QL3C8Y"
+
+};
 
 
-/* ================= CAMERA ================= */
+firebase.initializeApp(firebaseConfig);
 
-async function startCamera(){
+const auth = firebase.auth();
 
-    if(stream)return;
 
-    if(!navigator.mediaDevices ||
-       !navigator.mediaDevices.getUserMedia){
+/* =========================================================
+   VARIABLES
+========================================================= */
 
-        showToast("Camera unavailable");
+let stream = null;
+
+let facingMode = "user";
+
+let currentFilter = "none";
+
+let capturedPhoto = null;
+
+let selectedFriends = [];
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+function showAuthMessage(message){
+
+    document.getElementById("authMessage").textContent = message;
+
+}
+
+
+function clearAuthFields(){
+
+    document.getElementById("emailInput").value = "";
+
+    document.getElementById("passwordInput").value = "";
+
+}
+
+
+function getAuthValues(){
+
+    return {
+
+        email:
+            document.getElementById("emailInput")
+                .value
+                .trim(),
+
+        password:
+            document.getElementById("passwordInput")
+                .value
+
+    };
+
+}
+
+
+/* CREATE ACCOUNT */
+
+async function createAccount(){
+
+    const {email,password} = getAuthValues();
+
+
+    if(!email || !password){
+
+        showAuthMessage(
+            "Enter your email and password."
+        );
+
         return;
     }
 
+
+    if(password.length < 6){
+
+        showAuthMessage(
+            "Password must be at least 6 characters."
+        );
+
+        return;
+    }
+
+
+    showAuthMessage(
+        "Creating your account..."
+    );
+
+
     try{
 
-        stream=
-            await navigator.mediaDevices.getUserMedia({
-                video:{
-                    facingMode:facingMode
-                },
-                audio:false
-            });
+        await auth.createUserWithEmailAndPassword(
+            email,
+            password
+        );
 
-        document
-            .getElementById("video")
-            .srcObject=stream;
+        showAuthMessage("");
 
     }catch(error){
 
         console.log(error);
 
-        showToast("Please allow camera access");
+        showAuthMessage(
+            getAuthError(error)
+        );
+
+    }
+
+}
+
+
+/* LOGIN */
+
+async function loginAccount(){
+
+    const {email,password} = getAuthValues();
+
+
+    if(!email || !password){
+
+        showAuthMessage(
+            "Enter your email and password."
+        );
+
+        return;
+    }
+
+
+    showAuthMessage(
+        "Logging in..."
+    );
+
+
+    try{
+
+        await auth.signInWithEmailAndPassword(
+            email,
+            password
+        );
+
+        showAuthMessage("");
+
+    }catch(error){
+
+        console.log(error);
+
+        showAuthMessage(
+            getAuthError(error)
+        );
+
+    }
+
+}
+
+
+/* LOGOUT */
+
+async function logoutAccount(){
+
+    try{
+
+        stopCamera();
+
+        await auth.signOut();
+
+    }catch(error){
+
+        console.log(error);
+
+        showToast(
+            "Could not log out"
+        );
+
+    }
+
+}
+
+
+/* FIREBASE ERROR MESSAGES */
+
+function getAuthError(error){
+
+    switch(error.code){
+
+        case "auth/invalid-email":
+
+            return "Please enter a valid email.";
+
+
+        case "auth/email-already-in-use":
+
+            return "That email already has an account. Try Log In.";
+
+
+        case "auth/weak-password":
+
+            return "Choose a stronger password.";
+
+
+        case "auth/invalid-credential":
+
+        case "auth/wrong-password":
+
+        case "auth/user-not-found":
+
+            return "Email or password is incorrect.";
+
+
+        case "auth/too-many-requests":
+
+            return "Too many attempts. Please try again later.";
+
+
+        case "auth/network-request-failed":
+
+            return "Network error. Check your internet connection.";
+
+
+        default:
+
+            return error.message ||
+                "Something went wrong.";
+
+    }
+
+}
+
+
+/* SHOW MAIN APP */
+
+function showMainApp(user){
+
+    document
+        .getElementById("authScreen")
+        .classList
+        .add("hidden");
+
+
+    const email =
+        user.email || "";
+
+
+    const username =
+        email
+            ? email.split("@")[0]
+            : "username";
+
+
+    document
+        .getElementById("profileEmail")
+        .textContent =
+            "@" + username;
+
+
+    const firstLetter =
+        email
+            ? email.charAt(0).toUpperCase()
+            : "U";
+
+
+    document
+        .getElementById("profileAvatar")
+        .textContent =
+            firstLetter;
+
+
+    document
+        .querySelector(".profile-small")
+        .textContent =
+            firstLetter;
+
+
+    document
+        .getElementById("profileName")
+        .textContent =
+            "Your Profile";
+
+
+    openScreen("camera");
+
+    startCamera();
+
+}
+
+
+/* SHOW LOGIN */
+
+function showLogin(){
+
+    stopCamera();
+
+    document
+        .getElementById("authScreen")
+        .classList
+        .remove("hidden");
+
+    clearAuthFields();
+
+    showAuthMessage("");
+
+}
+
+
+/* FIREBASE AUTH LISTENER */
+
+auth.onAuthStateChanged(function(user){
+
+    if(user){
+
+        showMainApp(user);
+
+    }else{
+
+        showLogin();
+
+    }
+
+});
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+async function startCamera(){
+
+    try{
+
+        if(stream){
+
+            stream
+                .getTracks()
+                .forEach(track => track.stop());
+
+        }
+
+
+        stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video:{
+                    facingMode:facingMode
+                },
+
+                audio:false
+
+            });
+
+
+        const video =
+            document.getElementById("video");
+
+
+        video.srcObject =
+            stream;
+
+
+        video.style.filter =
+            currentFilter;
+
+
+    }catch(error){
+
+        console.log(error);
+
+        showToast(
+            "Camera permission is needed."
+        );
 
     }
 
@@ -1069,9 +1479,10 @@ function stopCamera(){
 
         stream
             .getTracks()
-            .forEach(track=>track.stop());
+            .forEach(track => track.stop());
 
-        stream=null;
+        stream = null;
+
     }
 
 }
@@ -1079,41 +1490,72 @@ function stopCamera(){
 
 async function switchCamera(){
 
-    facingMode=
-        facingMode==="user"
-        ?"environment"
-        :"user";
+    facingMode =
+        facingMode === "user"
+            ? "environment"
+            : "user";
 
-    stopCamera();
 
     await startCamera();
 
 }
 
 
-/* ================= PHOTO ================= */
+/* =========================================================
+   CAPTURE PHOTO
+========================================================= */
 
-function takePhoto(){
+function capturePhoto(){
 
-    if(!stream){
-
-        showToast("Camera isn't available");
-        return;
-    }
-
-    const video=
+    const video =
         document.getElementById("video");
 
-    const canvas=
+
+    if(!video.videoWidth){
+
+        showToast(
+            "Camera is not ready."
+        );
+
+        return;
+
+    }
+
+
+    const canvas =
         document.createElement("canvas");
 
-    canvas.width=video.videoWidth;
-    canvas.height=video.videoHeight;
 
-    const ctx=
+    canvas.width =
+        video.videoWidth;
+
+
+    canvas.height =
+        video.videoHeight;
+
+
+    const ctx =
         canvas.getContext("2d");
 
-    ctx.filter=currentFilter;
+
+    ctx.filter =
+        currentFilter;
+
+
+    if(facingMode === "user"){
+
+        ctx.translate(
+            canvas.width,
+            0
+        );
+
+        ctx.scale(
+            -1,
+            1
+        );
+
+    }
+
 
     ctx.drawImage(
         video,
@@ -1123,86 +1565,77 @@ function takePhoto(){
         canvas.height
     );
 
-    /*
-       IMPORTANT:
-       The photo is kept in memory.
-       It is NOT downloaded.
-    */
 
-    capturedPhoto=
-        canvas.toDataURL("image/jpeg",0.9);
+    capturedPhoto =
+        canvas.toDataURL(
+            "image/jpeg",
+            0.9
+        );
 
-    document
-        .getElementById("photoPreview")
-        .src=capturedPhoto;
 
     document
-        .getElementById("preview")
-        .classList.add("show");
+        .getElementById("previewImage")
+        .src =
+            capturedPhoto;
+
+
+    document
+        .getElementById("previewOverlay")
+        .classList
+        .add("active");
 
 }
 
 
-/* ================= PREVIEW ================= */
+/* =========================================================
+   RETAKE
+========================================================= */
 
 function retakePhoto(){
 
-    capturedPhoto=null;
+    capturedPhoto = null;
 
     document
-        .getElementById("preview")
-        .classList.remove("show");
+        .getElementById("previewOverlay")
+        .classList
+        .remove("active");
 
 }
 
+
+/* =========================================================
+   SEND PANEL
+========================================================= */
 
 function openSendPanel(){
 
-    if(!capturedPhoto){
-
-        showToast("Take a photo first");
-        return;
-    }
-
-    selectedFriends=[];
-
-    document
-        .querySelectorAll(".select-friend")
-        .forEach(friend=>{
-            friend.classList.remove("selected");
-        });
-
     document
         .getElementById("sendPanel")
-        .classList.add("show");
+        .classList
+        .add("active");
 
 }
 
 
-function closeSendPanel(){
+function toggleFriend(checkbox){
 
-    document
-        .getElementById("sendPanel")
-        .classList.remove("show");
-
-}
+    const friend =
+        checkbox.value;
 
 
-/* ================= FRIEND SELECTION ================= */
+    if(checkbox.checked){
 
-function toggleFriend(element,name){
+        if(!selectedFriends.includes(friend)){
 
-    element.classList.toggle("selected");
+            selectedFriends.push(friend);
 
-    if(element.classList.contains("selected")){
-
-        selectedFriends.push(name);
+        }
 
     }else{
 
-        selectedFriends=
+        selectedFriends =
             selectedFriends.filter(
-                friend=>friend!==name
+                name => name !== friend
             );
 
     }
@@ -1210,64 +1643,105 @@ function toggleFriend(element,name){
 }
 
 
-/* ================= SEND ================= */
-
 function sendPhoto(){
 
-    if(selectedFriends.length===0){
+    if(!capturedPhoto){
 
-        showToast("Select a friend first");
+        showToast(
+            "Take a photo first."
+        );
+
         return;
+
     }
 
-    /*
-       Prototype simulation.
 
-       In the real version, this is where
-       the photo will be uploaded securely
-       and delivered to the selected users.
-    */
+    if(selectedFriends.length === 0){
 
-    const names=
+        showToast(
+            "Select at least one friend."
+        );
+
+        return;
+
+    }
+
+
+    const names =
         selectedFriends.join(", ");
 
-    closeSendPanel();
 
     document
-        .getElementById("preview")
-        .classList.remove("show");
+        .getElementById("sendPanel")
+        .classList
+        .remove("active");
 
-    capturedPhoto=null;
 
-    showToast("Photo sent to "+names+" 📸");
+    document
+        .getElementById("previewOverlay")
+        .classList
+        .remove("active");
+
+
+    selectedFriends = [];
+
+
+    document
+        .querySelectorAll(".send-check")
+        .forEach(check => {
+
+            check.checked = false;
+
+        });
+
+
+    showToast(
+        "Photo sent to " + names
+    );
 
 }
 
 
-/* ================= FILTERS ================= */
+/* =========================================================
+   FILTERS
+========================================================= */
 
-function setFilter(button,value){
+function setFilter(filter,button){
 
-    currentFilter=value;
+    currentFilter =
+        filter;
 
-    document
-        .querySelectorAll(".filter")
-        .forEach(filter=>{
-            filter.classList.remove("active");
-        });
-
-    button.classList.add("active");
 
     document
         .getElementById("video")
-        .style.filter=value;
+        .style
+        .filter =
+            filter;
+
+
+    document
+        .querySelectorAll(".filter-button")
+        .forEach(btn => {
+
+            btn.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    button.classList.add(
+        "active"
+    );
 
 }
 
 
-/* ================= MEDIA ================= */
+/* =========================================================
+   MEDIA PICKER
+========================================================= */
 
-function chooseMedia(){
+function openMediaPicker(){
 
     document
         .getElementById("mediaInput")
@@ -1276,58 +1750,113 @@ function chooseMedia(){
 }
 
 
-function mediaSelected(event){
+function handleMediaPicker(event){
 
-    const file=
+    const file =
         event.target.files[0];
 
-    if(!file)return;
 
-    if(file.type.startsWith("image/")){
+    if(!file){
 
-        const reader=
-            new FileReader();
+        return;
 
-        reader.onload=function(e){
+    }
 
-            capturedPhoto=e.target.result;
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e){
+
+            capturedPhoto =
+                e.target.result;
+
 
             document
-                .getElementById("photoPreview")
-                .src=capturedPhoto;
+                .getElementById("previewImage")
+                .src =
+                    capturedPhoto;
+
 
             document
-                .getElementById("preview")
-                .classList.add("show");
+                .getElementById("previewOverlay")
+                .classList
+                .add("active");
 
         };
 
-        reader.readAsDataURL(file);
 
-    }else{
+    reader.readAsDataURL(file);
 
-        showToast("Video selected 🎥");
 
-    }
+    event.target.value = "";
 
 }
 
 
-/* ================= NAVIGATION ================= */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-function openScreen(id){
+function openScreen(screen){
+
+    if(!auth.currentUser){
+
+        return;
+
+    }
+
 
     document
         .querySelectorAll(".screen")
-        .forEach(screen=>{
-            screen.classList.remove("active");
+        .forEach(section => {
+
+            section.classList.remove(
+                "active"
+            );
+
         });
 
-    document
-        .getElementById(id)
-        .classList.add("active");
 
-    if(id==="camera"){
+    document
+        .getElementById(
+            screen + "Screen"
+        )
+        .classList
+        .add("active");
+
+
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(button => {
+
+            button.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    const nav =
+        document.getElementById(
+            "nav" +
+            screen.charAt(0).toUpperCase() +
+            screen.slice(1)
+        );
+
+
+    if(nav){
+
+        nav.classList.add(
+            "active"
+        );
+
+    }
+
+
+    if(screen === "camera"){
 
         startCamera();
 
@@ -1340,54 +1869,114 @@ function openScreen(id){
 }
 
 
-/* ================= TOAST ================= */
+/* =========================================================
+   SEARCH
+========================================================= */
 
-let toastTimer;
+function searchUsers(value){
 
-function showToast(message){
+    const items =
+        document.querySelectorAll(
+            "#chatList .user-item"
+        );
 
-    const toast=
-        document.getElementById("toast");
 
-    toast.textContent=message;
+    value =
+        value.toLowerCase();
 
-    toast.classList.add("show");
 
-    clearTimeout(toastTimer);
+    items.forEach(item => {
 
-    toastTimer=
-        setTimeout(()=>{
-            toast.classList.remove("show");
-        },2500);
+        const name =
+            item
+                .querySelector(".user-name")
+                .textContent
+                .toLowerCase();
+
+
+        item.style.display =
+            name.includes(value)
+                ? "flex"
+                : "none";
+
+    });
 
 }
 
 
-/* ================= START ================= */
+function searchFriends(value){
 
-startCamera();
+    const items =
+        document.querySelectorAll(
+            "#friendList .user-item"
+        );
+
+
+    value =
+        value.toLowerCase();
+
+
+    items.forEach(item => {
+
+        const name =
+            item
+                .querySelector(".user-name")
+                .textContent
+                .toLowerCase();
+
+
+        item.style.display =
+            name.includes(value)
+                ? "flex"
+                : "none";
+
+    });
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            function(){
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
+
+}
 
 </script>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
-    authDomain: "vibesnap-213d4.firebaseapp.com",
-    projectId: "vibesnap-213d4",
-    storageBucket: "vibesnap-213d4.firebasestorage.app",
-    messagingSenderId: "933479938239",
-    appId: "1:933479938239:web:d120d7ba99f5665987ae0a",
-    measurementId: "G-HP0QL3C8YV"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
-  const auth = firebase.auth();
-
-  console.log("Firebase connected!");
-</script>
 </body>
 </html>
