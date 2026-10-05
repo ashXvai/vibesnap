@@ -519,8 +519,6 @@ button{
     display:block;
 }
 
-/* ================= MEDIA ================= */
-
 @media(max-width:480px){
     .app{
         max-width:none;
@@ -576,7 +574,6 @@ button{
     </div>
 
 </section>
-
 
 <!-- ================= CAMERA ================= -->
 
@@ -664,7 +661,6 @@ button{
 
 </section>
 
-
 <!-- ================= CHATS ================= -->
 
 <section id="chatsScreen" class="screen">
@@ -682,65 +678,32 @@ button{
     <div id="chatList">
 
         <div class="user-item">
-
             <div class="avatar">A</div>
-
             <div class="user-info">
-
-                <div class="user-name">
-                    Alex
-                </div>
-
-                <div class="user-status">
-                    Hey! What's up?
-                </div>
-
+                <div class="user-name">Alex</div>
+                <div class="user-status">Hey! What's up?</div>
             </div>
-
         </div>
 
-
         <div class="user-item">
-
             <div class="avatar">M</div>
-
             <div class="user-info">
-
-                <div class="user-name">
-                    Mia
-                </div>
-
-                <div class="user-status">
-                    Photo received
-                </div>
-
+                <div class="user-name">Mia</div>
+                <div class="user-status">Photo received</div>
             </div>
-
         </div>
 
-
         <div class="user-item">
-
             <div class="avatar">J</div>
-
             <div class="user-info">
-
-                <div class="user-name">
-                    Jay
-                </div>
-
-                <div class="user-status">
-                    Let's chat!
-                </div>
-
+                <div class="user-name">Jay</div>
+                <div class="user-status">Let's chat!</div>
             </div>
-
         </div>
 
     </div>
 
 </section>
-
 
 <!-- ================= FRIENDS ================= -->
 
@@ -782,7 +745,6 @@ button{
 
         </div>
 
-
         <div class="user-item">
 
             <div class="avatar">M</div>
@@ -806,7 +768,6 @@ button{
             </button>
 
         </div>
-
 
         <div class="user-item">
 
@@ -836,7 +797,6 @@ button{
 
 </section>
 
-
 <!-- ================= PROFILE ================= -->
 
 <section id="profileScreen" class="screen">
@@ -859,7 +819,6 @@ button{
             @username
         </div>
 
-
         <div class="stats">
 
             <div class="stat">
@@ -878,7 +837,6 @@ button{
             </div>
 
         </div>
-
 
         <button class="profile-option"
                 onclick="showToast('Edit profile coming soon')">
@@ -904,7 +862,6 @@ button{
 
 </section>
 
-
 <!-- ================= BOTTOM NAV ================= -->
 
 <nav class="bottom-nav">
@@ -919,7 +876,6 @@ button{
 
     </button>
 
-
     <button
         id="navChats"
         class="nav-button"
@@ -930,7 +886,6 @@ button{
 
     </button>
 
-
     <button
         id="navFriends"
         class="nav-button"
@@ -940,7 +895,6 @@ button{
         Friends
 
     </button>
-
 
     <button
         id="navProfile"
@@ -953,7 +907,6 @@ button{
     </button>
 
 </nav>
-
 
 <!-- ================= PHOTO PREVIEW ================= -->
 
@@ -979,7 +932,6 @@ button{
 
 </div>
 
-
 <!-- ================= SEND PANEL ================= -->
 
 <div id="sendPanel" class="send-panel">
@@ -987,7 +939,6 @@ button{
     <div class="send-title">
         Send Photo To
     </div>
-
 
     <div class="send-friend">
 
@@ -1006,7 +957,6 @@ button{
 
     </div>
 
-
     <div class="send-friend">
 
         <div class="avatar">M</div>
@@ -1023,7 +973,6 @@ button{
         >
 
     </div>
-
 
     <div class="send-friend">
 
@@ -1042,7 +991,6 @@ button{
 
     </div>
 
-
     <button
         class="confirm-send"
         onclick="sendPhoto()">
@@ -1051,13 +999,11 @@ button{
 
 </div>
 
-
 <!-- ================= TOAST ================= -->
 
 <div id="toast" class="toast"></div>
 
 </div>
-
 
 <!-- ================= FIREBASE ================= -->
 
@@ -1065,6 +1011,7 @@ button{
 
 <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
 
 <script>
 
@@ -1097,10 +1044,12 @@ const firebaseConfig = {
 
 };
 
-
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
+
+/* FIRESTORE CONNECTION */
+const db = firebase.firestore();
 
 
 /* =========================================================
@@ -1162,7 +1111,6 @@ async function createAccount(){
 
     const {email,password} = getAuthValues();
 
-
     if(!email || !password){
 
         showAuthMessage(
@@ -1171,7 +1119,6 @@ async function createAccount(){
 
         return;
     }
-
 
     if(password.length < 6){
 
@@ -1182,18 +1129,34 @@ async function createAccount(){
         return;
     }
 
-
     showAuthMessage(
         "Creating your account..."
     );
 
-
     try{
 
-        await auth.createUserWithEmailAndPassword(
-            email,
-            password
-        );
+        const result =
+            await auth.createUserWithEmailAndPassword(
+                email,
+                password
+            );
+
+        /* CREATE BASIC USER PROFILE IN FIRESTORE */
+
+        await db
+            .collection("users")
+            .doc(result.user.uid)
+            .set({
+
+                email: email,
+
+                username:
+                    email.split("@")[0],
+
+                createdAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            });
 
         showAuthMessage("");
 
@@ -1216,7 +1179,6 @@ async function loginAccount(){
 
     const {email,password} = getAuthValues();
 
-
     if(!email || !password){
 
         showAuthMessage(
@@ -1226,11 +1188,9 @@ async function loginAccount(){
         return;
     }
 
-
     showAuthMessage(
         "Logging in..."
     );
-
 
     try{
 
@@ -1287,16 +1247,13 @@ function getAuthError(error){
 
             return "Please enter a valid email.";
 
-
         case "auth/email-already-in-use":
 
             return "That email already has an account. Try Log In.";
 
-
         case "auth/weak-password":
 
             return "Choose a stronger password.";
-
 
         case "auth/invalid-credential":
 
@@ -1306,16 +1263,13 @@ function getAuthError(error){
 
             return "Email or password is incorrect.";
 
-
         case "auth/too-many-requests":
 
             return "Too many attempts. Please try again later.";
 
-
         case "auth/network-request-failed":
 
             return "Network error. Check your internet connection.";
-
 
         default:
 
@@ -1336,50 +1290,40 @@ function showMainApp(user){
         .classList
         .add("hidden");
 
-
     const email =
         user.email || "";
-
 
     const username =
         email
             ? email.split("@")[0]
             : "username";
 
-
     document
         .getElementById("profileEmail")
         .textContent =
             "@" + username;
-
 
     const firstLetter =
         email
             ? email.charAt(0).toUpperCase()
             : "U";
 
-
     document
         .getElementById("profileAvatar")
         .textContent =
             firstLetter;
-
 
     document
         .querySelector(".profile-small")
         .textContent =
             firstLetter;
 
-
     document
         .getElementById("profileName")
         .textContent =
             "Your Profile";
 
-
     openScreen("camera");
-
-    startCamera();
 
 }
 
@@ -1435,7 +1379,6 @@ async function startCamera(){
 
         }
 
-
         stream =
             await navigator.mediaDevices.getUserMedia({
 
@@ -1447,18 +1390,14 @@ async function startCamera(){
 
             });
 
-
         const video =
             document.getElementById("video");
-
 
         video.srcObject =
             stream;
 
-
         video.style.filter =
             currentFilter;
-
 
     }catch(error){
 
@@ -1495,7 +1434,6 @@ async function switchCamera(){
             ? "environment"
             : "user";
 
-
     await startCamera();
 
 }
@@ -1510,7 +1448,6 @@ function capturePhoto(){
     const video =
         document.getElementById("video");
 
-
     if(!video.videoWidth){
 
         showToast(
@@ -1521,26 +1458,20 @@ function capturePhoto(){
 
     }
 
-
     const canvas =
         document.createElement("canvas");
-
 
     canvas.width =
         video.videoWidth;
 
-
     canvas.height =
         video.videoHeight;
-
 
     const ctx =
         canvas.getContext("2d");
 
-
     ctx.filter =
         currentFilter;
-
 
     if(facingMode === "user"){
 
@@ -1556,7 +1487,6 @@ function capturePhoto(){
 
     }
 
-
     ctx.drawImage(
         video,
         0,
@@ -1565,19 +1495,16 @@ function capturePhoto(){
         canvas.height
     );
 
-
     capturedPhoto =
         canvas.toDataURL(
             "image/jpeg",
             0.9
         );
 
-
     document
         .getElementById("previewImage")
         .src =
             capturedPhoto;
-
 
     document
         .getElementById("previewOverlay")
@@ -1622,7 +1549,6 @@ function toggleFriend(checkbox){
     const friend =
         checkbox.value;
 
-
     if(checkbox.checked){
 
         if(!selectedFriends.includes(friend)){
@@ -1655,7 +1581,6 @@ function sendPhoto(){
 
     }
 
-
     if(selectedFriends.length === 0){
 
         showToast(
@@ -1666,25 +1591,20 @@ function sendPhoto(){
 
     }
 
-
     const names =
         selectedFriends.join(", ");
-
 
     document
         .getElementById("sendPanel")
         .classList
         .remove("active");
 
-
     document
         .getElementById("previewOverlay")
         .classList
         .remove("active");
 
-
     selectedFriends = [];
-
 
     document
         .querySelectorAll(".send-check")
@@ -1693,7 +1613,6 @@ function sendPhoto(){
             check.checked = false;
 
         });
-
 
     showToast(
         "Photo sent to " + names
@@ -1711,13 +1630,11 @@ function setFilter(filter,button){
     currentFilter =
         filter;
 
-
     document
         .getElementById("video")
         .style
         .filter =
             filter;
-
 
     document
         .querySelectorAll(".filter-button")
@@ -1728,7 +1645,6 @@ function setFilter(filter,button){
             );
 
         });
-
 
     button.classList.add(
         "active"
@@ -1755,17 +1671,14 @@ function handleMediaPicker(event){
     const file =
         event.target.files[0];
 
-
     if(!file){
 
         return;
 
     }
 
-
     const reader =
         new FileReader();
-
 
     reader.onload =
         function(e){
@@ -1773,12 +1686,10 @@ function handleMediaPicker(event){
             capturedPhoto =
                 e.target.result;
 
-
             document
                 .getElementById("previewImage")
                 .src =
                     capturedPhoto;
-
 
             document
                 .getElementById("previewOverlay")
@@ -1787,9 +1698,7 @@ function handleMediaPicker(event){
 
         };
 
-
     reader.readAsDataURL(file);
-
 
     event.target.value = "";
 
@@ -1808,7 +1717,6 @@ function openScreen(screen){
 
     }
 
-
     document
         .querySelectorAll(".screen")
         .forEach(section => {
@@ -1819,14 +1727,12 @@ function openScreen(screen){
 
         });
 
-
     document
         .getElementById(
             screen + "Screen"
         )
         .classList
         .add("active");
-
 
     document
         .querySelectorAll(".nav-button")
@@ -1838,14 +1744,12 @@ function openScreen(screen){
 
         });
 
-
     const nav =
         document.getElementById(
             "nav" +
             screen.charAt(0).toUpperCase() +
             screen.slice(1)
         );
-
 
     if(nav){
 
@@ -1854,7 +1758,6 @@ function openScreen(screen){
         );
 
     }
-
 
     if(screen === "camera"){
 
@@ -1880,10 +1783,8 @@ function searchUsers(value){
             "#chatList .user-item"
         );
 
-
     value =
         value.toLowerCase();
-
 
     items.forEach(item => {
 
@@ -1892,7 +1793,6 @@ function searchUsers(value){
                 .querySelector(".user-name")
                 .textContent
                 .toLowerCase();
-
 
         item.style.display =
             name.includes(value)
@@ -1911,10 +1811,8 @@ function searchFriends(value){
             "#friendList .user-item"
         );
 
-
     value =
         value.toLowerCase();
-
 
     items.forEach(item => {
 
@@ -1923,7 +1821,6 @@ function searchFriends(value){
                 .querySelector(".user-name")
                 .textContent
                 .toLowerCase();
-
 
         item.style.display =
             name.includes(value)
@@ -1941,26 +1838,21 @@ function searchFriends(value){
 
 let toastTimer;
 
-
 function showToast(message){
 
     const toast =
         document.getElementById("toast");
 
-
     toast.textContent =
         message;
-
 
     toast.classList.add(
         "show"
     );
 
-
     clearTimeout(
         toastTimer
     );
-
 
     toastTimer =
         setTimeout(
