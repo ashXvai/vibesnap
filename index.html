@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VibeSnap</title>
 
 <style>
@@ -15,140 +14,128 @@
 }
 
 body{
-    background:#000;
-    color:#fff;
-    overflow:hidden;
+    background:#0d0d0d;
+    color:white;
+    min-height:100vh;
 }
 
-.app{
-    width:100%;
-    max-width:480px;
-    height:100vh;
-    margin:auto;
-    background:#090909;
-    position:relative;
-    overflow:hidden;
+button{
+    cursor:pointer;
+    border:none;
+}
+
+.hidden{
+    display:none !important;
 }
 
 /* ================= AUTH ================= */
 
 .auth-screen{
-    position:absolute;
+    position:fixed;
     inset:0;
-    z-index:200;
-    background:#090909;
+    background:#0d0d0d;
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:25px;
-    overflow-y:auto;
-}
-
-.auth-screen.hidden{
-    display:none;
+    padding:20px;
+    z-index:1000;
 }
 
 .auth-box{
     width:100%;
-    max-width:380px;
+    max-width:420px;
+    background:#151515;
+    border:1px solid #292929;
+    border-radius:24px;
+    padding:35px 25px;
     text-align:center;
-    padding:25px 0;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
 }
 
 .auth-logo{
     font-size:42px;
-    font-weight:900;
-    letter-spacing:-2px;
+    font-weight:800;
+    color:white;
+    margin-bottom:5px;
 }
 
 .auth-logo span{
-    color:#ffe600;
+    color:#ffd400;
 }
 
 .auth-subtitle{
-    color:#777;
-    margin:10px 0 28px;
+    color:#999;
+    margin-bottom:30px;
 }
 
 .auth-title{
     font-size:24px;
-    font-weight:900;
-    margin-bottom:18px;
+    font-weight:bold;
+    margin-bottom:22px;
 }
 
 .auth-input{
     width:100%;
-    padding:16px 17px;
-    margin:7px 0;
-    border:1px solid #ffffff18;
-    border-radius:16px;
-    background:#ffffff08;
-    color:#fff;
+    padding:15px;
+    margin-bottom:12px;
+    border-radius:12px;
+    border:1px solid #333;
+    background:#202020;
+    color:white;
     outline:none;
-    font-size:16px;
+    font-size:15px;
 }
 
 .auth-input:focus{
-    border-color:#ffe60066;
-}
-
-.auth-button,
-.auth-login-button{
-    width:100%;
-    padding:16px;
-    margin-top:10px;
-    border:0;
-    border-radius:16px;
-    font-weight:800;
-    font-size:16px;
-    cursor:pointer;
+    border-color:#ffd400;
 }
 
 .auth-button{
-    background:#ffe600;
+    width:100%;
+    padding:15px;
+    border-radius:12px;
+    background:#ffd400;
     color:#111;
-}
-
-.auth-login-button{
-    background:#ffffff10;
-    color:#fff;
-    border:1px solid #ffffff18;
+    font-size:16px;
+    font-weight:bold;
+    margin-top:5px;
 }
 
 .auth-secondary{
-    background:none;
-    border:0;
-    color:#ffe600;
-    margin-top:18px;
-    font-weight:700;
-    cursor:pointer;
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    border-radius:12px;
+    background:#242424;
+    color:white;
+    font-size:14px;
 }
 
 .auth-message{
-    min-height:22px;
+    min-height:20px;
     margin-top:15px;
-    color:#ff7676;
-    font-size:13px;
-}
-
-.auth-success{
-    color:#76ff9b;
+    color:#ffcc00;
+    font-size:14px;
 }
 
 /* PROFILE PHOTO PICKER */
 
 .photo-picker{
-    width:90px;
-    height:90px;
+    width:100px;
+    height:100px;
     border-radius:50%;
-    margin:0 auto 15px;
-    background:#ffffff10;
-    border:2px dashed #ffffff33;
+    background:#242424;
+    border:2px dashed #555;
     display:flex;
     align-items:center;
     justify-content:center;
+    margin:0 auto 10px;
     overflow:hidden;
     cursor:pointer;
+}
+
+.photo-picker-icon{
+    font-size:32px;
 }
 
 .photo-picker img{
@@ -157,88 +144,109 @@ body{
     object-fit:cover;
 }
 
-.photo-picker-icon{
-    font-size:30px;
-}
-
-.photo-picker-text{
-    color:#999;
-    font-size:12px;
-    margin-bottom:15px;
-}
-
 #signupPhotoInput{
     display:none;
 }
 
-/* ================= COMMON ================= */
+.photo-picker-text{
+    color:#999;
+    font-size:13px;
+    margin-bottom:18px;
+}
+
+/* ================= APP ================= */
+
+#app{
+    min-height:100vh;
+}
 
 .screen{
-    position:absolute;
-    inset:0;
     display:none;
-    padding-bottom:75px;
-    overflow-y:auto;
+    min-height:calc(100vh - 75px);
+    padding-bottom:90px;
 }
 
 .screen.active{
     display:block;
 }
 
-button{
-    cursor:pointer;
+/* ================= TOP BAR ================= */
+
+.top-bar{
+    height:65px;
+    padding:0 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid #222;
+    background:#101010;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:800;
+}
+
+.logo span{
+    color:#ffd400;
+}
+
+.top-action{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#222;
+    color:white;
+    font-size:19px;
 }
 
 /* ================= CAMERA ================= */
 
-.camera-screen{
-    background:#000;
+.camera-container{
+    position:relative;
+    width:100%;
+    height:calc(100vh - 75px);
+    min-height:550px;
+    overflow:hidden;
+    background:#050505;
 }
 
 #video{
     width:100%;
     height:100%;
     object-fit:cover;
-    position:absolute;
-    inset:0;
+    background:#111;
 }
 
 .camera-overlay{
     position:absolute;
     inset:0;
-    z-index:5;
+    pointer-events:none;
 }
 
 .camera-top{
     position:absolute;
     top:20px;
-    left:20px;
-    right:20px;
+    left:18px;
+    right:18px;
     display:flex;
-    align-items:center;
     justify-content:space-between;
-}
-
-.logo{
-    font-size:25px;
-    font-weight:900;
-}
-
-.logo span{
-    color:#ffe600;
+    align-items:center;
+    pointer-events:auto;
 }
 
 .profile-small{
-    width:40px;
-    height:40px;
+    width:44px;
+    height:44px;
     border-radius:50%;
-    background:#ffe600;
+    overflow:hidden;
+    background:#ffd400;
     color:#111;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-weight:900;
-    overflow:hidden;
+    font-size:20px;
+    font-weight:bold;
 }
 
 .profile-small img{
@@ -248,159 +256,184 @@ button{
 }
 
 .camera-tools{
-    position:absolute;
-    right:15px;
-    top:90px;
     display:flex;
-    flex-direction:column;
-    gap:12px;
+    gap:10px;
 }
 
-.tool-button{
-    width:48px;
-    height:48px;
+.camera-tool{
+    width:44px;
+    height:44px;
     border-radius:50%;
-    border:1px solid #ffffff33;
-    background:#00000066;
-    color:#fff;
-    font-size:20px;
+    background:rgba(0,0,0,.55);
+    color:white;
+    font-size:19px;
 }
 
-.filters{
+.filter-bar{
     position:absolute;
-    bottom:145px;
+    bottom:125px;
     left:0;
     right:0;
     display:flex;
-    gap:8px;
-    padding:10px;
+    gap:10px;
     overflow-x:auto;
-    justify-content:center;
+    padding:10px 18px;
 }
 
 .filter-button{
-    background:#00000099;
-    color:#fff;
-    border:1px solid #ffffff33;
-    padding:8px 13px;
+    flex-shrink:0;
+    padding:9px 15px;
     border-radius:20px;
-    font-size:12px;
+    background:rgba(0,0,0,.6);
+    color:white;
+    font-size:13px;
 }
 
 .filter-button.active{
-    background:#ffe600;
+    background:#ffd400;
     color:#111;
-    border-color:#ffe600;
 }
 
 .capture-area{
     position:absolute;
-    bottom:70px;
+    bottom:35px;
     left:0;
     right:0;
     display:flex;
+    align-items:center;
     justify-content:center;
 }
 
 .capture-button{
-    width:72px;
-    height:72px;
+    width:76px;
+    height:76px;
     border-radius:50%;
-    border:6px solid #fff;
-    background:#ffffff44;
+    background:white;
+    border:6px solid rgba(255,255,255,.35);
+    background-clip:padding-box;
 }
 
 /* ================= CHAT ================= */
 
-.header{
-    padding:22px 18px;
-    font-size:27px;
-    font-weight:900;
+.section-header{
+    padding:20px;
+    font-size:26px;
+    font-weight:bold;
 }
 
 .search-box{
-    margin:0 15px 15px;
-    width:calc(100% - 30px);
+    margin:0 18px 15px;
+}
+
+.search-box input{
+    width:100%;
     padding:14px;
-    border-radius:15px;
-    border:1px solid #ffffff15;
-    background:#ffffff08;
-    color:#fff;
+    border-radius:12px;
+    border:1px solid #333;
+    background:#202020;
+    color:white;
     outline:none;
 }
 
-.user-item{
+.chat-list{
+    padding:0 15px;
+}
+
+.chat-item{
     display:flex;
     align-items:center;
     gap:13px;
-    padding:14px 18px;
-    border-bottom:1px solid #ffffff0c;
+    padding:14px 5px;
+    border-bottom:1px solid #222;
 }
 
-.avatar{
-    width:48px;
-    height:48px;
+.chat-avatar{
+    width:50px;
+    height:50px;
     border-radius:50%;
-    background:#ffe600;
+    background:#ffd400;
     color:#111;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-weight:900;
-    overflow:hidden;
-    flex-shrink:0;
+    font-weight:bold;
+    font-size:20px;
 }
 
-.avatar img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.user-info{
+.chat-info{
     flex:1;
 }
 
-.user-name{
-    font-weight:800;
+.chat-name{
+    font-weight:bold;
+    margin-bottom:5px;
 }
 
-.user-status{
-    color:#777;
+.chat-preview{
+    color:#888;
     font-size:13px;
-    margin-top:4px;
 }
 
 /* ================= FRIENDS ================= */
 
-.friend-button{
-    padding:9px 14px;
-    border:0;
-    border-radius:20px;
-    background:#ffe600;
+.friend-list{
+    padding:0 18px;
+}
+
+.friend-card{
+    background:#171717;
+    border:1px solid #252525;
+    border-radius:15px;
+    padding:15px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:12px;
+}
+
+.friend-avatar{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:#ffd400;
     color:#111;
-    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+}
+
+.friend-info{
+    flex:1;
+}
+
+.friend-button{
+    background:#ffd400;
+    color:#111;
+    padding:9px 13px;
+    border-radius:10px;
+    font-weight:bold;
 }
 
 /* ================= PROFILE ================= */
 
-.profile{
+.profile-page{
     text-align:center;
     padding:30px 20px;
 }
 
 .profile-avatar{
-    width:100px;
-    height:100px;
+    width:120px;
+    height:120px;
     border-radius:50%;
-    margin:10px auto 15px;
-    background:#ffe600;
+    margin:10px auto 20px;
+    background:#ffd400;
     color:#111;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:40px;
-    font-weight:900;
+    font-size:50px;
+    font-weight:bold;
     overflow:hidden;
 }
 
@@ -411,199 +444,206 @@ button{
 }
 
 .profile-name{
-    font-size:25px;
-    font-weight:900;
+    font-size:26px;
+    font-weight:bold;
 }
 
-.profile-email{
-    color:#777;
-    margin-top:5px;
+.profile-username{
+    color:#888;
+    margin-top:6px;
 }
 
-.stats{
+.profile-stats{
     display:flex;
     justify-content:center;
     gap:45px;
     margin:30px 0;
 }
 
-.stat strong{
-    display:block;
+.stat-number{
     font-size:22px;
+    font-weight:bold;
 }
 
-.stat span{
-    color:#777;
-    font-size:12px;
-}
-
-.profile-option{
-    width:100%;
-    padding:15px;
-    margin-top:10px;
-    border-radius:15px;
-    border:1px solid #ffffff12;
-    background:#ffffff08;
-    color:#fff;
-    text-align:left;
+.stat-label{
+    color:#888;
+    font-size:13px;
+    margin-top:4px;
 }
 
 .logout-button{
-    background:#ff444420;
-    color:#ff7777;
+    padding:13px 25px;
+    border-radius:12px;
+    background:#242424;
+    color:white;
 }
 
-/* ================= BOTTOM NAV ================= */
+/* ================= NAV ================= */
 
 .bottom-nav{
-    position:absolute;
+    position:fixed;
     bottom:0;
     left:0;
     right:0;
-    height:70px;
-    background:#090909ee;
-    border-top:1px solid #ffffff12;
+    height:75px;
+    background:#111;
+    border-top:1px solid #292929;
     display:flex;
-    z-index:50;
+    justify-content:space-around;
+    align-items:center;
+    z-index:500;
 }
 
 .nav-button{
-    flex:1;
+    width:65px;
+    height:58px;
     background:none;
-    border:0;
     color:#777;
-    font-size:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    font-size:21px;
+}
+
+.nav-button span{
+    font-size:11px;
 }
 
 .nav-button.active{
-    color:#ffe600;
-}
-
-.nav-icon{
-    display:block;
-    font-size:22px;
-    margin-bottom:3px;
+    color:#ffd400;
 }
 
 /* ================= PREVIEW ================= */
 
-.preview-overlay{
-    position:absolute;
+.preview-panel{
+    position:fixed;
     inset:0;
     background:#000;
-    z-index:100;
+    z-index:900;
     display:none;
+    flex-direction:column;
 }
 
-.preview-overlay.active{
-    display:block;
+.preview-panel.active{
+    display:flex;
 }
 
-#previewImage{
+.preview-image{
+    flex:1;
     width:100%;
-    height:100%;
     object-fit:contain;
 }
 
 .preview-actions{
-    position:absolute;
-    bottom:25px;
-    left:15px;
-    right:15px;
     display:flex;
-    gap:10px;
+    gap:12px;
+    padding:20px;
 }
 
 .preview-button{
     flex:1;
     padding:15px;
-    border-radius:15px;
-    border:0;
-    font-weight:900;
+    border-radius:12px;
+    font-weight:bold;
 }
 
 .retake-button{
-    background:#ffffff18;
-    color:#fff;
+    background:#242424;
+    color:white;
 }
 
 .send-button{
-    background:#ffe600;
+    background:#ffd400;
     color:#111;
 }
 
 /* ================= SEND PANEL ================= */
 
 .send-panel{
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
-    background:#151515;
-    border-radius:25px 25px 0 0;
-    padding:20px;
-    z-index:110;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    z-index:950;
     display:none;
+    align-items:flex-end;
 }
 
 .send-panel.active{
-    display:block;
+    display:flex;
+}
+
+.send-box{
+    width:100%;
+    background:#171717;
+    border-radius:25px 25px 0 0;
+    padding:25px;
+    max-height:75vh;
+    overflow:auto;
 }
 
 .send-title{
-    font-size:20px;
-    font-weight:900;
-    margin-bottom:15px;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:20px;
 }
 
 .send-friend{
     display:flex;
     align-items:center;
-    padding:10px 0;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid #292929;
 }
 
-.send-check{
+.send-friend input{
     margin-left:auto;
-    width:22px;
-    height:22px;
+    width:20px;
+    height:20px;
+    accent-color:#ffd400;
 }
 
-.confirm-send{
+.send-confirm{
     width:100%;
+    margin-top:20px;
     padding:15px;
-    margin-top:15px;
-    border:0;
-    border-radius:15px;
-    background:#ffe600;
-    font-weight:900;
+    border-radius:12px;
+    background:#ffd400;
+    font-weight:bold;
 }
 
 /* ================= TOAST ================= */
 
 .toast{
-    position:absolute;
+    position:fixed;
     left:50%;
-    bottom:85px;
+    bottom:95px;
     transform:translateX(-50%);
-    background:#fff;
-    color:#111;
-    padding:12px 18px;
-    border-radius:20px;
-    font-size:13px;
-    font-weight:700;
-    z-index:300;
-    display:none;
+    background:#222;
+    color:white;
+    padding:13px 18px;
+    border-radius:12px;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    z-index:2000;
     white-space:nowrap;
-    max-width:90%;
 }
 
 .toast.show{
-    display:block;
+    opacity:1;
 }
 
-@media(max-width:480px){
-    .app{
-        max-width:none;
+/* ================= MOBILE ================= */
+
+@media(max-width:600px){
+    .auth-box{
+        padding:30px 20px;
+    }
+
+    .camera-container{
+        min-height:calc(100vh - 75px);
     }
 }
 </style>
@@ -611,11 +651,7 @@ button{
 
 <body>
 
-<div class="app">
-
-<!-- =====================================================
-     AUTH
-===================================================== -->
+<!-- ================= AUTH ================= -->
 
 <section id="authScreen" class="auth-screen">
 
@@ -628,6 +664,7 @@ button{
         <p class="auth-subtitle">
             Connect. Share. Vibe.
         </p>
+
 
         <!-- LOGIN -->
 
@@ -655,13 +692,15 @@ button{
 
             <button
                 class="auth-button"
-                onclick="loginUser()">
+                onclick="loginUser()"
+            >
                 Log In
             </button>
 
             <button
                 class="auth-secondary"
-                onclick="showSignup()">
+                onclick="showSignup()"
+            >
                 Create a new account
             </button>
 
@@ -681,23 +720,26 @@ button{
             <label
                 for="signupPhotoInput"
                 class="photo-picker"
-                id="photoPicker">
+                id="photoPicker"
+            >
 
                 <span
                     id="photoPickerIcon"
-                    class="photo-picker-icon">
+                    class="photo-picker-icon"
+                >
                     📷
                 </span>
 
                 <img
                     id="signupPhotoPreview"
                     style="display:none;"
-                    alt="Profile photo">
+                    alt="Profile photo"
+                >
 
             </label>
 
             <div class="photo-picker-text">
-                Choose your profile photo
+                Profile photo is optional
             </div>
 
             <input
@@ -734,13 +776,15 @@ button{
 
             <button
                 class="auth-button"
-                onclick="requestAccount()">
+                onclick="requestAccount()"
+            >
                 Request Access
             </button>
 
             <button
                 class="auth-secondary"
-                onclick="showLogin()">
+                onclick="showLogin()"
+            >
                 Already have an account? Log In
             </button>
 
@@ -749,7 +793,7 @@ button{
         </div>
 
 
-        <!-- WAITING -->
+        <!-- PENDING -->
 
         <div id="pendingForm" style="display:none;">
 
@@ -771,7 +815,8 @@ button{
 
             <button
                 class="auth-secondary"
-                onclick="showLogin()">
+                onclick="showLogin()"
+            >
                 Back to Login
             </button>
 
@@ -782,464 +827,429 @@ button{
 </section>
 
 
-<!-- =====================================================
-     CAMERA
-===================================================== -->
+<!-- ================= APP ================= -->
 
-<section id="cameraScreen" class="screen camera-screen">
+<div id="app" class="hidden">
 
-    <video
-        id="video"
-        autoplay
-        playsinline>
-    </video>
 
-    <div class="camera-overlay">
+    <!-- CAMERA -->
 
-        <div class="camera-top">
+    <section id="cameraScreen" class="screen active">
+
+        <div class="camera-container">
+
+            <video
+                id="video"
+                autoplay
+                playsinline
+            ></video>
+
+            <div class="camera-overlay">
+
+                <div class="camera-top">
+
+                    <div
+                        class="profile-small"
+                        onclick="openScreen('profile')"
+                    >
+
+                        <span id="smallProfileLetter">
+                            V
+                        </span>
+
+                        <img
+                            id="smallProfileImage"
+                            style="display:none;"
+                            alt="Profile"
+                        >
+
+                    </div>
+
+                    <div class="camera-tools">
+
+                        <button
+                            class="camera-tool"
+                            onclick="switchCamera()"
+                        >
+                            🔄
+                        </button>
+
+                        <button
+                            class="camera-tool"
+                            onclick="pickMedia()"
+                        >
+                            🖼️
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="filter-bar">
+
+                    <button
+                        class="filter-button active"
+                        onclick="setFilter('none',this)"
+                    >
+                        Normal
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        onclick="setFilter('grayscale(1)',this)"
+                    >
+                        B&W
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        onclick="setFilter('sepia(1)',this)"
+                    >
+                        Sepia
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        onclick="setFilter('brightness(1.3)',this)"
+                    >
+                        Bright
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        onclick="setFilter('contrast(1.4)',this)"
+                    >
+                        Contrast
+                    </button>
+
+                </div>
+
+
+                <div class="capture-area">
+
+                    <button
+                        class="capture-button"
+                        onclick="capturePhoto()"
+                    ></button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CHATS -->
+
+    <section id="chatsScreen" class="screen">
+
+        <div class="top-bar">
 
             <div class="logo">
                 Vibe<span>Snap</span>
             </div>
 
-            <div
-                class="profile-small"
-                onclick="openScreen('profile')">
+        </div>
 
-                <span id="smallProfileLetter">
-                    U
+        <div class="section-header">
+            Chats
+        </div>
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="chatSearch"
+                placeholder="Search chats..."
+                oninput="searchChats()"
+            >
+
+        </div>
+
+        <div class="chat-list" id="chatList">
+
+            <div class="chat-item">
+
+                <div class="chat-avatar">
+                    A
+                </div>
+
+                <div class="chat-info">
+
+                    <div class="chat-name">
+                        Alex
+                    </div>
+
+                    <div class="chat-preview">
+                        Hey! 👋
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="chat-item">
+
+                <div class="chat-avatar">
+                    R
+                </div>
+
+                <div class="chat-info">
+
+                    <div class="chat-name">
+                        Rahul
+                    </div>
+
+                    <div class="chat-preview">
+                        Nice photo!
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FRIENDS -->
+
+    <section id="friendsScreen" class="screen">
+
+        <div class="top-bar">
+
+            <div class="logo">
+                Vibe<span>Snap</span>
+            </div>
+
+        </div>
+
+        <div class="section-header">
+            Friends
+        </div>
+
+        <div class="friend-list">
+
+            <div class="friend-card">
+
+                <div class="friend-avatar">
+                    A
+                </div>
+
+                <div class="friend-info">
+
+                    <b>Alex</b>
+
+                    <div style="color:#888;font-size:13px;">
+                        @alex
+                    </div>
+
+                </div>
+
+                <button
+                    class="friend-button"
+                    onclick="showToast('Friend added!')"
+                >
+                    Add
+                </button>
+
+            </div>
+
+
+            <div class="friend-card">
+
+                <div class="friend-avatar">
+                    R
+                </div>
+
+                <div class="friend-info">
+
+                    <b>Rahul</b>
+
+                    <div style="color:#888;font-size:13px;">
+                        @rahul
+                    </div>
+
+                </div>
+
+                <button
+                    class="friend-button"
+                    onclick="showToast('Friend added!')"
+                >
+                    Add
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+
+    <section id="profileScreen" class="screen">
+
+        <div class="top-bar">
+
+            <div class="logo">
+                Vibe<span>Snap</span>
+            </div>
+
+        </div>
+
+        <div class="profile-page">
+
+            <div
+                id="profileAvatar"
+                class="profile-avatar"
+            >
+
+                <span id="profileLetter">
+                    V
                 </span>
 
                 <img
-                    id="smallProfileImage"
+                    id="profileImage"
                     style="display:none;"
-                    alt="Profile">
+                    alt="Profile"
+                >
 
             </div>
 
-        </div>
-
-        <div class="camera-tools">
-
-            <button
-                class="tool-button"
-                onclick="switchCamera()">
-                🔄
-            </button>
-
-            <button
-                class="tool-button"
-                onclick="openMediaPicker()">
-                🖼️
-            </button>
-
-            <button
-                class="tool-button"
-                onclick="showToast('Effects coming soon')">
-                ✨
-            </button>
-
-        </div>
-
-        <div class="filters">
-
-            <button
-                class="filter-button active"
-                onclick="setFilter('none',this)">
-                Normal
-            </button>
-
-            <button
-                class="filter-button"
-                onclick="setFilter('grayscale(1)',this)">
-                B&W
-            </button>
-
-            <button
-                class="filter-button"
-                onclick="setFilter('sepia(0.7)',this)">
-                Retro
-            </button>
-
-            <button
-                class="filter-button"
-                onclick="setFilter('saturate(1.8)',this)">
-                Vivid
-            </button>
-
-            <button
-                class="filter-button"
-                onclick="setFilter('contrast(1.5)',this)">
-                Drama
-            </button>
-
-        </div>
-
-        <div class="capture-area">
-
-            <button
-                class="capture-button"
-                onclick="capturePhoto()">
-            </button>
-
-        </div>
-
-    </div>
-
-    <input
-        id="mediaInput"
-        type="file"
-        accept="image/*"
-        style="display:none"
-        onchange="handleMediaPicker(event)"
-    >
-
-</section>
-
-
-<!-- =====================================================
-     CHATS
-===================================================== -->
-
-<section id="chatsScreen" class="screen">
-
-    <div class="header">
-        Chats
-    </div>
-
-    <input
-        class="search-box"
-        placeholder="Search chats..."
-        oninput="searchUsers(this.value)"
-    >
-
-    <div id="chatList">
-
-        <div class="user-item">
-
-            <div class="avatar">
-                A
+            <div
+                id="profileName"
+                class="profile-name"
+            >
+                Vibe User
             </div>
 
-            <div class="user-info">
+            <div
+                id="profileUsername"
+                class="profile-username"
+            >
+                @vibeuser
+            </div>
 
-                <div class="user-name">
-                    Alex
+
+            <div class="profile-stats">
+
+                <div>
+
+                    <div class="stat-number">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        Friends
+                    </div>
+
                 </div>
 
-                <div class="user-status">
-                    Hey! What's up?
+
+                <div>
+
+                    <div class="stat-number">
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        Photos
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
-
-        <div class="user-item">
-
-            <div class="avatar">
-                M
-            </div>
-
-            <div class="user-info">
-
-                <div class="user-name">
-                    Mia
-                </div>
-
-                <div class="user-status">
-                    Photo received
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="user-item">
-
-            <div class="avatar">
-                J
-            </div>
-
-            <div class="user-info">
-
-                <div class="user-name">
-                    Jay
-                </div>
-
-                <div class="user-status">
-                    Let's chat!
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     FRIENDS
-===================================================== -->
-
-<section id="friendsScreen" class="screen">
-
-    <div class="header">
-        Friends
-    </div>
-
-    <input
-        class="search-box"
-        placeholder="Search people..."
-        oninput="searchFriends(this.value)"
-    >
-
-    <div id="friendList">
-
-        <div class="user-item">
-
-            <div class="avatar">
-                A
-            </div>
-
-            <div class="user-info">
-
-                <div class="user-name">
-                    Alex
-                </div>
-
-                <div class="user-status">
-                    Friend
-                </div>
-
-            </div>
 
             <button
-                class="friend-button"
-                onclick="showToast('Alex is already your friend')">
-                Friend
+                class="logout-button"
+                onclick="logoutUser()"
+            >
+                Log Out
             </button>
 
         </div>
 
-        <div class="user-item">
-
-            <div class="avatar">
-                M
-            </div>
-
-            <div class="user-info">
-
-                <div class="user-name">
-                    Mia
-                </div>
-
-                <div class="user-status">
-                    Friend
-                </div>
-
-            </div>
-
-            <button
-                class="friend-button"
-                onclick="showToast('Mia is already your friend')">
-                Friend
-            </button>
-
-        </div>
-
-        <div class="user-item">
-
-            <div class="avatar">
-                J
-            </div>
-
-            <div class="user-info">
-
-                <div class="user-name">
-                    Jay
-                </div>
-
-                <div class="user-status">
-                    Friend
-                </div>
-
-            </div>
-
-            <button
-                class="friend-button"
-                onclick="showToast('Jay is already your friend')">
-                Friend
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
+    </section>
 
 
-<!-- =====================================================
-     PROFILE
-===================================================== -->
+    <!-- NAVIGATION -->
 
-<section id="profileScreen" class="screen">
-
-    <div class="header">
-        Your Profile
-    </div>
-
-    <div class="profile">
-
-        <div
-            id="profileAvatar"
-            class="profile-avatar">
-
-            <span id="profileLetter">
-                U
-            </span>
-
-            <img
-                id="profileImage"
-                style="display:none;"
-                alt="Profile">
-
-        </div>
-
-        <div
-            id="profileName"
-            class="profile-name">
-            Your Profile
-        </div>
-
-        <div
-            id="profileUsername"
-            class="profile-email">
-            @username
-        </div>
-
-        <div class="stats">
-
-            <div class="stat">
-                <strong>128</strong>
-                <span>Friends</span>
-            </div>
-
-            <div class="stat">
-                <strong>42</strong>
-                <span>Photos</span>
-            </div>
-
-            <div class="stat">
-                <strong>890</strong>
-                <span>Vibes</span>
-            </div>
-
-        </div>
+    <nav class="bottom-nav">
 
         <button
-            class="profile-option"
-            onclick="showToast('Edit profile coming soon')">
-            ✏️ Edit Profile
+            id="navCamera"
+            class="nav-button active"
+            onclick="openScreen('camera')"
+        >
+            📷
+            <span>Camera</span>
         </button>
 
         <button
-            class="profile-option"
-            onclick="showToast('Settings coming soon')">
-            ⚙️ Settings
+            id="navChats"
+            class="nav-button"
+            onclick="openScreen('chats')"
+        >
+            💬
+            <span>Chats</span>
         </button>
 
         <button
-            class="profile-option"
-            onclick="showToast('Privacy settings coming soon')">
-            🔒 Privacy
+            id="navFriends"
+            class="nav-button"
+            onclick="openScreen('friends')"
+        >
+            👥
+            <span>Friends</span>
         </button>
 
         <button
-            class="profile-option logout-button"
-            onclick="logoutUser()">
-            🚪 Log Out
+            id="navProfile"
+            class="nav-button"
+            onclick="openScreen('profile')"
+        >
+            👤
+            <span>Profile</span>
         </button>
 
-    </div>
+    </nav>
 
-</section>
-
-
-<!-- =====================================================
-     BOTTOM NAV
-===================================================== -->
-
-<nav class="bottom-nav">
-
-    <button
-        id="navCamera"
-        class="nav-button active"
-        onclick="openScreen('camera')">
-
-        <span class="nav-icon">📷</span>
-        Camera
-
-    </button>
-
-    <button
-        id="navChats"
-        class="nav-button"
-        onclick="openScreen('chats')">
-
-        <span class="nav-icon">💬</span>
-        Chats
-
-    </button>
-
-    <button
-        id="navFriends"
-        class="nav-button"
-        onclick="openScreen('friends')">
-
-        <span class="nav-icon">👥</span>
-        Friends
-
-    </button>
-
-    <button
-        id="navProfile"
-        class="nav-button"
-        onclick="openScreen('profile')">
-
-        <span class="nav-icon">👤</span>
-        Profile
-
-    </button>
-
-</nav>
+</div>
 
 
-<!-- =====================================================
-     PHOTO PREVIEW
-===================================================== -->
+<!-- ================= PHOTO PREVIEW ================= -->
 
 <div
-    id="previewOverlay"
-    class="preview-overlay">
+    id="previewPanel"
+    class="preview-panel"
+>
 
     <img
         id="previewImage"
-        alt="Photo preview">
+        class="preview-image"
+        alt="Captured photo"
+    >
 
     <div class="preview-actions">
 
         <button
             class="preview-button retake-button"
-            onclick="retakePhoto()">
+            onclick="retakePhoto()"
+        >
             Retake
         </button>
 
         <button
             class="preview-button send-button"
-            onclick="openSendPanel()">
+            onclick="openSendPanel()"
+        >
             Send
         </button>
 
@@ -1248,114 +1258,113 @@ button{
 </div>
 
 
-<!-- =====================================================
-     SEND PANEL
-===================================================== -->
+<!-- ================= SEND PANEL ================= -->
 
 <div
     id="sendPanel"
-    class="send-panel">
+    class="send-panel"
+    onclick="closeSendPanelOutside(event)"
+>
 
-    <div class="send-title">
-        Send Photo To
-    </div>
+    <div class="send-box">
 
-    <div class="send-friend">
-
-        <div class="avatar">
-            A
+        <div class="send-title">
+            Send Photo
         </div>
 
-        <div class="user-info">
 
-            <div class="user-name">
+        <label class="send-friend">
+
+            <div class="friend-avatar">
+                A
+            </div>
+
+            <span>
                 Alex
+            </span>
+
+            <input
+                type="checkbox"
+                value="Alex"
+                class="friend-checkbox"
+            >
+
+        </label>
+
+
+        <label class="send-friend">
+
+            <div class="friend-avatar">
+                R
             </div>
 
-        </div>
+            <span>
+                Rahul
+            </span>
 
-        <input
-            class="send-check"
-            type="checkbox"
-            value="Alex"
-            onchange="toggleFriend(this)"
-        >
+            <input
+                type="checkbox"
+                value="Rahul"
+                class="friend-checkbox"
+            >
 
-    </div>
+        </label>
 
-    <div class="send-friend">
 
-        <div class="avatar">
-            M
-        </div>
+        <label class="send-friend">
 
-        <div class="user-info">
-
-            <div class="user-name">
-                Mia
+            <div class="friend-avatar">
+                S
             </div>
 
-        </div>
+            <span>
+                Sam
+            </span>
 
-        <input
-            class="send-check"
-            type="checkbox"
-            value="Mia"
-            onchange="toggleFriend(this)"
+            <input
+                type="checkbox"
+                value="Sam"
+                class="friend-checkbox"
+            >
+
+        </label>
+
+
+        <button
+            class="send-confirm"
+            onclick="sendPhoto()"
         >
+            Send Photo
+        </button>
 
     </div>
-
-    <div class="send-friend">
-
-        <div class="avatar">
-            J
-        </div>
-
-        <div class="user-info">
-
-            <div class="user-name">
-                Jay
-            </div>
-
-        </div>
-
-        <input
-            class="send-check"
-            type="checkbox"
-            value="Jay"
-            onchange="toggleFriend(this)"
-        >
-
-    </div>
-
-    <button
-        class="confirm-send"
-        onclick="sendPhoto()">
-        Send Photo
-    </button>
 
 </div>
 
 
-<!-- =====================================================
-     TOAST
-===================================================== -->
+<!-- ================= TOAST ================= -->
 
 <div
     id="toast"
-    class="toast">
+    class="toast"
+>
 </div>
 
-</div>
+
+<!-- ================= HIDDEN FILE INPUT ================= -->
+
+<input
+    type="file"
+    id="mediaInput"
+    accept="image/*,video/*"
+    style="display:none;"
+    onchange="handleMediaPick(event)"
+>
 
 
 <script>
 
-/* =========================================================
-   USER INTERFACE DATA
-   UI ONLY FOR NOW
-========================================================= */
+/* ================= VARIABLES ================= */
 
 let stream = null;
 
@@ -1372,64 +1381,75 @@ let signupPhoto = null;
 let demoUser = null;
 
 
-/* =========================================================
-   AUTH SCREEN SWITCHING
-========================================================= */
+/* ================= AUTH UI ================= */
 
-function showSignup(){
+function showLogin(){
 
-    document.getElementById("loginForm").style.display =
-        "none";
+    document.getElementById("loginForm").style.display = "block";
 
-    document.getElementById("signupForm").style.display =
-        "block";
+    document.getElementById("signupForm").style.display = "none";
 
-    document.getElementById("pendingForm").style.display =
-        "none";
+    document.getElementById("pendingForm").style.display = "none";
 
-    clearAuthMessages();
+    clearMessages();
 
 }
 
 
-function showLogin(){
+function showSignup(){
 
-    document.getElementById("loginForm").style.display =
-        "block";
+    document.getElementById("loginForm").style.display = "none";
 
-    document.getElementById("signupForm").style.display =
-        "none";
+    document.getElementById("signupForm").style.display = "block";
 
-    document.getElementById("pendingForm").style.display =
-        "none";
+    document.getElementById("pendingForm").style.display = "none";
 
-    clearAuthMessages();
+    clearMessages();
 
 }
 
 
 function showPending(){
 
-    document.getElementById("loginForm").style.display =
-        "none";
+    document.getElementById("loginForm").style.display = "none";
 
-    document.getElementById("signupForm").style.display =
-        "none";
+    document.getElementById("signupForm").style.display = "none";
 
-    document.getElementById("pendingForm").style.display =
-        "block";
+    document.getElementById("pendingForm").style.display = "block";
+
+    clearMessages();
 
 }
 
 
-/* =========================================================
-   PROFILE PHOTO
-========================================================= */
+function clearMessages(){
+
+    document.getElementById("loginMessage").textContent = "";
+
+    document.getElementById("signupMessage").textContent = "";
+
+}
+
+
+function showLoginMessage(message){
+
+    document.getElementById("loginMessage").textContent = message;
+
+}
+
+
+function showSignupMessage(message){
+
+    document.getElementById("signupMessage").textContent = message;
+
+}
+
+
+/* ================= SIGNUP PHOTO ================= */
 
 function previewSignupPhoto(event){
 
-    const file =
-        event.target.files[0];
+    const file = event.target.files[0];
 
     if(!file){
         return;
@@ -1442,73 +1462,52 @@ function previewSignupPhoto(event){
         );
 
         return;
-
     }
 
-    const reader =
-        new FileReader();
+    const reader = new FileReader();
 
-    reader.onload =
-        function(e){
+    reader.onload = function(e){
 
-            signupPhoto =
-                e.target.result;
+        signupPhoto = e.target.result;
 
-            const image =
-                document.getElementById(
-                    "signupPhotoPreview"
-                );
-
-            image.src =
-                signupPhoto;
-
-            image.style.display =
-                "block";
-
+        const image =
             document.getElementById(
-                "photoPickerIcon"
-            ).style.display =
-                "none";
+                "signupPhotoPreview"
+            );
 
-        };
+        image.src = signupPhoto;
+
+        image.style.display = "block";
+
+        document.getElementById(
+            "photoPickerIcon"
+        ).style.display = "none";
+
+    };
 
     reader.readAsDataURL(file);
-
 }
 
 
-/* =========================================================
-   SIGNUP UI
-========================================================= */
+/* ================= REQUEST ACCOUNT ================= */
 
 function requestAccount(){
 
     const username =
         document
-            .getElementById("signupUsername")
-            .value
-            .trim();
+        .getElementById("signupUsername")
+        .value
+        .trim();
 
     const password =
         document
-            .getElementById("signupPassword")
-            .value;
+        .getElementById("signupPassword")
+        .value;
 
     const confirmPassword =
         document
-            .getElementById("signupConfirmPassword")
-            .value;
-
-
-    if(!signupPhoto){
-
-        showSignupMessage(
-            "Please choose a profile photo."
-        );
-
-        return;
-
-    }
+        .getElementById("signupConfirmPassword")
+        .value;
 
 
     if(!username){
@@ -1518,7 +1517,6 @@ function requestAccount(){
         );
 
         return;
-
     }
 
 
@@ -1529,7 +1527,6 @@ function requestAccount(){
         );
 
         return;
-
     }
 
 
@@ -1540,7 +1537,6 @@ function requestAccount(){
         );
 
         return;
-
     }
 
 
@@ -1551,16 +1547,8 @@ function requestAccount(){
         );
 
         return;
-
     }
 
-
-    /*
-       UI DEMO ONLY
-
-       Later this information will be sent
-       securely to Firebase.
-    */
 
     demoUser = {
 
@@ -1580,22 +1568,20 @@ function requestAccount(){
 }
 
 
-/* =========================================================
-   LOGIN UI
-========================================================= */
+/* ================= LOGIN ================= */
 
 function loginUser(){
 
     const username =
         document
-            .getElementById("loginUsername")
-            .value
-            .trim();
+        .getElementById("loginUsername")
+        .value
+        .trim();
 
     const password =
         document
-            .getElementById("loginPassword")
-            .value;
+        .getElementById("loginPassword")
+        .value;
 
 
     if(!username || !password){
@@ -1605,16 +1591,8 @@ function loginUser(){
         );
 
         return;
-
     }
 
-
-    /*
-       UI DEMO ONLY
-
-       Later this will check the real
-       approved account in Firebase.
-    */
 
     if(
         demoUser &&
@@ -1629,13 +1607,12 @@ function loginUser(){
             );
 
             return;
-
         }
+
 
         enterMainApp(demoUser);
 
         return;
-
     }
 
 
@@ -1646,24 +1623,28 @@ function loginUser(){
 }
 
 
-/* =========================================================
-   DEMO APPROVAL HELPER
-========================================================= */
+/* ================= DEMO APPROVAL ================= */
+
+/*
+    Temporary UI testing helper.
+
+    Later this will be replaced with
+    the real owner approval system.
+*/
 
 function approveDemoAccount(){
 
     if(!demoUser){
 
         showToast(
-            "No signup request exists."
+            "No signup request found."
         );
 
         return;
-
     }
 
-    demoUser.status =
-        "approved";
+
+    demoUser.status = "approved";
 
     showToast(
         "Demo account approved."
@@ -1672,82 +1653,118 @@ function approveDemoAccount(){
 }
 
 
-/* =========================================================
-   ENTER APP
-========================================================= */
+/* ================= ENTER APP ================= */
 
 function enterMainApp(user){
 
     document
         .getElementById("authScreen")
-        .classList
-        .add("hidden");
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("app")
+        .classList.remove("hidden");
 
 
     const firstLetter =
         user.username
-            .charAt(0)
-            .toUpperCase();
+        .charAt(0)
+        .toUpperCase();
 
 
-    document.getElementById(
-        "profileName"
-    ).textContent =
+    document
+        .getElementById("profileName")
+        .textContent =
         user.username;
 
 
-    document.getElementById(
-        "profileUsername"
-    ).textContent =
+    document
+        .getElementById("profileUsername")
+        .textContent =
         "@" + user.username;
 
 
-    document.getElementById(
-        "profileLetter"
-    ).textContent =
-        firstLetter;
-
-
-    document.getElementById(
-        "smallProfileLetter"
-    ).textContent =
-        firstLetter;
-
+    /* =================
+       PROFILE PHOTO
+       ================= */
 
     if(user.photo){
 
-        document.getElementById(
-            "profileImage"
-        ).src =
+        document
+            .getElementById("profileImage")
+            .src =
             user.photo;
 
-        document.getElementById(
-            "profileImage"
-        ).style.display =
+
+        document
+            .getElementById("profileImage")
+            .style.display =
             "block";
 
 
-        document.getElementById(
-            "profileLetter"
-        ).style.display =
+        document
+            .getElementById("profileLetter")
+            .style.display =
             "none";
 
 
-        document.getElementById(
-            "smallProfileImage"
-        ).src =
+        document
+            .getElementById("smallProfileImage")
+            .src =
             user.photo;
 
-        document.getElementById(
-            "smallProfileImage"
-        ).style.display =
+
+        document
+            .getElementById("smallProfileImage")
+            .style.display =
             "block";
 
 
-        document.getElementById(
-            "smallProfileLetter"
-        ).style.display =
+        document
+            .getElementById("smallProfileLetter")
+            .style.display =
             "none";
+
+    }else{
+
+        /* NO PHOTO:
+           Use first letter */
+
+        document
+            .getElementById("profileImage")
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById("profileLetter")
+            .textContent =
+            firstLetter;
+
+
+        document
+            .getElementById("profileLetter")
+            .style.display =
+            "block";
+
+
+        document
+            .getElementById("smallProfileImage")
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById("smallProfileLetter")
+            .textContent =
+            firstLetter;
+
+
+        document
+            .getElementById("smallProfileLetter")
+            .style.display =
+            "block";
 
     }
 
@@ -1757,81 +1774,13 @@ function enterMainApp(user){
 }
 
 
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-function logoutUser(){
-
-    stopCamera();
-
-    document
-        .getElementById("authScreen")
-        .classList
-        .remove("hidden");
-
-    showLogin();
-
-}
-
-
-/* =========================================================
-   AUTH MESSAGES
-========================================================= */
-
-function showSignupMessage(message){
-
-    document.getElementById(
-        "signupMessage"
-    ).textContent =
-        message;
-
-}
-
-
-function showLoginMessage(message){
-
-    document.getElementById(
-        "loginMessage"
-    ).textContent =
-        message;
-
-}
-
-
-function clearAuthMessages(){
-
-    document.getElementById(
-        "signupMessage"
-    ).textContent =
-        "";
-
-    document.getElementById(
-        "loginMessage"
-    ).textContent =
-        "";
-
-}
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
+/* ================= CAMERA ================= */
 
 async function startCamera(){
 
     try{
 
-        if(stream){
-
-            stream
-                .getTracks()
-                .forEach(track =>
-                    track.stop()
-                );
-
-        }
-
+        stopCamera();
 
         stream =
             await navigator.mediaDevices.getUserMedia({
@@ -1846,18 +1795,12 @@ async function startCamera(){
 
 
         const video =
-            document.getElementById(
-                "video"
-            );
+            document.getElementById("video");
 
-
-        video.srcObject =
-            stream;
-
+        video.srcObject = stream;
 
         video.style.filter =
             currentFilter;
-
 
     }catch(error){
 
@@ -1876,11 +1819,9 @@ function stopCamera(){
 
     if(stream){
 
-        stream
-            .getTracks()
-            .forEach(track =>
-                track.stop()
-            );
+        stream.getTracks().forEach(
+            track => track.stop()
+        );
 
         stream = null;
 
@@ -1893,41 +1834,59 @@ async function switchCamera(){
 
     facingMode =
         facingMode === "user"
-            ? "environment"
-            : "user";
+        ? "environment"
+        : "user";
 
     await startCamera();
 
 }
 
 
-/* =========================================================
-   CAPTURE
-========================================================= */
+/* ================= FILTER ================= */
+
+function setFilter(filter,button){
+
+    currentFilter = filter;
+
+    document
+        .getElementById("video")
+        .style.filter =
+        filter;
+
+
+    document
+        .querySelectorAll(".filter-button")
+        .forEach(
+            btn =>
+            btn.classList.remove("active")
+        );
+
+
+    button.classList.add("active");
+
+}
+
+
+/* ================= CAPTURE ================= */
 
 function capturePhoto(){
 
     const video =
-        document.getElementById(
-            "video"
-        );
+        document.getElementById("video");
 
 
     if(!video.videoWidth){
 
         showToast(
-            "Camera is not ready."
+            "Camera is not ready yet."
         );
 
         return;
-
     }
 
 
     const canvas =
-        document.createElement(
-            "canvas"
-        );
+        document.createElement("canvas");
 
 
     canvas.width =
@@ -1937,30 +1896,27 @@ function capturePhoto(){
         video.videoHeight;
 
 
-    const ctx =
+    const context =
         canvas.getContext("2d");
 
 
-    ctx.filter =
+    context.filter =
         currentFilter;
 
 
     if(facingMode === "user"){
 
-        ctx.translate(
+        context.translate(
             canvas.width,
             0
         );
 
-        ctx.scale(
-            -1,
-            1
-        );
+        context.scale(-1,1);
 
     }
 
 
-    ctx.drawImage(
+    context.drawImage(
         video,
         0,
         0,
@@ -1976,83 +1932,98 @@ function capturePhoto(){
         );
 
 
-    document.getElementById(
-        "previewImage"
-    ).src =
+    document
+        .getElementById("previewImage")
+        .src =
         capturedPhoto;
 
 
-    document.getElementById(
-        "previewOverlay"
-    ).classList.add(
-        "active"
-    );
+    document
+        .getElementById("previewPanel")
+        .classList.add("active");
 
 }
 
 
-/* =========================================================
-   RETAKE
-========================================================= */
+/* ================= RETAKE ================= */
 
 function retakePhoto(){
 
     capturedPhoto = null;
 
-    document.getElementById(
-        "previewOverlay"
-    ).classList.remove(
-        "active"
-    );
+    document
+        .getElementById("previewPanel")
+        .classList.remove("active");
 
 }
 
 
-/* =========================================================
-   SEND PANEL
-========================================================= */
+/* ================= MEDIA PICKER ================= */
 
-function openSendPanel(){
+function pickMedia(){
 
-    document.getElementById(
-        "sendPanel"
-    ).classList.add(
-        "active"
-    );
+    document
+        .getElementById("mediaInput")
+        .click();
 
 }
 
 
-function toggleFriend(checkbox){
+function handleMediaPick(event){
 
-    const friend =
-        checkbox.value;
+    const file =
+        event.target.files[0];
+
+    if(!file){
+        return;
+    }
 
 
-    if(checkbox.checked){
+    if(file.type.startsWith("image/")){
 
-        if(!selectedFriends.includes(friend)){
+        const reader =
+            new FileReader();
 
-            selectedFriends.push(
-                friend
-            );
 
-        }
+        reader.onload =
+        function(e){
+
+            capturedPhoto =
+                e.target.result;
+
+
+            document
+                .getElementById("previewImage")
+                .src =
+                capturedPhoto;
+
+
+            document
+                .getElementById("previewPanel")
+                .classList.add("active");
+
+        };
+
+
+        reader.readAsDataURL(file);
 
     }else{
 
-        selectedFriends =
-            selectedFriends.filter(
-                name =>
-                    name !== friend
-            );
+        showToast(
+            "Video selected."
+        );
 
     }
+
+
+    event.target.value = "";
 
 }
 
 
-function sendPhoto(){
+/* ================= SEND PANEL ================= */
+
+function openSendPanel(){
 
     if(!capturedPhoto){
 
@@ -2061,8 +2032,45 @@ function sendPhoto(){
         );
 
         return;
+    }
+
+
+    document
+        .getElementById("sendPanel")
+        .classList.add("active");
+
+}
+
+
+function closeSendPanelOutside(event){
+
+    if(
+        event.target ===
+        document.getElementById("sendPanel")
+    ){
+
+        document
+            .getElementById("sendPanel")
+            .classList.remove("active");
 
     }
+
+}
+
+
+function sendPhoto(){
+
+    selectedFriends = [];
+
+
+    document
+        .querySelectorAll(".friend-checkbox:checked")
+        .forEach(
+            checkbox =>
+            selectedFriends.push(
+                checkbox.value
+            )
+        );
 
 
     if(selectedFriends.length === 0){
@@ -2072,182 +2080,64 @@ function sendPhoto(){
         );
 
         return;
-
     }
 
 
-    const names =
-        selectedFriends.join(", ");
-
-
-    document.getElementById(
-        "sendPanel"
-    ).classList.remove(
-        "active"
-    );
-
-
-    document.getElementById(
-        "previewOverlay"
-    ).classList.remove(
-        "active"
-    );
-
-
-    selectedFriends = [];
+    document
+        .getElementById("sendPanel")
+        .classList.remove("active");
 
 
     document
-        .querySelectorAll(".send-check")
-        .forEach(check => {
+        .getElementById("previewPanel")
+        .classList.remove("active");
 
-            check.checked =
-                false;
 
-        });
+    document
+        .querySelectorAll(".friend-checkbox")
+        .forEach(
+            checkbox =>
+            checkbox.checked = false
+        );
 
 
     showToast(
-        "Photo sent to " + names
+        "Photo sent to " +
+        selectedFriends.join(", ") +
+        "!"
     );
 
-}
 
-
-/* =========================================================
-   FILTERS
-========================================================= */
-
-function setFilter(filter,button){
-
-    currentFilter =
-        filter;
-
-
-    document.getElementById(
-        "video"
-    ).style.filter =
-        filter;
-
-
-    document
-        .querySelectorAll(
-            ".filter-button"
-        )
-        .forEach(btn => {
-
-            btn.classList.remove(
-                "active"
-            );
-
-        });
-
-
-    button.classList.add(
-        "active"
-    );
+    capturedPhoto = null;
 
 }
 
 
-/* =========================================================
-   MEDIA PICKER
-========================================================= */
-
-function openMediaPicker(){
-
-    document.getElementById(
-        "mediaInput"
-    ).click();
-
-}
-
-
-function handleMediaPicker(event){
-
-    const file =
-        event.target.files[0];
-
-
-    if(!file){
-
-        return;
-
-    }
-
-
-    const reader =
-        new FileReader();
-
-
-    reader.onload =
-        function(e){
-
-            capturedPhoto =
-                e.target.result;
-
-
-            document.getElementById(
-                "previewImage"
-            ).src =
-                capturedPhoto;
-
-
-            document.getElementById(
-                "previewOverlay"
-            ).classList.add(
-                "active"
-            );
-
-        };
-
-
-    reader.readAsDataURL(file);
-
-
-    event.target.value =
-        "";
-
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
+/* ================= NAVIGATION ================= */
 
 function openScreen(screen){
 
     document
-        .querySelectorAll(
-            ".screen"
-        )
-        .forEach(section => {
-
-            section.classList.remove(
-                "active"
-            );
-
-        });
-
-
-    document.getElementById(
-        screen + "Screen"
-    ).classList.add(
-        "active"
-    );
+        .querySelectorAll(".screen")
+        .forEach(
+            section =>
+            section.classList.remove("active")
+        );
 
 
     document
-        .querySelectorAll(
-            ".nav-button"
+        .getElementById(
+            screen + "Screen"
         )
-        .forEach(button => {
+        .classList.add("active");
 
-            button.classList.remove(
-                "active"
-            );
 
-        });
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(
+            button =>
+            button.classList.remove("active")
+        );
 
 
     const nav =
@@ -2260,9 +2150,7 @@ function openScreen(screen){
 
     if(nav){
 
-        nav.classList.add(
-            "active"
-        );
+        nav.classList.add("active");
 
     }
 
@@ -2280,118 +2168,105 @@ function openScreen(screen){
 }
 
 
-/* =========================================================
-   SEARCH
-========================================================= */
+/* ================= SEARCH ================= */
 
-function searchUsers(value){
+function searchChats(){
 
-    const items =
-        document.querySelectorAll(
-            "#chatList .user-item"
+    const search =
+        document
+        .getElementById("chatSearch")
+        .value
+        .toLowerCase();
+
+
+    document
+        .querySelectorAll(".chat-item")
+        .forEach(
+            item => {
+
+                const name =
+                    item
+                    .querySelector(".chat-name")
+                    .textContent
+                    .toLowerCase();
+
+
+                item.style.display =
+                    name.includes(search)
+                    ? "flex"
+                    : "none";
+
+            }
         );
-
-
-    value =
-        value.toLowerCase();
-
-
-    items.forEach(item => {
-
-        const name =
-            item
-                .querySelector(
-                    ".user-name"
-                )
-                .textContent
-                .toLowerCase();
-
-
-        item.style.display =
-            name.includes(value)
-                ? "flex"
-                : "none";
-
-    });
 
 }
 
 
-function searchFriends(value){
+/* ================= LOGOUT ================= */
 
-    const items =
-        document.querySelectorAll(
-            "#friendList .user-item"
-        );
+function logoutUser(){
 
+    stopCamera();
 
-    value =
-        value.toLowerCase();
-
-
-    items.forEach(item => {
-
-        const name =
-            item
-                .querySelector(
-                    ".user-name"
-                )
-                .textContent
-                .toLowerCase();
+    document
+        .getElementById("app")
+        .classList.add("hidden");
 
 
-        item.style.display =
-            name.includes(value)
-                ? "flex"
-                : "none";
+    document
+        .getElementById("authScreen")
+        .classList.remove("hidden");
 
-    });
+
+    showLogin();
 
 }
 
 
-/* =========================================================
-   TOAST
-========================================================= */
+/* ================= TOAST ================= */
 
-let toastTimer;
+let toastTimer = null;
 
 
 function showToast(message){
 
     const toast =
-        document.getElementById(
-            "toast"
-        );
+        document.getElementById("toast");
 
 
     toast.textContent =
         message;
 
 
-    toast.classList.add(
-        "show"
-    );
+    toast.classList.add("show");
 
 
-    clearTimeout(
-        toastTimer
-    );
+    clearTimeout(toastTimer);
 
 
     toastTimer =
         setTimeout(
-            function(){
+            () => {
 
-                toast.classList.remove(
-                    "show"
-                );
+                toast.classList.remove("show");
 
             },
             2500
         );
 
 }
+
+
+/* ================= INITIAL STATE ================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        showLogin();
+
+    }
+);
 
 </script>
 
