@@ -1368,6 +1368,26 @@ function showToast(message){
 startCamera();
 
 </script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
 
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
+    authDomain: "vibesnap-213d4.firebaseapp.com",
+    projectId: "vibesnap-213d4",
+    storageBucket: "vibesnap-213d4.firebasestorage.app",
+    messagingSenderId: "933479938239",
+    appId: "1:933479938239:web:d120d7ba99f5665987ae0a",
+    measurementId: "G-HP0QL3C8YV"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+
+  console.log("Firebase connected!");
+</script>
 </body>
 </html>
