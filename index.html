@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>VibeSnap</title>
 
 <style>
@@ -40,6 +41,7 @@ body{
     align-items:center;
     justify-content:center;
     padding:25px;
+    overflow-y:auto;
 }
 
 .auth-screen.hidden{
@@ -50,6 +52,7 @@ body{
     width:100%;
     max-width:380px;
     text-align:center;
+    padding:25px 0;
 }
 
 .auth-logo{
@@ -64,7 +67,13 @@ body{
 
 .auth-subtitle{
     color:#777;
-    margin:10px 0 35px;
+    margin:10px 0 28px;
+}
+
+.auth-title{
+    font-size:24px;
+    font-weight:900;
+    margin-bottom:18px;
 }
 
 .auth-input{
@@ -106,11 +115,60 @@ body{
     border:1px solid #ffffff18;
 }
 
+.auth-secondary{
+    background:none;
+    border:0;
+    color:#ffe600;
+    margin-top:18px;
+    font-weight:700;
+    cursor:pointer;
+}
+
 .auth-message{
     min-height:22px;
     margin-top:15px;
     color:#ff7676;
     font-size:13px;
+}
+
+.auth-success{
+    color:#76ff9b;
+}
+
+/* PROFILE PHOTO PICKER */
+
+.photo-picker{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    margin:0 auto 15px;
+    background:#ffffff10;
+    border:2px dashed #ffffff33;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    cursor:pointer;
+}
+
+.photo-picker img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.photo-picker-icon{
+    font-size:30px;
+}
+
+.photo-picker-text{
+    color:#999;
+    font-size:12px;
+    margin-bottom:15px;
+}
+
+#signupPhotoInput{
+    display:none;
 }
 
 /* ================= COMMON ================= */
@@ -180,6 +238,13 @@ button{
     align-items:center;
     justify-content:center;
     font-weight:900;
+    overflow:hidden;
+}
+
+.profile-small img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 .camera-tools{
@@ -282,6 +347,14 @@ button{
     align-items:center;
     justify-content:center;
     font-weight:900;
+    overflow:hidden;
+    flex-shrink:0;
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 .user-info{
@@ -328,6 +401,13 @@ button{
     justify-content:center;
     font-size:40px;
     font-weight:900;
+    overflow:hidden;
+}
+
+.profile-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 .profile-name{
@@ -513,6 +593,8 @@ button{
     font-weight:700;
     z-index:300;
     display:none;
+    white-space:nowrap;
+    max-width:90%;
 }
 
 .toast.show{
@@ -531,7 +613,9 @@ button{
 
 <div class="app">
 
-<!-- ================= AUTH SCREEN ================= -->
+<!-- =====================================================
+     AUTH
+===================================================== -->
 
 <section id="authScreen" class="auth-screen">
 
@@ -545,41 +629,170 @@ button{
             Connect. Share. Vibe.
         </p>
 
-        <input
-            id="emailInput"
-            class="auth-input"
-            type="email"
-            placeholder="Email"
-            autocomplete="email"
-        >
+        <!-- LOGIN -->
 
-        <input
-            id="passwordInput"
-            class="auth-input"
-            type="password"
-            placeholder="Password"
-            autocomplete="current-password"
-        >
+        <div id="loginForm">
 
-        <button class="auth-button" onclick="createAccount()">
-            Create Account
-        </button>
+            <div class="auth-title">
+                Welcome Back
+            </div>
 
-        <button class="auth-login-button" onclick="loginAccount()">
-            Log In
-        </button>
+            <input
+                id="loginUsername"
+                class="auth-input"
+                type="text"
+                placeholder="Username"
+                autocomplete="username"
+            >
 
-        <p id="authMessage" class="auth-message"></p>
+            <input
+                id="loginPassword"
+                class="auth-input"
+                type="password"
+                placeholder="Password"
+                autocomplete="current-password"
+            >
+
+            <button
+                class="auth-button"
+                onclick="loginUser()">
+                Log In
+            </button>
+
+            <button
+                class="auth-secondary"
+                onclick="showSignup()">
+                Create a new account
+            </button>
+
+            <p id="loginMessage" class="auth-message"></p>
+
+        </div>
+
+
+        <!-- SIGNUP -->
+
+        <div id="signupForm" style="display:none;">
+
+            <div class="auth-title">
+                Create Account
+            </div>
+
+            <label
+                for="signupPhotoInput"
+                class="photo-picker"
+                id="photoPicker">
+
+                <span
+                    id="photoPickerIcon"
+                    class="photo-picker-icon">
+                    📷
+                </span>
+
+                <img
+                    id="signupPhotoPreview"
+                    style="display:none;"
+                    alt="Profile photo">
+
+            </label>
+
+            <div class="photo-picker-text">
+                Choose your profile photo
+            </div>
+
+            <input
+                id="signupPhotoInput"
+                type="file"
+                accept="image/*"
+                onchange="previewSignupPhoto(event)"
+            >
+
+            <input
+                id="signupUsername"
+                class="auth-input"
+                type="text"
+                placeholder="Choose a username"
+                autocomplete="username"
+                maxlength="20"
+            >
+
+            <input
+                id="signupPassword"
+                class="auth-input"
+                type="password"
+                placeholder="Create a password"
+                autocomplete="new-password"
+            >
+
+            <input
+                id="signupConfirmPassword"
+                class="auth-input"
+                type="password"
+                placeholder="Confirm password"
+                autocomplete="new-password"
+            >
+
+            <button
+                class="auth-button"
+                onclick="requestAccount()">
+                Request Access
+            </button>
+
+            <button
+                class="auth-secondary"
+                onclick="showLogin()">
+                Already have an account? Log In
+            </button>
+
+            <p id="signupMessage" class="auth-message"></p>
+
+        </div>
+
+
+        <!-- WAITING -->
+
+        <div id="pendingForm" style="display:none;">
+
+            <div style="font-size:55px;margin-bottom:15px;">
+                ⏳
+            </div>
+
+            <div class="auth-title">
+                Request Sent
+            </div>
+
+            <p style="color:#999;line-height:1.6;">
+                Your VibeSnap account request has been sent to the owner.
+            </p>
+
+            <p style="color:#999;line-height:1.6;margin-top:10px;">
+                You'll be able to log in after your account is approved.
+            </p>
+
+            <button
+                class="auth-secondary"
+                onclick="showLogin()">
+                Back to Login
+            </button>
+
+        </div>
 
     </div>
 
 </section>
 
-<!-- ================= CAMERA ================= -->
+
+<!-- =====================================================
+     CAMERA
+===================================================== -->
 
 <section id="cameraScreen" class="screen camera-screen">
 
-    <video id="video" autoplay playsinline></video>
+    <video
+        id="video"
+        autoplay
+        playsinline>
+    </video>
 
     <div class="camera-overlay">
 
@@ -589,23 +802,40 @@ button{
                 Vibe<span>Snap</span>
             </div>
 
-            <div class="profile-small" onclick="openScreen('profile')">
-                U
+            <div
+                class="profile-small"
+                onclick="openScreen('profile')">
+
+                <span id="smallProfileLetter">
+                    U
+                </span>
+
+                <img
+                    id="smallProfileImage"
+                    style="display:none;"
+                    alt="Profile">
+
             </div>
 
         </div>
 
         <div class="camera-tools">
 
-            <button class="tool-button" onclick="switchCamera()">
+            <button
+                class="tool-button"
+                onclick="switchCamera()">
                 🔄
             </button>
 
-            <button class="tool-button" onclick="openMediaPicker()">
+            <button
+                class="tool-button"
+                onclick="openMediaPicker()">
                 🖼️
             </button>
 
-            <button class="tool-button" onclick="showToast('Effects coming soon')">
+            <button
+                class="tool-button"
+                onclick="showToast('Effects coming soon')">
                 ✨
             </button>
 
@@ -613,28 +843,33 @@ button{
 
         <div class="filters">
 
-            <button class="filter-button active"
-                    onclick="setFilter('none',this)">
+            <button
+                class="filter-button active"
+                onclick="setFilter('none',this)">
                 Normal
             </button>
 
-            <button class="filter-button"
-                    onclick="setFilter('grayscale(1)',this)">
+            <button
+                class="filter-button"
+                onclick="setFilter('grayscale(1)',this)">
                 B&W
             </button>
 
-            <button class="filter-button"
-                    onclick="setFilter('sepia(0.7)',this)">
+            <button
+                class="filter-button"
+                onclick="setFilter('sepia(0.7)',this)">
                 Retro
             </button>
 
-            <button class="filter-button"
-                    onclick="setFilter('saturate(1.8)',this)">
+            <button
+                class="filter-button"
+                onclick="setFilter('saturate(1.8)',this)">
                 Vivid
             </button>
 
-            <button class="filter-button"
-                    onclick="setFilter('contrast(1.5)',this)">
+            <button
+                class="filter-button"
+                onclick="setFilter('contrast(1.5)',this)">
                 Drama
             </button>
 
@@ -661,7 +896,10 @@ button{
 
 </section>
 
-<!-- ================= CHATS ================= -->
+
+<!-- =====================================================
+     CHATS
+===================================================== -->
 
 <section id="chatsScreen" class="screen">
 
@@ -678,34 +916,73 @@ button{
     <div id="chatList">
 
         <div class="user-item">
-            <div class="avatar">A</div>
-            <div class="user-info">
-                <div class="user-name">Alex</div>
-                <div class="user-status">Hey! What's up?</div>
+
+            <div class="avatar">
+                A
             </div>
+
+            <div class="user-info">
+
+                <div class="user-name">
+                    Alex
+                </div>
+
+                <div class="user-status">
+                    Hey! What's up?
+                </div>
+
+            </div>
+
         </div>
 
         <div class="user-item">
-            <div class="avatar">M</div>
-            <div class="user-info">
-                <div class="user-name">Mia</div>
-                <div class="user-status">Photo received</div>
+
+            <div class="avatar">
+                M
             </div>
+
+            <div class="user-info">
+
+                <div class="user-name">
+                    Mia
+                </div>
+
+                <div class="user-status">
+                    Photo received
+                </div>
+
+            </div>
+
         </div>
 
         <div class="user-item">
-            <div class="avatar">J</div>
-            <div class="user-info">
-                <div class="user-name">Jay</div>
-                <div class="user-status">Let's chat!</div>
+
+            <div class="avatar">
+                J
             </div>
+
+            <div class="user-info">
+
+                <div class="user-name">
+                    Jay
+                </div>
+
+                <div class="user-status">
+                    Let's chat!
+                </div>
+
+            </div>
+
         </div>
 
     </div>
 
 </section>
 
-<!-- ================= FRIENDS ================= -->
+
+<!-- =====================================================
+     FRIENDS
+===================================================== -->
 
 <section id="friendsScreen" class="screen">
 
@@ -723,7 +1000,9 @@ button{
 
         <div class="user-item">
 
-            <div class="avatar">A</div>
+            <div class="avatar">
+                A
+            </div>
 
             <div class="user-info">
 
@@ -747,7 +1026,9 @@ button{
 
         <div class="user-item">
 
-            <div class="avatar">M</div>
+            <div class="avatar">
+                M
+            </div>
 
             <div class="user-info">
 
@@ -771,7 +1052,9 @@ button{
 
         <div class="user-item">
 
-            <div class="avatar">J</div>
+            <div class="avatar">
+                J
+            </div>
 
             <div class="user-info">
 
@@ -797,7 +1080,10 @@ button{
 
 </section>
 
-<!-- ================= PROFILE ================= -->
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
 
 <section id="profileScreen" class="screen">
 
@@ -807,15 +1093,30 @@ button{
 
     <div class="profile">
 
-        <div id="profileAvatar" class="profile-avatar">
-            U
+        <div
+            id="profileAvatar"
+            class="profile-avatar">
+
+            <span id="profileLetter">
+                U
+            </span>
+
+            <img
+                id="profileImage"
+                style="display:none;"
+                alt="Profile">
+
         </div>
 
-        <div id="profileName" class="profile-name">
+        <div
+            id="profileName"
+            class="profile-name">
             Your Profile
         </div>
 
-        <div id="profileEmail" class="profile-email">
+        <div
+            id="profileUsername"
+            class="profile-email">
             @username
         </div>
 
@@ -838,23 +1139,27 @@ button{
 
         </div>
 
-        <button class="profile-option"
-                onclick="showToast('Edit profile coming soon')">
+        <button
+            class="profile-option"
+            onclick="showToast('Edit profile coming soon')">
             ✏️ Edit Profile
         </button>
 
-        <button class="profile-option"
-                onclick="showToast('Settings coming soon')">
+        <button
+            class="profile-option"
+            onclick="showToast('Settings coming soon')">
             ⚙️ Settings
         </button>
 
-        <button class="profile-option"
-                onclick="showToast('Privacy settings coming soon')">
+        <button
+            class="profile-option"
+            onclick="showToast('Privacy settings coming soon')">
             🔒 Privacy
         </button>
 
-        <button class="profile-option logout-button"
-                onclick="logoutAccount()">
+        <button
+            class="profile-option logout-button"
+            onclick="logoutUser()">
             🚪 Log Out
         </button>
 
@@ -862,7 +1167,10 @@ button{
 
 </section>
 
-<!-- ================= BOTTOM NAV ================= -->
+
+<!-- =====================================================
+     BOTTOM NAV
+===================================================== -->
 
 <nav class="bottom-nav">
 
@@ -908,11 +1216,18 @@ button{
 
 </nav>
 
-<!-- ================= PHOTO PREVIEW ================= -->
 
-<div id="previewOverlay" class="preview-overlay">
+<!-- =====================================================
+     PHOTO PREVIEW
+===================================================== -->
 
-    <img id="previewImage">
+<div
+    id="previewOverlay"
+    class="preview-overlay">
+
+    <img
+        id="previewImage"
+        alt="Photo preview">
 
     <div class="preview-actions">
 
@@ -932,9 +1247,14 @@ button{
 
 </div>
 
-<!-- ================= SEND PANEL ================= -->
 
-<div id="sendPanel" class="send-panel">
+<!-- =====================================================
+     SEND PANEL
+===================================================== -->
+
+<div
+    id="sendPanel"
+    class="send-panel">
 
     <div class="send-title">
         Send Photo To
@@ -942,10 +1262,16 @@ button{
 
     <div class="send-friend">
 
-        <div class="avatar">A</div>
+        <div class="avatar">
+            A
+        </div>
 
         <div class="user-info">
-            <div class="user-name">Alex</div>
+
+            <div class="user-name">
+                Alex
+            </div>
+
         </div>
 
         <input
@@ -959,10 +1285,16 @@ button{
 
     <div class="send-friend">
 
-        <div class="avatar">M</div>
+        <div class="avatar">
+            M
+        </div>
 
         <div class="user-info">
-            <div class="user-name">Mia</div>
+
+            <div class="user-name">
+                Mia
+            </div>
+
         </div>
 
         <input
@@ -976,10 +1308,16 @@ button{
 
     <div class="send-friend">
 
-        <div class="avatar">J</div>
+        <div class="avatar">
+            J
+        </div>
 
         <div class="user-info">
-            <div class="user-name">Jay</div>
+
+            <div class="user-name">
+                Jay
+            </div>
+
         </div>
 
         <input
@@ -999,61 +1337,24 @@ button{
 
 </div>
 
-<!-- ================= TOAST ================= -->
 
-<div id="toast" class="toast"></div>
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    id="toast"
+    class="toast">
+</div>
 
 </div>
 
-<!-- ================= FIREBASE ================= -->
-
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
 
 <script>
 
 /* =========================================================
-   FIREBASE
-========================================================= */
-
-const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
-
-    authDomain:
-        "vibesnap-213d4.firebaseapp.com",
-
-    projectId:
-        "vibesnap-213d4",
-
-    storageBucket:
-        "vibesnap-213d4.firebasestorage.app",
-
-    messagingSenderId:
-        "933479938239",
-
-    appId:
-        "1:933479938239:web:d120d7ba99f5665987ae0a",
-
-    measurementId:
-        "G-HP0QL3C8Y"
-
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-
-/* FIRESTORE CONNECTION */
-const db = firebase.firestore();
-
-
-/* =========================================================
-   VARIABLES
+   USER INTERFACE DATA
+   UI ONLY FOR NOW
 ========================================================= */
 
 let stream = null;
@@ -1066,271 +1367,401 @@ let capturedPhoto = null;
 
 let selectedFriends = [];
 
+let signupPhoto = null;
+
+let demoUser = null;
+
 
 /* =========================================================
-   AUTH
+   AUTH SCREEN SWITCHING
 ========================================================= */
 
-function showAuthMessage(message){
+function showSignup(){
 
-    document.getElementById("authMessage").textContent = message;
+    document.getElementById("loginForm").style.display =
+        "none";
 
-}
+    document.getElementById("signupForm").style.display =
+        "block";
 
+    document.getElementById("pendingForm").style.display =
+        "none";
 
-function clearAuthFields(){
-
-    document.getElementById("emailInput").value = "";
-
-    document.getElementById("passwordInput").value = "";
-
-}
-
-
-function getAuthValues(){
-
-    return {
-
-        email:
-            document.getElementById("emailInput")
-                .value
-                .trim(),
-
-        password:
-            document.getElementById("passwordInput")
-                .value
-
-    };
+    clearAuthMessages();
 
 }
 
 
-/* CREATE ACCOUNT */
+function showLogin(){
 
-async function createAccount(){
+    document.getElementById("loginForm").style.display =
+        "block";
 
-    const {email,password} = getAuthValues();
+    document.getElementById("signupForm").style.display =
+        "none";
 
-    if(!email || !password){
+    document.getElementById("pendingForm").style.display =
+        "none";
 
-        showAuthMessage(
-            "Enter your email and password."
-        );
+    clearAuthMessages();
 
+}
+
+
+function showPending(){
+
+    document.getElementById("loginForm").style.display =
+        "none";
+
+    document.getElementById("signupForm").style.display =
+        "none";
+
+    document.getElementById("pendingForm").style.display =
+        "block";
+
+}
+
+
+/* =========================================================
+   PROFILE PHOTO
+========================================================= */
+
+function previewSignupPhoto(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file){
         return;
     }
 
+    if(!file.type.startsWith("image/")){
+
+        showSignupMessage(
+            "Please choose an image."
+        );
+
+        return;
+
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload =
+        function(e){
+
+            signupPhoto =
+                e.target.result;
+
+            const image =
+                document.getElementById(
+                    "signupPhotoPreview"
+                );
+
+            image.src =
+                signupPhoto;
+
+            image.style.display =
+                "block";
+
+            document.getElementById(
+                "photoPickerIcon"
+            ).style.display =
+                "none";
+
+        };
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* =========================================================
+   SIGNUP UI
+========================================================= */
+
+function requestAccount(){
+
+    const username =
+        document
+            .getElementById("signupUsername")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("signupPassword")
+            .value;
+
+    const confirmPassword =
+        document
+            .getElementById("signupConfirmPassword")
+            .value;
+
+
+    if(!signupPhoto){
+
+        showSignupMessage(
+            "Please choose a profile photo."
+        );
+
+        return;
+
+    }
+
+
+    if(!username){
+
+        showSignupMessage(
+            "Please choose a username."
+        );
+
+        return;
+
+    }
+
+
+    if(username.length < 3){
+
+        showSignupMessage(
+            "Username must be at least 3 characters."
+        );
+
+        return;
+
+    }
+
+
     if(password.length < 6){
 
-        showAuthMessage(
+        showSignupMessage(
             "Password must be at least 6 characters."
         );
 
         return;
-    }
-
-    showAuthMessage(
-        "Creating your account..."
-    );
-
-    try{
-
-        const result =
-            await auth.createUserWithEmailAndPassword(
-                email,
-                password
-            );
-
-        /* CREATE BASIC USER PROFILE IN FIRESTORE */
-
-        await db
-            .collection("users")
-            .doc(result.user.uid)
-            .set({
-
-                email: email,
-
-                username:
-                    email.split("@")[0],
-
-                createdAt:
-                    firebase.firestore.FieldValue.serverTimestamp()
-
-            });
-
-        showAuthMessage("");
-
-    }catch(error){
-
-        console.log(error);
-
-        showAuthMessage(
-            getAuthError(error)
-        );
 
     }
 
-}
 
+    if(password !== confirmPassword){
 
-/* LOGIN */
-
-async function loginAccount(){
-
-    const {email,password} = getAuthValues();
-
-    if(!email || !password){
-
-        showAuthMessage(
-            "Enter your email and password."
+        showSignupMessage(
+            "Passwords do not match."
         );
 
         return;
+
     }
 
-    showAuthMessage(
-        "Logging in..."
+
+    /*
+       UI DEMO ONLY
+
+       Later this information will be sent
+       securely to Firebase.
+    */
+
+    demoUser = {
+
+        username:username,
+
+        password:password,
+
+        photo:signupPhoto,
+
+        status:"pending"
+
+    };
+
+
+    showPending();
+
+}
+
+
+/* =========================================================
+   LOGIN UI
+========================================================= */
+
+function loginUser(){
+
+    const username =
+        document
+            .getElementById("loginUsername")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+
+    if(!username || !password){
+
+        showLoginMessage(
+            "Enter your username and password."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       UI DEMO ONLY
+
+       Later this will check the real
+       approved account in Firebase.
+    */
+
+    if(
+        demoUser &&
+        demoUser.username === username &&
+        demoUser.password === password
+    ){
+
+        if(demoUser.status === "pending"){
+
+            showLoginMessage(
+                "Your account is still waiting for approval."
+            );
+
+            return;
+
+        }
+
+        enterMainApp(demoUser);
+
+        return;
+
+    }
+
+
+    showLoginMessage(
+        "Account not found or not approved yet."
     );
 
-    try{
-
-        await auth.signInWithEmailAndPassword(
-            email,
-            password
-        );
-
-        showAuthMessage("");
-
-    }catch(error){
-
-        console.log(error);
-
-        showAuthMessage(
-            getAuthError(error)
-        );
-
-    }
-
 }
 
 
-/* LOGOUT */
+/* =========================================================
+   DEMO APPROVAL HELPER
+========================================================= */
 
-async function logoutAccount(){
+function approveDemoAccount(){
 
-    try{
-
-        stopCamera();
-
-        await auth.signOut();
-
-    }catch(error){
-
-        console.log(error);
+    if(!demoUser){
 
         showToast(
-            "Could not log out"
+            "No signup request exists."
         );
 
+        return;
+
     }
+
+    demoUser.status =
+        "approved";
+
+    showToast(
+        "Demo account approved."
+    );
 
 }
 
 
-/* FIREBASE ERROR MESSAGES */
+/* =========================================================
+   ENTER APP
+========================================================= */
 
-function getAuthError(error){
-
-    switch(error.code){
-
-        case "auth/invalid-email":
-
-            return "Please enter a valid email.";
-
-        case "auth/email-already-in-use":
-
-            return "That email already has an account. Try Log In.";
-
-        case "auth/weak-password":
-
-            return "Choose a stronger password.";
-
-        case "auth/invalid-credential":
-
-        case "auth/wrong-password":
-
-        case "auth/user-not-found":
-
-            return "Email or password is incorrect.";
-
-        case "auth/too-many-requests":
-
-            return "Too many attempts. Please try again later.";
-
-        case "auth/network-request-failed":
-
-            return "Network error. Check your internet connection.";
-
-        default:
-
-            return error.message ||
-                "Something went wrong.";
-
-    }
-
-}
-
-
-/* SHOW MAIN APP */
-
-function showMainApp(user){
+function enterMainApp(user){
 
     document
         .getElementById("authScreen")
         .classList
         .add("hidden");
 
-    const email =
-        user.email || "";
-
-    const username =
-        email
-            ? email.split("@")[0]
-            : "username";
-
-    document
-        .getElementById("profileEmail")
-        .textContent =
-            "@" + username;
 
     const firstLetter =
-        email
-            ? email.charAt(0).toUpperCase()
-            : "U";
+        user.username
+            .charAt(0)
+            .toUpperCase();
 
-    document
-        .getElementById("profileAvatar")
-        .textContent =
-            firstLetter;
 
-    document
-        .querySelector(".profile-small")
-        .textContent =
-            firstLetter;
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        user.username;
 
-    document
-        .getElementById("profileName")
-        .textContent =
-            "Your Profile";
+
+    document.getElementById(
+        "profileUsername"
+    ).textContent =
+        "@" + user.username;
+
+
+    document.getElementById(
+        "profileLetter"
+    ).textContent =
+        firstLetter;
+
+
+    document.getElementById(
+        "smallProfileLetter"
+    ).textContent =
+        firstLetter;
+
+
+    if(user.photo){
+
+        document.getElementById(
+            "profileImage"
+        ).src =
+            user.photo;
+
+        document.getElementById(
+            "profileImage"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "profileLetter"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "smallProfileImage"
+        ).src =
+            user.photo;
+
+        document.getElementById(
+            "smallProfileImage"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "smallProfileLetter"
+        ).style.display =
+            "none";
+
+    }
+
 
     openScreen("camera");
 
 }
 
 
-/* SHOW LOGIN */
+/* =========================================================
+   LOGOUT
+========================================================= */
 
-function showLogin(){
+function logoutUser(){
 
     stopCamera();
 
@@ -1339,28 +1770,48 @@ function showLogin(){
         .classList
         .remove("hidden");
 
-    clearAuthFields();
-
-    showAuthMessage("");
+    showLogin();
 
 }
 
 
-/* FIREBASE AUTH LISTENER */
+/* =========================================================
+   AUTH MESSAGES
+========================================================= */
 
-auth.onAuthStateChanged(function(user){
+function showSignupMessage(message){
 
-    if(user){
+    document.getElementById(
+        "signupMessage"
+    ).textContent =
+        message;
 
-        showMainApp(user);
+}
 
-    }else{
 
-        showLogin();
+function showLoginMessage(message){
 
-    }
+    document.getElementById(
+        "loginMessage"
+    ).textContent =
+        message;
 
-});
+}
+
+
+function clearAuthMessages(){
+
+    document.getElementById(
+        "signupMessage"
+    ).textContent =
+        "";
+
+    document.getElementById(
+        "loginMessage"
+    ).textContent =
+        "";
+
+}
 
 
 /* =========================================================
@@ -1375,9 +1826,12 @@ async function startCamera(){
 
             stream
                 .getTracks()
-                .forEach(track => track.stop());
+                .forEach(track =>
+                    track.stop()
+                );
 
         }
+
 
         stream =
             await navigator.mediaDevices.getUserMedia({
@@ -1390,14 +1844,20 @@ async function startCamera(){
 
             });
 
+
         const video =
-            document.getElementById("video");
+            document.getElementById(
+                "video"
+            );
+
 
         video.srcObject =
             stream;
 
+
         video.style.filter =
             currentFilter;
+
 
     }catch(error){
 
@@ -1418,7 +1878,9 @@ function stopCamera(){
 
         stream
             .getTracks()
-            .forEach(track => track.stop());
+            .forEach(track =>
+                track.stop()
+            );
 
         stream = null;
 
@@ -1440,13 +1902,16 @@ async function switchCamera(){
 
 
 /* =========================================================
-   CAPTURE PHOTO
+   CAPTURE
 ========================================================= */
 
 function capturePhoto(){
 
     const video =
-        document.getElementById("video");
+        document.getElementById(
+            "video"
+        );
+
 
     if(!video.videoWidth){
 
@@ -1458,8 +1923,12 @@ function capturePhoto(){
 
     }
 
+
     const canvas =
-        document.createElement("canvas");
+        document.createElement(
+            "canvas"
+        );
+
 
     canvas.width =
         video.videoWidth;
@@ -1467,11 +1936,14 @@ function capturePhoto(){
     canvas.height =
         video.videoHeight;
 
+
     const ctx =
         canvas.getContext("2d");
 
+
     ctx.filter =
         currentFilter;
+
 
     if(facingMode === "user"){
 
@@ -1487,6 +1959,7 @@ function capturePhoto(){
 
     }
 
+
     ctx.drawImage(
         video,
         0,
@@ -1495,21 +1968,25 @@ function capturePhoto(){
         canvas.height
     );
 
+
     capturedPhoto =
         canvas.toDataURL(
             "image/jpeg",
             0.9
         );
 
-    document
-        .getElementById("previewImage")
-        .src =
-            capturedPhoto;
 
-    document
-        .getElementById("previewOverlay")
-        .classList
-        .add("active");
+    document.getElementById(
+        "previewImage"
+    ).src =
+        capturedPhoto;
+
+
+    document.getElementById(
+        "previewOverlay"
+    ).classList.add(
+        "active"
+    );
 
 }
 
@@ -1522,10 +1999,11 @@ function retakePhoto(){
 
     capturedPhoto = null;
 
-    document
-        .getElementById("previewOverlay")
-        .classList
-        .remove("active");
+    document.getElementById(
+        "previewOverlay"
+    ).classList.remove(
+        "active"
+    );
 
 }
 
@@ -1536,10 +2014,11 @@ function retakePhoto(){
 
 function openSendPanel(){
 
-    document
-        .getElementById("sendPanel")
-        .classList
-        .add("active");
+    document.getElementById(
+        "sendPanel"
+    ).classList.add(
+        "active"
+    );
 
 }
 
@@ -1549,11 +2028,14 @@ function toggleFriend(checkbox){
     const friend =
         checkbox.value;
 
+
     if(checkbox.checked){
 
         if(!selectedFriends.includes(friend)){
 
-            selectedFriends.push(friend);
+            selectedFriends.push(
+                friend
+            );
 
         }
 
@@ -1561,7 +2043,8 @@ function toggleFriend(checkbox){
 
         selectedFriends =
             selectedFriends.filter(
-                name => name !== friend
+                name =>
+                    name !== friend
             );
 
     }
@@ -1581,6 +2064,7 @@ function sendPhoto(){
 
     }
 
+
     if(selectedFriends.length === 0){
 
         showToast(
@@ -1591,28 +2075,37 @@ function sendPhoto(){
 
     }
 
+
     const names =
         selectedFriends.join(", ");
 
-    document
-        .getElementById("sendPanel")
-        .classList
-        .remove("active");
 
-    document
-        .getElementById("previewOverlay")
-        .classList
-        .remove("active");
+    document.getElementById(
+        "sendPanel"
+    ).classList.remove(
+        "active"
+    );
+
+
+    document.getElementById(
+        "previewOverlay"
+    ).classList.remove(
+        "active"
+    );
+
 
     selectedFriends = [];
+
 
     document
         .querySelectorAll(".send-check")
         .forEach(check => {
 
-            check.checked = false;
+            check.checked =
+                false;
 
         });
+
 
     showToast(
         "Photo sent to " + names
@@ -1630,14 +2123,17 @@ function setFilter(filter,button){
     currentFilter =
         filter;
 
-    document
-        .getElementById("video")
-        .style
-        .filter =
-            filter;
+
+    document.getElementById(
+        "video"
+    ).style.filter =
+        filter;
+
 
     document
-        .querySelectorAll(".filter-button")
+        .querySelectorAll(
+            ".filter-button"
+        )
         .forEach(btn => {
 
             btn.classList.remove(
@@ -1645,6 +2141,7 @@ function setFilter(filter,button){
             );
 
         });
+
 
     button.classList.add(
         "active"
@@ -1659,9 +2156,9 @@ function setFilter(filter,button){
 
 function openMediaPicker(){
 
-    document
-        .getElementById("mediaInput")
-        .click();
+    document.getElementById(
+        "mediaInput"
+    ).click();
 
 }
 
@@ -1671,14 +2168,17 @@ function handleMediaPicker(event){
     const file =
         event.target.files[0];
 
+
     if(!file){
 
         return;
 
     }
 
+
     const reader =
         new FileReader();
+
 
     reader.onload =
         function(e){
@@ -1686,21 +2186,27 @@ function handleMediaPicker(event){
             capturedPhoto =
                 e.target.result;
 
-            document
-                .getElementById("previewImage")
-                .src =
-                    capturedPhoto;
 
-            document
-                .getElementById("previewOverlay")
-                .classList
-                .add("active");
+            document.getElementById(
+                "previewImage"
+            ).src =
+                capturedPhoto;
+
+
+            document.getElementById(
+                "previewOverlay"
+            ).classList.add(
+                "active"
+            );
 
         };
 
+
     reader.readAsDataURL(file);
 
-    event.target.value = "";
+
+    event.target.value =
+        "";
 
 }
 
@@ -1711,14 +2217,10 @@ function handleMediaPicker(event){
 
 function openScreen(screen){
 
-    if(!auth.currentUser){
-
-        return;
-
-    }
-
     document
-        .querySelectorAll(".screen")
+        .querySelectorAll(
+            ".screen"
+        )
         .forEach(section => {
 
             section.classList.remove(
@@ -1727,15 +2229,18 @@ function openScreen(screen){
 
         });
 
-    document
-        .getElementById(
-            screen + "Screen"
-        )
-        .classList
-        .add("active");
+
+    document.getElementById(
+        screen + "Screen"
+    ).classList.add(
+        "active"
+    );
+
 
     document
-        .querySelectorAll(".nav-button")
+        .querySelectorAll(
+            ".nav-button"
+        )
         .forEach(button => {
 
             button.classList.remove(
@@ -1744,12 +2249,14 @@ function openScreen(screen){
 
         });
 
+
     const nav =
         document.getElementById(
             "nav" +
             screen.charAt(0).toUpperCase() +
             screen.slice(1)
         );
+
 
     if(nav){
 
@@ -1758,6 +2265,7 @@ function openScreen(screen){
         );
 
     }
+
 
     if(screen === "camera"){
 
@@ -1783,16 +2291,21 @@ function searchUsers(value){
             "#chatList .user-item"
         );
 
+
     value =
         value.toLowerCase();
+
 
     items.forEach(item => {
 
         const name =
             item
-                .querySelector(".user-name")
+                .querySelector(
+                    ".user-name"
+                )
                 .textContent
                 .toLowerCase();
+
 
         item.style.display =
             name.includes(value)
@@ -1811,16 +2324,21 @@ function searchFriends(value){
             "#friendList .user-item"
         );
 
+
     value =
         value.toLowerCase();
+
 
     items.forEach(item => {
 
         const name =
             item
-                .querySelector(".user-name")
+                .querySelector(
+                    ".user-name"
+                )
                 .textContent
                 .toLowerCase();
+
 
         item.style.display =
             name.includes(value)
@@ -1838,21 +2356,28 @@ function searchFriends(value){
 
 let toastTimer;
 
+
 function showToast(message){
 
     const toast =
-        document.getElementById("toast");
+        document.getElementById(
+            "toast"
+        );
+
 
     toast.textContent =
         message;
+
 
     toast.classList.add(
         "show"
     );
 
+
     clearTimeout(
         toastTimer
     );
+
 
     toastTimer =
         setTimeout(
