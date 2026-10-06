@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>VibeSnap</title>
 
 <style>
@@ -27,12 +26,10 @@ button{
 }
 
 .hidden{
-    display:none !important;
+    display:none!important;
 }
 
-/* =========================
-   AUTH
-========================= */
+/* ================= AUTH ================= */
 
 #authScreen{
     min-height:100vh;
@@ -41,7 +38,7 @@ button{
     align-items:center;
     padding:20px;
     background:
-        radial-gradient(circle at top,#252000 0%,#090909 45%,#000 100%);
+        radial-gradient(circle at top,#252000,#090909 45%,#000);
 }
 
 .authBox{
@@ -51,20 +48,19 @@ button{
     border:1px solid #2d2d2d;
     border-radius:24px;
     padding:32px 24px;
-    box-shadow:0 20px 60px rgba(0,0,0,.5);
     text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
 }
 
 .logo{
     font-size:38px;
     font-weight:900;
     color:#ffd400;
-    margin-bottom:8px;
 }
 
 .tagline{
     color:#999;
-    margin-bottom:30px;
+    margin:8px 0 28px;
 }
 
 .authBtn{
@@ -77,7 +73,7 @@ button{
 }
 
 .googleBtn{
-    background:white;
+    background:#fff;
     color:#111;
 }
 
@@ -88,7 +84,7 @@ button{
 
 .signupBtn{
     background:#202020;
-    color:white;
+    color:#fff;
     border:1px solid #333;
 }
 
@@ -103,7 +99,7 @@ button{
     border-radius:12px;
     border:1px solid #333;
     background:#181818;
-    color:white;
+    color:#fff;
     outline:none;
     margin-top:8px;
 }
@@ -124,9 +120,7 @@ button{
     min-height:20px;
 }
 
-/* =========================
-   APP
-========================= */
+/* ================= APP ================= */
 
 #app{
     min-height:100vh;
@@ -162,12 +156,8 @@ button{
     height:42px;
     border-radius:50%;
     background:#202020;
-    color:white;
+    color:#fff;
     font-size:20px;
-}
-
-.iconBtn:hover{
-    background:#303030;
 }
 
 .main{
@@ -184,9 +174,7 @@ button{
     display:block;
 }
 
-/* =========================
-   HOME
-========================= */
+/* ================= HOME ================= */
 
 .welcome{
     background:linear-gradient(135deg,#191919,#101010);
@@ -258,9 +246,7 @@ button{
     font-weight:bold;
 }
 
-/* =========================
-   CHAT
-========================= */
+/* ================= CHAT ================= */
 
 .chatHeader{
     background:#111;
@@ -274,7 +260,7 @@ button{
 
 .backBtn{
     background:#222;
-    color:white;
+    color:#fff;
     width:40px;
     height:40px;
     border-radius:50%;
@@ -312,7 +298,7 @@ button{
 
 .message.them{
     background:#202020;
-    color:white;
+    color:#fff;
     border-bottom-left-radius:4px;
 }
 
@@ -342,7 +328,7 @@ button{
 .messageInput{
     flex:1;
     background:#1d1d1d;
-    color:white;
+    color:#fff;
     border:1px solid #333;
     border-radius:13px;
     padding:13px;
@@ -362,13 +348,11 @@ button{
     width:48px;
     border-radius:13px;
     background:#222;
-    color:white;
+    color:#fff;
     font-size:20px;
 }
 
-/* =========================
-   CAMERA
-========================= */
+/* ================= CAMERA ================= */
 
 .cameraPage{
     max-width:650px;
@@ -398,11 +382,8 @@ button{
     display:none;
 }
 
-/*
- IMPORTANT:
- The captured image is shown INSIDE this box.
- It is never placed as a full-screen <img>.
-*/
+/* PHOTO STAYS INSIDE CAMERA BOX */
+
 #photoPreview{
     position:absolute;
     inset:0;
@@ -427,10 +408,9 @@ button{
     width:44px;
     height:44px;
     border-radius:50%;
-    background:rgba(0,0,0,.55);
-    color:white;
+    background:rgba(0,0,0,.6);
+    color:#fff;
     font-size:20px;
-    backdrop-filter:blur(5px);
 }
 
 .cameraBottom{
@@ -449,9 +429,8 @@ button{
     width:72px;
     height:72px;
     border-radius:50%;
-    background:white;
+    background:#fff;
     border:7px solid rgba(255,255,255,.4);
-    background-clip:padding-box;
 }
 
 .galleryBtn,
@@ -460,8 +439,11 @@ button{
     height:50px;
     border-radius:50%;
     background:rgba(0,0,0,.6);
-    color:white;
+    color:#fff;
     font-size:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .previewControls{
@@ -475,13 +457,15 @@ button{
     z-index:10;
 }
 
+/* CROSS BUTTON */
+
 .previewCancel{
     width:55px;
     height:55px;
     border-radius:50%;
-    background:rgba(0,0,0,.7);
-    color:white;
-    font-size:28px;
+    background:rgba(0,0,0,.75);
+    color:#fff;
+    font-size:30px;
 }
 
 .previewSend{
@@ -510,9 +494,7 @@ button{
     color:#ffd400;
 }
 
-/* =========================
-   PROFILE
-========================= */
+/* ================= PROFILE ================= */
 
 .profileBox{
     max-width:500px;
@@ -551,14 +533,10 @@ button{
     width:100%;
     padding:14px;
     background:#292929;
-    color:white;
+    color:#fff;
     border-radius:12px;
     margin-top:25px;
 }
-
-/* =========================
-   MOBILE
-========================= */
 
 @media(max-width:600px){
 
@@ -585,9 +563,7 @@ button{
 
 <body>
 
-<!-- =========================
-     AUTH SCREEN
-========================= -->
+<!-- ================= AUTH ================= -->
 
 <div id="authScreen">
 
@@ -599,15 +575,21 @@ button{
             Connect. Chat. Share your vibe.
         </div>
 
-        <button class="authBtn googleBtn" id="googleLogin">
+        <button
+            class="authBtn googleBtn"
+            id="googleLogin">
             Continue with Google
         </button>
 
-        <button class="authBtn phoneBtn" id="showPhone">
+        <button
+            class="authBtn phoneBtn"
+            id="showPhone">
             Login with Phone Number
         </button>
 
-        <button class="authBtn signupBtn" id="requestAccount">
+        <button
+            class="authBtn signupBtn"
+            id="requestAccount">
             Request an Account
         </button>
 
@@ -616,12 +598,13 @@ button{
             <input
                 id="phoneNumber"
                 type="tel"
-                placeholder="+91XXXXXXXXXX"
-            >
+                placeholder="+91XXXXXXXXXX">
 
             <div id="recaptcha-container"></div>
 
-            <button class="smallBtn" id="sendOTP">
+            <button
+                class="smallBtn"
+                id="sendOTP">
                 Send OTP
             </button>
 
@@ -629,13 +612,11 @@ button{
                 id="otpCode"
                 class="hidden"
                 type="number"
-                placeholder="Enter OTP"
-            >
+                placeholder="Enter OTP">
 
             <button
                 id="verifyOTP"
-                class="smallBtn hidden"
-            >
+                class="smallBtn hidden">
                 Verify OTP
             </button>
 
@@ -648,9 +629,7 @@ button{
 </div>
 
 
-<!-- =========================
-     APP
-========================= -->
+<!-- ================= APP ================= -->
 
 <div id="app">
 
@@ -664,25 +643,19 @@ button{
 
             <button
                 class="iconBtn"
-                id="homeBtn"
-                title="Home"
-            >
+                id="homeBtn">
                 🏠
             </button>
 
             <button
                 class="iconBtn"
-                id="cameraBtn"
-                title="Camera"
-            >
+                id="cameraBtn">
                 📸
             </button>
 
             <button
                 class="iconBtn"
-                id="profileBtn"
-                title="Profile"
-            >
+                id="profileBtn">
                 👤
             </button>
 
@@ -697,8 +670,7 @@ button{
 
         <section
             id="homeScreen"
-            class="screen active"
-        >
+            class="screen active">
 
             <div class="welcome">
 
@@ -727,26 +699,25 @@ button{
 
         <section
             id="chatScreen"
-            class="screen"
-        >
+            class="screen">
 
             <div class="chatHeader">
 
                 <button
                     class="backBtn"
-                    id="backFromChat"
-                >
+                    id="backFromChat">
                     ←
                 </button>
 
                 <div
                     class="avatar"
-                    id="chatAvatar"
-                >
+                    id="chatAvatar">
                     ?
                 </div>
 
-                <div class="chatName" id="chatUserName">
+                <div
+                    class="chatName"
+                    id="chatUserName">
                     Chat
                 </div>
 
@@ -754,16 +725,14 @@ button{
 
             <div
                 id="messages"
-                class="messages"
-            ></div>
+                class="messages">
+            </div>
 
             <div class="chatInputBar">
 
                 <button
                     class="mediaBtn"
-                    id="chatMediaBtn"
-                    title="Send photo/video"
-                >
+                    id="chatMediaBtn">
                     📎
                 </button>
 
@@ -771,13 +740,11 @@ button{
                     class="messageInput"
                     id="messageInput"
                     type="text"
-                    placeholder="Type a message..."
-                >
+                    placeholder="Type a message...">
 
                 <button
                     class="sendBtn"
-                    id="sendMessage"
-                >
+                    id="sendMessage">
                     ➤
                 </button>
 
@@ -787,8 +754,7 @@ button{
                 type="file"
                 id="chatFileInput"
                 accept="image/*,video/*"
-                class="hidden"
-            >
+                class="hidden">
 
         </section>
 
@@ -797,8 +763,7 @@ button{
 
         <section
             id="cameraScreen"
-            class="screen"
-        >
+            class="screen">
 
             <div class="cameraPage">
 
@@ -808,15 +773,14 @@ button{
                         id="cameraVideo"
                         autoplay
                         playsinline
-                        muted
-                    ></video>
+                        muted>
+                    </video>
 
                     <canvas id="photoCanvas"></canvas>
 
                     <img
                         id="photoPreview"
-                        alt="Captured photo"
-                    >
+                        alt="Captured photo">
 
                     <div class="cameraTop">
 
@@ -830,65 +794,55 @@ button{
 
                     </div>
 
+
                     <div
                         id="normalCameraControls"
-                        class="cameraBottom"
-                    >
+                        class="cameraBottom">
 
                         <label
                             class="galleryBtn"
-                            title="Gallery"
-                        >
+                            title="Gallery">
+
                             🖼️
 
                             <input
                                 id="cameraGalleryInput"
                                 type="file"
                                 accept="image/*,video/*"
-                                class="hidden"
-                            >
+                                class="hidden">
+
                         </label>
 
                         <button
                             id="capturePhoto"
-                            class="captureBtn"
-                            title="Take photo"
-                        ></button>
+                            class="captureBtn">
+                        </button>
 
                         <button
                             id="switchVideo"
-                            class="flipBtn"
-                            title="Video mode"
-                        >
+                            class="flipBtn">
                             🎥
                         </button>
 
                     </div>
 
 
-                    <!--
-                       THESE ARE THE IMPORTANT PHOTO PREVIEW BUTTONS.
-                       ✕ = DISCARD
-                       ➤ = SEND
-                    -->
+                    <!-- PHOTO PREVIEW CONTROLS -->
 
                     <div
                         id="photoPreviewControls"
-                        class="previewControls"
-                    >
+                        class="previewControls">
 
                         <button
                             id="discardPhoto"
                             class="previewCancel"
-                            title="Discard photo"
-                        >
+                            title="Discard photo">
                             ✕
                         </button>
 
                         <button
                             id="sendCapturedPhoto"
-                            class="previewSend"
-                        >
+                            class="previewSend">
                             Send ➤
                         </button>
 
@@ -901,15 +855,13 @@ button{
 
                     <button
                         id="photoModeBtn"
-                        class="modeBtn active"
-                    >
+                        class="modeBtn active">
                         PHOTO
                     </button>
 
                     <button
                         id="videoModeBtn"
-                        class="modeBtn"
-                    >
+                        class="modeBtn">
                         VIDEO
                     </button>
 
@@ -924,15 +876,13 @@ button{
 
         <section
             id="profileScreen"
-            class="screen"
-        >
+            class="screen">
 
             <div class="profileBox">
 
                 <div
                     id="profileAvatar"
-                    class="profileAvatar"
-                >
+                    class="profileAvatar">
                     ?
                 </div>
 
@@ -942,14 +892,12 @@ button{
 
                 <div
                     id="profileEmail"
-                    class="profileEmail"
-                >
+                    class="profileEmail">
                 </div>
 
                 <button
                     id="logoutBtn"
-                    class="logoutBtn"
-                >
+                    class="logoutBtn">
                     Log Out
                 </button>
 
@@ -964,9 +912,7 @@ button{
 
 <script type="module">
 
-/* =========================================
-   FIREBASE IMPORTS
-========================================= */
+/* ================= FIREBASE IMPORTS ================= */
 
 import {
     initializeApp
@@ -1003,14 +949,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
 
-/* =========================================
-   FIREBASE CONFIG
-========================================= */
+/* ================= CORRECT FIREBASE CONFIG ================= */
 
 const firebaseConfig = {
 
     apiKey:
-        "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcDc",
+        "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
 
     authDomain:
         "vibesnap-213d4.firebaseapp.com",
@@ -1032,22 +976,22 @@ const firebaseConfig = {
 };
 
 
-/* =========================================
-   INITIALIZE
-========================================= */
+/* ================= INITIALIZE ================= */
 
-const app = initializeApp(firebaseConfig);
+const app =
+    initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const auth =
+    getAuth(app);
 
-const db = getFirestore(app);
+const db =
+    getFirestore(app);
 
-const storage = getStorage(app);
+const storage =
+    getStorage(app);
 
 
-/* =========================================
-   GLOBAL VARIABLES
-========================================= */
+/* ================= VARIABLES ================= */
 
 let currentUser = null;
 
@@ -1063,10 +1007,12 @@ let currentFacingMode = "user";
 
 let capturedPhotoBlob = null;
 
+let confirmationResult = null;
 
-/* =========================================
-   ELEMENTS
-========================================= */
+let recaptchaVerifier = null;
+
+
+/* ================= ELEMENTS ================= */
 
 const authScreen =
     document.getElementById("authScreen");
@@ -1108,9 +1054,7 @@ const photoPreviewControls =
     document.getElementById("photoPreviewControls");
 
 
-/* =========================================
-   AUTH STATUS
-========================================= */
+/* ================= AUTH MESSAGE ================= */
 
 function showAuthMessage(message){
 
@@ -1119,13 +1063,11 @@ function showAuthMessage(message){
 }
 
 
-/* =========================================
-   GOOGLE LOGIN
-========================================= */
+/* ================= GOOGLE LOGIN ================= */
 
 document
 .getElementById("googleLogin")
-.addEventListener("click", async () => {
+.addEventListener("click",async()=>{
 
     try{
 
@@ -1155,20 +1097,15 @@ document
 });
 
 
-/* =========================================
-   PHONE LOGIN
-========================================= */
-
-let confirmationResult = null;
-
-let recaptchaVerifier = null;
-
+/* ================= PHONE LOGIN ================= */
 
 document
 .getElementById("showPhone")
-.addEventListener("click", () => {
+.addEventListener("click",()=>{
 
-    phoneBox.classList.toggle("hidden");
+    phoneBox.classList.toggle(
+        "hidden"
+    );
 
 });
 
@@ -1193,7 +1130,7 @@ function createRecaptcha(){
 
 document
 .getElementById("sendOTP")
-.addEventListener("click", async () => {
+.addEventListener("click",async()=>{
 
     const phone =
         document
@@ -1225,9 +1162,13 @@ document
                 recaptchaVerifier
             );
 
-        otpCode.classList.remove("hidden");
+        otpCode.classList.remove(
+            "hidden"
+        );
 
-        verifyOTP.classList.remove("hidden");
+        verifyOTP.classList.remove(
+            "hidden"
+        );
 
         showAuthMessage(
             "OTP sent. Enter it below."
@@ -1257,7 +1198,7 @@ document
 
 verifyOTP.addEventListener(
     "click",
-    async () => {
+    async()=>{
 
         const code =
             otpCode.value.trim();
@@ -1304,17 +1245,15 @@ verifyOTP.addEventListener(
 );
 
 
-/* =========================================
-   ACCOUNT REQUEST
-========================================= */
+/* ================= ACCOUNT REQUEST ================= */
 
 document
 .getElementById("requestAccount")
-.addEventListener("click", async () => {
+.addEventListener("click",async()=>{
 
     const email =
         prompt(
-            "Enter your email for the account request:"
+            "Enter your email:"
         );
 
     if(!email){
@@ -1338,10 +1277,17 @@ document
                 "signupRequests"
             ),
             {
-                email:email.trim(),
-                username:username.trim(),
-                status:"pending",
-                createdAt:serverTimestamp()
+                email:
+                    email.trim(),
+
+                username:
+                    username.trim(),
+
+                status:
+                    "pending",
+
+                createdAt:
+                    serverTimestamp()
             }
         );
 
@@ -1363,17 +1309,16 @@ document
 });
 
 
-/* =========================================
-   AUTH STATE
-========================================= */
+/* ================= AUTH STATE ================= */
 
 onAuthStateChanged(
     auth,
-    async user => {
+    async user=>{
 
         if(user){
 
-            currentUser = user;
+            currentUser =
+                user;
 
             authScreen.style.display =
                 "none";
@@ -1387,11 +1332,14 @@ onAuthStateChanged(
 
             updateProfile();
 
-            showScreen("homeScreen");
+            showScreen(
+                "homeScreen"
+            );
 
         }else{
 
-            currentUser = null;
+            currentUser =
+                null;
 
             authScreen.style.display =
                 "flex";
@@ -1405,9 +1353,7 @@ onAuthStateChanged(
 );
 
 
-/* =========================================
-   CREATE USER PROFILE
-========================================= */
+/* ================= USER PROFILE ================= */
 
 async function createUserProfile(){
 
@@ -1423,14 +1369,17 @@ async function createUserProfile(){
         );
 
     const existing =
-        await getDoc(userRef);
+        await getDoc(
+            userRef
+        );
 
     if(!existing.exists()){
 
         await setDoc(
             userRef,
             {
-                uid:currentUser.uid,
+                uid:
+                    currentUser.uid,
 
                 name:
                     currentUser.displayName ||
@@ -1458,18 +1407,9 @@ async function createUserProfile(){
 }
 
 
-/* =========================================
-   LOAD USERS
-========================================= */
+/* ================= LOAD USERS ================= */
 
 async function loadUsers(){
-
-    /*
-      NOTE:
-      This is kept simple for the current prototype.
-      Your Firestore rules will eventually need a proper
-      friend-request/friendship system.
-    */
 
     usersList.innerHTML =
         "Loading users...";
@@ -1478,26 +1418,32 @@ async function loadUsers(){
 
         const snapshot =
             await new Promise(
-                (resolve,reject) => {
+                (resolve,reject)=>{
 
-                    const unsubscribe =
+                    let unsubscribe;
+
+                    unsubscribe =
                         onSnapshot(
                             collection(
                                 db,
                                 "users"
                             ),
-                            snap => {
+                            snap=>{
 
                                 unsubscribe();
 
-                                resolve(snap);
+                                resolve(
+                                    snap
+                                );
 
                             },
-                            error => {
+                            error=>{
 
                                 unsubscribe();
 
-                                reject(error);
+                                reject(
+                                    error
+                                );
 
                             }
                         );
@@ -1510,22 +1456,27 @@ async function loadUsers(){
         let found = false;
 
         snapshot.forEach(
-            userDoc => {
+            userDoc=>{
 
                 const user =
                     userDoc.data();
 
                 if(
                     currentUser &&
-                    user.uid === currentUser.uid
+                    user.uid ===
+                    currentUser.uid
                 ){
+
                     return;
+
                 }
 
                 found = true;
 
                 const card =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
 
                 card.className =
                     "userCard";
@@ -1570,20 +1521,13 @@ async function loadUsers(){
                     <button class="chatBtn">
                         Chat
                     </button>
-
                 `;
 
                 card
                 .querySelector(".chatBtn")
                 .addEventListener(
                     "click",
-                    () => {
-
-                        openChat(
-                            user
-                        );
-
-                    }
+                    ()=>openChat(user)
                 );
 
                 usersList.appendChild(
@@ -1620,21 +1564,17 @@ async function loadUsers(){
 }
 
 
-/* =========================================
-   SCREEN SWITCHING
-========================================= */
+/* ================= SCREEN SWITCH ================= */
 
 function showScreen(id){
 
     document
     .querySelectorAll(".screen")
     .forEach(
-        screen => {
-
+        screen=>{
             screen.classList.remove(
                 "active"
             );
-
         }
     );
 
@@ -1647,61 +1587,48 @@ function showScreen(id){
 }
 
 
-/* =========================================
-   TOP NAV
-========================================= */
+/* ================= NAVIGATION ================= */
 
 document
 .getElementById("homeBtn")
-.addEventListener(
-    "click",
-    () => {
+.addEventListener("click",()=>{
 
-        closeCamera();
+    closeCamera();
 
-        showScreen(
-            "homeScreen"
-        );
+    showScreen(
+        "homeScreen"
+    );
 
-    }
-);
+});
 
 
 document
 .getElementById("profileBtn")
-.addEventListener(
-    "click",
-    () => {
+.addEventListener("click",()=>{
 
-        closeCamera();
+    closeCamera();
 
-        showScreen(
-            "profileScreen"
-        );
+    showScreen(
+        "profileScreen"
+    );
 
-    }
-);
+});
 
 
 document
 .getElementById("cameraBtn")
-.addEventListener(
-    "click",
-    async () => {
+.addEventListener("click",async()=>{
 
-        showScreen(
-            "cameraScreen"
-        );
+    showScreen(
+        "cameraScreen"
+    );
 
-        await startCamera();
+    await startCamera();
 
-    }
-);
+});
 
 
-/* =========================================
-   PROFILE
-========================================= */
+/* ================= PROFILE ================= */
 
 function updateProfile(){
 
@@ -1728,7 +1655,9 @@ function updateProfile(){
     document
     .getElementById("profileAvatar")
     .textContent =
-        name.charAt(0).toUpperCase();
+        name
+        .charAt(0)
+        .toUpperCase();
 
     welcomeText.textContent =
         `Logged in as ${name}`;
@@ -1738,34 +1667,30 @@ function updateProfile(){
 
 document
 .getElementById("logoutBtn")
-.addEventListener(
-    "click",
-    async () => {
+.addEventListener("click",async()=>{
 
-        closeCamera();
+    closeCamera();
 
-        if(unsubscribeMessages){
+    if(unsubscribeMessages){
 
-            unsubscribeMessages();
+        unsubscribeMessages();
 
-            unsubscribeMessages =
-                null;
-
-        }
-
-        await signOut(auth);
+        unsubscribeMessages =
+            null;
 
     }
-);
+
+    await signOut(auth);
+
+});
 
 
-/* =========================================
-   CHAT
-========================================= */
+/* ================= CHAT ================= */
 
 async function openChat(user){
 
-    currentChatUser = user;
+    currentChatUser =
+        user;
 
     currentChatId =
         [
@@ -1839,19 +1764,16 @@ function loadMessages(){
     unsubscribeMessages =
         onSnapshot(
             q,
-            snapshot => {
+            snapshot=>{
 
                 messagesElement.innerHTML =
                     "";
 
                 snapshot.forEach(
-                    messageDoc => {
-
-                        const data =
-                            messageDoc.data();
+                    messageDoc=>{
 
                         renderMessage(
-                            data
+                            messageDoc.data()
                         );
 
                     }
@@ -1861,13 +1783,11 @@ function loadMessages(){
                     messagesElement.scrollHeight;
 
             },
-            error => {
-
+            error=>{
                 console.error(
                     "Message error:",
                     error
                 );
-
             }
         );
 
@@ -1882,7 +1802,9 @@ function renderMessage(data){
         );
 
     const message =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     const mine =
         data.senderUid ===
@@ -1893,11 +1815,12 @@ function renderMessage(data){
         ? "message me"
         : "message them";
 
-
     if(data.type === "image"){
 
         const img =
-            document.createElement("img");
+            document.createElement(
+                "img"
+            );
 
         img.src =
             data.mediaUrl;
@@ -1934,7 +1857,9 @@ function renderMessage(data){
     }else{
 
         const text =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         text.textContent =
             data.text || "";
@@ -1944,7 +1869,6 @@ function renderMessage(data){
         );
 
     }
-
 
     const time =
         document.createElement(
@@ -1975,56 +1899,25 @@ function renderMessage(data){
 
 document
 .getElementById("backFromChat")
-.addEventListener(
-    "click",
-    () => {
+.addEventListener("click",()=>{
 
-        if(unsubscribeMessages){
+    if(unsubscribeMessages){
 
-            unsubscribeMessages();
+        unsubscribeMessages();
 
-            unsubscribeMessages =
-                null;
-
-        }
-
-        showScreen(
-            "homeScreen"
-        );
+        unsubscribeMessages =
+            null;
 
     }
-);
+
+    showScreen(
+        "homeScreen"
+    );
+
+});
 
 
-/* =========================================
-   SEND TEXT
-========================================= */
-
-document
-.getElementById("sendMessage")
-.addEventListener(
-    "click",
-    sendTextMessage
-);
-
-
-document
-.getElementById("messageInput")
-.addEventListener(
-    "keydown",
-    event => {
-
-        if(
-            event.key === "Enter"
-        ){
-
-            sendTextMessage();
-
-        }
-
-    }
-);
-
+/* ================= SEND TEXT ================= */
 
 async function sendTextMessage(){
 
@@ -2070,7 +1963,8 @@ async function sendTextMessage(){
             }
         );
 
-        input.value = "";
+        input.value =
+            "";
 
     }catch(error){
 
@@ -2084,41 +1978,55 @@ async function sendTextMessage(){
 
 }
 
-
-/* =========================================
-   CHAT MEDIA
-========================================= */
-
 document
-.getElementById("chatMediaBtn")
+.getElementById("sendMessage")
 .addEventListener(
     "click",
-    () => {
+    sendTextMessage
+);
 
-        document
-        .getElementById(
-            "chatFileInput"
-        )
-        .click();
+document
+.getElementById("messageInput")
+.addEventListener(
+    "keydown",
+    event=>{
+
+        if(event.key === "Enter"){
+            sendTextMessage();
+        }
 
     }
 );
+
+
+/* ================= CHAT MEDIA ================= */
+
+document
+.getElementById("chatMediaBtn")
+.addEventListener("click",()=>{
+
+    document
+    .getElementById(
+        "chatFileInput"
+    )
+    .click();
+
+});
 
 
 document
 .getElementById("chatFileInput")
 .addEventListener(
     "change",
-    async event => {
+    async event=>{
 
         const file =
             event.target.files[0];
 
-        if(!file){
-            return;
-        }
-
-        if(!currentChatUser){
+        if(
+            !file ||
+            !currentChatUser
+        ){
             return;
         }
 
@@ -2209,6 +2117,8 @@ document
     }
 );
 
+
+/* ================= EXTENSION ================= */
 
 function getExtension(
     filename,
@@ -2248,21 +2158,16 @@ function getExtension(
     }
 
     if(
-        mimeType.startsWith(
-            "video/"
-        )
+        mimeType.startsWith("video/")
     ){
         return "mp4";
     }
 
     return "bin";
-
 }
 
 
-/* =========================================
-   CAMERA START
-========================================= */
+/* ================= CAMERA ================= */
 
 async function startCamera(){
 
@@ -2272,16 +2177,13 @@ async function startCamera(){
 
         cameraStream =
             await navigator.mediaDevices
-            .getUserMedia(
-                {
-                    video:{
-                        facingMode:
-                            currentFacingMode
-                    },
-
-                    audio:false
-                }
-            );
+            .getUserMedia({
+                video:{
+                    facingMode:
+                        currentFacingMode
+                },
+                audio:false
+            });
 
         cameraVideo.srcObject =
             cameraStream;
@@ -2298,17 +2200,13 @@ async function startCamera(){
         );
 
         alert(
-            "Camera could not start. Please allow camera permission in your browser."
+            "Camera could not start. Please allow camera permission."
         );
 
     }
 
 }
 
-
-/* =========================================
-   CLOSE CAMERA
-========================================= */
 
 function closeCamera(){
 
@@ -2317,12 +2215,11 @@ function closeCamera(){
         cameraStream
         .getTracks()
         .forEach(
-            track => track.stop()
+            track=>track.stop()
         );
 
         cameraStream =
             null;
-
     }
 
     cameraVideo.srcObject =
@@ -2331,20 +2228,16 @@ function closeCamera(){
 }
 
 
-/* =========================================
-   FLIP CAMERA
-========================================= */
+/* ================= FLIP CAMERA ================= */
 
 document
 .getElementById("flipCamera")
 .addEventListener(
     "click",
-    async () => {
+    async()=>{
 
         if(capturedPhotoBlob){
-
             return;
-
         }
 
         currentFacingMode =
@@ -2358,9 +2251,7 @@ document
 );
 
 
-/* =========================================
-   CAPTURE PHOTO
-========================================= */
+/* ================= CAPTURE PHOTO ================= */
 
 document
 .getElementById("capturePhoto")
@@ -2382,9 +2273,7 @@ function capturePhoto(){
         );
 
         return;
-
     }
-
 
     const width =
         cameraVideo.videoWidth;
@@ -2392,24 +2281,14 @@ function capturePhoto(){
     const height =
         cameraVideo.videoHeight;
 
-
     photoCanvas.width =
         width;
 
     photoCanvas.height =
         height;
 
-
     const context =
-        photoCanvas.getContext(
-            "2d"
-        );
-
-
-    /*
-       Draw the camera frame
-       into the canvas.
-    */
+        photoCanvas.getContext("2d");
 
     context.drawImage(
         cameraVideo,
@@ -2419,31 +2298,15 @@ function capturePhoto(){
         height
     );
 
-
     photoCanvas.toBlob(
-        blob => {
+        blob=>{
 
             if(!blob){
-
-                alert(
-                    "Could not capture photo."
-                );
-
                 return;
-
             }
 
             capturedPhotoBlob =
                 blob;
-
-
-            /*
-               Create a local preview URL.
-               IMPORTANT:
-               This image is placed inside
-               #cameraBox, not opened as a
-               separate browser page.
-            */
 
             const previewURL =
                 URL.createObjectURL(
@@ -2453,38 +2316,14 @@ function capturePhoto(){
             photoPreview.src =
                 previewURL;
 
-
-            /*
-               Hide live camera.
-            */
-
             cameraVideo.style.display =
                 "none";
-
-
-            /*
-               Show captured photo
-               INSIDE cameraBox.
-            */
 
             photoPreview.style.display =
                 "block";
 
-
-            /*
-               Hide normal camera
-               controls.
-            */
-
             normalCameraControls.style.display =
                 "none";
-
-
-            /*
-               Show:
-               ✕
-               Send
-            */
 
             photoPreviewControls.style.display =
                 "flex";
@@ -2497,15 +2336,13 @@ function capturePhoto(){
 }
 
 
-/* =========================================
-   DISCARD PHOTO — ✕
-========================================= */
+/* ================= ✕ DISCARD PHOTO ================= */
 
 document
 .getElementById("discardPhoto")
 .addEventListener(
     "click",
-    () => {
+    ()=>{
 
         resetPhotoPreview();
 
@@ -2517,9 +2354,7 @@ function resetPhotoPreview(){
 
     if(
         photoPreview.src &&
-        photoPreview.src.startsWith(
-            "blob:"
-        )
+        photoPreview.src.startsWith("blob:")
     ){
 
         URL.revokeObjectURL(
@@ -2549,38 +2384,26 @@ function resetPhotoPreview(){
 }
 
 
-/* =========================================
-   SEND CAPTURED PHOTO
-========================================= */
+/* ================= SEND CAPTURED PHOTO ================= */
 
 document
 .getElementById("sendCapturedPhoto")
 .addEventListener(
     "click",
-    async () => {
+    async()=>{
 
         if(!capturedPhotoBlob){
-
             return;
-
         }
 
         if(!currentChatUser){
 
-            /*
-              If no chat is selected,
-              we currently don't know
-              who should receive it.
-            */
-
             alert(
-                "Open a chat first, then use the camera to send a photo."
+                "Open a chat first, then take a photo."
             );
 
             return;
-
         }
-
 
         const sendButton =
             document.getElementById(
@@ -2592,7 +2415,6 @@ document
 
         sendButton.textContent =
             "Sending...";
-
 
         try{
 
@@ -2606,17 +2428,14 @@ document
                     )
                 );
 
-
             const storagePath =
                 `chatMedia/${currentChatId}/${messageRef.id}.jpg`;
-
 
             const storageRef =
                 ref(
                     storage,
                     storagePath
                 );
-
 
             await uploadBytes(
                 storageRef,
@@ -2627,12 +2446,10 @@ document
                 }
             );
 
-
             const downloadURL =
                 await getDownloadURL(
                     storageRef
                 );
-
 
             await setDoc(
                 messageRef,
@@ -2657,7 +2474,6 @@ document
                 }
             );
 
-
             resetPhotoPreview();
 
             closeCamera();
@@ -2665,7 +2481,6 @@ document
             showScreen(
                 "chatScreen"
             );
-
 
         }catch(error){
 
@@ -2675,7 +2490,8 @@ document
             );
 
             alert(
-                "Photo could not be sent."
+                "Photo could not be sent: " +
+                error.message
             );
 
         }finally{
@@ -2692,15 +2508,13 @@ document
 );
 
 
-/* =========================================
-   GALLERY FROM CAMERA
-========================================= */
+/* ================= GALLERY ================= */
 
 document
 .getElementById("cameraGalleryInput")
 .addEventListener(
     "change",
-    async event => {
+    async event=>{
 
         const file =
             event.target.files[0];
@@ -2709,25 +2523,17 @@ document
             return;
         }
 
-
-        /*
-          If no chat is open,
-          ask user to open one.
-        */
-
         if(!currentChatUser){
 
             alert(
-                "Open a chat first to send this media."
+                "Open a chat first to send media."
             );
 
             event.target.value =
                 "";
 
             return;
-
         }
-
 
         try{
 
@@ -2741,24 +2547,20 @@ document
                     )
                 );
 
-
             const extension =
                 getExtension(
                     file.name,
                     file.type
                 );
 
-
             const storagePath =
                 `chatMedia/${currentChatId}/${messageRef.id}.${extension}`;
-
 
             const storageRef =
                 ref(
                     storage,
                     storagePath
                 );
-
 
             await uploadBytes(
                 storageRef,
@@ -2769,20 +2571,15 @@ document
                 }
             );
 
-
             const downloadURL =
                 await getDownloadURL(
                     storageRef
                 );
 
-
             const type =
-                file.type.startsWith(
-                    "video/"
-                )
+                file.type.startsWith("video/")
                 ? "video"
                 : "image";
-
 
             await setDoc(
                 messageRef,
@@ -2807,7 +2604,6 @@ document
                 }
             );
 
-
             event.target.value =
                 "";
 
@@ -2825,9 +2621,7 @@ document
 );
 
 
-/* =========================================
-   PHOTO / VIDEO MODE BUTTONS
-========================================= */
+/* ================= CAMERA MODE ================= */
 
 const photoModeBtn =
     document.getElementById(
@@ -2841,8 +2635,7 @@ const videoModeBtn =
 
 photoModeBtn.addEventListener(
     "click",
-    () => {
-
+    ()=>{
         photoModeBtn.classList.add(
             "active"
         );
@@ -2850,14 +2643,12 @@ photoModeBtn.addEventListener(
         videoModeBtn.classList.remove(
             "active"
         );
-
     }
 );
 
 videoModeBtn.addEventListener(
     "click",
-    () => {
-
+    ()=>{
         videoModeBtn.classList.add(
             "active"
         );
@@ -2867,38 +2658,28 @@ videoModeBtn.addEventListener(
         );
 
         alert(
-            "Video camera recording will be added next."
+            "Video recording will be added next."
         );
-
     }
 );
-
-
-/* =========================================
-   SWITCH VIDEO BUTTON
-========================================= */
 
 document
 .getElementById("switchVideo")
 .addEventListener(
     "click",
-    () => {
-
+    ()=>{
         videoModeBtn.click();
-
     }
 );
 
 
-/* =========================================
-   CLOSE CAMERA
-========================================= */
+/* ================= CLOSE CAMERA ================= */
 
 document
 .getElementById("closeCamera")
 .addEventListener(
     "click",
-    () => {
+    ()=>{
 
         resetPhotoPreview();
 
@@ -2912,16 +2693,12 @@ document
 );
 
 
-/* =========================================
-   CLEANUP
-========================================= */
+/* ================= CLEANUP ================= */
 
 window.addEventListener(
     "beforeunload",
-    () => {
-
+    ()=>{
         closeCamera();
-
     }
 );
 
