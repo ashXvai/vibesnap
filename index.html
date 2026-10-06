@@ -1,2744 +1,2032 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VibeSnap</title>
-
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-    background:#0d0d0d;
-    color:white;
-    min-height:100vh;
-}
-
-button{
-    cursor:pointer;
-    border:none;
-}
-
-.hidden{
-    display:none!important;
-}
-
-/* AUTH */
-
-.auth-screen{
-    position:fixed;
-    inset:0;
-    background:#0d0d0d;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    z-index:1000;
-}
-
-.auth-box{
-    width:100%;
-    max-width:430px;
-    background:#151515;
-    border:1px solid #292929;
-    border-radius:24px;
-    padding:35px 25px;
-    text-align:center;
-    box-shadow:0 20px 60px rgba(0,0,0,.5);
-}
-
-.auth-logo{
-    font-size:42px;
-    font-weight:800;
-    margin-bottom:5px;
-}
-
-.auth-logo span,
-.logo span{
-    color:#ffd400;
-}
-
-.auth-subtitle{
-    color:#999;
-    margin-bottom:30px;
-}
-
-.auth-title{
-    font-size:24px;
-    font-weight:bold;
-    margin-bottom:22px;
-}
-
-.auth-input{
-    width:100%;
-    padding:15px;
-    margin-bottom:12px;
-    border-radius:12px;
-    border:1px solid #333;
-    background:#202020;
-    color:white;
-    outline:none;
-    font-size:15px;
-}
-
-.auth-input:focus{
-    border-color:#ffd400;
-}
-
-.auth-button{
-    width:100%;
-    padding:15px;
-    border-radius:12px;
-    background:#ffd400;
-    color:#111;
-    font-size:16px;
-    font-weight:bold;
-    margin-top:5px;
-}
-
-.auth-secondary{
-    width:100%;
-    padding:14px;
-    margin-top:10px;
-    border-radius:12px;
-    background:#242424;
-    color:white;
-    font-size:14px;
-}
-
-.auth-message{
-    min-height:20px;
-    margin-top:15px;
-    color:#ffcc00;
-    font-size:14px;
-    line-height:1.5;
-}
-
-.auth-divider{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin:20px 0;
-    color:#666;
-    font-size:12px;
-}
-
-.auth-divider:before,
-.auth-divider:after{
-    content:"";
-    height:1px;
-    background:#333;
-    flex:1;
-}
-
-/* APP */
-
-#app{
-    min-height:100vh;
-}
-
-.screen{
-    display:none;
-    min-height:calc(100vh - 75px);
-    padding-bottom:90px;
-}
-
-.screen.active{
-    display:block;
-}
-
-/* TOP */
-
-.top-bar{
-    height:65px;
-    padding:0 18px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom:1px solid #222;
-    background:#101010;
-}
-
-.logo{
-    font-size:24px;
-    font-weight:800;
-}
-
-/* CAMERA */
-
-.camera-container{
-    position:relative;
-    width:100%;
-    height:calc(100vh - 75px);
-    min-height:500px;
-    overflow:hidden;
-    background:#050505;
-}
-
-#video{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    background:#111;
-}
-
-.camera-overlay{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-}
-
-.camera-top{
-    position:absolute;
-    top:20px;
-    left:18px;
-    right:18px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    pointer-events:auto;
-}
-
-.profile-small{
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    overflow:hidden;
-    background:#ffd400;
-    color:#111;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:20px;
-    font-weight:bold;
-}
-
-.profile-small img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.camera-tools{
-    display:flex;
-    gap:10px;
-}
-
-.camera-tool{
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    background:rgba(0,0,0,.6);
-    color:white;
-    font-size:19px;
-}
-
-.filter-bar{
-    position:absolute;
-    bottom:145px;
-    left:0;
-    right:0;
-    display:flex;
-    gap:10px;
-    overflow-x:auto;
-    padding:10px 18px;
-}
-
-.filter-button{
-    flex-shrink:0;
-    padding:9px 15px;
-    border-radius:20px;
-    background:rgba(0,0,0,.6);
-    color:white;
-    font-size:13px;
-}
-
-.filter-button.active{
-    background:#ffd400;
-    color:#111;
-}
-
-.capture-area{
-    position:absolute;
-    bottom:25px;
-    left:0;
-    right:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:18px;
-    pointer-events:auto;
-}
-
-.capture-button{
-    width:76px;
-    height:76px;
-    border-radius:50%;
-    background:white;
-    border:6px solid rgba(255,255,255,.35);
-}
-
-.capture-button.recording{
-    background:#ff3030;
-    border-color:rgba(255,255,255,.6);
-    transform:scale(.9);
-}
-
-.gallery-button{
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background:rgba(0,0,0,.65);
-    color:white;
-    font-size:22px;
-}
-
-.record-label{
-    position:absolute;
-    bottom:105px;
-    left:0;
-    right:0;
-    text-align:center;
-    color:white;
-    font-size:13px;
-    font-weight:bold;
-    text-shadow:0 2px 5px #000;
-}
-
-/* CHAT */
-
-.section-header{
-    padding:20px;
-    font-size:26px;
-    font-weight:bold;
-}
-
-.search-box{
-    margin:0 18px 15px;
-}
-
-.search-box input{
-    width:100%;
-    padding:14px;
-    border-radius:12px;
-    border:1px solid #333;
-    background:#202020;
-    color:white;
-    outline:none;
-}
-
-.chat-list{
-    padding:0 15px;
-}
-
-.chat-item{
-    display:flex;
-    align-items:center;
-    gap:13px;
-    padding:14px 5px;
-    border-bottom:1px solid #222;
-}
-
-.chat-avatar,
-.friend-avatar{
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background:#ffd400;
-    color:#111;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:bold;
-    font-size:20px;
-    overflow:hidden;
-    flex-shrink:0;
-}
-
-.chat-avatar img,
-.friend-avatar img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.chat-info{
-    flex:1;
-}
-
-.chat-name{
-    font-weight:bold;
-    margin-bottom:5px;
-}
-
-.chat-preview{
-    color:#888;
-    font-size:13px;
-}
-
-/* FRIENDS */
-
-.friend-list{
-    padding:0 18px;
-}
-
-.friend-card{
-    background:#171717;
-    border:1px solid #252525;
-    border-radius:15px;
-    padding:15px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:12px;
-}
-
-.friend-info{
-    flex:1;
-}
-
-.friend-button{
-    background:#ffd400;
-    color:#111;
-    padding:9px 13px;
-    border-radius:10px;
-    font-weight:bold;
-}
-
-/* PROFILE */
-
-.profile-page{
-    text-align:center;
-    padding:30px 20px;
-}
-
-.profile-avatar{
-    width:120px;
-    height:120px;
-    border-radius:50%;
-    margin:10px auto 20px;
-    background:#ffd400;
-    color:#111;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:50px;
-    font-weight:bold;
-    overflow:hidden;
-}
-
-.profile-avatar img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.profile-name{
-    font-size:26px;
-    font-weight:bold;
-}
-
-.profile-username{
-    color:#888;
-    margin-top:6px;
-}
-
-.profile-provider{
-    color:#666;
-    margin-top:8px;
-    font-size:13px;
-}
-
-.profile-stats{
-    display:flex;
-    justify-content:center;
-    gap:45px;
-    margin:30px 0;
-}
-
-.stat-number{
-    font-size:22px;
-    font-weight:bold;
-}
-
-.stat-label{
-    color:#888;
-    font-size:13px;
-    margin-top:4px;
-}
-
-.logout-button{
-    padding:13px 25px;
-    border-radius:12px;
-    background:#242424;
-    color:white;
-}
-
-/* NAV */
-
-.bottom-nav{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    height:75px;
-    background:#111;
-    border-top:1px solid #292929;
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-    z-index:500;
-}
-
-.nav-button{
-    width:65px;
-    height:58px;
-    background:none;
-    color:#777;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:5px;
-    font-size:21px;
-}
-
-.nav-button span{
-    font-size:11px;
-}
-
-.nav-button.active{
-    color:#ffd400;
-}
-
-/* PREVIEW */
-
-.preview-panel{
-    position:fixed;
-    inset:0;
-    background:#000;
-    z-index:900;
-    display:none;
-    flex-direction:column;
-}
-
-.preview-panel.active{
-    display:flex;
-}
-
-.preview-media{
-    flex:1;
-    width:100%;
-    min-height:0;
-    object-fit:contain;
-    background:#000;
-}
-
-.preview-actions{
-    display:flex;
-    gap:12px;
-    padding:20px;
-}
-
-.preview-button{
-    flex:1;
-    padding:15px;
-    border-radius:12px;
-    font-weight:bold;
-}
-
-.retake-button{
-    background:#242424;
-    color:white;
-}
-
-.send-button{
-    background:#ffd400;
-    color:#111;
-}
-
-/* TOAST */
-
-.toast{
-    position:fixed;
-    left:50%;
-    bottom:95px;
-    transform:translateX(-50%);
-    background:#222;
-    color:white;
-    padding:13px 18px;
-    border-radius:12px;
-    opacity:0;
-    pointer-events:none;
-    transition:.3s;
-    z-index:2000;
-    white-space:nowrap;
-    max-width:90%;
-}
-
-.toast.show{
-    opacity:1;
-}
-
-@media(max-width:600px){
-    .auth-box{
-        padding:30px 20px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>VibeSnap</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    .camera-container{
-        min-height:calc(100vh - 75px);
+    body {
+      background: #050505;
+      color: white;
+      min-height: 100vh;
     }
-}
-</style>
+
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      margin: auto;
+      background: #0b0b0b;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* ================= AUTH ================= */
+
+    #authScreen {
+      padding: 35px 22px;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 42px;
+      font-weight: 900;
+      color: #ffd400;
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 35px;
+    }
+
+    .auth-card {
+      background: #151515;
+      padding: 22px;
+      border-radius: 22px;
+      border: 1px solid #272727;
+    }
+
+    .auth-card h2 {
+      margin-bottom: 20px;
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 15px;
+      margin: 8px 0;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #222;
+      color: white;
+    }
+
+    .google-btn {
+      background: white;
+      color: #111;
+    }
+
+    .phone-btn {
+      background: #ffd400;
+      color: #111;
+    }
+
+    .input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      background: #101010;
+      color: white;
+      margin: 7px 0;
+      outline: none;
+    }
+
+    /* ================= HEADER ================= */
+
+    .topbar {
+      height: 65px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #222;
+    }
+
+    .top-logo {
+      color: #ffd400;
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #1d1d1d;
+      color: white;
+      font-size: 20px;
+    }
+
+    /* ================= HOME ================= */
+
+    .home-content {
+      padding: 18px;
+      padding-bottom: 90px;
+    }
+
+    .welcome {
+      font-size: 25px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .empty-card {
+      background: #151515;
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      color: #aaa;
+      border: 1px solid #262626;
+    }
+
+    /* ================= CAMERA ================= */
+
+    #cameraScreen {
+      position: relative;
+      background: #000;
+    }
+
+    .camera-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+    }
+
+    .camera-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .camera-title {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .camera-controls-top {
+      display: flex;
+      gap: 10px;
+    }
+
+    .camera-circle {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.55);
+      color: white;
+      font-size: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .filter-bar {
+      position: absolute;
+      bottom: 130px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      z-index: 10;
+      padding: 0 10px;
+    }
+
+    .filter-btn {
+      padding: 8px 12px;
+      border-radius: 20px;
+      background: rgba(0,0,0,.6);
+      color: white;
+      font-size: 12px;
+    }
+
+    .filter-btn.active {
+      background: #ffd400;
+      color: black;
+    }
+
+    .camera-bottom {
+      position: absolute;
+      bottom: 25px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 10;
+    }
+
+    .gallery-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(0,0,0,.65);
+      color: white;
+      font-size: 24px;
+    }
+
+    .capture-btn {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      border: 5px solid white;
+      background: white;
+      position: relative;
+    }
+
+    .capture-btn.recording {
+      background: #ff3030;
+      border-color: white;
+    }
+
+    .recording-text {
+      position: absolute;
+      top: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      background: rgba(0,0,0,.6);
+      padding: 7px 12px;
+      border-radius: 15px;
+      display: none;
+    }
+
+    .recording-text.show {
+      display: block;
+    }
+
+    /* ================= PREVIEW ================= */
+
+    #previewScreen {
+      background: #000;
+      position: relative;
+    }
+
+    .preview-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+    }
+
+    .preview-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 18px;
+      z-index: 20;
+    }
+
+    .close-preview {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.65);
+      color: white;
+      font-size: 27px;
+    }
+
+    .preview-media-area {
+      flex: 1;
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #photoPreview,
+    #videoPreview {
+      width: 100%;
+      max-height: 78vh;
+      object-fit: contain;
+    }
+
+    #videoPreview {
+      display: none;
+    }
+
+    .preview-bottom {
+      padding: 20px;
+      display: flex;
+      gap: 12px;
+      background: #080808;
+    }
+
+    .preview-action {
+      flex: 1;
+      padding: 16px;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .save-btn {
+      background: #ffd400;
+      color: #111;
+    }
+
+    .send-btn {
+      background: #1f1f1f;
+      color: white;
+      border: 1px solid #444;
+    }
+
+    /* ================= MODAL ================= */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 9999;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 390px;
+      background: #191919;
+      border-radius: 22px;
+      padding: 24px;
+      border: 1px solid #333;
+    }
+
+    .modal h3 {
+      font-size: 21px;
+      margin-bottom: 12px;
+    }
+
+    .modal p {
+      color: #aaa;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      padding: 14px;
+      border-radius: 13px;
+      font-weight: bold;
+    }
+
+    .cancel-modal {
+      background: #292929;
+      color: white;
+    }
+
+    .discard-modal {
+      background: #ff3b30;
+      color: white;
+    }
+
+    /* ================= FRIENDS ================= */
+
+    .page-content {
+      padding: 18px;
+      padding-bottom: 90px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #151515;
+      padding: 13px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #ffd400;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .add-btn {
+      padding: 9px 15px;
+      border-radius: 12px;
+      background: #ffd400;
+      color: #111;
+      font-weight: bold;
+    }
+
+    /* ================= BOTTOM NAV ================= */
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 520px;
+      height: 70px;
+      background: rgba(12,12,12,.97);
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: transparent;
+      color: #777;
+      font-size: 23px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-btn span {
+      font-size: 10px;
+    }
+
+    .nav-btn.active {
+      color: #ffd400;
+    }
+
+    /* ================= PROFILE ================= */
+
+    .profile-box {
+      text-align: center;
+      padding: 25px 0;
+    }
+
+    .profile-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: #ffd400;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto;
+      font-size: 35px;
+      font-weight: bold;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 15px;
+      background: #292929;
+      color: white;
+      border-radius: 14px;
+      margin-top: 25px;
+      font-weight: bold;
+    }
+
+    /* ================= TOAST ================= */
+
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 20px;
+      display: none;
+      z-index: 10000;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    @media (min-width: 600px) {
+      .app {
+        box-shadow: 0 0 40px rgba(0,0,0,.6);
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- AUTH -->
+<div class="app">
 
-<section id="authScreen" class="auth-screen">
+  <!-- ================= AUTH ================= -->
 
-    <div class="auth-box">
+  <section id="authScreen" class="screen active">
 
-        <div class="auth-logo">
-            Vibe<span>Snap</span>
+    <div class="logo">VibeSnap</div>
+    <div class="tagline">Connect. Snap. Vibe.</div>
+
+    <div class="auth-card">
+
+      <h2>Welcome to VibeSnap</h2>
+
+      <button class="auth-btn google-btn" id="googleLoginBtn">
+        Continue with Google
+      </button>
+
+      <button class="auth-btn phone-btn" id="phoneLoginBtn">
+        Continue with Phone
+      </button>
+
+      <div id="phoneForm" style="display:none; margin-top:15px;">
+
+        <input
+          id="phoneNumber"
+          class="input"
+          type="tel"
+          placeholder="+91XXXXXXXXXX"
+        >
+
+        <div id="recaptcha-container"></div>
+
+        <button class="auth-btn phone-btn" id="sendOtpBtn">
+          Send OTP
+        </button>
+
+        <input
+          id="otpInput"
+          class="input"
+          type="number"
+          placeholder="Enter OTP"
+          style="display:none;"
+        >
+
+        <button
+          class="auth-btn google-btn"
+          id="verifyOtpBtn"
+          style="display:none;"
+        >
+          Verify OTP
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= HOME ================= -->
+
+  <section id="homeScreen" class="screen">
+
+    <div class="topbar">
+      <div class="top-logo">VibeSnap</div>
+      <button class="icon-btn" onclick="openScreen('profile')">👤</button>
+    </div>
+
+    <div class="home-content">
+
+      <div class="welcome" id="welcomeText">
+        Welcome 👋
+      </div>
+
+      <div class="empty-card">
+        <h2>Your Vibes</h2>
+        <br>
+        <p>Your conversations and snaps will appear here.</p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= CAMERA ================= -->
+
+  <section id="cameraScreen" class="screen">
+
+    <div class="camera-container">
+
+      <video id="video" autoplay muted playsinline></video>
+
+      <div class="camera-top">
+
+        <div class="camera-title">
+          Camera
         </div>
 
-        <p class="auth-subtitle">
-            Connect. Share. Vibe.
+        <div class="camera-controls-top">
+
+          <button
+            class="camera-circle"
+            id="switchCameraBtn"
+            title="Switch camera"
+          >
+            🔄
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="filter-bar">
+
+        <button class="filter-btn active" data-filter="none">
+          Normal
+        </button>
+
+        <button class="filter-btn" data-filter="grayscale(1)">
+          B&W
+        </button>
+
+        <button class="filter-btn" data-filter="sepia(1)">
+          Sepia
+        </button>
+
+        <button class="filter-btn" data-filter="brightness(1.3)">
+          Bright
+        </button>
+
+      </div>
+
+
+      <div
+        id="recordingText"
+        class="recording-text"
+      >
+        🔴 Recording... Tap to stop
+      </div>
+
+
+      <div class="camera-bottom">
+
+        <button
+          class="gallery-btn"
+          id="galleryBtn"
+          title="Choose from gallery"
+        >
+          🖼️
+        </button>
+
+        <button
+          class="capture-btn"
+          id="captureButton"
+          title="Tap for photo, hold for video"
+        ></button>
+
+        <input
+          id="mediaInput"
+          type="file"
+          accept="image/*,video/*"
+          style="display:none;"
+        >
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= PREVIEW ================= -->
+
+  <section id="previewScreen" class="screen">
+
+    <div class="preview-container">
+
+      <div class="preview-top">
+
+        <button
+          class="close-preview"
+          id="closePreviewBtn"
+          title="Discard"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="preview-media-area">
+
+        <img
+          id="photoPreview"
+          alt="Captured photo"
+        >
+
+        <video
+          id="videoPreview"
+          controls
+          playsinline
+        ></video>
+
+      </div>
+
+
+      <div class="preview-bottom">
+
+        <button
+          class="preview-action save-btn"
+          id="saveMediaBtn"
+        >
+          💾 Save
+        </button>
+
+        <button
+          class="preview-action send-btn"
+          id="sendMediaBtn"
+        >
+          📤 Send
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= FRIENDS ================= -->
+
+  <section id="friendsScreen" class="screen">
+
+    <div class="topbar">
+      <div class="top-logo">VibeSnap</div>
+    </div>
+
+    <div class="page-content">
+
+      <div class="page-title">
+        Friends
+      </div>
+
+      <div id="usersList">
+        <div class="empty-card">
+          Loading users...
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= PROFILE ================= -->
+
+  <section id="profileScreen" class="screen">
+
+    <div class="topbar">
+      <div class="top-logo">VibeSnap</div>
+    </div>
+
+    <div class="page-content">
+
+      <div class="profile-box">
+
+        <div
+          class="profile-avatar"
+          id="profileAvatar"
+        >
+          V
+        </div>
+
+        <h2 id="profileName" style="margin-top:15px;">
+          VibeSnap User
+        </h2>
+
+        <p
+          id="profileEmail"
+          style="color:#888;margin-top:7px;"
+        >
+          —
         </p>
 
-        <div id="authButtons">
+      </div>
 
-            <div class="auth-title">
-                Sign in to VibeSnap
-            </div>
-
-            <button
-                class="auth-button"
-                onclick="loginWithGoogle()">
-                Continue with Google
-            </button>
-
-            <div class="auth-divider">OR</div>
-
-            <input
-                id="phoneNumber"
-                class="auth-input"
-                type="tel"
-                placeholder="+91 9876543210">
-
-            <button
-                class="auth-secondary"
-                onclick="sendPhoneCode()">
-                Continue with Phone OTP
-            </button>
-
-            <div
-                id="recaptcha-container"
-                style="margin-top:15px;">
-            </div>
-
-            <p
-                id="authMessage"
-                class="auth-message">
-            </p>
-
-        </div>
-
-        <div id="otpBox" style="display:none;">
-
-            <div class="auth-title">
-                Enter verification code
-            </div>
-
-            <input
-                id="phoneCode"
-                class="auth-input"
-                type="text"
-                inputmode="numeric"
-                maxlength="6"
-                placeholder="6-digit code">
-
-            <button
-                class="auth-button"
-                onclick="verifyPhoneCode()">
-                Verify Code
-            </button>
-
-            <button
-                class="auth-secondary"
-                onclick="backToAuth()">
-                Back
-            </button>
-
-            <p
-                id="otpMessage"
-                class="auth-message">
-            </p>
-
-        </div>
+      <button
+        class="logout-btn"
+        id="logoutBtn"
+      >
+        Log Out
+      </button>
 
     </div>
-</section>
 
-
-<!-- APP -->
-
-<div id="app" class="hidden">
-
-    <!-- CAMERA -->
-
-    <section id="cameraScreen" class="screen active">
-
-        <div class="camera-container">
-
-            <video
-                id="video"
-                autoplay
-                muted
-                playsinline>
-            </video>
-
-            <div class="camera-overlay">
-
-                <div class="camera-top">
-
-                    <div
-                        class="profile-small"
-                        onclick="openScreen('profile')">
-
-                        <span id="smallProfileLetter">V</span>
-
-                        <img
-                            id="smallProfileImage"
-                            style="display:none"
-                            alt="Profile">
-
-                    </div>
-
-                    <div class="camera-tools">
-
-                        <button
-                            class="camera-tool"
-                            onclick="switchCamera()">
-                            🔄
-                        </button>
-
-                    </div>
-                </div>
-
-
-                <div class="filter-bar">
-
-                    <button
-                        class="filter-button active"
-                        onclick="setFilter('none',this)">
-                        Normal
-                    </button>
-
-                    <button
-                        class="filter-button"
-                        onclick="setFilter('grayscale(1)',this)">
-                        B&W
-                    </button>
-
-                    <button
-                        class="filter-button"
-                        onclick="setFilter('sepia(1)',this)">
-                        Sepia
-                    </button>
-
-                    <button
-                        class="filter-button"
-                        onclick="setFilter('brightness(1.3)',this)">
-                        Bright
-                    </button>
-
-                    <button
-                        class="filter-button"
-                        onclick="setFilter('contrast(1.4)',this)">
-                        Contrast
-                    </button>
-
-                </div>
-
-
-                <div
-                    id="recordLabel"
-                    class="record-label">
-                </div>
-
-
-                <div class="capture-area">
-
-                    <button
-                        class="gallery-button"
-                        onclick="pickMedia()">
-                        🖼️
-                    </button>
-
-                    <button
-                        id="captureButton"
-                        class="capture-button"
-                        onclick="captureButtonPressed()">
-                    </button>
-
-                </div>
-
-            </div>
-        </div>
-
-    </section>
-
-
-    <!-- CHATS -->
-
-    <section id="chatsScreen" class="screen">
-
-        <div class="top-bar">
-            <div class="logo">
-                Vibe<span>Snap</span>
-            </div>
-        </div>
-
-        <div class="section-header">
-            Chats
-        </div>
-
-        <div class="search-box">
-
-            <input
-                type="text"
-                id="chatSearch"
-                placeholder="Search users..."
-                oninput="searchUsers()">
-
-        </div>
-
-        <div
-            class="chat-list"
-            id="chatList">
-        </div>
-
-    </section>
-
-
-    <!-- FRIENDS -->
-
-    <section id="friendsScreen" class="screen">
-
-        <div class="top-bar">
-            <div class="logo">
-                Vibe<span>Snap</span>
-            </div>
-        </div>
-
-        <div class="section-header">
-            Find People
-        </div>
-
-        <div class="search-box">
-
-            <input
-                type="text"
-                id="friendSearch"
-                placeholder="Search username..."
-                oninput="searchUsers()">
-
-        </div>
-
-        <div
-            class="friend-list"
-            id="friendList">
-        </div>
-
-    </section>
-
-
-    <!-- PROFILE -->
-
-    <section id="profileScreen" class="screen">
-
-        <div class="top-bar">
-            <div class="logo">
-                Vibe<span>Snap</span>
-            </div>
-        </div>
-
-        <div class="profile-page">
-
-            <div
-                id="profileAvatar"
-                class="profile-avatar">
-
-                <span id="profileLetter">V</span>
-
-                <img
-                    id="profileImage"
-                    style="display:none"
-                    alt="Profile">
-
-            </div>
-
-            <div
-                id="profileName"
-                class="profile-name">
-                Vibe User
-            </div>
-
-            <div
-                id="profileUsername"
-                class="profile-username">
-                @vibeuser
-            </div>
-
-            <div
-                id="profileProvider"
-                class="profile-provider">
-            </div>
-
-            <div class="profile-stats">
-
-                <div>
-                    <div
-                        id="friendCount"
-                        class="stat-number">
-                        0
-                    </div>
-
-                    <div class="stat-label">
-                        Friends
-                    </div>
-                </div>
-
-                <div>
-                    <div
-                        id="photoCount"
-                        class="stat-number">
-                        0
-                    </div>
-
-                    <div class="stat-label">
-                        Photos
-                    </div>
-                </div>
-
-            </div>
-
-            <button
-                class="logout-button"
-                onclick="logoutUser()">
-                Log Out
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- NAVIGATION -->
-
-    <nav class="bottom-nav">
-
-        <button
-            id="navCamera"
-            class="nav-button active"
-            onclick="openScreen('camera')">
-            📷
-            <span>Camera</span>
-        </button>
-
-        <button
-            id="navChats"
-            class="nav-button"
-            onclick="openScreen('chats')">
-            💬
-            <span>Chats</span>
-        </button>
-
-        <button
-            id="navFriends"
-            class="nav-button"
-            onclick="openScreen('friends')">
-            👥
-            <span>Friends</span>
-        </button>
-
-        <button
-            id="navProfile"
-            class="nav-button"
-            onclick="openScreen('profile')">
-            👤
-            <span>Profile</span>
-        </button>
-
-    </nav>
+  </section>
+
+
+  <!-- ================= BOTTOM NAV ================= -->
+
+  <div
+    id="bottomNav"
+    class="bottom-nav"
+    style="display:none;"
+  >
+
+    <button
+      class="nav-btn active"
+      data-screen="home"
+    >
+      🏠
+      <span>Home</span>
+    </button>
+
+    <button
+      class="nav-btn"
+      data-screen="friends"
+    >
+      👥
+      <span>Friends</span>
+    </button>
+
+    <button
+      class="nav-btn"
+      data-screen="camera"
+    >
+      📸
+      <span>Camera</span>
+    </button>
+
+    <button
+      class="nav-btn"
+      data-screen="profile"
+    >
+      👤
+      <span>Profile</span>
+    </button>
+
+  </div>
 
 </div>
 
 
-<!-- MEDIA PREVIEW -->
+<!-- ================= DISCARD CONFIRMATION ================= -->
 
 <div
-    id="previewPanel"
-    class="preview-panel">
+  id="discardModal"
+  class="modal-overlay"
+>
 
-    <img
-        id="previewImage"
-        class="preview-media"
-        style="display:none"
-        alt="Captured photo">
+  <div class="modal">
 
-    <video
-        id="previewVideo"
-        class="preview-media"
-        style="display:none"
-        controls
-        playsinline>
-    </video>
+    <h3>
+      Are you sure you want to retake?
+    </h3>
 
-    <div class="preview-actions">
+    <p>
+      This photo will be discarded.
+    </p>
 
-        <button
-            class="preview-button retake-button"
-            onclick="retakeMedia()">
-            Retake
-        </button>
+    <div class="modal-buttons">
 
-        <button
-            class="preview-button send-button"
-            onclick="saveCapturedMedia()">
-            Save
-        </button>
+      <button
+        class="cancel-modal"
+        id="cancelDiscardBtn"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="discard-modal"
+        id="confirmDiscardBtn"
+      >
+        Discard Photo
+      </button>
 
     </div>
 
+  </div>
+
 </div>
 
-
-<!-- TOAST -->
 
 <div
-    id="toast"
-    class="toast">
-</div>
+  id="toast"
+  class="toast"
+></div>
 
 
-<!-- FILE PICKER -->
+<!-- ================= FIREBASE ================= -->
 
-<input
-    type="file"
-    id="mediaInput"
-    accept="image/*,video/*"
-    style="display:none"
-    onchange="handleMediaPick(event)">
-
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
 
-/* =========================================================
-   FIREBASE
-========================================================= */
+  const firebaseConfig = {
+    apiKey: "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
+    authDomain: "vibesnap-213d4.firebaseapp.com",
+    projectId: "vibesnap-213d4",
+    storageBucket: "vibesnap-213d4.firebasestorage.app",
+    messagingSenderId: "933479938239",
+    appId: "1:933479938239:web:d120d7ba99f5665987ae0a",
+    measurementId: "G-HP0QL3C8Y"
+  };
 
-const firebaseConfig = {
-    apiKey:"AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
-    authDomain:"vibesnap-213d4.firebaseapp.com",
-    projectId:"vibesnap-213d4",
-    storageBucket:"vibesnap-213d4.firebasestorage.app",
-    messagingSenderId:"933479938239",
-    appId:"1:933479938239:web:d120d7ba99f5665987ae0a",
-    measurementId:"G-HP0QL3C8Y"
-};
+  firebase.initializeApp(firebaseConfig);
 
-firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-const auth=firebase.auth();
-const db=firebase.firestore();
+  let currentUser = null;
 
-const googleProvider=
-    new firebase.auth.GoogleAuthProvider();
+  let cameraStream = null;
+  let facingMode = "user";
 
+  let mediaRecorder = null;
+  let recordedChunks = [];
 
-/* =========================================================
-   VARIABLES
-========================================================= */
+  let capturedBlob = null;
+  let capturedType = null;
 
-let currentUser=null;
-let currentProfile=null;
+  let currentFilter = "none";
 
-let stream=null;
-let facingMode="user";
-let currentFilter="none";
+  let pressTimer = null;
+  let longPressTriggered = false;
 
-let capturedPhoto=null;
-let capturedVideoBlob=null;
-let capturedVideoURL=null;
 
-let mediaRecorder=null;
-let recordedChunks=[];
-let isRecording=false;
+  /* ================= GENERAL ================= */
 
-let confirmationResult=null;
-let recaptchaVerifier=null;
+  function showToast(message) {
 
-let allUsers=[];
-let usersUnsubscribe=null;
+    const toast = document.getElementById("toast");
 
-let toastTimer=null;
+    toast.textContent = message;
+    toast.classList.add("show");
 
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2500);
+  }
 
-/* =========================================================
-   AUTH
-========================================================= */
 
-function showAuthMessage(message){
-    document.getElementById("authMessage").textContent=message;
-}
+  function openScreen(screenName) {
 
-function showOtpMessage(message){
-    document.getElementById("otpMessage").textContent=message;
-}
+    document.querySelectorAll(".screen").forEach(screen => {
+      screen.classList.remove("active");
+    });
 
-
-async function loginWithGoogle(){
-
-    showAuthMessage("Opening Google...");
-
-    try{
-
-        await auth.signInWithPopup(
-            googleProvider
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-        showAuthMessage(
-            firebaseErrorMessage(error)
-        );
-    }
-}
-
-
-function setupRecaptcha(){
-
-    if(recaptchaVerifier){
-        return;
-    }
-
-    recaptchaVerifier=
-        new firebase.auth.RecaptchaVerifier(
-            "recaptcha-container",
-            {
-                size:"normal"
-            }
-        );
-
-    recaptchaVerifier.render();
-}
-
-
-async function sendPhoneCode(){
-
-    const phone=
-        document
-        .getElementById("phoneNumber")
-        .value
-        .trim();
-
-    if(!phone){
-
-        showAuthMessage(
-            "Enter your phone number with country code."
-        );
-
-        return;
-    }
-
-    try{
-
-        setupRecaptcha();
-
-        showAuthMessage(
-            "Sending verification code..."
-        );
-
-        confirmationResult=
-            await auth.signInWithPhoneNumber(
-                phone,
-                recaptchaVerifier
-            );
-
-        document
-        .getElementById("authButtons")
-        .style.display="none";
-
-        document
-        .getElementById("otpBox")
-        .style.display="block";
-
-        showOtpMessage(
-            "Code sent. Check your phone."
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-        showAuthMessage(
-            firebaseErrorMessage(error)
-        );
-    }
-}
-
-
-async function verifyPhoneCode(){
-
-    const code=
-        document
-        .getElementById("phoneCode")
-        .value
-        .trim();
-
-    if(!code){
-
-        showOtpMessage(
-            "Enter the verification code."
-        );
-
-        return;
-    }
-
-    if(!confirmationResult){
-
-        showOtpMessage(
-            "Request a new code first."
-        );
-
-        return;
-    }
-
-    try{
-
-        showOtpMessage("Verifying...");
-
-        await confirmationResult.confirm(code);
-
-    }catch(error){
-
-        console.error(error);
-
-        showOtpMessage(
-            firebaseErrorMessage(error)
-        );
-    }
-}
-
-
-function backToAuth(){
-
-    document
-    .getElementById("otpBox")
-    .style.display="none";
-
-    document
-    .getElementById("authButtons")
-    .style.display="block";
-
-    showAuthMessage("");
-    showOtpMessage("");
-}
-
-
-/* =========================================================
-   USER PROFILE
-========================================================= */
-
-function makeUsername(name){
-
-    let username=
-        String(name||"")
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g,"")
-        .substring(0,14);
-
-    return username||"vibeuser";
-}
-
-
-function getProviderName(user){
-
-    if(user.providerData){
-
-        for(const provider of user.providerData){
-
-            if(provider.providerId==="google.com"){
-                return "Google";
-            }
-
-            if(provider.providerId==="phone"){
-                return "Phone";
-            }
-        }
-    }
-
-    return "Firebase";
-}
-
-
-async function createOrUpdateUserProfile(user){
-
-    if(!user){
-        return;
-    }
-
-    currentUser=user;
-
-    const userRef=
-        db.collection("users").doc(user.uid);
-
-    const snapshot=
-        await userRef.get();
-
-    const existing=
-        snapshot.exists
-        ? snapshot.data()
-        : {};
-
-    const username=
-        existing.username ||
-        makeUsername(
-            user.displayName ||
-            "user"+user.uid.substring(0,6)
-        );
-
-    const profile={
-
-        uid:user.uid,
-
-        username:username,
-
-        displayName:
-            user.displayName ||
-            existing.displayName ||
-            username,
-
-        photoURL:
-            user.photoURL ||
-            existing.photoURL ||
-            "",
-
-        phoneNumber:
-            user.phoneNumber ||
-            existing.phoneNumber ||
-            "",
-
-        email:
-            user.email ||
-            existing.email ||
-            "",
-
-        provider:
-            getProviderName(user),
-
-        updatedAt:
-            firebase.firestore.FieldValue
-            .serverTimestamp(),
-
-        createdAt:
-            existing.createdAt ||
-            firebase.firestore.FieldValue
-            .serverTimestamp()
-    };
-
-    await userRef.set(
-        profile,
-        {merge:true}
+    const target = document.getElementById(
+      screenName + "Screen"
     );
 
-    currentProfile={
-        ...existing,
-        ...profile
-    };
-
-    enterMainApp();
-}
-
-
-/* =========================================================
-   AUTH STATE
-========================================================= */
-
-auth.onAuthStateChanged(
-    async function(user){
-
-        if(user){
-
-            try{
-
-                await createOrUpdateUserProfile(user);
-
-            }catch(error){
-
-                console.error(error);
-
-                showAuthMessage(
-                    "Could not load your profile."
-                );
-            }
-
-        }else{
-
-            currentUser=null;
-            currentProfile=null;
-
-            stopCamera();
-
-            document
-            .getElementById("authScreen")
-            .classList.remove("hidden");
-
-            document
-            .getElementById("app")
-            .classList.add("hidden");
-        }
-    }
-);
-
-
-/* =========================================================
-   MAIN APP
-========================================================= */
-
-async function enterMainApp(){
-
-    document
-    .getElementById("authScreen")
-    .classList.add("hidden");
-
-    document
-    .getElementById("app")
-    .classList.remove("hidden");
-
-    updateProfileUI();
-
-    await loadUsers();
-
-    openScreen("camera");
-
-    startUserListener();
-}
-
-
-/* =========================================================
-   PROFILE UI
-========================================================= */
-
-function updateProfileUI(){
-
-    if(!currentProfile){
-        return;
+    if (target) {
+      target.classList.add("active");
     }
 
-    const displayName=
-        currentProfile.displayName ||
-        currentProfile.username ||
-        "Vibe User";
-
-    const username=
-        currentProfile.username ||
-        "vibeuser";
-
-    const letter=
-        displayName
-        .charAt(0)
-        .toUpperCase();
-
-    document.getElementById("profileName")
-        .textContent=displayName;
-
-    document.getElementById("profileUsername")
-        .textContent="@"+username;
-
-    document.getElementById("profileProvider")
-        .textContent=
-        "Signed in with "+
-        (currentProfile.provider||"Firebase");
-
-    document.getElementById("profileLetter")
-        .textContent=letter;
-
-    document.getElementById("smallProfileLetter")
-        .textContent=letter;
-
-    if(currentProfile.photoURL){
-
-        document.getElementById("profileImage")
-            .src=currentProfile.photoURL;
-
-        document.getElementById("profileImage")
-            .style.display="block";
-
-        document.getElementById("profileLetter")
-            .style.display="none";
-
-        document.getElementById("smallProfileImage")
-            .src=currentProfile.photoURL;
-
-        document.getElementById("smallProfileImage")
-            .style.display="block";
-
-        document.getElementById("smallProfileLetter")
-            .style.display="none";
-
-    }else{
-
-        document.getElementById("profileImage")
-            .style.display="none";
-
-        document.getElementById("profileLetter")
-            .style.display="block";
-
-        document.getElementById("smallProfileImage")
-            .style.display="none";
-
-        document.getElementById("smallProfileLetter")
-            .style.display="block";
+    if (screenName === "camera") {
+      startCamera();
+    } else {
+      stopCamera();
     }
-}
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.classList.remove("active");
+
+      if (btn.dataset.screen === screenName) {
+        btn.classList.add("active");
+      }
+    });
+  }
 
 
-/* =========================================================
-   USERS
-========================================================= */
+  function showApp() {
 
-async function loadUsers(){
+    document.getElementById("authScreen")
+      .classList.remove("active");
 
-    try{
+    document.getElementById("bottomNav")
+      .style.display = "flex";
 
-        const snapshot=
-            await db
-            .collection("users")
-            .limit(100)
-            .get();
+    openScreen("home");
 
-        allUsers=[];
+    loadProfile();
+    loadUsers();
+  }
 
-        snapshot.forEach(function(doc){
 
-            const data=doc.data();
+  /* ================= GOOGLE LOGIN ================= */
 
-            if(
-                currentUser &&
-                data.uid===currentUser.uid
-            ){
-                return;
-            }
+  document.getElementById("googleLoginBtn")
+    .addEventListener("click", async () => {
 
-            allUsers.push(data);
-        });
+      try {
 
-        renderUsers();
+        const provider =
+          new firebase.auth.GoogleAuthProvider();
 
-    }catch(error){
+        await auth.signInWithPopup(provider);
+
+      } catch (error) {
 
         console.error(error);
 
         showToast(
-            "Could not load users."
+          error.message || "Google login failed"
         );
-    }
-}
 
+      }
 
-function startUserListener(){
-
-    if(usersUnsubscribe){
-        usersUnsubscribe();
-    }
-
-    usersUnsubscribe=
-        db
-        .collection("users")
-        .limit(100)
-        .onSnapshot(
-            function(snapshot){
-
-                allUsers=[];
-
-                snapshot.forEach(function(doc){
-
-                    const data=doc.data();
-
-                    if(
-                        currentUser &&
-                        data.uid===currentUser.uid
-                    ){
-                        return;
-                    }
-
-                    allUsers.push(data);
-                });
-
-                renderUsers();
-            },
-            function(error){
-
-                console.error(
-                    "User listener:",
-                    error
-                );
-            }
-        );
-}
-
-
-function renderUsers(){
-
-    const friendList=
-        document.getElementById("friendList");
-
-    const chatList=
-        document.getElementById("chatList");
-
-    friendList.innerHTML="";
-    chatList.innerHTML="";
-
-    if(!allUsers.length){
-
-        friendList.innerHTML=
-            `<p style="color:#777;padding:20px">
-                No other VibeSnap users yet.
-            </p>`;
-
-        chatList.innerHTML=
-            `<p style="color:#777;padding:20px">
-                No other VibeSnap users yet.
-            </p>`;
-
-        return;
-    }
-
-    allUsers.forEach(function(user){
-
-        const name=
-            user.displayName ||
-            user.username ||
-            "Vibe User";
-
-        const username=
-            user.username ||
-            "user";
-
-        const letter=
-            name.charAt(0).toUpperCase();
-
-        const photo=
-            user.photoURL
-            ? `<img src="${escapeHtml(user.photoURL)}" alt="">`
-            : letter;
-
-        friendList.innerHTML+=`
-
-            <div
-                class="friend-card"
-                data-name="${escapeHtml(
-                    name+" "+username
-                ).toLowerCase()}">
-
-                <div class="friend-avatar">
-                    ${photo}
-                </div>
-
-                <div class="friend-info">
-
-                    <b>
-                        ${escapeHtml(name)}
-                    </b>
-
-                    <div style="color:#888;font-size:13px">
-                        @${escapeHtml(username)}
-                    </div>
-
-                </div>
-
-                <button
-                    class="friend-button"
-                    onclick="addFriend('${escapeHtml(user.uid)}')">
-                    Add
-                </button>
-
-            </div>
-        `;
-
-
-        chatList.innerHTML+=`
-
-            <div
-                class="chat-item"
-                data-name="${escapeHtml(
-                    name+" "+username
-                ).toLowerCase()}"
-                onclick="openChat('${escapeHtml(user.uid)}')"
-                style="cursor:pointer">
-
-                <div class="chat-avatar">
-                    ${photo}
-                </div>
-
-                <div class="chat-info">
-
-                    <div class="chat-name">
-                        ${escapeHtml(name)}
-                    </div>
-
-                    <div class="chat-preview">
-                        Tap to start a chat
-                    </div>
-
-                </div>
-
-            </div>
-        `;
     });
-}
 
 
-/* =========================================================
-   FRIENDS
-========================================================= */
+  /* ================= PHONE LOGIN ================= */
 
-async function addFriend(friendUid){
+  let confirmationResult = null;
 
-    if(!currentUser || !friendUid){
-        return;
+  document.getElementById("phoneLoginBtn")
+    .addEventListener("click", () => {
+
+      document.getElementById("phoneForm")
+        .style.display = "block";
+
+      setupRecaptcha();
+
+    });
+
+
+  function setupRecaptcha() {
+
+    if (window.recaptchaVerifier) {
+      return;
     }
 
-    if(friendUid===currentUser.uid){
+    window.recaptchaVerifier =
+      new firebase.auth.RecaptchaVerifier(
+        "recaptcha-container",
+        {
+          size: "normal"
+        }
+      );
+
+    window.recaptchaVerifier.render();
+
+  }
+
+
+  document.getElementById("sendOtpBtn")
+    .addEventListener("click", async () => {
+
+      const phone =
+        document.getElementById("phoneNumber").value.trim();
+
+      if (!phone) {
+        showToast("Enter your phone number");
         return;
+      }
+
+      try {
+
+        setupRecaptcha();
+
+        confirmationResult =
+          await auth.signInWithPhoneNumber(
+            phone,
+            window.recaptchaVerifier
+          );
+
+        document.getElementById("otpInput")
+          .style.display = "block";
+
+        document.getElementById("verifyOtpBtn")
+          .style.display = "block";
+
+        showToast("OTP sent");
+
+      } catch (error) {
+
+        console.error(error);
+
+        showToast(
+          error.message || "Could not send OTP"
+        );
+
+      }
+
+    });
+
+
+  document.getElementById("verifyOtpBtn")
+    .addEventListener("click", async () => {
+
+      const otp =
+        document.getElementById("otpInput").value.trim();
+
+      if (!confirmationResult) {
+        showToast("Send the OTP first");
+        return;
+      }
+
+      try {
+
+        await confirmationResult.confirm(otp);
+
+      } catch (error) {
+
+        console.error(error);
+
+        showToast(
+          error.message || "Invalid OTP"
+        );
+
+      }
+
+    });
+
+
+  /* ================= AUTH STATE ================= */
+
+  auth.onAuthStateChanged(async user => {
+
+    if (user) {
+
+      currentUser = user;
+
+      await saveUserProfile();
+
+      showApp();
+
     }
 
-    try{
+  });
 
-        await db
-        .collection("users")
+
+  /* ================= USER PROFILE ================= */
+
+  async function saveUserProfile() {
+
+    if (!currentUser) return;
+
+    const userRef =
+      db.collection("users")
+        .doc(currentUser.uid);
+
+    await userRef.set({
+
+      uid: currentUser.uid,
+
+      displayName:
+        currentUser.displayName ||
+        "VibeSnap User",
+
+      email:
+        currentUser.email || "",
+
+      phoneNumber:
+        currentUser.phoneNumber || "",
+
+      photoURL:
+        currentUser.photoURL || "",
+
+      updatedAt:
+        firebase.firestore.FieldValue.serverTimestamp()
+
+    }, { merge: true });
+
+  }
+
+
+  async function loadProfile() {
+
+    if (!currentUser) return;
+
+    const name =
+      currentUser.displayName ||
+      "VibeSnap User";
+
+    document.getElementById("profileName")
+      .textContent = name;
+
+    document.getElementById("profileEmail")
+      .textContent =
+        currentUser.email ||
+        currentUser.phoneNumber ||
+        "VibeSnap User";
+
+    document.getElementById("welcomeText")
+      .textContent =
+        "Welcome, " + name + " 👋";
+
+    document.getElementById("profileAvatar")
+      .textContent =
+        name.charAt(0).toUpperCase();
+
+  }
+
+
+  /* ================= CAMERA ================= */
+
+  async function startCamera() {
+
+    stopCamera();
+
+    try {
+
+      cameraStream =
+        await navigator.mediaDevices.getUserMedia({
+
+          video: {
+            facingMode: facingMode
+          },
+
+          audio: true
+
+        });
+
+      const video =
+        document.getElementById("video");
+
+      video.srcObject = cameraStream;
+
+      video.style.filter = currentFilter;
+
+      await video.play();
+
+    } catch (error) {
+
+      console.error(error);
+
+      showToast(
+        "Camera permission is required"
+      );
+
+    }
+
+  }
+
+
+  function stopCamera() {
+
+    if (mediaRecorder &&
+        mediaRecorder.state !== "inactive") {
+
+      try {
+        mediaRecorder.stop();
+      } catch (e) {}
+
+    }
+
+    mediaRecorder = null;
+
+    if (cameraStream) {
+
+      cameraStream.getTracks()
+        .forEach(track => track.stop());
+
+      cameraStream = null;
+
+    }
+
+  }
+
+
+  /* ================= SWITCH CAMERA ================= */
+
+  document.getElementById("switchCameraBtn")
+    .addEventListener("click", async () => {
+
+      facingMode =
+        facingMode === "user"
+          ? "environment"
+          : "user";
+
+      await startCamera();
+
+    });
+
+
+  /* ================= FILTERS ================= */
+
+  document.querySelectorAll(".filter-btn")
+    .forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        document.querySelectorAll(".filter-btn")
+          .forEach(btn =>
+            btn.classList.remove("active")
+          );
+
+        button.classList.add("active");
+
+        currentFilter =
+          button.dataset.filter;
+
+        document.getElementById("video")
+          .style.filter = currentFilter;
+
+      });
+
+    });
+
+
+  /* ================= PHOTO CAPTURE ================= */
+
+  function capturePhoto() {
+
+    const video =
+      document.getElementById("video");
+
+    if (!cameraStream) {
+
+      showToast("Camera is not ready");
+      return;
+
+    }
+
+    const canvas =
+      document.createElement("canvas");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx =
+      canvas.getContext("2d");
+
+    ctx.filter = currentFilter;
+
+    if (facingMode === "user") {
+
+      ctx.translate(
+        canvas.width,
+        0
+      );
+
+      ctx.scale(-1, 1);
+
+    }
+
+    ctx.drawImage(
+      video,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    canvas.toBlob(blob => {
+
+      if (!blob) {
+
+        showToast("Could not capture photo");
+        return;
+
+      }
+
+      capturedBlob = blob;
+      capturedType = "photo";
+
+      showPhotoPreview(blob);
+
+    }, "image/jpeg", 0.92);
+
+  }
+
+
+  /* ================= VIDEO RECORDING ================= */
+
+  function startVideoRecording() {
+
+    if (!cameraStream) {
+
+      showToast("Camera is not ready");
+      return;
+
+    }
+
+    recordedChunks = [];
+
+    let mimeType = "";
+
+    const types = [
+
+      "video/webm;codecs=vp9",
+      "video/webm;codecs=vp8",
+      "video/webm",
+      "video/mp4"
+
+    ];
+
+    for (const type of types) {
+
+      if (
+        window.MediaRecorder &&
+        MediaRecorder.isTypeSupported(type)
+      ) {
+
+        mimeType = type;
+        break;
+
+      }
+
+    }
+
+    try {
+
+      mediaRecorder =
+        mimeType
+          ? new MediaRecorder(
+              cameraStream,
+              { mimeType }
+            )
+          : new MediaRecorder(cameraStream);
+
+      mediaRecorder.ondataavailable =
+        event => {
+
+          if (event.data &&
+              event.data.size > 0) {
+
+            recordedChunks.push(
+              event.data
+            );
+
+          }
+
+        };
+
+
+      mediaRecorder.onstop = () => {
+
+        const recorderType =
+          mediaRecorder &&
+          mediaRecorder.mimeType
+            ? mediaRecorder.mimeType
+            : "video/webm";
+
+        const blob =
+          new Blob(
+            recordedChunks,
+            { type: recorderType }
+          );
+
+        capturedBlob = blob;
+        capturedType = "video";
+
+        showVideoPreview(blob);
+
+      };
+
+
+      mediaRecorder.start(1000);
+
+      document.getElementById(
+        "captureButton"
+      ).classList.add("recording");
+
+      document.getElementById(
+        "recordingText"
+      ).classList.add("show");
+
+    } catch (error) {
+
+      console.error(error);
+
+      showToast(
+        "Video recording is not supported here"
+      );
+
+    }
+
+  }
+
+
+  function stopVideoRecording() {
+
+    if (
+      mediaRecorder &&
+      mediaRecorder.state !== "inactive"
+    ) {
+
+      mediaRecorder.stop();
+
+      document.getElementById(
+        "captureButton"
+      ).classList.remove("recording");
+
+      document.getElementById(
+        "recordingText"
+      ).classList.remove("show");
+
+    }
+
+  }
+
+
+  /* ================= CAPTURE BUTTON ================= */
+
+  const captureButton =
+    document.getElementById("captureButton");
+
+
+  captureButton.addEventListener(
+    "pointerdown",
+    event => {
+
+      event.preventDefault();
+
+      longPressTriggered = false;
+
+      pressTimer = setTimeout(() => {
+
+        longPressTriggered = true;
+
+        if (!mediaRecorder) {
+          startVideoRecording();
+        }
+
+      }, 450);
+
+    }
+  );
+
+
+  captureButton.addEventListener(
+    "pointerup",
+    event => {
+
+      event.preventDefault();
+
+      clearTimeout(pressTimer);
+
+      if (mediaRecorder) {
+
+        stopVideoRecording();
+
+        return;
+
+      }
+
+      if (!longPressTriggered) {
+
+        capturePhoto();
+
+      }
+
+    }
+  );
+
+
+  captureButton.addEventListener(
+    "pointerleave",
+    () => {
+
+      clearTimeout(pressTimer);
+
+    }
+  );
+
+
+  /* ================= PREVIEW ================= */
+
+  function showPhotoPreview(blob) {
+
+    stopCamera();
+
+    const image =
+      document.getElementById("photoPreview");
+
+    const video =
+      document.getElementById("videoPreview");
+
+    image.style.display = "block";
+    video.style.display = "none";
+
+    image.src =
+      URL.createObjectURL(blob);
+
+    openScreen("preview");
+
+  }
+
+
+  function showVideoPreview(blob) {
+
+    stopCamera();
+
+    const image =
+      document.getElementById("photoPreview");
+
+    const video =
+      document.getElementById("videoPreview");
+
+    image.style.display = "none";
+    video.style.display = "block";
+
+    video.src =
+      URL.createObjectURL(blob);
+
+    video.controls = true;
+
+    openScreen("preview");
+
+  }
+
+
+  /* ================= X BUTTON ================= */
+
+  document.getElementById("closePreviewBtn")
+    .addEventListener("click", () => {
+
+      document.getElementById(
+        "discardModal"
+      ).classList.add("show");
+
+    });
+
+
+  /* ================= CANCEL DISCARD ================= */
+
+  document.getElementById("cancelDiscardBtn")
+    .addEventListener("click", () => {
+
+      document.getElementById(
+        "discardModal"
+      ).classList.remove("show");
+
+    });
+
+
+  /* ================= DISCARD ================= */
+
+  document.getElementById("confirmDiscardBtn")
+    .addEventListener("click", () => {
+
+      capturedBlob = null;
+      capturedType = null;
+
+      document.getElementById(
+        "photoPreview"
+      ).src = "";
+
+      document.getElementById(
+        "videoPreview"
+      ).src = "";
+
+      document.getElementById(
+        "discardModal"
+      ).classList.remove("show");
+
+      openScreen("camera");
+
+    });
+
+
+  /* ================= SAVE ================= */
+
+  document.getElementById("saveMediaBtn")
+    .addEventListener("click", () => {
+
+      if (!capturedBlob) {
+
+        showToast("Nothing to save");
+        return;
+
+      }
+
+      const extension =
+        capturedType === "video"
+          ? "webm"
+          : "jpg";
+
+      const url =
+        URL.createObjectURL(capturedBlob);
+
+      const link =
+        document.createElement("a");
+
+      link.href = url;
+
+      link.download =
+        "vibesnap-" +
+        Date.now() +
+        "." +
+        extension;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      URL.revokeObjectURL(url);
+
+      showToast("Saved successfully");
+
+    });
+
+
+  /* ================= SEND ================= */
+
+  document.getElementById("sendMediaBtn")
+    .addEventListener("click", () => {
+
+      /*
+        The Send button is intentionally present now.
+
+        Real sending will later use:
+
+        Firebase Storage
+        +
+        Firestore messages
+
+        This version does not pretend
+        that the media was delivered.
+      */
+
+      showToast(
+        "Send will be connected to VibeSnap chat later"
+      );
+
+    });
+
+
+  /* ================= GALLERY ================= */
+
+  document.getElementById("galleryBtn")
+    .addEventListener("click", () => {
+
+      document.getElementById(
+        "mediaInput"
+      ).click();
+
+    });
+
+
+  document.getElementById("mediaInput")
+    .addEventListener("change", event => {
+
+      const file =
+        event.target.files[0];
+
+      if (!file) return;
+
+      capturedBlob = file;
+
+      if (file.type.startsWith("video/")) {
+
+        capturedType = "video";
+
+        showVideoPreview(file);
+
+      } else {
+
+        capturedType = "photo";
+
+        showPhotoPreview(file);
+
+      }
+
+      event.target.value = "";
+
+    });
+
+
+  /* ================= USERS ================= */
+
+  async function loadUsers() {
+
+    const usersList =
+      document.getElementById("usersList");
+
+    if (!currentUser) return;
+
+    try {
+
+      const snapshot =
+        await db.collection("users")
+          .limit(30)
+          .get();
+
+      usersList.innerHTML = "";
+
+      let found = false;
+
+      snapshot.forEach(doc => {
+
+        if (doc.id === currentUser.uid) {
+          return;
+        }
+
+        found = true;
+
+        const data = doc.data();
+
+        const name =
+          data.displayName ||
+          "VibeSnap User";
+
+        const card =
+          document.createElement("div");
+
+        card.className = "user-card";
+
+        card.innerHTML = `
+
+          <div class="user-info">
+
+            <div class="avatar">
+              ${escapeHtml(
+                name.charAt(0).toUpperCase()
+              )}
+            </div>
+
+            <div>
+              <strong>
+                ${escapeHtml(name)}
+              </strong>
+            </div>
+
+          </div>
+
+          <button
+            class="add-btn"
+            onclick="addFriend('${doc.id}')"
+          >
+            Add
+          </button>
+
+        `;
+
+        usersList.appendChild(card);
+
+      });
+
+      if (!found) {
+
+        usersList.innerHTML = `
+          <div class="empty-card">
+            No other users found yet.
+          </div>
+        `;
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      usersList.innerHTML = `
+        <div class="empty-card">
+          Users could not be loaded.
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  async function addFriend(friendUid) {
+
+    if (!currentUser) return;
+
+    try {
+
+      await db.collection("users")
         .doc(currentUser.uid)
         .collection("friends")
         .doc(friendUid)
         .set({
-            uid:friendUid,
-            addedAt:
-                firebase.firestore.FieldValue
-                .serverTimestamp()
+
+          uid: friendUid,
+
+          addedAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+
         });
 
-        showToast("Friend added!");
+      showToast("Friend added");
 
-    }catch(error){
+    } catch (error) {
 
-        console.error(error);
+      console.error(error);
 
-        showToast(
-            "Could not add friend."
-        );
-    }
-}
+      showToast(
+        "Could not add friend"
+      );
 
-
-function openChat(uid){
-
-    const user=
-        allUsers.find(
-            item=>item.uid===uid
-        );
-
-    if(!user){
-        return;
     }
 
-    showToast(
-        "Chat with @"+
-        (user.username||"user")+
-        " will be connected next."
-    );
-}
+  }
 
 
-/* =========================================================
-   SEARCH
-========================================================= */
+  /* ================= LOGOUT ================= */
 
-function searchUsers(){
+  document.getElementById("logoutBtn")
+    .addEventListener("click", async () => {
 
-    const friendQuery=
-        document
-        .getElementById("friendSearch")
-        .value
-        .toLowerCase()
-        .trim();
-
-    const chatQuery=
-        document
-        .getElementById("chatSearch")
-        .value
-        .toLowerCase()
-        .trim();
-
-    document
-    .querySelectorAll("#friendList .friend-card")
-    .forEach(function(item){
-
-        const name=
-            item.getAttribute("data-name")||"";
-
-        item.style.display=
-            name.includes(friendQuery)
-            ? "flex"
-            : "none";
-    });
-
-    document
-    .querySelectorAll("#chatList .chat-item")
-    .forEach(function(item){
-
-        const name=
-            item.getAttribute("data-name")||"";
-
-        item.style.display=
-            name.includes(chatQuery)
-            ? "flex"
-            : "none";
-    });
-}
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-async function startCamera(){
-
-    try{
-
-        if(
-            !navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia
-        ){
-
-            showToast(
-                "Camera is not supported by this browser."
-            );
-
-            return;
-        }
-
-        stopCamera();
-
-        const video=
-            document.getElementById("video");
-
-        video.setAttribute(
-            "playsinline",
-            "true"
-        );
-
-        video.muted=true;
-
-        stream=
-            await navigator.mediaDevices.getUserMedia({
-
-                video:{
-                    facingMode:{
-                        ideal:facingMode
-                    },
-
-                    width:{
-                        ideal:1280
-                    },
-
-                    height:{
-                        ideal:720
-                    }
-                },
-
-                audio:true
-            });
-
-        video.srcObject=stream;
-
-        video.style.filter=currentFilter;
-
-        await video.play();
-
-    }catch(error){
-
-        console.error(
-            "VibeSnap camera error:",
-            error
-        );
-
-        if(error.name==="NotAllowedError"){
-
-            showToast(
-                "Allow camera and microphone permission for VibeSnap."
-            );
-
-        }else if(error.name==="NotFoundError"){
-
-            showToast(
-                "No camera or microphone was found."
-            );
-
-        }else if(error.name==="NotReadableError"){
-
-            showToast(
-                "Camera is already being used by another app."
-            );
-
-        }else{
-
-            showToast(
-                "Could not start the camera."
-            );
-        }
-    }
-}
-
-
-function stopCamera(){
-
-    if(
-        mediaRecorder &&
-        mediaRecorder.state!=="inactive"
-    ){
-
-        try{
-            mediaRecorder.stop();
-        }catch(e){}
-    }
-
-    mediaRecorder=null;
-    isRecording=false;
-    recordedChunks=[];
-
-    if(stream){
-
-        stream
-        .getTracks()
-        .forEach(
-            track=>track.stop()
-        );
-
-        stream=null;
-    }
-
-    const button=
-        document.getElementById(
-            "captureButton"
-        );
-
-    if(button){
-        button.classList.remove("recording");
-    }
-
-    const label=
-        document.getElementById(
-            "recordLabel"
-        );
-
-    if(label){
-        label.textContent="";
-    }
-}
-
-
-async function switchCamera(){
-
-    if(isRecording){
-        showToast(
-            "Stop recording before switching cameras."
-        );
-        return;
-    }
-
-    facingMode=
-        facingMode==="user"
-        ? "environment"
-        : "user";
-
-    await startCamera();
-}
-
-
-/* =========================================================
-   PHOTO CAPTURE
-========================================================= */
-
-function capturePhoto(){
-
-    const video=
-        document.getElementById("video");
-
-    if(
-        !video ||
-        !video.videoWidth ||
-        !video.videoHeight
-    ){
-
-        showToast(
-            "Camera is not ready yet."
-        );
-
-        return;
-    }
-
-    const canvas=
-        document.createElement("canvas");
-
-    canvas.width=video.videoWidth;
-    canvas.height=video.videoHeight;
-
-    const context=
-        canvas.getContext("2d");
-
-    context.filter=currentFilter;
-
-    if(facingMode==="user"){
-
-        context.translate(
-            canvas.width,
-            0
-        );
-
-        context.scale(-1,1);
-    }
-
-    context.drawImage(
-        video,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    capturedPhoto=
-        canvas.toDataURL(
-            "image/jpeg",
-            .92
-        );
-
-    showPhotoPreview();
-}
-
-
-/* =========================================================
-   VIDEO RECORDING
-========================================================= */
-
-function captureButtonPressed(){
-
-    if(isRecording){
-
-        stopVideoRecording();
-
-    }else{
-
-        capturePhoto();
-    }
-}
-
-
-function startVideoRecording(){
-
-    if(!stream){
-
-        showToast(
-            "Camera is not ready."
-        );
-
-        return;
-    }
-
-    if(!window.MediaRecorder){
-
-        showToast(
-            "Video recording is not supported on this browser."
-        );
-
-        return;
-    }
-
-    recordedChunks=[];
-
-    let mimeType="";
-
-    const types=[
-        "video/webm;codecs=vp9",
-        "video/webm;codecs=vp8",
-        "video/webm",
-        "video/mp4"
-    ];
-
-    for(const type of types){
-
-        if(
-            MediaRecorder.isTypeSupported(type)
-        ){
-
-            mimeType=type;
-            break;
-        }
-    }
-
-    try{
-
-        mediaRecorder=
-            mimeType
-            ? new MediaRecorder(
-                stream,
-                {mimeType:mimeType}
-              )
-            : new MediaRecorder(stream);
-
-    }catch(error){
-
-        console.error(error);
-
-        showToast(
-            "Could not start video recording."
-        );
-
-        return;
-    }
-
-
-    mediaRecorder.ondataavailable=
-        function(event){
-
-            if(
-                event.data &&
-                event.data.size>0
-            ){
-
-                recordedChunks.push(
-                    event.data
-                );
-            }
-        };
-
-
-    mediaRecorder.onstop=
-        function(){
-
-            if(!recordedChunks.length){
-
-                showToast(
-                    "No video was recorded."
-                );
-
-                return;
-            }
-
-            const type=
-                mediaRecorder.mimeType ||
-                "video/webm";
-
-            capturedVideoBlob=
-                new Blob(
-                    recordedChunks,
-                    {type:type}
-                );
-
-            if(capturedVideoURL){
-
-                URL.revokeObjectURL(
-                    capturedVideoURL
-                );
-            }
-
-            capturedVideoURL=
-                URL.createObjectURL(
-                    capturedVideoBlob
-                );
-
-            showVideoPreview();
-
-            recordedChunks=[];
-        };
-
-
-    mediaRecorder.onerror=
-        function(error){
-
-            console.error(
-                "MediaRecorder error:",
-                error
-            );
-
-            showToast(
-                "Video recording failed."
-            );
-        };
-
-
-    mediaRecorder.start(1000);
-
-    isRecording=true;
-
-    document
-    .getElementById("captureButton")
-    .classList.add("recording");
-
-    document
-    .getElementById("recordLabel")
-    .textContent=
-        "🔴 Recording — tap again to stop";
-
-    showToast(
-        "Video recording started."
-    );
-}
-
-
-function stopVideoRecording(){
-
-    if(
-        !mediaRecorder ||
-        mediaRecorder.state==="inactive"
-    ){
-
-        return;
-    }
-
-    mediaRecorder.stop();
-
-    isRecording=false;
-
-    document
-    .getElementById("captureButton")
-    .classList.remove("recording");
-
-    document
-    .getElementById("recordLabel")
-    .textContent="";
-
-    showToast(
-        "Finishing video..."
-    );
-}
-
-
-function startVideoMode(){
-
-    if(isRecording){
-        stopVideoRecording();
-        return;
-    }
-
-    startVideoRecording();
-}
-
-
-/* =========================================================
-   LONG PRESS / VIDEO BUTTON
-========================================================= */
-
-let capturePressTimer=null;
-
-const captureButton=
-    document.getElementById("captureButton");
-
-captureButton.addEventListener(
-    "pointerdown",
-    function(){
-
-        capturePressTimer=
-            setTimeout(
-                function(){
-
-                    if(!isRecording){
-                        startVideoRecording();
-                    }
-
-                },
-                450
-            );
-    }
-);
-
-captureButton.addEventListener(
-    "pointerup",
-    function(){
-
-        clearTimeout(
-            capturePressTimer
-        );
-    }
-);
-
-captureButton.addEventListener(
-    "pointerleave",
-    function(){
-
-        clearTimeout(
-            capturePressTimer
-        );
-    }
-);
-
-
-/* =========================================================
-   PREVIEWS
-========================================================= */
-
-function showPhotoPreview(){
-
-    stopCamera();
-
-    const image=
-        document.getElementById(
-            "previewImage"
-        );
-
-    const video=
-        document.getElementById(
-            "previewVideo"
-        );
-
-    image.src=capturedPhoto;
-    image.style.display="block";
-
-    video.pause();
-    video.removeAttribute("src");
-    video.style.display="none";
-
-    document
-    .getElementById("previewPanel")
-    .classList.add("active");
-}
-
-
-function showVideoPreview(){
-
-    stopCamera();
-
-    const image=
-        document.getElementById(
-            "previewImage"
-        );
-
-    const video=
-        document.getElementById(
-            "previewVideo"
-        );
-
-    image.style.display="none";
-    image.src="";
-
-    video.src=capturedVideoURL;
-    video.style.display="block";
-    video.load();
-
-    document
-    .getElementById("previewPanel")
-    .classList.add("active");
-}
-
-
-/* =========================================================
-   RETAKE
-========================================================= */
-
-function retakeMedia(){
-
-    capturedPhoto=null;
-    capturedVideoBlob=null;
-
-    if(capturedVideoURL){
-
-        URL.revokeObjectURL(
-            capturedVideoURL
-        );
-
-        capturedVideoURL=null;
-    }
-
-    const image=
-        document.getElementById(
-            "previewImage"
-        );
-
-    const video=
-        document.getElementById(
-            "previewVideo"
-        );
-
-    image.src="";
-    image.style.display="none";
-
-    video.pause();
-    video.src="";
-    video.style.display="none";
-
-    document
-    .getElementById("previewPanel")
-    .classList.remove("active");
-
-    startCamera();
-}
-
-
-/* =========================================================
-   SAVE CAPTURED MEDIA
-========================================================= */
-
-function saveCapturedMedia(){
-
-    if(capturedPhoto){
-
-        document
-        .getElementById("previewPanel")
-        .classList.remove("active");
-
-        showToast(
-            "Photo captured successfully!"
-        );
-
-        capturedPhoto=null;
-
-        startCamera();
-
-        return;
-    }
-
-    if(capturedVideoBlob){
-
-        document
-        .getElementById("previewPanel")
-        .classList.remove("active");
-
-        showToast(
-            "Video recorded successfully!"
-        );
-
-        capturedVideoBlob=null;
-
-        if(capturedVideoURL){
-
-            URL.revokeObjectURL(
-                capturedVideoURL
-            );
-
-            capturedVideoURL=null;
-        }
-
-        startCamera();
-
-        return;
-    }
-
-    showToast(
-        "Capture a photo or video first."
-    );
-}
-
-
-/* =========================================================
-   FILE PICKER
-========================================================= */
-
-function pickMedia(){
-
-    document
-    .getElementById("mediaInput")
-    .click();
-}
-
-
-function handleMediaPick(event){
-
-    const file=
-        event.target.files[0];
-
-    if(!file){
-        return;
-    }
-
-    if(file.type.startsWith("image/")){
-
-        const reader=
-            new FileReader();
-
-        reader.onload=
-            function(e){
-
-                capturedPhoto=
-                    e.target.result;
-
-                showPhotoPreview();
-            };
-
-        reader.readAsDataURL(file);
-
-    }else if(
-        file.type.startsWith("video/")
-    ){
-
-        capturedVideoBlob=file;
-
-        if(capturedVideoURL){
-
-            URL.revokeObjectURL(
-                capturedVideoURL
-            );
-        }
-
-        capturedVideoURL=
-            URL.createObjectURL(file);
-
-        showVideoPreview();
-
-    }else{
-
-        showToast(
-            "Please select a photo or video."
-        );
-    }
-
-    event.target.value="";
-}
-
-
-/* =========================================================
-   FILTERS
-========================================================= */
-
-function setFilter(
-    filter,
-    button
-){
-
-    currentFilter=filter;
-
-    document
-    .getElementById("video")
-    .style.filter=filter;
-
-    document
-    .querySelectorAll(".filter-button")
-    .forEach(function(btn){
-
-        btn.classList.remove("active");
-    });
-
-    if(button){
-        button.classList.add("active");
-    }
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function openScreen(screen){
-
-    document
-    .querySelectorAll(".screen")
-    .forEach(function(section){
-
-        section.classList.remove("active");
-    });
-
-    const target=
-        document.getElementById(
-            screen+"Screen"
-        );
-
-    if(target){
-        target.classList.add("active");
-    }
-
-    document
-    .querySelectorAll(".nav-button")
-    .forEach(function(button){
-
-        button.classList.remove("active");
-    });
-
-    const nav=
-        document.getElementById(
-            "nav"+
-            screen.charAt(0).toUpperCase()+
-            screen.slice(1)
-        );
-
-    if(nav){
-        nav.classList.add("active");
-    }
-
-    if(screen==="camera"){
-
-        startCamera();
-
-    }else{
-
-        stopCamera();
-    }
-
-    if(
-        screen==="friends" ||
-        screen==="chats"
-    ){
-
-        loadUsers();
-    }
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logoutUser(){
-
-    stopCamera();
-
-    if(usersUnsubscribe){
-
-        usersUnsubscribe();
-        usersUnsubscribe=null;
-    }
-
-    try{
+      try {
 
         await auth.signOut();
 
-    }catch(error){
+        currentUser = null;
+
+        document.getElementById(
+          "bottomNav"
+        ).style.display = "none";
+
+        document.querySelectorAll(".screen")
+          .forEach(screen =>
+            screen.classList.remove("active")
+          );
+
+        document.getElementById(
+          "authScreen"
+        ).classList.add("active");
+
+      } catch (error) {
 
         console.error(error);
-    }
-}
+
+      }
+
+    });
 
 
-/* =========================================================
-   ERRORS
-========================================================= */
+  /* ================= NAVIGATION ================= */
 
-function firebaseErrorMessage(error){
+  document.querySelectorAll(".nav-btn")
+    .forEach(button => {
 
-    if(!error){
-        return "Something went wrong.";
-    }
+      button.addEventListener("click", () => {
 
-    switch(error.code){
-
-        case "auth/popup-closed-by-user":
-            return "Google sign-in was cancelled.";
-
-        case "auth/popup-blocked":
-            return "Your browser blocked the Google sign-in window.";
-
-        case "auth/unauthorized-domain":
-            return "This website domain is not authorized in Firebase.";
-
-        case "auth/operation-not-allowed":
-            return "This sign-in method is disabled in Firebase.";
-
-        case "auth/invalid-phone-number":
-            return "Enter a valid phone number with country code.";
-
-        case "auth/invalid-verification-code":
-            return "The verification code is incorrect.";
-
-        case "auth/code-expired":
-            return "That verification code expired.";
-
-        case "auth/too-many-requests":
-            return "Too many attempts. Please try again later.";
-
-        default:
-            return error.message ||
-                "Authentication failed.";
-    }
-}
-
-
-/* =========================================================
-   HTML SAFETY
-========================================================= */
-
-function escapeHtml(value){
-
-    return String(value||"")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-function showToast(message){
-
-    const toast=
-        document.getElementById("toast");
-
-    toast.textContent=message;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer=
-        setTimeout(
-            function(){
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            3000
+        openScreen(
+          button.dataset.screen
         );
-}
+
+      });
+
+    });
 
 
-/* =========================================================
-   START
-========================================================= */
+  /* ================= ESCAPE HTML ================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
+  function escapeHtml(value) {
 
-        try{
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
-            setupRecaptcha();
-
-        }catch(error){
-
-            console.log(
-                "reCAPTCHA will initialize when needed."
-            );
-        }
-    }
-);
+  }
 
 </script>
 
