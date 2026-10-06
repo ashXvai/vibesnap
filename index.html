@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,10 +29,10 @@ button{
 }
 
 .hidden{
-    display:none !important;
+    display:none!important;
 }
 
-/* ================= AUTH ================= */
+/* AUTH */
 
 .auth-screen{
     position:fixed;
@@ -133,15 +132,15 @@ button{
     font-size:12px;
 }
 
-.auth-divider::before,
-.auth-divider::after{
+.auth-divider:before,
+.auth-divider:after{
     content:"";
     height:1px;
     background:#333;
     flex:1;
 }
 
-/* ================= APP ================= */
+/* APP */
 
 #app{
     min-height:100vh;
@@ -157,7 +156,7 @@ button{
     display:block;
 }
 
-/* ================= TOP BAR ================= */
+/* TOP */
 
 .top-bar{
     height:65px;
@@ -174,13 +173,13 @@ button{
     font-weight:800;
 }
 
-/* ================= CAMERA ================= */
+/* CAMERA */
 
 .camera-container{
     position:relative;
     width:100%;
     height:calc(100vh - 75px);
-    min-height:550px;
+    min-height:500px;
     overflow:hidden;
     background:#050505;
 }
@@ -238,14 +237,14 @@ button{
     width:44px;
     height:44px;
     border-radius:50%;
-    background:rgba(0,0,0,.55);
+    background:rgba(0,0,0,.6);
     color:white;
     font-size:19px;
 }
 
 .filter-bar{
     position:absolute;
-    bottom:125px;
+    bottom:145px;
     left:0;
     right:0;
     display:flex;
@@ -270,12 +269,14 @@ button{
 
 .capture-area{
     position:absolute;
-    bottom:35px;
+    bottom:25px;
     left:0;
     right:0;
     display:flex;
     align-items:center;
     justify-content:center;
+    gap:18px;
+    pointer-events:auto;
 }
 
 .capture-button{
@@ -286,7 +287,34 @@ button{
     border:6px solid rgba(255,255,255,.35);
 }
 
-/* ================= CHAT ================= */
+.capture-button.recording{
+    background:#ff3030;
+    border-color:rgba(255,255,255,.6);
+    transform:scale(.9);
+}
+
+.gallery-button{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:rgba(0,0,0,.65);
+    color:white;
+    font-size:22px;
+}
+
+.record-label{
+    position:absolute;
+    bottom:105px;
+    left:0;
+    right:0;
+    text-align:center;
+    color:white;
+    font-size:13px;
+    font-weight:bold;
+    text-shadow:0 2px 5px #000;
+}
+
+/* CHAT */
 
 .section-header{
     padding:20px;
@@ -357,7 +385,7 @@ button{
     font-size:13px;
 }
 
-/* ================= FRIENDS ================= */
+/* FRIENDS */
 
 .friend-list{
     padding:0 18px;
@@ -386,12 +414,7 @@ button{
     font-weight:bold;
 }
 
-.friend-button.added{
-    background:#333;
-    color:#aaa;
-}
-
-/* ================= PROFILE ================= */
+/* PROFILE */
 
 .profile-page{
     text-align:center;
@@ -460,7 +483,7 @@ button{
     color:white;
 }
 
-/* ================= NAV ================= */
+/* NAV */
 
 .bottom-nav{
     position:fixed;
@@ -497,7 +520,7 @@ button{
     color:#ffd400;
 }
 
-/* ================= PREVIEW ================= */
+/* PREVIEW */
 
 .preview-panel{
     position:fixed;
@@ -512,10 +535,12 @@ button{
     display:flex;
 }
 
-.preview-image{
+.preview-media{
     flex:1;
     width:100%;
+    min-height:0;
     object-fit:contain;
+    background:#000;
 }
 
 .preview-actions{
@@ -541,7 +566,7 @@ button{
     color:#111;
 }
 
-/* ================= TOAST ================= */
+/* TOAST */
 
 .toast{
     position:fixed;
@@ -565,7 +590,6 @@ button{
 }
 
 @media(max-width:600px){
-
     .auth-box{
         padding:30px 20px;
     }
@@ -573,14 +597,13 @@ button{
     .camera-container{
         min-height:calc(100vh - 75px);
     }
-
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= AUTH ================= -->
+<!-- AUTH -->
 
 <section id="authScreen" class="auth-screen">
 
@@ -602,38 +625,35 @@ button{
 
             <button
                 class="auth-button"
-                onclick="loginWithGoogle()"
-            >
+                onclick="loginWithGoogle()">
                 Continue with Google
             </button>
 
-            <div class="auth-divider">
-                OR
-            </div>
+            <div class="auth-divider">OR</div>
 
             <input
                 id="phoneNumber"
                 class="auth-input"
                 type="tel"
-                placeholder="+91 9876543210"
-            >
+                placeholder="+91 9876543210">
 
             <button
                 class="auth-secondary"
-                onclick="sendPhoneCode()"
-            >
+                onclick="sendPhoneCode()">
                 Continue with Phone OTP
             </button>
 
             <div
                 id="recaptcha-container"
-                style="margin-top:15px;"
-            ></div>
+                style="margin-top:15px;">
+            </div>
 
-            <p id="authMessage" class="auth-message"></p>
+            <p
+                id="authMessage"
+                class="auth-message">
+            </p>
 
         </div>
-
 
         <div id="otpBox" style="display:none;">
 
@@ -647,36 +667,34 @@ button{
                 type="text"
                 inputmode="numeric"
                 maxlength="6"
-                placeholder="6-digit code"
-            >
+                placeholder="6-digit code">
 
             <button
                 class="auth-button"
-                onclick="verifyPhoneCode()"
-            >
+                onclick="verifyPhoneCode()">
                 Verify Code
             </button>
 
             <button
                 class="auth-secondary"
-                onclick="backToAuth()"
-            >
+                onclick="backToAuth()">
                 Back
             </button>
 
-            <p id="otpMessage" class="auth-message"></p>
+            <p
+                id="otpMessage"
+                class="auth-message">
+            </p>
 
         </div>
 
     </div>
-
 </section>
 
 
-<!-- ================= APP ================= -->
+<!-- APP -->
 
 <div id="app" class="hidden">
-
 
     <!-- CAMERA -->
 
@@ -688,8 +706,8 @@ button{
                 id="video"
                 autoplay
                 muted
-                playsinline
-            ></video>
+                playsinline>
+            </video>
 
             <div class="camera-overlay">
 
@@ -697,18 +715,14 @@ button{
 
                     <div
                         class="profile-small"
-                        onclick="openScreen('profile')"
-                    >
+                        onclick="openScreen('profile')">
 
-                        <span id="smallProfileLetter">
-                            V
-                        </span>
+                        <span id="smallProfileLetter">V</span>
 
                         <img
                             id="smallProfileImage"
-                            style="display:none;"
-                            alt="Profile"
-                        >
+                            style="display:none"
+                            alt="Profile">
 
                     </div>
 
@@ -716,20 +730,11 @@ button{
 
                         <button
                             class="camera-tool"
-                            onclick="switchCamera()"
-                        >
+                            onclick="switchCamera()">
                             🔄
                         </button>
 
-                        <button
-                            class="camera-tool"
-                            onclick="pickMedia()"
-                        >
-                            🖼️
-                        </button>
-
                     </div>
-
                 </div>
 
 
@@ -737,53 +742,60 @@ button{
 
                     <button
                         class="filter-button active"
-                        onclick="setFilter('none',this)"
-                    >
+                        onclick="setFilter('none',this)">
                         Normal
                     </button>
 
                     <button
                         class="filter-button"
-                        onclick="setFilter('grayscale(1)',this)"
-                    >
+                        onclick="setFilter('grayscale(1)',this)">
                         B&W
                     </button>
 
                     <button
                         class="filter-button"
-                        onclick="setFilter('sepia(1)',this)"
-                    >
+                        onclick="setFilter('sepia(1)',this)">
                         Sepia
                     </button>
 
                     <button
                         class="filter-button"
-                        onclick="setFilter('brightness(1.3)',this)"
-                    >
+                        onclick="setFilter('brightness(1.3)',this)">
                         Bright
                     </button>
 
                     <button
                         class="filter-button"
-                        onclick="setFilter('contrast(1.4)',this)"
-                    >
+                        onclick="setFilter('contrast(1.4)',this)">
                         Contrast
                     </button>
 
                 </div>
 
 
+                <div
+                    id="recordLabel"
+                    class="record-label">
+                </div>
+
+
                 <div class="capture-area">
 
                     <button
+                        class="gallery-button"
+                        onclick="pickMedia()">
+                        🖼️
+                    </button>
+
+                    <button
+                        id="captureButton"
                         class="capture-button"
-                        onclick="capturePhoto()"
-                    ></button>
+                        onclick="captureButtonPressed()">
+                    </button>
 
                 </div>
 
             </div>
-
         </div>
 
     </section>
@@ -794,11 +806,9 @@ button{
     <section id="chatsScreen" class="screen">
 
         <div class="top-bar">
-
             <div class="logo">
                 Vibe<span>Snap</span>
             </div>
-
         </div>
 
         <div class="section-header">
@@ -811,15 +821,13 @@ button{
                 type="text"
                 id="chatSearch"
                 placeholder="Search users..."
-                oninput="searchUsers()"
-            >
+                oninput="searchUsers()">
 
         </div>
 
         <div
             class="chat-list"
-            id="chatList"
-        >
+            id="chatList">
         </div>
 
     </section>
@@ -830,11 +838,9 @@ button{
     <section id="friendsScreen" class="screen">
 
         <div class="top-bar">
-
             <div class="logo">
                 Vibe<span>Snap</span>
             </div>
-
         </div>
 
         <div class="section-header">
@@ -847,15 +853,13 @@ button{
                 type="text"
                 id="friendSearch"
                 placeholder="Search username..."
-                oninput="searchUsers()"
-            >
+                oninput="searchUsers()">
 
         </div>
 
         <div
             class="friend-list"
-            id="friendList"
-        >
+            id="friendList">
         </div>
 
     </section>
@@ -866,90 +870,74 @@ button{
     <section id="profileScreen" class="screen">
 
         <div class="top-bar">
-
             <div class="logo">
                 Vibe<span>Snap</span>
             </div>
-
         </div>
 
         <div class="profile-page">
 
             <div
                 id="profileAvatar"
-                class="profile-avatar"
-            >
+                class="profile-avatar">
 
-                <span id="profileLetter">
-                    V
-                </span>
+                <span id="profileLetter">V</span>
 
                 <img
                     id="profileImage"
-                    style="display:none;"
-                    alt="Profile"
-                >
+                    style="display:none"
+                    alt="Profile">
 
             </div>
 
             <div
                 id="profileName"
-                class="profile-name"
-            >
+                class="profile-name">
                 Vibe User
             </div>
 
             <div
                 id="profileUsername"
-                class="profile-username"
-            >
+                class="profile-username">
                 @vibeuser
             </div>
 
             <div
                 id="profileProvider"
-                class="profile-provider"
-            >
+                class="profile-provider">
             </div>
 
             <div class="profile-stats">
 
                 <div>
-
                     <div
                         id="friendCount"
-                        class="stat-number"
-                    >
+                        class="stat-number">
                         0
                     </div>
 
                     <div class="stat-label">
                         Friends
                     </div>
-
                 </div>
 
                 <div>
-
                     <div
                         id="photoCount"
-                        class="stat-number"
-                    >
+                        class="stat-number">
                         0
                     </div>
 
                     <div class="stat-label">
                         Photos
                     </div>
-
                 </div>
 
             </div>
 
             <button
                 class="logout-button"
-                onclick="logoutUser()"
-            >
+                onclick="logoutUser()">
                 Log Out
             </button>
 
@@ -965,8 +953,7 @@ button{
         <button
             id="navCamera"
             class="nav-button active"
-            onclick="openScreen('camera')"
-        >
+            onclick="openScreen('camera')">
             📷
             <span>Camera</span>
         </button>
@@ -974,8 +961,7 @@ button{
         <button
             id="navChats"
             class="nav-button"
-            onclick="openScreen('chats')"
-        >
+            onclick="openScreen('chats')">
             💬
             <span>Chats</span>
         </button>
@@ -983,8 +969,7 @@ button{
         <button
             id="navFriends"
             class="nav-button"
-            onclick="openScreen('friends')"
-        >
+            onclick="openScreen('friends')">
             👥
             <span>Friends</span>
         </button>
@@ -992,8 +977,7 @@ button{
         <button
             id="navProfile"
             class="nav-button"
-            onclick="openScreen('profile')"
-        >
+            onclick="openScreen('profile')">
             👤
             <span>Profile</span>
         </button>
@@ -1003,33 +987,38 @@ button{
 </div>
 
 
-<!-- ================= PHOTO PREVIEW ================= -->
+<!-- MEDIA PREVIEW -->
 
 <div
     id="previewPanel"
-    class="preview-panel"
->
+    class="preview-panel">
 
     <img
         id="previewImage"
-        class="preview-image"
-        alt="Captured photo"
-    >
+        class="preview-media"
+        style="display:none"
+        alt="Captured photo">
+
+    <video
+        id="previewVideo"
+        class="preview-media"
+        style="display:none"
+        controls
+        playsinline>
+    </video>
 
     <div class="preview-actions">
 
         <button
             class="preview-button retake-button"
-            onclick="retakePhoto()"
-        >
+            onclick="retakeMedia()">
             Retake
         </button>
 
         <button
             class="preview-button send-button"
-            onclick="sendPhoto()"
-        >
-            Save Photo
+            onclick="saveCapturedMedia()">
+            Save
         </button>
 
     </div>
@@ -1037,92 +1026,89 @@ button{
 </div>
 
 
-<!-- ================= TOAST ================= -->
+<!-- TOAST -->
 
 <div
     id="toast"
-    class="toast"
-></div>
+    class="toast">
+</div>
 
 
-<!-- ================= MEDIA ================= -->
+<!-- FILE PICKER -->
 
 <input
     type="file"
     id="mediaInput"
     accept="image/*,video/*"
-    style="display:none;"
-    onchange="handleMediaPick(event)"
->
+    style="display:none"
+    onchange="handleMediaPick(event)">
 
 
 <script>
 
 /* =========================================================
    FIREBASE
-   ========================================================= */
+========================================================= */
 
 const firebaseConfig = {
-    apiKey: "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
-    authDomain: "vibesnap-213d4.firebaseapp.com",
-    projectId: "vibesnap-213d4",
-    storageBucket: "vibesnap-213d4.firebasestorage.app",
-    messagingSenderId: "933479938239",
-    appId: "1:933479938239:web:d120d7ba99f5665987ae0a",
-    measurementId: "G-HP0QL3C8Y"
+    apiKey:"AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
+    authDomain:"vibesnap-213d4.firebaseapp.com",
+    projectId:"vibesnap-213d4",
+    storageBucket:"vibesnap-213d4.firebasestorage.app",
+    messagingSenderId:"933479938239",
+    appId:"1:933479938239:web:d120d7ba99f5665987ae0a",
+    measurementId:"G-HP0QL3C8Y"
 };
 
 firebase.initializeApp(firebaseConfig);
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+const auth=firebase.auth();
+const db=firebase.firestore();
 
-const googleProvider =
+const googleProvider=
     new firebase.auth.GoogleAuthProvider();
 
 
 /* =========================================================
    VARIABLES
-   ========================================================= */
+========================================================= */
 
-let currentUser = null;
-let currentProfile = null;
+let currentUser=null;
+let currentProfile=null;
 
-let stream = null;
-let facingMode = "user";
-let currentFilter = "none";
+let stream=null;
+let facingMode="user";
+let currentFilter="none";
 
-let capturedPhoto = null;
+let capturedPhoto=null;
+let capturedVideoBlob=null;
+let capturedVideoURL=null;
 
-let confirmationResult = null;
+let mediaRecorder=null;
+let recordedChunks=[];
+let isRecording=false;
 
-let allUsers = [];
+let confirmationResult=null;
+let recaptchaVerifier=null;
+
+let allUsers=[];
+let usersUnsubscribe=null;
+
+let toastTimer=null;
 
 
 /* =========================================================
-   AUTH MESSAGES
-   ========================================================= */
+   AUTH
+========================================================= */
 
 function showAuthMessage(message){
-
-    document
-        .getElementById("authMessage")
-        .textContent = message;
-
+    document.getElementById("authMessage").textContent=message;
 }
 
 function showOtpMessage(message){
-
-    document
-        .getElementById("otpMessage")
-        .textContent = message;
-
+    document.getElementById("otpMessage").textContent=message;
 }
 
-
-/* =========================================================
-   GOOGLE LOGIN
-   ========================================================= */
 
 async function loginWithGoogle(){
 
@@ -1130,13 +1116,8 @@ async function loginWithGoogle(){
 
     try{
 
-        const result =
-            await auth.signInWithPopup(
-                googleProvider
-            );
-
-        await createOrUpdateUserProfile(
-            result.user
+        await auth.signInWithPopup(
+            googleProvider
         );
 
     }catch(error){
@@ -1146,17 +1127,9 @@ async function loginWithGoogle(){
         showAuthMessage(
             firebaseErrorMessage(error)
         );
-
     }
-
 }
 
-
-/* =========================================================
-   PHONE LOGIN
-   ========================================================= */
-
-let recaptchaVerifier = null;
 
 function setupRecaptcha(){
 
@@ -1164,7 +1137,7 @@ function setupRecaptcha(){
         return;
     }
 
-    recaptchaVerifier =
+    recaptchaVerifier=
         new firebase.auth.RecaptchaVerifier(
             "recaptcha-container",
             {
@@ -1173,13 +1146,12 @@ function setupRecaptcha(){
         );
 
     recaptchaVerifier.render();
-
 }
 
 
 async function sendPhoneCode(){
 
-    const phone =
+    const phone=
         document
         .getElementById("phoneNumber")
         .value
@@ -1202,19 +1174,19 @@ async function sendPhoneCode(){
             "Sending verification code..."
         );
 
-        confirmationResult =
+        confirmationResult=
             await auth.signInWithPhoneNumber(
                 phone,
                 recaptchaVerifier
             );
 
         document
-            .getElementById("authButtons")
-            .style.display = "none";
+        .getElementById("authButtons")
+        .style.display="none";
 
         document
-            .getElementById("otpBox")
-            .style.display = "block";
+        .getElementById("otpBox")
+        .style.display="block";
 
         showOtpMessage(
             "Code sent. Check your phone."
@@ -1227,15 +1199,13 @@ async function sendPhoneCode(){
         showAuthMessage(
             firebaseErrorMessage(error)
         );
-
     }
-
 }
 
 
 async function verifyPhoneCode(){
 
-    const code =
+    const code=
         document
         .getElementById("phoneCode")
         .value
@@ -1253,7 +1223,7 @@ async function verifyPhoneCode(){
     if(!confirmationResult){
 
         showOtpMessage(
-            "Please request a new code."
+            "Request a new code first."
         );
 
         return;
@@ -1261,18 +1231,9 @@ async function verifyPhoneCode(){
 
     try{
 
-        showOtpMessage(
-            "Verifying..."
-        );
+        showOtpMessage("Verifying...");
 
-        const result =
-            await confirmationResult.confirm(
-                code
-            );
-
-        await createOrUpdateUserProfile(
-            result.user
-        );
+        await confirmationResult.confirm(code);
 
     }catch(error){
 
@@ -1281,30 +1242,60 @@ async function verifyPhoneCode(){
         showOtpMessage(
             firebaseErrorMessage(error)
         );
-
     }
-
 }
 
 
 function backToAuth(){
 
     document
-        .getElementById("otpBox")
-        .style.display = "none";
+    .getElementById("otpBox")
+    .style.display="none";
 
     document
-        .getElementById("authButtons")
-        .style.display = "block";
+    .getElementById("authButtons")
+    .style.display="block";
 
     showAuthMessage("");
-
+    showOtpMessage("");
 }
 
 
 /* =========================================================
-   CREATE / UPDATE FIRESTORE USER PROFILE
-   ========================================================= */
+   USER PROFILE
+========================================================= */
+
+function makeUsername(name){
+
+    let username=
+        String(name||"")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g,"")
+        .substring(0,14);
+
+    return username||"vibeuser";
+}
+
+
+function getProviderName(user){
+
+    if(user.providerData){
+
+        for(const provider of user.providerData){
+
+            if(provider.providerId==="google.com"){
+                return "Google";
+            }
+
+            if(provider.providerId==="phone"){
+                return "Phone";
+            }
+        }
+    }
+
+    return "Firebase";
+}
+
 
 async function createOrUpdateUserProfile(user){
 
@@ -1312,49 +1303,27 @@ async function createOrUpdateUserProfile(user){
         return;
     }
 
-    currentUser = user;
+    currentUser=user;
 
-    const userRef =
-        db.collection("users")
-        .doc(user.uid);
+    const userRef=
+        db.collection("users").doc(user.uid);
 
-    const snapshot =
+    const snapshot=
         await userRef.get();
 
-    const existing =
+    const existing=
         snapshot.exists
         ? snapshot.data()
         : {};
 
-    let username =
-        existing.username;
+    const username=
+        existing.username ||
+        makeUsername(
+            user.displayName ||
+            "user"+user.uid.substring(0,6)
+        );
 
-    if(!username){
-
-        if(user.displayName){
-
-            username =
-                makeUsername(
-                    user.displayName
-                );
-
-        }else if(user.phoneNumber){
-
-            username =
-                "user" +
-                user.uid.substring(0,6);
-
-        }else{
-
-            username =
-                "user" +
-                user.uid.substring(0,6);
-
-        }
-
-    }
-
-    const profile = {
+    const profile={
 
         uid:user.uid,
 
@@ -1384,84 +1353,32 @@ async function createOrUpdateUserProfile(user){
             getProviderName(user),
 
         updatedAt:
-            firebase.firestore.FieldValue.serverTimestamp(),
+            firebase.firestore.FieldValue
+            .serverTimestamp(),
 
         createdAt:
             existing.createdAt ||
-            firebase.firestore.FieldValue.serverTimestamp()
-
+            firebase.firestore.FieldValue
+            .serverTimestamp()
     };
 
     await userRef.set(
         profile,
-        {
-            merge:true
-        }
+        {merge:true}
     );
 
-    currentProfile = {
+    currentProfile={
         ...existing,
         ...profile
     };
 
     enterMainApp();
-
-}
-
-
-/* =========================================================
-   USERNAME
-   ========================================================= */
-
-function makeUsername(name){
-
-    let username =
-        name
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g,"")
-        .substring(0,14);
-
-    if(!username){
-        username = "vibeuser";
-    }
-
-    return username;
-
-}
-
-
-/* =========================================================
-   PROVIDER
-   ========================================================= */
-
-function getProviderName(user){
-
-    if(
-        user.providerData &&
-        user.providerData.length
-    ){
-
-        const provider =
-            user.providerData[0].providerId;
-
-        if(provider === "google.com"){
-            return "Google";
-        }
-
-        if(provider === "phone"){
-            return "Phone";
-        }
-
-    }
-
-    return "Firebase";
-
 }
 
 
 /* =========================================================
    AUTH STATE
-   ========================================================= */
+========================================================= */
 
 auth.onAuthStateChanged(
     async function(user){
@@ -1470,9 +1387,7 @@ auth.onAuthStateChanged(
 
             try{
 
-                await createOrUpdateUserProfile(
-                    user
-                );
+                await createOrUpdateUserProfile(user);
 
             }catch(error){
 
@@ -1481,41 +1396,40 @@ auth.onAuthStateChanged(
                 showAuthMessage(
                     "Could not load your profile."
                 );
-
             }
 
         }else{
 
-            currentUser = null;
-            currentProfile = null;
+            currentUser=null;
+            currentProfile=null;
+
+            stopCamera();
 
             document
-                .getElementById("authScreen")
-                .classList.remove("hidden");
+            .getElementById("authScreen")
+            .classList.remove("hidden");
 
             document
-                .getElementById("app")
-                .classList.add("hidden");
-
+            .getElementById("app")
+            .classList.add("hidden");
         }
-
     }
 );
 
 
 /* =========================================================
-   ENTER MAIN APP
-   ========================================================= */
+   MAIN APP
+========================================================= */
 
 async function enterMainApp(){
 
     document
-        .getElementById("authScreen")
-        .classList.add("hidden");
+    .getElementById("authScreen")
+    .classList.add("hidden");
 
     document
-        .getElementById("app")
-        .classList.remove("hidden");
+    .getElementById("app")
+    .classList.remove("hidden");
 
     updateProfileUI();
 
@@ -1523,155 +1437,117 @@ async function enterMainApp(){
 
     openScreen("camera");
 
+    startUserListener();
 }
 
 
 /* =========================================================
    PROFILE UI
-   ========================================================= */
+========================================================= */
 
 function updateProfileUI(){
 
-    if(!currentUser){
+    if(!currentProfile){
         return;
     }
 
-    const profile =
-        currentProfile || {};
+    const displayName=
+        currentProfile.displayName ||
+        currentProfile.username ||
+        "Vibe User";
 
-    const username =
-        profile.username ||
+    const username=
+        currentProfile.username ||
         "vibeuser";
 
-    const displayName =
-        profile.displayName ||
-        username;
-
-    const firstLetter =
+    const letter=
         displayName
         .charAt(0)
         .toUpperCase();
 
-    document
-        .getElementById("profileName")
-        .textContent =
-        displayName;
+    document.getElementById("profileName")
+        .textContent=displayName;
 
-    document
-        .getElementById("profileUsername")
-        .textContent =
-        "@" + username;
+    document.getElementById("profileUsername")
+        .textContent="@"+username;
 
-    document
-        .getElementById("profileProvider")
-        .textContent =
-        "Signed in with " +
-        (profile.provider || "Firebase");
+    document.getElementById("profileProvider")
+        .textContent=
+        "Signed in with "+
+        (currentProfile.provider||"Firebase");
 
-    document
-        .getElementById("profileLetter")
-        .textContent =
-        firstLetter;
+    document.getElementById("profileLetter")
+        .textContent=letter;
 
-    document
-        .getElementById("smallProfileLetter")
-        .textContent =
-        firstLetter;
+    document.getElementById("smallProfileLetter")
+        .textContent=letter;
 
-    if(profile.photoURL){
+    if(currentProfile.photoURL){
 
-        document
-            .getElementById("profileImage")
-            .src =
-            profile.photoURL;
+        document.getElementById("profileImage")
+            .src=currentProfile.photoURL;
 
-        document
-            .getElementById("profileImage")
-            .style.display =
-            "block";
+        document.getElementById("profileImage")
+            .style.display="block";
 
-        document
-            .getElementById("profileLetter")
-            .style.display =
-            "none";
+        document.getElementById("profileLetter")
+            .style.display="none";
 
-        document
-            .getElementById("smallProfileImage")
-            .src =
-            profile.photoURL;
+        document.getElementById("smallProfileImage")
+            .src=currentProfile.photoURL;
 
-        document
-            .getElementById("smallProfileImage")
-            .style.display =
-            "block";
+        document.getElementById("smallProfileImage")
+            .style.display="block";
 
-        document
-            .getElementById("smallProfileLetter")
-            .style.display =
-            "none";
+        document.getElementById("smallProfileLetter")
+            .style.display="none";
 
     }else{
 
-        document
-            .getElementById("profileImage")
-            .style.display =
-            "none";
+        document.getElementById("profileImage")
+            .style.display="none";
 
-        document
-            .getElementById("profileLetter")
-            .style.display =
-            "block";
+        document.getElementById("profileLetter")
+            .style.display="block";
 
-        document
-            .getElementById("smallProfileImage")
-            .style.display =
-            "none";
+        document.getElementById("smallProfileImage")
+            .style.display="none";
 
-        document
-            .getElementById("smallProfileLetter")
-            .style.display =
-            "block";
-
+        document.getElementById("smallProfileLetter")
+            .style.display="block";
     }
-
 }
 
 
 /* =========================================================
-   LOAD REAL USERS
-   ========================================================= */
+   USERS
+========================================================= */
 
 async function loadUsers(){
 
     try{
 
-        const snapshot =
+        const snapshot=
             await db
             .collection("users")
             .limit(100)
             .get();
 
-        allUsers = [];
+        allUsers=[];
 
-        snapshot.forEach(
-            function(doc){
+        snapshot.forEach(function(doc){
 
-                const data =
-                    doc.data();
+            const data=doc.data();
 
-                if(
-                    currentUser &&
-                    data.uid === currentUser.uid
-                ){
-
-                    return;
-
-                }
-
-                allUsers.push(data);
-
+            if(
+                currentUser &&
+                data.uid===currentUser.uid
+            ){
+                return;
             }
-        );
+
+            allUsers.push(data);
+        });
 
         renderUsers();
 
@@ -1682,53 +1558,40 @@ async function loadUsers(){
         showToast(
             "Could not load users."
         );
-
     }
-
 }
 
 
-/* =========================================================
-   REALTIME USER LIST
-   ========================================================= */
-
-let usersUnsubscribe = null;
-
-function listenForUsers(){
+function startUserListener(){
 
     if(usersUnsubscribe){
         usersUnsubscribe();
     }
 
-    usersUnsubscribe =
+    usersUnsubscribe=
         db
         .collection("users")
         .limit(100)
         .onSnapshot(
             function(snapshot){
 
-                allUsers = [];
+                allUsers=[];
 
-                snapshot.forEach(
-                    function(doc){
+                snapshot.forEach(function(doc){
 
-                        const data =
-                            doc.data();
+                    const data=doc.data();
 
-                        if(
-                            currentUser &&
-                            data.uid === currentUser.uid
-                        ){
-                            return;
-                        }
-
-                        allUsers.push(data);
-
+                    if(
+                        currentUser &&
+                        data.uid===currentUser.uid
+                    ){
+                        return;
                     }
-                );
+
+                    allUsers.push(data);
+                });
 
                 renderUsers();
-
             },
             function(error){
 
@@ -1736,161 +1599,133 @@ function listenForUsers(){
                     "User listener:",
                     error
                 );
-
             }
         );
-
 }
 
-
-/* =========================================================
-   RENDER USERS
-   ========================================================= */
 
 function renderUsers(){
 
-    const friendList =
-        document.getElementById(
-            "friendList"
-        );
+    const friendList=
+        document.getElementById("friendList");
 
-    const chatList =
-        document.getElementById(
-            "chatList"
-        );
+    const chatList=
+        document.getElementById("chatList");
 
-    friendList.innerHTML = "";
-    chatList.innerHTML = "";
+    friendList.innerHTML="";
+    chatList.innerHTML="";
 
-    if(allUsers.length === 0){
+    if(!allUsers.length){
 
-        friendList.innerHTML =
-            "<p style='color:#777;padding:20px;'>No other VibeSnap users yet.</p>";
+        friendList.innerHTML=
+            `<p style="color:#777;padding:20px">
+                No other VibeSnap users yet.
+            </p>`;
 
-        chatList.innerHTML =
-            "<p style='color:#777;padding:20px;'>No other VibeSnap users yet.</p>";
+        chatList.innerHTML=
+            `<p style="color:#777;padding:20px">
+                No other VibeSnap users yet.
+            </p>`;
 
         return;
-
     }
 
-    allUsers.forEach(
-        function(user){
+    allUsers.forEach(function(user){
 
-            const letter =
-                (
-                    user.displayName ||
-                    user.username ||
-                    "V"
-                )
-                .charAt(0)
-                .toUpperCase();
+        const name=
+            user.displayName ||
+            user.username ||
+            "Vibe User";
 
-            const photo =
-                user.photoURL
-                ? `<img src="${escapeHtml(user.photoURL)}" alt="">`
-                : letter;
+        const username=
+            user.username ||
+            "user";
 
-            friendList.innerHTML += `
+        const letter=
+            name.charAt(0).toUpperCase();
 
-                <div
-                    class="friend-card"
-                    data-name="${escapeHtml(
-                        (user.username || "") +
-                        " " +
-                        (user.displayName || "")
-                    ).toLowerCase()}"
-                >
+        const photo=
+            user.photoURL
+            ? `<img src="${escapeHtml(user.photoURL)}" alt="">`
+            : letter;
 
-                    <div class="friend-avatar">
-                        ${photo}
-                    </div>
+        friendList.innerHTML+=`
 
-                    <div class="friend-info">
+            <div
+                class="friend-card"
+                data-name="${escapeHtml(
+                    name+" "+username
+                ).toLowerCase()}">
 
-                        <b>
-                            ${escapeHtml(
-                                user.displayName ||
-                                user.username ||
-                                "Vibe User"
-                            )}
-                        </b>
-
-                        <div style="color:#888;font-size:13px;">
-                            @${escapeHtml(
-                                user.username ||
-                                "user"
-                            )}
-                        </div>
-
-                    </div>
-
-                    <button
-                        class="friend-button"
-                        onclick="addFriend('${escapeHtml(user.uid)}')"
-                    >
-                        Add
-                    </button>
-
+                <div class="friend-avatar">
+                    ${photo}
                 </div>
 
-            `;
+                <div class="friend-info">
 
+                    <b>
+                        ${escapeHtml(name)}
+                    </b>
 
-            chatList.innerHTML += `
-
-                <div
-                    class="chat-item"
-                    data-name="${escapeHtml(
-                        (user.username || "") +
-                        " " +
-                        (user.displayName || "")
-                    ).toLowerCase()}"
-                    onclick="openChat('${escapeHtml(user.uid)}')"
-                    style="cursor:pointer;"
-                >
-
-                    <div class="chat-avatar">
-                        ${photo}
-                    </div>
-
-                    <div class="chat-info">
-
-                        <div class="chat-name">
-                            ${escapeHtml(
-                                user.displayName ||
-                                user.username ||
-                                "Vibe User"
-                            )}
-                        </div>
-
-                        <div class="chat-preview">
-                            Tap to start a chat
-                        </div>
-
+                    <div style="color:#888;font-size:13px">
+                        @${escapeHtml(username)}
                     </div>
 
                 </div>
 
-            `;
+                <button
+                    class="friend-button"
+                    onclick="addFriend('${escapeHtml(user.uid)}')">
+                    Add
+                </button>
 
-        }
-    );
+            </div>
+        `;
 
+
+        chatList.innerHTML+=`
+
+            <div
+                class="chat-item"
+                data-name="${escapeHtml(
+                    name+" "+username
+                ).toLowerCase()}"
+                onclick="openChat('${escapeHtml(user.uid)}')"
+                style="cursor:pointer">
+
+                <div class="chat-avatar">
+                    ${photo}
+                </div>
+
+                <div class="chat-info">
+
+                    <div class="chat-name">
+                        ${escapeHtml(name)}
+                    </div>
+
+                    <div class="chat-preview">
+                        Tap to start a chat
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+    });
 }
 
 
 /* =========================================================
-   ADD FRIEND
-   ========================================================= */
+   FRIENDS
+========================================================= */
 
 async function addFriend(friendUid){
 
-    if(!currentUser){
+    if(!currentUser || !friendUid){
         return;
     }
 
-    if(friendUid === currentUser.uid){
+    if(friendUid===currentUser.uid){
         return;
     }
 
@@ -1902,18 +1737,13 @@ async function addFriend(friendUid){
         .collection("friends")
         .doc(friendUid)
         .set({
-
             uid:friendUid,
-
             addedAt:
                 firebase.firestore.FieldValue
                 .serverTimestamp()
-
         });
 
-        showToast(
-            "Friend added!"
-        );
+        showToast("Friend added!");
 
     }catch(error){
 
@@ -1922,41 +1752,15 @@ async function addFriend(friendUid){
         showToast(
             "Could not add friend."
         );
-
     }
-
 }
 
-
-/* =========================================================
-   START REALTIME USER LIST
-   ========================================================= */
-
-function startUserListener(){
-
-    if(
-        currentUser &&
-        !usersUnsubscribe
-    ){
-
-        listenForUsers();
-
-    }
-
-}
-
-
-/* =========================================================
-   CHAT PLACEHOLDER
-   ========================================================= */
 
 function openChat(uid){
 
-    const user =
+    const user=
         allUsers.find(
-            function(item){
-                return item.uid === uid;
-            }
+            item=>item.uid===uid
         );
 
     if(!user){
@@ -1964,86 +1768,64 @@ function openChat(uid){
     }
 
     showToast(
-        "Chat with @" +
-        (user.username || "user") +
+        "Chat with @"+
+        (user.username||"user")+
         " will be connected next."
     );
-
 }
 
 
 /* =========================================================
    SEARCH
-   ========================================================= */
+========================================================= */
 
 function searchUsers(){
 
-    const friendSearch =
+    const friendQuery=
         document
         .getElementById("friendSearch")
         .value
         .toLowerCase()
         .trim();
 
-    const chatSearch =
+    const chatQuery=
         document
         .getElementById("chatSearch")
         .value
         .toLowerCase()
         .trim();
 
-    const friendQuery =
-        friendSearch;
+    document
+    .querySelectorAll("#friendList .friend-card")
+    .forEach(function(item){
 
-    const chatQuery =
-        chatSearch;
+        const name=
+            item.getAttribute("data-name")||"";
+
+        item.style.display=
+            name.includes(friendQuery)
+            ? "flex"
+            : "none";
+    });
 
     document
-    .querySelectorAll(
-        "#friendList .friend-card"
-    )
-    .forEach(
-        function(item){
+    .querySelectorAll("#chatList .chat-item")
+    .forEach(function(item){
 
-            const name =
-                item
-                .getAttribute("data-name") ||
-                "";
+        const name=
+            item.getAttribute("data-name")||"";
 
-            item.style.display =
-                name.includes(friendQuery)
-                ? "flex"
-                : "none";
-
-        }
-    );
-
-    document
-    .querySelectorAll(
-        "#chatList .chat-item"
-    )
-    .forEach(
-        function(item){
-
-            const name =
-                item
-                .getAttribute("data-name") ||
-                "";
-
-            item.style.display =
-                name.includes(chatQuery)
-                ? "flex"
-                : "none";
-
-        }
-    );
-
+        item.style.display=
+            name.includes(chatQuery)
+            ? "flex"
+            : "none";
+    });
 }
 
 
 /* =========================================================
    CAMERA
-   ========================================================= */
+========================================================= */
 
 async function startCamera(){
 
@@ -2059,12 +1841,11 @@ async function startCamera(){
             );
 
             return;
-
         }
 
         stopCamera();
 
-        const video =
+        const video=
             document.getElementById("video");
 
         video.setAttribute(
@@ -2072,28 +1853,31 @@ async function startCamera(){
             "true"
         );
 
-        video.muted = true;
+        video.muted=true;
 
-        stream =
-            await navigator
-            .mediaDevices
-            .getUserMedia({
+        stream=
+            await navigator.mediaDevices.getUserMedia({
 
                 video:{
                     facingMode:{
                         ideal:facingMode
+                    },
+
+                    width:{
+                        ideal:1280
+                    },
+
+                    height:{
+                        ideal:720
                     }
                 },
 
-                audio:false
-
+                audio:true
             });
 
-        video.srcObject =
-            stream;
+        video.srcObject=stream;
 
-        video.style.filter =
-            currentFilter;
+        video.style.filter=currentFilter;
 
         await video.play();
 
@@ -2104,31 +1888,22 @@ async function startCamera(){
             error
         );
 
-        if(
-            error.name ===
-            "NotAllowedError"
-        ){
+        if(error.name==="NotAllowedError"){
 
             showToast(
-                "Camera permission was denied."
+                "Allow camera and microphone permission for VibeSnap."
             );
 
-        }else if(
-            error.name ===
-            "NotFoundError"
-        ){
+        }else if(error.name==="NotFoundError"){
 
             showToast(
-                "No camera was found."
+                "No camera or microphone was found."
             );
 
-        }else if(
-            error.name ===
-            "NotReadableError"
-        ){
+        }else if(error.name==="NotReadableError"){
 
             showToast(
-                "The camera is being used by another app."
+                "Camera is already being used by another app."
             );
 
         }else{
@@ -2136,135 +1911,117 @@ async function startCamera(){
             showToast(
                 "Could not start the camera."
             );
-
         }
-
     }
-
 }
 
 
 function stopCamera(){
+
+    if(
+        mediaRecorder &&
+        mediaRecorder.state!=="inactive"
+    ){
+
+        try{
+            mediaRecorder.stop();
+        }catch(e){}
+    }
+
+    mediaRecorder=null;
+    isRecording=false;
+    recordedChunks=[];
 
     if(stream){
 
         stream
         .getTracks()
         .forEach(
-            function(track){
-                track.stop();
-            }
+            track=>track.stop()
         );
 
-        stream = null;
-
+        stream=null;
     }
 
+    const button=
+        document.getElementById(
+            "captureButton"
+        );
+
+    if(button){
+        button.classList.remove("recording");
+    }
+
+    const label=
+        document.getElementById(
+            "recordLabel"
+        );
+
+    if(label){
+        label.textContent="";
+    }
 }
 
 
 async function switchCamera(){
 
-    facingMode =
-        facingMode === "user"
+    if(isRecording){
+        showToast(
+            "Stop recording before switching cameras."
+        );
+        return;
+    }
+
+    facingMode=
+        facingMode==="user"
         ? "environment"
         : "user";
 
     await startCamera();
-
 }
 
 
 /* =========================================================
-   FILTER
-   ========================================================= */
-
-function setFilter(
-    filter,
-    button
-){
-
-    currentFilter =
-        filter;
-
-    document
-    .getElementById("video")
-    .style.filter =
-        filter;
-
-    document
-    .querySelectorAll(
-        ".filter-button"
-    )
-    .forEach(
-        function(btn){
-            btn.classList.remove(
-                "active"
-            );
-        }
-    );
-
-    button.classList.add(
-        "active"
-    );
-
-}
-
-
-/* =========================================================
-   CAPTURE
-   ========================================================= */
+   PHOTO CAPTURE
+========================================================= */
 
 function capturePhoto(){
 
-    const video =
-        document.getElementById(
-            "video"
-        );
+    const video=
+        document.getElementById("video");
 
-    if(!video.videoWidth){
+    if(
+        !video ||
+        !video.videoWidth ||
+        !video.videoHeight
+    ){
 
         showToast(
             "Camera is not ready yet."
         );
 
         return;
-
     }
 
-    const canvas =
-        document.createElement(
-            "canvas"
-        );
+    const canvas=
+        document.createElement("canvas");
 
-    canvas.width =
-        video.videoWidth;
+    canvas.width=video.videoWidth;
+    canvas.height=video.videoHeight;
 
-    canvas.height =
-        video.videoHeight;
+    const context=
+        canvas.getContext("2d");
 
-    const context =
-        canvas.getContext(
-            "2d"
-        );
+    context.filter=currentFilter;
 
-    context.filter =
-        currentFilter;
-
-    if(
-        facingMode === "user"
-    ){
+    if(facingMode==="user"){
 
         context.translate(
             canvas.width,
             0
         );
 
-        context.scale(
-            -1,
-            1
-        );
-
+        context.scale(-1,1);
     }
 
     context.drawImage(
@@ -2275,240 +2032,584 @@ function capturePhoto(){
         canvas.height
     );
 
-    capturedPhoto =
+    capturedPhoto=
         canvas.toDataURL(
             "image/jpeg",
-            0.9
+            .92
         );
 
-    document
-    .getElementById(
-        "previewImage"
-    )
-    .src =
-        capturedPhoto;
+    showPhotoPreview();
+}
+
+
+/* =========================================================
+   VIDEO RECORDING
+========================================================= */
+
+function captureButtonPressed(){
+
+    if(isRecording){
+
+        stopVideoRecording();
+
+    }else{
+
+        capturePhoto();
+    }
+}
+
+
+function startVideoRecording(){
+
+    if(!stream){
+
+        showToast(
+            "Camera is not ready."
+        );
+
+        return;
+    }
+
+    if(!window.MediaRecorder){
+
+        showToast(
+            "Video recording is not supported on this browser."
+        );
+
+        return;
+    }
+
+    recordedChunks=[];
+
+    let mimeType="";
+
+    const types=[
+        "video/webm;codecs=vp9",
+        "video/webm;codecs=vp8",
+        "video/webm",
+        "video/mp4"
+    ];
+
+    for(const type of types){
+
+        if(
+            MediaRecorder.isTypeSupported(type)
+        ){
+
+            mimeType=type;
+            break;
+        }
+    }
+
+    try{
+
+        mediaRecorder=
+            mimeType
+            ? new MediaRecorder(
+                stream,
+                {mimeType:mimeType}
+              )
+            : new MediaRecorder(stream);
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Could not start video recording."
+        );
+
+        return;
+    }
+
+
+    mediaRecorder.ondataavailable=
+        function(event){
+
+            if(
+                event.data &&
+                event.data.size>0
+            ){
+
+                recordedChunks.push(
+                    event.data
+                );
+            }
+        };
+
+
+    mediaRecorder.onstop=
+        function(){
+
+            if(!recordedChunks.length){
+
+                showToast(
+                    "No video was recorded."
+                );
+
+                return;
+            }
+
+            const type=
+                mediaRecorder.mimeType ||
+                "video/webm";
+
+            capturedVideoBlob=
+                new Blob(
+                    recordedChunks,
+                    {type:type}
+                );
+
+            if(capturedVideoURL){
+
+                URL.revokeObjectURL(
+                    capturedVideoURL
+                );
+            }
+
+            capturedVideoURL=
+                URL.createObjectURL(
+                    capturedVideoBlob
+                );
+
+            showVideoPreview();
+
+            recordedChunks=[];
+        };
+
+
+    mediaRecorder.onerror=
+        function(error){
+
+            console.error(
+                "MediaRecorder error:",
+                error
+            );
+
+            showToast(
+                "Video recording failed."
+            );
+        };
+
+
+    mediaRecorder.start(1000);
+
+    isRecording=true;
 
     document
-    .getElementById(
-        "previewPanel"
-    )
-    .classList.add(
-        "active"
+    .getElementById("captureButton")
+    .classList.add("recording");
+
+    document
+    .getElementById("recordLabel")
+    .textContent=
+        "🔴 Recording — tap again to stop";
+
+    showToast(
+        "Video recording started."
     );
+}
 
+
+function stopVideoRecording(){
+
+    if(
+        !mediaRecorder ||
+        mediaRecorder.state==="inactive"
+    ){
+
+        return;
+    }
+
+    mediaRecorder.stop();
+
+    isRecording=false;
+
+    document
+    .getElementById("captureButton")
+    .classList.remove("recording");
+
+    document
+    .getElementById("recordLabel")
+    .textContent="";
+
+    showToast(
+        "Finishing video..."
+    );
+}
+
+
+function startVideoMode(){
+
+    if(isRecording){
+        stopVideoRecording();
+        return;
+    }
+
+    startVideoRecording();
+}
+
+
+/* =========================================================
+   LONG PRESS / VIDEO BUTTON
+========================================================= */
+
+let capturePressTimer=null;
+
+const captureButton=
+    document.getElementById("captureButton");
+
+captureButton.addEventListener(
+    "pointerdown",
+    function(){
+
+        capturePressTimer=
+            setTimeout(
+                function(){
+
+                    if(!isRecording){
+                        startVideoRecording();
+                    }
+
+                },
+                450
+            );
+    }
+);
+
+captureButton.addEventListener(
+    "pointerup",
+    function(){
+
+        clearTimeout(
+            capturePressTimer
+        );
+    }
+);
+
+captureButton.addEventListener(
+    "pointerleave",
+    function(){
+
+        clearTimeout(
+            capturePressTimer
+        );
+    }
+);
+
+
+/* =========================================================
+   PREVIEWS
+========================================================= */
+
+function showPhotoPreview(){
+
+    stopCamera();
+
+    const image=
+        document.getElementById(
+            "previewImage"
+        );
+
+    const video=
+        document.getElementById(
+            "previewVideo"
+        );
+
+    image.src=capturedPhoto;
+    image.style.display="block";
+
+    video.pause();
+    video.removeAttribute("src");
+    video.style.display="none";
+
+    document
+    .getElementById("previewPanel")
+    .classList.add("active");
+}
+
+
+function showVideoPreview(){
+
+    stopCamera();
+
+    const image=
+        document.getElementById(
+            "previewImage"
+        );
+
+    const video=
+        document.getElementById(
+            "previewVideo"
+        );
+
+    image.style.display="none";
+    image.src="";
+
+    video.src=capturedVideoURL;
+    video.style.display="block";
+    video.load();
+
+    document
+    .getElementById("previewPanel")
+    .classList.add("active");
 }
 
 
 /* =========================================================
    RETAKE
-   ========================================================= */
+========================================================= */
 
-function retakePhoto(){
+function retakeMedia(){
 
-    capturedPhoto = null;
+    capturedPhoto=null;
+    capturedVideoBlob=null;
+
+    if(capturedVideoURL){
+
+        URL.revokeObjectURL(
+            capturedVideoURL
+        );
+
+        capturedVideoURL=null;
+    }
+
+    const image=
+        document.getElementById(
+            "previewImage"
+        );
+
+    const video=
+        document.getElementById(
+            "previewVideo"
+        );
+
+    image.src="";
+    image.style.display="none";
+
+    video.pause();
+    video.src="";
+    video.style.display="none";
 
     document
-    .getElementById(
-        "previewPanel"
-    )
-    .classList.remove(
-        "active"
-    );
+    .getElementById("previewPanel")
+    .classList.remove("active");
 
+    startCamera();
 }
 
 
 /* =========================================================
-   MEDIA PICKER
-   ========================================================= */
+   SAVE CAPTURED MEDIA
+========================================================= */
+
+function saveCapturedMedia(){
+
+    if(capturedPhoto){
+
+        document
+        .getElementById("previewPanel")
+        .classList.remove("active");
+
+        showToast(
+            "Photo captured successfully!"
+        );
+
+        capturedPhoto=null;
+
+        startCamera();
+
+        return;
+    }
+
+    if(capturedVideoBlob){
+
+        document
+        .getElementById("previewPanel")
+        .classList.remove("active");
+
+        showToast(
+            "Video recorded successfully!"
+        );
+
+        capturedVideoBlob=null;
+
+        if(capturedVideoURL){
+
+            URL.revokeObjectURL(
+                capturedVideoURL
+            );
+
+            capturedVideoURL=null;
+        }
+
+        startCamera();
+
+        return;
+    }
+
+    showToast(
+        "Capture a photo or video first."
+    );
+}
+
+
+/* =========================================================
+   FILE PICKER
+========================================================= */
 
 function pickMedia(){
 
     document
-    .getElementById(
-        "mediaInput"
-    )
+    .getElementById("mediaInput")
     .click();
-
 }
 
 
 function handleMediaPick(event){
 
-    const file =
+    const file=
         event.target.files[0];
 
     if(!file){
         return;
     }
 
-    if(
-        file.type.startsWith(
-            "image/"
-        )
-    ){
+    if(file.type.startsWith("image/")){
 
-        const reader =
+        const reader=
             new FileReader();
 
-        reader.onload =
+        reader.onload=
             function(e){
 
-                capturedPhoto =
+                capturedPhoto=
                     e.target.result;
 
-                document
-                .getElementById(
-                    "previewImage"
-                )
-                .src =
-                    capturedPhoto;
-
-                document
-                .getElementById(
-                    "previewPanel"
-                )
-                .classList.add(
-                    "active"
-                );
-
+                showPhotoPreview();
             };
 
-        reader.readAsDataURL(
-            file
-        );
+        reader.readAsDataURL(file);
+
+    }else if(
+        file.type.startsWith("video/")
+    ){
+
+        capturedVideoBlob=file;
+
+        if(capturedVideoURL){
+
+            URL.revokeObjectURL(
+                capturedVideoURL
+            );
+        }
+
+        capturedVideoURL=
+            URL.createObjectURL(file);
+
+        showVideoPreview();
 
     }else{
 
         showToast(
-            "Video selection will be connected when media storage is added."
+            "Please select a photo or video."
         );
-
     }
 
-    event.target.value = "";
-
+    event.target.value="";
 }
 
 
 /* =========================================================
-   PHOTO SAVE FOR NOW
-   ========================================================= */
+   FILTERS
+========================================================= */
 
-function sendPhoto(){
+function setFilter(
+    filter,
+    button
+){
 
-    if(!capturedPhoto){
-
-        showToast(
-            "Take a photo first."
-        );
-
-        return;
-
-    }
+    currentFilter=filter;
 
     document
-    .getElementById(
-        "previewPanel"
-    )
-    .classList.remove(
-        "active"
-    );
+    .getElementById("video")
+    .style.filter=filter;
 
-    capturedPhoto = null;
+    document
+    .querySelectorAll(".filter-button")
+    .forEach(function(btn){
 
-    showToast(
-        "Photo captured successfully!"
-    );
+        btn.classList.remove("active");
+    });
 
+    if(button){
+        button.classList.add("active");
+    }
 }
 
 
 /* =========================================================
    NAVIGATION
-   ========================================================= */
+========================================================= */
 
-function openScreen(
-    screen
-){
+function openScreen(screen){
 
     document
-    .querySelectorAll(
-        ".screen"
-    )
-    .forEach(
-        function(section){
-            section.classList.remove(
-                "active"
-            );
-        }
-    );
+    .querySelectorAll(".screen")
+    .forEach(function(section){
 
-    const target =
+        section.classList.remove("active");
+    });
+
+    const target=
         document.getElementById(
-            screen + "Screen"
+            screen+"Screen"
         );
 
     if(target){
-        target.classList.add(
-            "active"
-        );
+        target.classList.add("active");
     }
 
     document
-    .querySelectorAll(
-        ".nav-button"
-    )
-    .forEach(
-        function(button){
-            button.classList.remove(
-                "active"
-            );
-        }
-    );
+    .querySelectorAll(".nav-button")
+    .forEach(function(button){
 
-    const nav =
+        button.classList.remove("active");
+    });
+
+    const nav=
         document.getElementById(
-            "nav" +
-            screen
-            .charAt(0)
-            .toUpperCase() +
+            "nav"+
+            screen.charAt(0).toUpperCase()+
             screen.slice(1)
         );
 
     if(nav){
-        nav.classList.add(
-            "active"
-        );
+        nav.classList.add("active");
     }
 
-    if(
-        screen === "camera"
-    ){
+    if(screen==="camera"){
 
         startCamera();
 
     }else{
 
         stopCamera();
-
     }
 
     if(
-        screen === "friends" ||
-        screen === "chats"
+        screen==="friends" ||
+        screen==="chats"
     ){
 
         loadUsers();
-
     }
-
 }
 
 
 /* =========================================================
    LOGOUT
-   ========================================================= */
+========================================================= */
 
 async function logoutUser(){
 
@@ -2517,10 +2618,7 @@ async function logoutUser(){
     if(usersUnsubscribe){
 
         usersUnsubscribe();
-
-        usersUnsubscribe =
-            null;
-
+        usersUnsubscribe=null;
     }
 
     try{
@@ -2530,19 +2628,15 @@ async function logoutUser(){
     }catch(error){
 
         console.error(error);
-
     }
-
 }
 
 
 /* =========================================================
-   FIREBASE ERROR TEXT
-   ========================================================= */
+   ERRORS
+========================================================= */
 
-function firebaseErrorMessage(
-    error
-){
+function firebaseErrorMessage(error){
 
     if(!error){
         return "Something went wrong.";
@@ -2569,7 +2663,7 @@ function firebaseErrorMessage(
             return "The verification code is incorrect.";
 
         case "auth/code-expired":
-            return "That verification code expired. Request a new one.";
+            return "That verification code expired.";
 
         case "auth/too-many-requests":
             return "Too many attempts. Please try again later.";
@@ -2577,72 +2671,41 @@ function firebaseErrorMessage(
         default:
             return error.message ||
                 "Authentication failed.";
-
     }
-
 }
 
 
 /* =========================================================
    HTML SAFETY
-   ========================================================= */
+========================================================= */
 
-function escapeHtml(
-    value
-){
+function escapeHtml(value){
 
-    return String(value || "")
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
+    return String(value||"")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
 
 
 /* =========================================================
    TOAST
-   ========================================================= */
+========================================================= */
 
-let toastTimer = null;
+function showToast(message){
 
-function showToast(
-    message
-){
+    const toast=
+        document.getElementById("toast");
 
-    const toast =
-        document.getElementById(
-            "toast"
-        );
+    toast.textContent=message;
 
-    toast.textContent =
-        message;
+    toast.classList.add("show");
 
-    toast.classList.add(
-        "show"
-    );
+    clearTimeout(toastTimer);
 
-    clearTimeout(
-        toastTimer
-    );
-
-    toastTimer =
+    toastTimer=
         setTimeout(
             function(){
 
@@ -2653,13 +2716,12 @@ function showToast(
             },
             3000
         );
-
 }
 
 
 /* =========================================================
-   INITIALIZATION
-   ========================================================= */
+   START
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -2672,35 +2734,9 @@ document.addEventListener(
         }catch(error){
 
             console.log(
-                "reCAPTCHA setup delayed."
+                "reCAPTCHA will initialize when needed."
             );
-
         }
-
-    }
-);
-
-
-/* =========================================================
-   START USER LISTENER AFTER AUTH
-   ========================================================= */
-
-auth.onAuthStateChanged(
-    function(user){
-
-        if(user){
-
-            setTimeout(
-                function(){
-
-                    startUserListener();
-
-                },
-                500
-            );
-
-        }
-
     }
 );
 
@@ -2708,4 +2744,3 @@ auth.onAuthStateChanged(
 
 </body>
 </html>
-```
