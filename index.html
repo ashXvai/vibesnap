@@ -111,57 +111,6 @@ button{
     font-size:14px;
 }
 
-.auth-option{
-    width:100%;
-    display:flex;
-    align-items:center;
-    gap:15px;
-    padding:16px;
-    margin-bottom:12px;
-    border-radius:14px;
-    background:#202020;
-    border:1px solid #333;
-    color:white;
-    text-align:left;
-    transition:.2s;
-}
-
-.auth-option:hover{
-    border-color:#ffd400;
-    background:#252525;
-}
-
-.auth-option-icon{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-    background:#292929;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    flex-shrink:0;
-}
-
-.auth-option-content{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-}
-
-.auth-option-content strong{
-    font-size:15px;
-}
-
-.auth-option-content small{
-    color:#999;
-    font-size:12px;
-}
-
-.owner-option{
-    border-color:#665800;
-}
-
 .auth-message{
     min-height:20px;
     margin-top:15px;
@@ -686,14 +635,9 @@ button{
     opacity:1;
 }
 
-.toast.show{
-    opacity:1;
-}
-
 /* ================= MOBILE ================= */
 
 @media(max-width:600px){
-
     .auth-box{
         padding:30px 20px;
     }
@@ -701,9 +645,44 @@ button{
     .camera-container{
         min-height:calc(100vh - 75px);
     }
-
 }
+
+/* ================= FIREBASE AUTH UI ================= */
+.auth-choice{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.auth-choice button{width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#171717;color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+.auth-choice button.primary{background:#ffd400;color:#111;border-color:#ffd400}
+.auth-choice button:hover{filter:brightness(1.08)}
+.auth-back{margin-top:12px}
+.phone-row{display:flex;gap:8px}
+.phone-row .auth-input{flex:1}
+#recaptcha-container{margin:10px 0}
+.auth-note{font-size:12px;color:#888;line-height:1.5;margin-top:10px}
+
 </style>
+
+<!-- Firebase Web SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
+  authDomain: "vibesnap-213d4.firebaseapp.com",
+  projectId: "vibesnap-213d4",
+  storageBucket: "vibesnap-213d4.firebasestorage.app",
+  messagingSenderId: "933479938239",
+  appId: "1:933479938239:web:d120d7ba99f5665987ae0a",
+  measurementId: "G-HP0QL3C8Y"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+auth.languageCode = 'en';
+</script>
+
 </head>
 
 <body>
@@ -711,394 +690,85 @@ button{
 <!-- ================= AUTH ================= -->
 
 <section id="authScreen" class="auth-screen">
-
-    <div class="auth-box">
-
-        <div class="auth-logo">
-            Vibe<span>Snap</span>
-        </div>
-
-        <p class="auth-subtitle">
-            Connect. Share. Vibe.
-        </p>
-
-
-        <!-- LOGIN OPTIONS -->
-
-        <div id="loginForm">
-
-            <div class="auth-title">
-                How do you want to continue?
-            </div>
-
-            <button
-                class="auth-option owner-option"
-                onclick="showFriendLogin()"
-            >
-                <span class="auth-option-icon">👑</span>
-
-                <span class="auth-option-content">
-                    <strong>Owner's Friend</strong>
-                    <small>Username &amp; password</small>
-                </span>
-            </button>
-
-
-            <button
-                class="auth-option"
-                onclick="showEmailLogin()"
-            >
-                <span class="auth-option-icon">📧</span>
-
-                <span class="auth-option-content">
-                    <strong>Gmail Login</strong>
-                    <small>Sign in with an email OTP</small>
-                </span>
-            </button>
-
-
-            <button
-                class="auth-option"
-                onclick="showGoogleLogin()"
-            >
-                <span class="auth-option-icon">🔵</span>
-
-                <span class="auth-option-content">
-                    <strong>Google Login</strong>
-                    <small>Continue with Google</small>
-                </span>
-            </button>
-
-
-            <button
-                class="auth-option"
-                onclick="showPhoneLogin()"
-            >
-                <span class="auth-option-icon">📱</span>
-
-                <span class="auth-option-content">
-                    <strong>Phone Number Login</strong>
-                    <small>Sign in with a phone OTP</small>
-                </span>
-            </button>
-
-            <p
-                id="loginMessage"
-                class="auth-message"
-            ></p>
-
-        </div>
-
-
-        <!-- OWNER'S FRIEND LOGIN -->
-
-        <div
-            id="friendLoginForm"
-            style="display:none;"
-        >
-
-            <div class="auth-title">
-                Owner's Friend
-            </div>
-
-            <input
-                id="loginUsername"
-                class="auth-input"
-                type="text"
-                placeholder="Username"
-                autocomplete="username"
-            >
-
-            <input
-                id="loginPassword"
-                class="auth-input"
-                type="password"
-                placeholder="Password"
-                autocomplete="current-password"
-            >
-
-            <button
-                class="auth-button"
-                onclick="loginUser()"
-            >
-                Log In
-            </button>
-
-            <button
-                class="auth-secondary"
-                onclick="showSignup()"
-            >
-                Request a Friend Account
-            </button>
-
-            <button
-                class="auth-secondary"
-                onclick="showLogin()"
-            >
-                ← Back
-            </button>
-
-            <p
-                id="friendLoginMessage"
-                class="auth-message"
-            ></p>
-
-        </div>
-
-
-        <!-- EMAIL LOGIN -->
-
-        <div
-            id="emailLoginForm"
-            style="display:none;"
-        >
-
-            <div class="auth-title">
-                Gmail Login
-            </div>
-
-            <p style="color:#999;line-height:1.5;margin-bottom:18px;">
-                Enter your Gmail address and we'll verify it with an OTP.
-            </p>
-
-            <input
-                id="emailLoginInput"
-                class="auth-input"
-                type="email"
-                placeholder="yourname@gmail.com"
-                autocomplete="email"
-            >
-
-            <button
-                class="auth-button"
-                onclick="requestEmailOtp()"
-            >
-                Send OTP
-            </button>
-
-            <button
-                class="auth-secondary"
-                onclick="showLogin()"
-            >
-                ← Back
-            </button>
-
-            <p
-                id="emailLoginMessage"
-                class="auth-message"
-            ></p>
-
-        </div>
-
-
-        <!-- GOOGLE LOGIN -->
-
-        <div
-            id="googleLoginForm"
-            style="display:none;"
-        >
-
-            <div style="font-size:55px;margin-bottom:15px;">
-                🔵
-            </div>
-
-            <div class="auth-title">
-                Google Login
-            </div>
-
-            <p style="color:#999;line-height:1.6;margin-bottom:20px;">
-                Continue securely with your Google account.
-            </p>
-
-            <button
-                class="auth-button"
-                onclick="startGoogleLogin()"
-            >
-                Continue with Google
-            </button>
-
-            <button
-                class="auth-secondary"
-                onclick="showLogin()"
-            >
-                ← Back
-            </button>
-
-            <p
-                id="googleLoginMessage"
-                class="auth-message"
-            ></p>
-
-        </div>
-
-
-        <!-- PHONE LOGIN -->
-
-        <div
-            id="phoneLoginForm"
-            style="display:none;"
-        >
-
-            <div class="auth-title">
-                Phone Number Login
-            </div>
-
-            <input
-                id="phoneLoginInput"
-                class="auth-input"
-                type="tel"
-                placeholder="+91 9876543210"
-                autocomplete="tel"
-            >
-
-            <button
-                class="auth-button"
-                onclick="requestPhoneOtp()"
-            >
-                Send OTP
-            </button>
-
-            <button
-                class="auth-secondary"
-                onclick="showLogin()"
-            >
-                ← Back
-            </button>
-
-            <p
-                id="phoneLoginMessage"
-                class="auth-message"
-            ></p>
-
-        </div>
-
-
-        <!-- SIGNUP -->
-
-        <div
-            id="signupForm"
-            style="display:none;"
-        >
-
-            <div class="auth-title">
-                Create Friend Account
-            </div>
-
-            <label
-                for="signupPhotoInput"
-                class="photo-picker"
-                id="photoPicker"
-            >
-
-                <span
-                    id="photoPickerIcon"
-                    class="photo-picker-icon"
-                >
-                    📷
-                </span>
-
-                <img
-                    id="signupPhotoPreview"
-                    style="display:none;"
-                    alt="Profile photo"
-                >
-
-            </label>
-
-            <div class="photo-picker-text">
-                Profile photo is optional
-            </div>
-
-            <input
-                id="signupPhotoInput"
-                type="file"
-                accept="image/*"
-                onchange="previewSignupPhoto(event)"
-            >
-
-            <input
-                id="signupUsername"
-                class="auth-input"
-                type="text"
-                placeholder="Choose a username"
-                autocomplete="username"
-                maxlength="20"
-            >
-
-            <input
-                id="signupPassword"
-                class="auth-input"
-                type="password"
-                placeholder="Create a password"
-                autocomplete="new-password"
-            >
-
-            <input
-                id="signupConfirmPassword"
-                class="auth-input"
-                type="password"
-                placeholder="Confirm password"
-                autocomplete="new-password"
-            >
-
-            <button
-                class="auth-button"
-                onclick="requestAccount()"
-            >
-                Request Access
-            </button>
-
-            <button
-                class="auth-secondary"
-                onclick="showFriendLogin()"
-            >
-                ← Back
-            </button>
-
-            <p
-                id="signupMessage"
-                class="auth-message"
-            ></p>
-
-        </div>
-
-
-        <!-- PENDING -->
-
-        <div
-            id="pendingForm"
-            style="display:none;"
-        >
-
-            <div style="font-size:55px;margin-bottom:15px;">
-                ⏳
-            </div>
-
-            <div class="auth-title">
-                Request Sent
-            </div>
-
-            <p style="color:#999;line-height:1.6;">
-                Your VibeSnap account request has been sent to the owner.
-            </p>
-
-            <p style="color:#999;line-height:1.6;margin-top:10px;">
-                You'll be able to log in after your account is approved.
-            </p>
-
-            <button
-                class="auth-secondary"
-                onclick="showFriendLogin()"
-            >
-                Back to Friend Login
-            </button>
-
-        </div>
-
+<div class="auth-box">
+  <div class="auth-logo">Vibe<span>Snap</span></div>
+  <p class="auth-subtitle">Connect. Share. Vibe.</p>
+
+  <!-- AUTH CHOICES -->
+  <div id="authChoices">
+    <div class="auth-title">Welcome to VibeSnap</div>
+    <div class="auth-choice">
+      <button class="primary" onclick="showFriendLogin()">👥 Owner's Friend</button>
+      <button onclick="showGmailOtp()">✉️ Gmail OTP</button>
+      <button onclick="googleLogin()">🔵 Continue with Google</button>
+      <button onclick="showPhoneLogin()">📱 Phone Number OTP</button>
     </div>
+    <p class="auth-note">Google uses Google's secure sign-in window. Phone sign-in uses an SMS verification code.</p>
+    <p id="choiceMessage" class="auth-message"></p>
+  </div>
 
+  <!-- OWNER'S FRIEND -->
+  <div id="friendForm" style="display:none;">
+    <div class="auth-title">Owner's Friend</div>
+    <input id="loginUsername" class="auth-input" type="text" placeholder="Username" autocomplete="username">
+    <input id="loginPassword" class="auth-input" type="password" placeholder="Password" autocomplete="current-password">
+    <button class="auth-button" onclick="loginUser()">Log In</button>
+    <button class="auth-secondary" onclick="showSignup()">Create a friend account</button>
+    <button class="auth-secondary auth-back" onclick="showAuthChoices()">← Back</button>
+    <p id="loginMessage" class="auth-message"></p>
+  </div>
+
+  <!-- FRIEND SIGNUP -->
+  <div id="signupForm" style="display:none;">
+    <div class="auth-title">Request Friend Access</div>
+    <label for="signupPhotoInput" class="photo-picker" id="photoPicker">
+      <span id="photoPickerIcon" class="photo-picker-icon">📷</span>
+      <img id="signupPhotoPreview" style="display:none;" alt="Profile photo">
+    </label>
+    <div class="photo-picker-text">Profile photo is optional</div>
+    <input id="signupPhotoInput" type="file" accept="image/*" onchange="previewSignupPhoto(event)">
+    <input id="signupUsername" class="auth-input" type="text" placeholder="Choose a username" autocomplete="username" maxlength="20">
+    <input id="signupPassword" class="auth-input" type="password" placeholder="Create a password" autocomplete="new-password">
+    <input id="signupConfirmPassword" class="auth-input" type="password" placeholder="Confirm password" autocomplete="new-password">
+    <button class="auth-button" onclick="requestAccount()">Request Access</button>
+    <button class="auth-secondary" onclick="showFriendLogin()">← Back</button>
+    <p id="signupMessage" class="auth-message"></p>
+  </div>
+
+  <!-- GMAIL OTP -->
+  <div id="gmailForm" style="display:none;">
+    <div class="auth-title">Gmail OTP</div>
+    <input id="gmailAddress" class="auth-input" type="email" placeholder="Your Gmail address" autocomplete="email">
+    <button class="auth-button" onclick="requestGmailOtp()">Send OTP</button>
+    <input id="gmailOtp" class="auth-input" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit OTP" style="display:none;">
+    <button id="gmailVerifyBtn" class="auth-button" onclick="verifyGmailOtp()" style="display:none;">Verify OTP</button>
+    <p id="gmailMessage" class="auth-message"></p>
+    <p class="auth-note">The numeric Gmail OTP needs the secure VibeSnap email backend. This page is ready for that backend endpoint.</p>
+    <button class="auth-secondary" onclick="showAuthChoices()">← Back</button>
+  </div>
+
+  <!-- PHONE OTP -->
+  <div id="phoneForm" style="display:none;">
+    <div class="auth-title">Phone Number OTP</div>
+    <input id="phoneNumber" class="auth-input" type="tel" placeholder="+91 9876543210" autocomplete="tel">
+    <div id="recaptcha-container"></div>
+    <button class="auth-button" onclick="sendPhoneOtp()">Send OTP</button>
+    <input id="phoneOtp" class="auth-input" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit OTP" style="display:none;">
+    <button id="phoneVerifyBtn" class="auth-button" onclick="verifyPhoneOtp()" style="display:none;">Verify OTP</button>
+    <p id="phoneMessage" class="auth-message"></p>
+    <button class="auth-secondary" onclick="showAuthChoices()">← Back</button>
+  </div>
+
+  <!-- PENDING -->
+  <div id="pendingForm" style="display:none;">
+    <div style="font-size:55px;margin-bottom:15px;">⏳</div>
+    <div class="auth-title">Request Sent</div>
+    <p style="color:#999;line-height:1.6;">Your VibeSnap account request has been sent to the owner.</p>
+    <p style="color:#999;line-height:1.6;margin-top:10px;">You'll be able to log in after your account is approved.</p>
+    <button class="auth-secondary" onclick="showAuthChoices()">Back</button>
+  </div>
+</div>
 </section>
-
 
 <!-- ================= APP ================= -->
 
@@ -1107,10 +777,7 @@ button{
 
     <!-- CAMERA -->
 
-    <section
-        id="cameraScreen"
-        class="screen active"
-    >
+    <section id="cameraScreen" class="screen active">
 
         <div class="camera-container">
 
@@ -1175,7 +842,7 @@ button{
                         class="filter-button"
                         onclick="setFilter('grayscale(1)',this)"
                     >
-                        B&amp;W
+                        B&W
                     </button>
 
                     <button
@@ -1220,10 +887,7 @@ button{
 
     <!-- CHATS -->
 
-    <section
-        id="chatsScreen"
-        class="screen"
-    >
+    <section id="chatsScreen" class="screen">
 
         <div class="top-bar">
 
@@ -1248,10 +912,7 @@ button{
 
         </div>
 
-        <div
-            class="chat-list"
-            id="chatList"
-        >
+        <div class="chat-list" id="chatList">
 
             <div class="chat-item">
 
@@ -1301,10 +962,7 @@ button{
 
     <!-- FRIENDS -->
 
-    <section
-        id="friendsScreen"
-        class="screen"
-    >
+    <section id="friendsScreen" class="screen">
 
         <div class="top-bar">
 
@@ -1378,10 +1036,7 @@ button{
 
     <!-- PROFILE -->
 
-    <section
-        id="profileScreen"
-        class="screen"
-    >
+    <section id="profileScreen" class="screen">
 
         <div class="top-bar">
 
@@ -1635,7 +1290,8 @@ button{
 <div
     id="toast"
     class="toast"
-></div>
+>
+</div>
 
 
 <!-- ================= HIDDEN FILE INPUT ================= -->
@@ -1652,245 +1308,142 @@ button{
 <script>
 
 /* ================= VARIABLES ================= */
-
 let stream = null;
-
 let facingMode = "user";
-
 let currentFilter = "none";
-
 let capturedPhoto = null;
-
 let selectedFriends = [];
-
 let signupPhoto = null;
-
-let demoUser = null;
-
+let confirmationResult = null;
+let recaptchaVerifier = null;
 
 /* ================= AUTH UI ================= */
-
-function hideAllAuthForms(){
-
-    document.getElementById("loginForm").style.display = "none";
-
-    document.getElementById("friendLoginForm").style.display = "none";
-
-    document.getElementById("emailLoginForm").style.display = "none";
-
-    document.getElementById("googleLoginForm").style.display = "none";
-
-    document.getElementById("phoneLoginForm").style.display = "none";
-
-    document.getElementById("signupForm").style.display = "none";
-
-    document.getElementById("pendingForm").style.display = "none";
-
+function hideAuthPanels(){
+  ["authChoices","friendForm","signupForm","gmailForm","phoneForm","pendingForm"].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display="none";
+  });
 }
-
-
-function showLogin(){
-
-    hideAllAuthForms();
-
-    document.getElementById("loginForm").style.display = "block";
-
-    clearMessages();
-
-}
-
-
-function showFriendLogin(){
-
-    hideAllAuthForms();
-
-    document.getElementById("friendLoginForm").style.display = "block";
-
-    clearMessages();
-
-}
-
-
-function showEmailLogin(){
-
-    hideAllAuthForms();
-
-    document.getElementById("emailLoginForm").style.display = "block";
-
-    clearMessages();
-
-}
-
-
-function showGoogleLogin(){
-
-    hideAllAuthForms();
-
-    document.getElementById("googleLoginForm").style.display = "block";
-
-    clearMessages();
-
-}
-
-
-function showPhoneLogin(){
-
-    hideAllAuthForms();
-
-    document.getElementById("phoneLoginForm").style.display = "block";
-
-    clearMessages();
-
-}
-
-
-function showSignup(){
-
-    hideAllAuthForms();
-
-    document.getElementById("signupForm").style.display = "block";
-
-    clearMessages();
-
-}
-
-
-function showPending(){
-
-    hideAllAuthForms();
-
-    document.getElementById("pendingForm").style.display = "block";
-
-    clearMessages();
-
-}
-
-
+function showAuthChoices(){ hideAuthPanels(); document.getElementById("authChoices").style.display="block"; clearMessages(); }
+function showLogin(){ showAuthChoices(); }
+function showFriendLogin(){ hideAuthPanels(); document.getElementById("friendForm").style.display="block"; clearMessages(); }
+function showSignup(){ hideAuthPanels(); document.getElementById("signupForm").style.display="block"; clearMessages(); }
+function showGmailOtp(){ hideAuthPanels(); document.getElementById("gmailForm").style.display="block"; clearMessages(); }
+function showPhoneLogin(){ hideAuthPanels(); document.getElementById("phoneForm").style.display="block"; clearMessages(); setupRecaptcha(); }
+function showPending(){ hideAuthPanels(); document.getElementById("pendingForm").style.display="block"; clearMessages(); }
 function clearMessages(){
+  ["choiceMessage","loginMessage","signupMessage","gmailMessage","phoneMessage"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="";});
+}
+function showLoginMessage(message){ document.getElementById("loginMessage").textContent=message; }
+function showSignupMessage(message){ document.getElementById("signupMessage").textContent=message; }
 
-    document.getElementById("loginMessage").textContent = "";
-
-    document.getElementById("friendLoginMessage").textContent = "";
-
-    document.getElementById("emailLoginMessage").textContent = "";
-
-    document.getElementById("googleLoginMessage").textContent = "";
-
-    document.getElementById("phoneLoginMessage").textContent = "";
-
-    document.getElementById("signupMessage").textContent = "";
-
+/* ================= FIREBASE PROFILE ================= */
+async function saveUserProfile(user, extra={}){
+  const ref=db.collection("users").doc(user.uid);
+  const snap=await ref.get();
+  const base={
+    uid:user.uid,
+    displayName:user.displayName || extra.username || "VibeSnap User",
+    username:extra.username || (user.email ? user.email.split("@")[0] : (user.phoneNumber || "user").replace(/\D/g,"").slice(-8)),
+    photoURL:user.photoURL || extra.photo || "",
+    provider:extra.provider || "firebase",
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if(!snap.exists) base.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+  await ref.set(base,{merge:true});
+}
+async function finishFirebaseLogin(user, extra={}){
+  await saveUserProfile(user,extra);
+  enterMainApp({username:extra.username || user.displayName || user.email?.split("@")[0] || user.phoneNumber || "VibeSnap User",photo:user.photoURL || extra.photo || "",firebaseUser:user});
 }
 
-
-function showLoginMessage(message){
-
-    document.getElementById("friendLoginMessage").textContent = message;
-
+/* ================= GOOGLE LOGIN ================= */
+async function googleLogin(){
+  try{
+    const provider=new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({prompt:"select_account"});
+    const result=await auth.signInWithPopup(provider);
+    await finishFirebaseLogin(result.user,{provider:"google"});
+  }catch(error){
+    const msg=error.code==="auth/popup-closed-by-user" ? "Google sign-in was cancelled." : (error.message || "Google sign-in failed.");
+    document.getElementById("choiceMessage").textContent=msg;
+  }
 }
 
-
-function showSignupMessage(message){
-
-    document.getElementById("signupMessage").textContent = message;
-
+/* ================= PHONE OTP ================= */
+function setupRecaptcha(){
+  if(recaptchaVerifier) return;
+  recaptchaVerifier=new firebase.auth.RecaptchaVerifier("recaptcha-container",{size:"normal",callback:()=>{}});
+  recaptchaVerifier.render().catch(()=>{});
+}
+async function sendPhoneOtp(){
+  const phone=document.getElementById("phoneNumber").value.trim();
+  if(!/^\+[1-9]\d{7,14}$/.test(phone)){
+    document.getElementById("phoneMessage").textContent="Enter the number in international format, for example +919876543210."; return;
+  }
+  try{
+    setupRecaptcha();
+    confirmationResult=await auth.signInWithPhoneNumber(phone,recaptchaVerifier);
+    document.getElementById("phoneOtp").style.display="block";
+    document.getElementById("phoneVerifyBtn").style.display="block";
+    document.getElementById("phoneMessage").textContent="OTP sent. Enter the code from the SMS.";
+  }catch(error){
+    document.getElementById("phoneMessage").textContent=error.message || "Could not send the OTP.";
+    if(recaptchaVerifier){try{await recaptchaVerifier.clear();}catch(e){} recaptchaVerifier=null;}
+  }
+}
+async function verifyPhoneOtp(){
+  const code=document.getElementById("phoneOtp").value.trim();
+  if(!confirmationResult){document.getElementById("phoneMessage").textContent="Send the OTP first.";return;}
+  if(!/^\d{6}$/.test(code)){document.getElementById("phoneMessage").textContent="Enter the 6-digit OTP.";return;}
+  try{
+    const result=await confirmationResult.confirm(code);
+    await finishFirebaseLogin(result.user,{provider:"phone"});
+  }catch(error){document.getElementById("phoneMessage").textContent=error.message || "Incorrect or expired OTP.";}
 }
 
-
-/* ================= EMAIL / GOOGLE / PHONE UI ================= */
-
-function requestEmailOtp(){
-
-    const email =
-        document
-        .getElementById("emailLoginInput")
-        .value
-        .trim();
-
-
-    if(!email){
-
-        document
-            .getElementById("emailLoginMessage")
-            .textContent =
-            "Enter your Gmail address.";
-
-        return;
-
-    }
-
-
-    if(!email.toLowerCase().endsWith("@gmail.com")){
-
-        document
-            .getElementById("emailLoginMessage")
-            .textContent =
-            "Please enter a Gmail address.";
-
-        return;
-
-    }
-
-
-    document
-        .getElementById("emailLoginMessage")
-        .textContent =
-        "Gmail OTP will be connected next.";
-
+/* ================= OWNER'S FRIEND ================= */
+async function requestAccount(){
+  const username=document.getElementById("signupUsername").value.trim();
+  const password=document.getElementById("signupPassword").value;
+  const confirmPassword=document.getElementById("signupConfirmPassword").value;
+  if(!username){showSignupMessage("Please choose a username.");return;}
+  if(!/^[A-Za-z0-9_]{3,20}$/.test(username)){showSignupMessage("Use 3–20 letters, numbers, or underscores.");return;}
+  if(password.length<6){showSignupMessage("Password must be at least 6 characters.");return;}
+  if(password!==confirmPassword){showSignupMessage("Passwords do not match.");return;}
+  try{
+    const existing=await db.collection("signupRequests").where("username","==",username.toLowerCase()).limit(1).get();
+    if(!existing.empty){showSignupMessage("That username is already requested.");return;}
+    await db.collection("signupRequests").add({username:username.toLowerCase(),photo:signupPhoto || "",status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showPending();
+  }catch(error){showSignupMessage("Could not send the request: "+(error.message||"unknown error"));}
 }
 
-
-function startGoogleLogin(){
-
-    document
-        .getElementById("googleLoginMessage")
-        .textContent =
-        "Google Login will be connected next.";
-
+async function loginUser(){
+  const username=document.getElementById("loginUsername").value.trim().toLowerCase();
+  const password=document.getElementById("loginPassword").value;
+  if(!username||!password){showLoginMessage("Enter your username and password.");return;}
+  showLoginMessage("Owner approval login is being connected securely. Your password is not stored in this webpage.");
 }
 
-
-function requestPhoneOtp(){
-
-    const phone =
-        document
-        .getElementById("phoneLoginInput")
-        .value
-        .trim();
-
-
-    if(!phone){
-
-        document
-            .getElementById("phoneLoginMessage")
-            .textContent =
-            "Enter your phone number.";
-
-        return;
-
-    }
-
-
-    document
-        .getElementById("phoneLoginMessage")
-        .textContent =
-        "Phone OTP will be connected next.";
-
+/* ================= GMAIL OTP BACKEND HOOK ================= */
+async function requestGmailOtp(){
+  const email=document.getElementById("gmailAddress").value.trim().toLowerCase();
+  if(!/^[^\s@]+@gmail\.com$/.test(email)){document.getElementById("gmailMessage").textContent="Enter a Gmail address.";return;}
+  document.getElementById("gmailMessage").textContent="Gmail OTP backend is not deployed yet. No code was sent.";
 }
-
+async function verifyGmailOtp(){
+  document.getElementById("gmailMessage").textContent="Gmail OTP verification backend is not deployed yet.";
+}
 
 /* ================= SIGNUP PHOTO ================= */
 
 function previewSignupPhoto(event){
 
-    const file =
-        event.target.files[0];
-
+    const file = event.target.files[0];
 
     if(!file){
         return;
     }
-
 
     if(!file.type.startsWith("image/")){
 
@@ -1899,217 +1452,30 @@ function previewSignupPhoto(event){
         );
 
         return;
-
     }
 
+    const reader = new FileReader();
 
-    const reader =
-        new FileReader();
+    reader.onload = function(e){
 
-
-    reader.onload =
-    function(e){
-
-        signupPhoto =
-            e.target.result;
-
+        signupPhoto = e.target.result;
 
         const image =
             document.getElementById(
                 "signupPhotoPreview"
             );
 
+        image.src = signupPhoto;
 
-        image.src =
-            signupPhoto;
+        image.style.display = "block";
 
-
-        image.style.display =
-            "block";
-
-
-        document
-            .getElementById(
-                "photoPickerIcon"
-            )
-            .style.display =
-            "none";
+        document.getElementById(
+            "photoPickerIcon"
+        ).style.display = "none";
 
     };
-
 
     reader.readAsDataURL(file);
-
-}
-
-
-/* ================= REQUEST ACCOUNT ================= */
-
-function requestAccount(){
-
-    const username =
-        document
-        .getElementById("signupUsername")
-        .value
-        .trim();
-
-
-    const password =
-        document
-        .getElementById("signupPassword")
-        .value;
-
-
-    const confirmPassword =
-        document
-        .getElementById("signupConfirmPassword")
-        .value;
-
-
-    if(!username){
-
-        showSignupMessage(
-            "Please choose a username."
-        );
-
-        return;
-
-    }
-
-
-    if(username.length < 3){
-
-        showSignupMessage(
-            "Username must be at least 3 characters."
-        );
-
-        return;
-
-    }
-
-
-    if(password.length < 6){
-
-        showSignupMessage(
-            "Password must be at least 6 characters."
-        );
-
-        return;
-
-    }
-
-
-    if(password !== confirmPassword){
-
-        showSignupMessage(
-            "Passwords do not match."
-        );
-
-        return;
-
-    }
-
-
-    demoUser = {
-
-        username:username,
-
-        password:password,
-
-        photo:signupPhoto,
-
-        status:"pending"
-
-    };
-
-
-    showPending();
-
-}
-
-
-/* ================= FRIEND LOGIN ================= */
-
-function loginUser(){
-
-    const username =
-        document
-        .getElementById("loginUsername")
-        .value
-        .trim();
-
-
-    const password =
-        document
-        .getElementById("loginPassword")
-        .value;
-
-
-    if(!username || !password){
-
-        showLoginMessage(
-            "Enter your username and password."
-        );
-
-        return;
-
-    }
-
-
-    if(
-        demoUser &&
-        demoUser.username === username &&
-        demoUser.password === password
-    ){
-
-        if(demoUser.status === "pending"){
-
-            showLoginMessage(
-                "Your account is still waiting for approval."
-            );
-
-            return;
-
-        }
-
-
-        enterMainApp(demoUser);
-
-        return;
-
-    }
-
-
-    showLoginMessage(
-        "Account not found or not approved yet."
-    );
-
-}
-
-
-/* ================= DEMO APPROVAL ================= */
-
-function approveDemoAccount(){
-
-    if(!demoUser){
-
-        showToast(
-            "No signup request found."
-        );
-
-        return;
-
-    }
-
-
-    demoUser.status =
-        "approved";
-
-
-    showToast(
-        "Demo account approved."
-    );
-
 }
 
 
@@ -2144,6 +1510,10 @@ function enterMainApp(user){
         .textContent =
         "@" + user.username;
 
+
+    /* =================
+       PROFILE PHOTO
+       ================= */
 
     if(user.photo){
 
@@ -2183,6 +1553,9 @@ function enterMainApp(user){
             "none";
 
     }else{
+
+        /* NO PHOTO:
+           Use first letter */
 
         document
             .getElementById("profileImage")
@@ -2235,7 +1608,6 @@ async function startCamera(){
 
         stopCamera();
 
-
         stream =
             await navigator.mediaDevices.getUserMedia({
 
@@ -2251,19 +1623,14 @@ async function startCamera(){
         const video =
             document.getElementById("video");
 
-
-        video.srcObject =
-            stream;
-
+        video.srcObject = stream;
 
         video.style.filter =
             currentFilter;
 
-
     }catch(error){
 
         console.log(error);
-
 
         showToast(
             "Camera permission is needed."
@@ -2278,13 +1645,9 @@ function stopCamera(){
 
     if(stream){
 
-        stream
-            .getTracks()
-            .forEach(
-                track =>
-                track.stop()
-            );
-
+        stream.getTracks().forEach(
+            track => track.stop()
+        );
 
         stream = null;
 
@@ -2300,7 +1663,6 @@ async function switchCamera(){
         ? "environment"
         : "user";
 
-
     await startCamera();
 
 }
@@ -2310,9 +1672,7 @@ async function switchCamera(){
 
 function setFilter(filter,button){
 
-    currentFilter =
-        filter;
-
+    currentFilter = filter;
 
     document
         .getElementById("video")
@@ -2348,7 +1708,6 @@ function capturePhoto(){
         );
 
         return;
-
     }
 
 
@@ -2358,7 +1717,6 @@ function capturePhoto(){
 
     canvas.width =
         video.videoWidth;
-
 
     canvas.height =
         video.videoHeight;
@@ -2379,11 +1737,7 @@ function capturePhoto(){
             0
         );
 
-
-        context.scale(
-            -1,
-            1
-        );
+        context.scale(-1,1);
 
     }
 
@@ -2421,9 +1775,7 @@ function capturePhoto(){
 
 function retakePhoto(){
 
-    capturedPhoto =
-        null;
-
+    capturedPhoto = null;
 
     document
         .getElementById("previewPanel")
@@ -2447,7 +1799,6 @@ function handleMediaPick(event){
 
     const file =
         event.target.files[0];
-
 
     if(!file){
         return;
@@ -2491,8 +1842,7 @@ function handleMediaPick(event){
     }
 
 
-    event.target.value =
-        "";
+    event.target.value = "";
 
 }
 
@@ -2508,7 +1858,6 @@ function openSendPanel(){
         );
 
         return;
-
     }
 
 
@@ -2537,14 +1886,11 @@ function closeSendPanelOutside(event){
 
 function sendPhoto(){
 
-    selectedFriends =
-        [];
+    selectedFriends = [];
 
 
     document
-        .querySelectorAll(
-            ".friend-checkbox:checked"
-        )
+        .querySelectorAll(".friend-checkbox:checked")
         .forEach(
             checkbox =>
             selectedFriends.push(
@@ -2560,7 +1906,6 @@ function sendPhoto(){
         );
 
         return;
-
     }
 
 
@@ -2575,13 +1920,10 @@ function sendPhoto(){
 
 
     document
-        .querySelectorAll(
-            ".friend-checkbox"
-        )
+        .querySelectorAll(".friend-checkbox")
         .forEach(
             checkbox =>
-            checkbox.checked =
-                false
+            checkbox.checked = false
         );
 
 
@@ -2592,8 +1934,7 @@ function sendPhoto(){
     );
 
 
-    capturedPhoto =
-        null;
+    capturedPhoto = null;
 
 }
 
@@ -2693,7 +2034,6 @@ function logoutUser(){
 
     stopCamera();
 
-
     document
         .getElementById("app")
         .classList.add("hidden");
@@ -2704,7 +2044,7 @@ function logoutUser(){
         .classList.remove("hidden");
 
 
-    showLogin();
+    showAuthChoices();
 
 }
 
@@ -2749,7 +2089,7 @@ document.addEventListener(
     "DOMContentLoaded",
     function(){
 
-        showLogin();
+        showAuthChoices();
 
     }
 );
