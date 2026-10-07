@@ -844,8 +844,6 @@ button{
                     </div>
 
 
-                    <!-- PHOTO CONTROLS -->
-
                     <div
                         id="photoCameraControls"
                         class="cameraBottom">
@@ -877,8 +875,6 @@ button{
 
                     </div>
 
-
-                    <!-- VIDEO CONTROLS -->
 
                     <div
                         id="videoCameraControls"
@@ -912,8 +908,6 @@ button{
                     </div>
 
 
-                    <!-- PHOTO PREVIEW -->
-
                     <div
                         id="photoPreviewControls"
                         class="previewControls">
@@ -933,8 +927,6 @@ button{
 
                     </div>
 
-
-                    <!-- VIDEO PREVIEW -->
 
                     <div
                         id="videoPreviewControls"
@@ -1105,6 +1097,8 @@ let currentChatUser = null;
 let currentChatId = null;
 let unsubscribeMessages = null;
 
+let availableUsers = [];
+
 let cameraStream = null;
 let currentFacingMode = "user";
 
@@ -1118,6 +1112,8 @@ let confirmationResult = null;
 let recaptchaVerifier = null;
 
 let cameraMode = "photo";
+
+let cameraReturnScreen = "homeScreen";
 
 
 /* ================= ELEMENTS ================= */
@@ -1475,6 +1471,14 @@ onAuthStateChanged(
             currentUser =
                 null;
 
+            currentChatUser =
+                null;
+
+            currentChatId =
+                null;
+
+            availableUsers = [];
+
             authScreen.style.display =
                 "flex";
 
@@ -1564,7 +1568,9 @@ async function loadUsers(){
                             ),
                             snap=>{
 
-                                unsubscribe();
+                                if(unsubscribe){
+                                    unsubscribe();
+                                }
 
                                 resolve(
                                     snap
@@ -1573,7 +1579,9 @@ async function loadUsers(){
                             },
                             error=>{
 
-                                unsubscribe();
+                                if(unsubscribe){
+                                    unsubscribe();
+                                }
 
                                 reject(
                                     error
@@ -1586,6 +1594,8 @@ async function loadUsers(){
             );
 
         usersList.innerHTML = "";
+
+        availableUsers = [];
 
         let found = false;
 
@@ -1604,6 +1614,8 @@ async function loadUsers(){
                     return;
 
                 }
+
+                availableUsers.push(user);
 
                 found = true;
 
@@ -1728,11 +1740,117 @@ function showScreen(id){
         }
     );
 
-    document
-    .getElementById(id)
-    .classList.add(
-        "active"
+    const target =
+        document.getElementById(id);
+
+    if(target){
+
+        target.classList.add(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CAMERA RECIPIENT
+========================================================= */
+
+/*
+   If the camera is opened from Home, there is no chat selected.
+   This function lets the user choose another VibeSnap user.
+*/
+
+async function chooseCameraRecipient(){
+
+    if(currentChatUser){
+
+        return true;
+
+    }
+
+    if(!availableUsers.length){
+
+        try{
+
+            await loadUsers();
+
+        }catch(error){
+
+            console.error(error);
+
+        }
+
+    }
+
+    if(!availableUsers.length){
+
+        alert(
+            "There are no other VibeSnap users available yet."
+        );
+
+        return false;
+
+    }
+
+    let options =
+        "Choose who should receive this media:\n\n";
+
+    availableUsers.forEach(
+        (user,index)=>{
+
+            options +=
+                `${index + 1}. ${
+                    user.name ||
+                    user.email ||
+                    user.phone ||
+                    "VibeSnap User"
+                }\n`;
+
+        }
     );
+
+    const answer =
+        prompt(
+            options +
+            "\nEnter the number:"
+        );
+
+    if(answer === null){
+        return false;
+    }
+
+    const number =
+        Number(answer);
+
+    if(
+        !Number.isInteger(number) ||
+        number < 1 ||
+        number > availableUsers.length
+    ){
+
+        alert(
+            "Please choose a valid user number."
+        );
+
+        return false;
+
+    }
+
+    currentChatUser =
+        availableUsers[number - 1];
+
+    currentChatId =
+        [
+            currentUser.uid,
+            currentChatUser.uid
+        ]
+        .sort()
+        .join("_");
+
+    return true;
 
 }
 
@@ -1743,7 +1861,11 @@ document
 .getElementById("homeBtn")
 .addEventListener("click",()=>{
 
-    stopVideoRecording();
+    cancelVideoRecording();
+
+    resetPhotoPreview();
+
+    resetVideoPreview();
 
     closeCamera();
 
@@ -1758,7 +1880,11 @@ document
 .getElementById("profileBtn")
 .addEventListener("click",()=>{
 
-    stopVideoRecording();
+    cancelVideoRecording();
+
+    resetPhotoPreview();
+
+    resetVideoPreview();
 
     closeCamera();
 
@@ -1772,6 +1898,16 @@ document
 document
 .getElementById("cameraBtn")
 .addEventListener("click",async()=>{
+
+    const activeScreen =
+        document.querySelector(
+            ".screen.active"
+        );
+
+    cameraReturnScreen =
+        activeScreen
+        ? activeScreen.id
+        : "homeScreen";
 
     showScreen(
         "cameraScreen"
@@ -1823,7 +1959,7 @@ document
 .getElementById("logoutBtn")
 .addEventListener("click",async()=>{
 
-    stopVideoRecording();
+    cancelVideoRecording();
 
     resetPhotoPreview();
 
@@ -1848,6 +1984,10 @@ document
 /* ================= CHAT ================= */
 
 async function openChat(user){
+
+    if(!currentUser){
+        return;
+    }
 
     currentChatUser =
         user;
@@ -1949,6 +2089,15 @@ function loadMessages(){
                     "Message error:",
                     error
                 );
+
+                messagesElement.innerHTML =
+                    `
+                    <div class="welcome">
+                        Could not load messages.
+                        <br><br>
+                        Check your Firestore chat rules.
+                    </div>
+                    `;
 
             }
         );
@@ -2078,6 +2227,12 @@ document
 
     }
 
+    currentChatUser =
+        null;
+
+    currentChatId =
+        null;
+
     showScreen(
         "homeScreen"
     );
@@ -2139,7 +2294,8 @@ async function sendTextMessage(){
         console.error(error);
 
         alert(
-            "Message could not be sent."
+            "Message could not be sent: " +
+            error.message
         );
 
     }
@@ -2175,6 +2331,15 @@ document
 .getElementById("chatMediaBtn")
 .addEventListener("click",()=>{
 
+    if(!currentChatUser){
+
+        alert(
+            "Open a chat first."
+        );
+
+        return;
+    }
+
     document
     .getElementById(
         "chatFileInput"
@@ -2205,11 +2370,21 @@ document
 
 async function uploadChatMedia(file){
 
+    if(!file){
+        return;
+    }
+
     if(
-        !file ||
         !currentChatUser
     ){
-        return;
+
+        const selected =
+            await chooseCameraRecipient();
+
+        if(!selected){
+            return;
+        }
+
     }
 
     if(
@@ -2339,12 +2514,20 @@ function getExtension(
         return "webp";
     }
 
+    if(mimeType === "image/gif"){
+        return "gif";
+    }
+
     if(mimeType === "video/webm"){
         return "webm";
     }
 
     if(mimeType === "video/mp4"){
         return "mp4";
+    }
+
+    if(mimeType === "video/quicktime"){
+        return "mov";
     }
 
     if(mimeType.startsWith("video/")){
@@ -2366,9 +2549,26 @@ async function startCamera(){
 
     try{
 
-        stopVideoRecording();
+        cancelVideoRecording();
+
+        resetPhotoPreview();
+
+        resetVideoPreview();
 
         closeCamera();
+
+        if(
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ){
+
+            alert(
+                "Camera is not supported by this browser."
+            );
+
+            return;
+
+        }
 
         cameraStream =
             await navigator.mediaDevices
@@ -2387,9 +2587,6 @@ async function startCamera(){
             cameraStream;
 
         await cameraVideo.play();
-
-        resetPhotoPreview();
-        resetVideoPreview();
 
         updateCameraControls();
 
@@ -2410,9 +2607,80 @@ async function startCamera(){
 }
 
 
+/* ================= CANCEL VIDEO RECORDING ================= */
+
+/*
+   This is different from stopVideoRecording().
+
+   stopVideoRecording()
+   = finish and save the current recording.
+
+   cancelVideoRecording()
+   = throw away the current unfinished recording.
+*/
+
+function cancelVideoRecording(){
+
+    const recorder =
+        videoRecorder;
+
+    if(recorder){
+
+        try{
+
+            recorder.ondataavailable =
+                null;
+
+            recorder.onstop =
+                null;
+
+            recorder.onerror =
+                null;
+
+            if(
+                recorder.state !==
+                "inactive"
+            ){
+
+                recorder.stop();
+
+            }
+
+        }catch(error){
+
+            console.log(
+                "Recording cancellation:",
+                error
+            );
+
+        }
+
+    }
+
+    videoRecorder =
+        null;
+
+    videoChunks =
+        [];
+
+    recordingIndicator.style.display =
+        "none";
+
+    recordVideoButton.classList.remove(
+        "recording"
+    );
+
+    recordVideoButton.title =
+        "Start recording";
+
+}
+
+
 /* ================= CLOSE CAMERA ================= */
 
 function closeCamera(){
+
+    cancelVideoRecording();
 
     if(cameraStream){
 
@@ -2424,6 +2692,7 @@ function closeCamera(){
 
         cameraStream =
             null;
+
     }
 
     cameraVideo.srcObject =
@@ -2440,8 +2709,10 @@ document
     "click",
     async()=>{
 
-        if(videoRecorder &&
-           videoRecorder.state === "recording"){
+        if(
+            videoRecorder &&
+            videoRecorder.state === "recording"
+        ){
 
             alert(
                 "Stop recording before flipping the camera."
@@ -2615,13 +2886,18 @@ document
             return;
         }
 
-        if(!currentChatUser){
+        /*
+           NEW:
+           If no chat is open, choose the recipient.
+        */
 
-            alert(
-                "Open a chat first, then take a photo."
-            );
+        const selected =
+            await chooseCameraRecipient();
+
+        if(!selected){
 
             return;
+
         }
 
         const sendButton =
@@ -2697,9 +2973,31 @@ document
 
             closeCamera();
 
+            /*
+               Show the chat that received the photo.
+            */
+
+            document
+            .getElementById("chatUserName")
+            .textContent =
+                currentChatUser.name ||
+                "User";
+
+            document
+            .getElementById("chatAvatar")
+            .textContent =
+                (
+                    currentChatUser.name ||
+                    "U"
+                )
+                .charAt(0)
+                .toUpperCase();
+
             showScreen(
                 "chatScreen"
             );
+
+            loadMessages();
 
         }catch(error){
 
@@ -2788,32 +3086,41 @@ function startVideoRecording(){
 
     let mimeType = "";
 
-    if(
-        MediaRecorder.isTypeSupported(
-            "video/webm;codecs=vp9,opus"
-        )
+    /*
+       Try MP4 first for browsers that support it,
+       then WebM.
+    */
+
+    const mimeTypes = [
+
+        "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+
+        "video/mp4",
+
+        "video/webm;codecs=vp9,opus",
+
+        "video/webm;codecs=vp8,opus",
+
+        "video/webm"
+
+    ];
+
+    for(
+        const type of mimeTypes
     ){
 
-        mimeType =
-            "video/webm;codecs=vp9,opus";
+        if(
+            MediaRecorder.isTypeSupported(
+                type
+            )
+        ){
 
-    }else if(
-        MediaRecorder.isTypeSupported(
-            "video/webm;codecs=vp8,opus"
-        )
-    ){
+            mimeType =
+                type;
 
-        mimeType =
-            "video/webm;codecs=vp8,opus";
+            break;
 
-    }else if(
-        MediaRecorder.isTypeSupported(
-            "video/webm"
-        )
-    ){
-
-        mimeType =
-            "video/webm";
+        }
 
     }
 
@@ -2823,7 +3130,10 @@ function startVideoRecording(){
             mimeType
             ? new MediaRecorder(
                 cameraStream,
-                {mimeType}
+                {
+                    mimeType:
+                        mimeType
+                }
             )
             : new MediaRecorder(
                 cameraStream
@@ -2833,14 +3143,24 @@ function startVideoRecording(){
 
         console.error(error);
 
+        videoRecorder =
+            null;
+
         alert(
             "This browser does not support camera video recording."
         );
 
         return;
+
     }
 
-    videoRecorder.ondataavailable =
+    const recorder =
+        videoRecorder;
+
+    videoChunks =
+        [];
+
+    recorder.ondataavailable =
         event=>{
 
             if(
@@ -2857,12 +3177,41 @@ function startVideoRecording(){
         };
 
 
-    videoRecorder.onstop =
+    recorder.onstop =
         ()=>{
 
+            /*
+               Make sure this callback belongs to
+               the current recording.
+            */
+
+            if(
+                videoRecorder !== recorder
+            ){
+
+                return;
+
+            }
+
             const finalType =
-                videoRecorder.mimeType ||
+                recorder.mimeType ||
                 "video/webm";
+
+            if(!videoChunks.length){
+
+                videoRecorder =
+                    null;
+
+                recordingIndicator.style.display =
+                    "none";
+
+                recordVideoButton.classList.remove(
+                    "recording"
+                );
+
+                return;
+
+            }
 
             capturedVideoBlob =
                 new Blob(
@@ -2897,18 +3246,41 @@ function startVideoRecording(){
                 "hidden"
             );
 
-            videoChunks = [];
+            videoChunks =
+                [];
+
+            videoRecorder =
+                null;
+
+            recordVideoButton.classList.remove(
+                "recording"
+            );
+
+            recordVideoButton.title =
+                "Start recording";
 
         };
 
 
-    videoRecorder.onerror =
+    recorder.onerror =
         event=>{
 
             console.error(
                 "Recorder error:",
                 event
             );
+
+            if(
+                videoRecorder === recorder
+            ){
+
+                videoRecorder =
+                    null;
+
+            }
+
+            videoChunks =
+                [];
 
             recordingIndicator.style.display =
                 "none";
@@ -2917,6 +3289,9 @@ function startVideoRecording(){
                 "recording"
             );
 
+            recordVideoButton.title =
+                "Start recording";
+
             alert(
                 "Video recording failed."
             );
@@ -2924,9 +3299,29 @@ function startVideoRecording(){
         };
 
 
-    videoRecorder.start(
-        250
-    );
+    try{
+
+        recorder.start(
+            250
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        videoRecorder =
+            null;
+
+        videoChunks =
+            [];
+
+        alert(
+            "Could not start video recording."
+        );
+
+        return;
+
+    }
 
     recordingIndicator.style.display =
         "block";
@@ -2945,12 +3340,32 @@ function startVideoRecording(){
 
 function stopVideoRecording(){
 
+    const recorder =
+        videoRecorder;
+
     if(
-        videoRecorder &&
-        videoRecorder.state === "recording"
+        recorder &&
+        recorder.state === "recording"
     ){
 
-        videoRecorder.stop();
+        try{
+
+            recorder.stop();
+
+        }catch(error){
+
+            console.error(
+                "Stop recording error:",
+                error
+            );
+
+            videoRecorder =
+                null;
+
+            videoChunks =
+                [];
+
+        }
 
         recordVideoButton.classList.remove(
             "recording"
@@ -2960,6 +3375,7 @@ function stopVideoRecording(){
             "Start recording";
 
         return true;
+
     }
 
     return false;
@@ -3002,21 +3418,15 @@ function resetVideoPreview(){
     recordingIndicator.style.display =
         "none";
 
-    videoChunks = [];
-
-    if(
-        videoRecorder &&
-        videoRecorder.state === "inactive"
-    ){
-
-        videoRecorder =
-            null;
-
-    }
+    videoChunks =
+        [];
 
     recordVideoButton.classList.remove(
         "recording"
     );
+
+    recordVideoButton.title =
+        "Start recording";
 
 }
 
@@ -3049,13 +3459,18 @@ document
             return;
         }
 
-        if(!currentChatUser){
+        /*
+           NEW:
+           If no chat is open, choose recipient.
+        */
 
-            alert(
-                "Open a chat first, then record a video."
-            );
+        const selected =
+            await chooseCameraRecipient();
+
+        if(!selected){
 
             return;
+
         }
 
         const sendButton =
@@ -3138,9 +3553,27 @@ document
 
             closeCamera();
 
+            document
+            .getElementById("chatUserName")
+            .textContent =
+                currentChatUser.name ||
+                "User";
+
+            document
+            .getElementById("chatAvatar")
+            .textContent =
+                (
+                    currentChatUser.name ||
+                    "U"
+                )
+                .charAt(0)
+                .toUpperCase();
+
             showScreen(
                 "chatScreen"
             );
+
+            loadMessages();
 
         }catch(error){
 
@@ -3214,6 +3647,18 @@ photoModeBtn.addEventListener(
 videoModeBtn.addEventListener(
     "click",
     ()=>{
+
+        if(
+            videoRecorder &&
+            videoRecorder.state === "recording"
+        ){
+
+            alert(
+                "Stop recording first."
+            );
+
+            return;
+        }
 
         cameraMode =
             "video";
@@ -3364,13 +3809,36 @@ async function uploadGalleryMedia(file){
         return;
     }
 
-    if(!currentChatUser){
+    if(
+        !file.type.startsWith("image/") &&
+        !file.type.startsWith("video/")
+    ){
 
         alert(
-            "Open a chat first to send media."
+            "Please choose an image or video."
         );
 
         return;
+
+    }
+
+    /*
+       NEW:
+       Gallery can also be used from Home/camera
+       without an already-open chat.
+    */
+
+    if(!currentChatUser){
+
+        const selected =
+            await chooseCameraRecipient();
+
+        if(!selected){
+
+            return;
+
+        }
+
     }
 
     await uploadChatMedia(file);
@@ -3388,14 +3856,15 @@ document
     "click",
     ()=>{
 
-        if(
-            videoRecorder &&
-            videoRecorder.state === "recording"
-        ){
+        /*
+           IMPORTANT:
+           Do NOT call stopVideoRecording() here.
+           That would finish the recording.
 
-            videoRecorder.stop();
+           We want Close = CANCEL.
+        */
 
-        }
+        cancelVideoRecording();
 
         resetPhotoPreview();
 
@@ -3404,6 +3873,7 @@ document
         closeCamera();
 
         showScreen(
+            cameraReturnScreen ||
             "homeScreen"
         );
 
@@ -3417,14 +3887,12 @@ window.addEventListener(
     "beforeunload",
     ()=>{
 
-        if(
-            videoRecorder &&
-            videoRecorder.state === "recording"
-        ){
+        /*
+           Page closing should cancel any unfinished
+           recording instead of processing it.
+        */
 
-            videoRecorder.stop();
-
-        }
+        cancelVideoRecording();
 
         closeCamera();
 
