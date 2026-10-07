@@ -1015,7 +1015,7 @@ button{
 
 import {
     initializeApp
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+} from "https://www.gstatic.com/firebase/12.7.0/firebase-app.js";
 
 import {
     getAuth,
@@ -1025,7 +1025,7 @@ import {
     signInWithPhoneNumber,
     onAuthStateChanged,
     signOut
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebase/12.7.0/firebase-auth.js";
 
 import {
     getFirestore,
@@ -1038,22 +1038,28 @@ import {
     orderBy,
     onSnapshot,
     serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebase/12.7.0/firebase-firestore.js";
 
 import {
     getStorage,
     ref,
     uploadBytes,
     getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+} from "https://www.gstatic.com/firebase/12.7.0/firebase-storage.js";
 
 
 /* ================= FIREBASE CONFIG ================= */
 
 const firebaseConfig = {
 
+    /*
+       IMPORTANT:
+       This is the exact API key you verified
+       in Google Cloud.
+    */
+
     apiKey:
-        "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0j0cKmDc",
+        "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
 
     authDomain:
         "vibesnap-213d4.firebaseapp.com",
@@ -1757,11 +1763,6 @@ function showScreen(id){
 /* =========================================================
    CAMERA RECIPIENT
 ========================================================= */
-
-/*
-   If the camera is opened from Home, there is no chat selected.
-   This function lets the user choose another VibeSnap user.
-*/
 
 async function chooseCameraRecipient(){
 
@@ -2609,16 +2610,6 @@ async function startCamera(){
 
 /* ================= CANCEL VIDEO RECORDING ================= */
 
-/*
-   This is different from stopVideoRecording().
-
-   stopVideoRecording()
-   = finish and save the current recording.
-
-   cancelVideoRecording()
-   = throw away the current unfinished recording.
-*/
-
 function cancelVideoRecording(){
 
     const recorder =
@@ -2886,18 +2877,11 @@ document
             return;
         }
 
-        /*
-           NEW:
-           If no chat is open, choose the recipient.
-        */
-
         const selected =
             await chooseCameraRecipient();
 
         if(!selected){
-
             return;
-
         }
 
         const sendButton =
@@ -2973,10 +2957,6 @@ document
 
             closeCamera();
 
-            /*
-               Show the chat that received the photo.
-            */
-
             document
             .getElementById("chatUserName")
             .textContent =
@@ -3029,9 +3009,6 @@ document
    VIDEO RECORDING
 ========================================================= */
 
-
-/* ================= START / STOP RECORDING ================= */
-
 document
 .getElementById("recordVideo")
 .addEventListener(
@@ -3058,8 +3035,6 @@ function toggleVideoRecording(){
 }
 
 
-/* ================= START VIDEO RECORDING ================= */
-
 function startVideoRecording(){
 
     if(!cameraStream){
@@ -3085,11 +3060,6 @@ function startVideoRecording(){
     videoChunks = [];
 
     let mimeType = "";
-
-    /*
-       Try MP4 first for browsers that support it,
-       then WebM.
-    */
 
     const mimeTypes = [
 
@@ -3176,14 +3146,8 @@ function startVideoRecording(){
 
         };
 
-
     recorder.onstop =
         ()=>{
-
-            /*
-               Make sure this callback belongs to
-               the current recording.
-            */
 
             if(
                 videoRecorder !== recorder
@@ -3261,7 +3225,6 @@ function startVideoRecording(){
 
         };
 
-
     recorder.onerror =
         event=>{
 
@@ -3297,7 +3260,6 @@ function startVideoRecording(){
             );
 
         };
-
 
     try{
 
@@ -3335,8 +3297,6 @@ function startVideoRecording(){
 
 }
 
-
-/* ================= STOP RECORDING ================= */
 
 function stopVideoRecording(){
 
@@ -3382,8 +3342,6 @@ function stopVideoRecording(){
 
 }
 
-
-/* ================= RESET VIDEO ================= */
 
 function resetVideoPreview(){
 
@@ -3431,8 +3389,6 @@ function resetVideoPreview(){
 }
 
 
-/* ================= DISCARD VIDEO ================= */
-
 document
 .getElementById("discardVideo")
 .addEventListener(
@@ -3459,18 +3415,11 @@ document
             return;
         }
 
-        /*
-           NEW:
-           If no chat is open, choose recipient.
-        */
-
         const selected =
             await chooseCameraRecipient();
 
         if(!selected){
-
             return;
-
         }
 
         const sendButton =
@@ -3708,8 +3657,6 @@ document
 );
 
 
-/* ================= UPDATE CAMERA CONTROLS ================= */
-
 function updateCameraControls(){
 
     photoModeBtn.classList.toggle(
@@ -3822,21 +3769,13 @@ async function uploadGalleryMedia(file){
 
     }
 
-    /*
-       NEW:
-       Gallery can also be used from Home/camera
-       without an already-open chat.
-    */
-
     if(!currentChatUser){
 
         const selected =
             await chooseCameraRecipient();
 
         if(!selected){
-
             return;
-
         }
 
     }
@@ -3857,11 +3796,7 @@ document
     ()=>{
 
         /*
-           IMPORTANT:
-           Do NOT call stopVideoRecording() here.
-           That would finish the recording.
-
-           We want Close = CANCEL.
+           Close cancels an unfinished recording.
         */
 
         cancelVideoRecording();
@@ -3886,11 +3821,6 @@ document
 window.addEventListener(
     "beforeunload",
     ()=>{
-
-        /*
-           Page closing should cancel any unfinished
-           recording instead of processing it.
-        */
 
         cancelVideoRecording();
 
