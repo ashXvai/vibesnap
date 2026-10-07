@@ -382,9 +382,8 @@ button{
     display:none;
 }
 
-/* PHOTO STAYS INSIDE CAMERA BOX */
-
-#photoPreview{
+#photoPreview,
+#videoPreview{
     position:absolute;
     inset:0;
     width:100%;
@@ -401,7 +400,7 @@ button{
     right:12px;
     display:flex;
     justify-content:space-between;
-    z-index:5;
+    z-index:20;
 }
 
 .cameraTop button{
@@ -422,7 +421,7 @@ button{
     justify-content:center;
     align-items:center;
     gap:28px;
-    z-index:5;
+    z-index:20;
 }
 
 .captureBtn{
@@ -431,6 +430,20 @@ button{
     border-radius:50%;
     background:#fff;
     border:7px solid rgba(255,255,255,.4);
+}
+
+.recordBtn{
+    width:72px;
+    height:72px;
+    border-radius:50%;
+    background:#ff3030;
+    border:7px solid rgba(255,255,255,.4);
+}
+
+.recordBtn.recording{
+    background:#ff3030;
+    transform:scale(.8);
+    box-shadow:0 0 0 6px rgba(255,48,48,.25);
 }
 
 .galleryBtn,
@@ -454,10 +467,8 @@ button{
     display:none;
     justify-content:space-between;
     align-items:center;
-    z-index:10;
+    z-index:30;
 }
-
-/* CROSS BUTTON */
 
 .previewCancel{
     width:55px;
@@ -475,6 +486,29 @@ button{
     color:#000;
     font-size:17px;
     font-weight:bold;
+}
+
+.recordingIndicator{
+    position:absolute;
+    top:70px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,.7);
+    color:#fff;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:14px;
+    z-index:25;
+    display:none;
+}
+
+.recordingDot{
+    display:inline-block;
+    width:9px;
+    height:9px;
+    background:red;
+    border-radius:50%;
+    margin-right:6px;
 }
 
 .cameraMode{
@@ -782,6 +816,21 @@ button{
                         id="photoPreview"
                         alt="Captured photo">
 
+                    <video
+                        id="videoPreview"
+                        controls
+                        playsinline>
+                    </video>
+
+                    <div
+                        id="recordingIndicator"
+                        class="recordingIndicator">
+
+                        <span class="recordingDot"></span>
+                        Recording...
+
+                    </div>
+
                     <div class="cameraTop">
 
                         <button id="closeCamera">
@@ -795,8 +844,10 @@ button{
                     </div>
 
 
+                    <!-- PHOTO CONTROLS -->
+
                     <div
-                        id="normalCameraControls"
+                        id="photoCameraControls"
                         class="cameraBottom">
 
                         <label
@@ -827,7 +878,41 @@ button{
                     </div>
 
 
-                    <!-- PHOTO PREVIEW CONTROLS -->
+                    <!-- VIDEO CONTROLS -->
+
+                    <div
+                        id="videoCameraControls"
+                        class="cameraBottom hidden">
+
+                        <label
+                            class="galleryBtn"
+                            title="Gallery">
+
+                            🖼️
+
+                            <input
+                                id="videoGalleryInput"
+                                type="file"
+                                accept="image/*,video/*"
+                                class="hidden">
+
+                        </label>
+
+                        <button
+                            id="recordVideo"
+                            class="recordBtn">
+                        </button>
+
+                        <button
+                            id="switchPhoto"
+                            class="flipBtn">
+                            📷
+                        </button>
+
+                    </div>
+
+
+                    <!-- PHOTO PREVIEW -->
 
                     <div
                         id="photoPreviewControls"
@@ -836,14 +921,36 @@ button{
                         <button
                             id="discardPhoto"
                             class="previewCancel"
-                            title="Discard photo">
+                            title="Retake photo">
                             ✕
                         </button>
 
                         <button
                             id="sendCapturedPhoto"
                             class="previewSend">
-                            Send ➤
+                            Send Photo ➤
+                        </button>
+
+                    </div>
+
+
+                    <!-- VIDEO PREVIEW -->
+
+                    <div
+                        id="videoPreviewControls"
+                        class="previewControls">
+
+                        <button
+                            id="discardVideo"
+                            class="previewCancel"
+                            title="Retake video">
+                            ✕
+                        </button>
+
+                        <button
+                            id="sendCapturedVideo"
+                            class="previewSend">
+                            Send Video ➤
                         </button>
 
                     </div>
@@ -949,12 +1056,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
 
-/* ================= CORRECT FIREBASE CONFIG ================= */
+/* ================= FIREBASE CONFIG ================= */
 
 const firebaseConfig = {
 
     apiKey:
-        "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcKmDc",
+        "AIzaSyC8_0DykQ_yyQT3xzVmpZ9TPML0jOcDc",
 
     authDomain:
         "vibesnap-213d4.firebaseapp.com",
@@ -994,22 +1101,23 @@ const storage =
 /* ================= VARIABLES ================= */
 
 let currentUser = null;
-
 let currentChatUser = null;
-
 let currentChatId = null;
-
 let unsubscribeMessages = null;
 
 let cameraStream = null;
-
 let currentFacingMode = "user";
 
 let capturedPhotoBlob = null;
+let capturedVideoBlob = null;
+
+let videoRecorder = null;
+let videoChunks = [];
 
 let confirmationResult = null;
-
 let recaptchaVerifier = null;
+
+let cameraMode = "photo";
 
 
 /* ================= ELEMENTS ================= */
@@ -1047,11 +1155,26 @@ const photoCanvas =
 const photoPreview =
     document.getElementById("photoPreview");
 
-const normalCameraControls =
-    document.getElementById("normalCameraControls");
+const videoPreview =
+    document.getElementById("videoPreview");
+
+const photoCameraControls =
+    document.getElementById("photoCameraControls");
+
+const videoCameraControls =
+    document.getElementById("videoCameraControls");
 
 const photoPreviewControls =
     document.getElementById("photoPreviewControls");
+
+const videoPreviewControls =
+    document.getElementById("videoPreviewControls");
+
+const recordingIndicator =
+    document.getElementById("recordingIndicator");
+
+const recordVideoButton =
+    document.getElementById("recordVideo");
 
 
 /* ================= AUTH MESSAGE ================= */
@@ -1326,9 +1449,20 @@ onAuthStateChanged(
             appScreen.style.display =
                 "block";
 
-            await createUserProfile();
+            try{
 
-            await loadUsers();
+                await createUserProfile();
+
+                await loadUsers();
+
+            }catch(error){
+
+                console.error(
+                    "Startup error:",
+                    error
+                );
+
+            }
 
             updateProfile();
 
@@ -1494,24 +1628,24 @@ async function loadUsers(){
                     <div class="userInfo">
 
                         <div class="avatar">
-                            ${initial}
+                            ${escapeHtml(initial)}
                         </div>
 
                         <div>
 
                             <div class="userName">
-                                ${
+                                ${escapeHtml(
                                     user.name ||
                                     "VibeSnap User"
-                                }
+                                )}
                             </div>
 
                             <div class="userEmail">
-                                ${
+                                ${escapeHtml(
                                     user.email ||
                                     user.phone ||
                                     ""
-                                }
+                                )}
                             </div>
 
                         </div>
@@ -1556,10 +1690,26 @@ async function loadUsers(){
             `
             <div class="welcome">
                 Could not load users.
+                <br><br>
+                Firebase Firestore rules may need to be updated.
             </div>
             `;
 
     }
+
+}
+
+
+/* ================= SAFE TEXT ================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
 
 }
 
@@ -1593,6 +1743,8 @@ document
 .getElementById("homeBtn")
 .addEventListener("click",()=>{
 
+    stopVideoRecording();
+
     closeCamera();
 
     showScreen(
@@ -1605,6 +1757,8 @@ document
 document
 .getElementById("profileBtn")
 .addEventListener("click",()=>{
+
+    stopVideoRecording();
 
     closeCamera();
 
@@ -1668,6 +1822,12 @@ function updateProfile(){
 document
 .getElementById("logoutBtn")
 .addEventListener("click",async()=>{
+
+    stopVideoRecording();
+
+    resetPhotoPreview();
+
+    resetVideoPreview();
 
     closeCamera();
 
@@ -1784,10 +1944,12 @@ function loadMessages(){
 
             },
             error=>{
+
                 console.error(
                     "Message error:",
                     error
                 );
+
             }
         );
 
@@ -1828,6 +1990,9 @@ function renderMessage(data){
         img.alt =
             "Photo";
 
+        img.loading =
+            "lazy";
+
         message.appendChild(
             img
         );
@@ -1849,6 +2014,9 @@ function renderMessage(data){
 
         video.playsInline =
             true;
+
+        video.preload =
+            "metadata";
 
         message.appendChild(
             video
@@ -1978,12 +2146,14 @@ async function sendTextMessage(){
 
 }
 
+
 document
 .getElementById("sendMessage")
 .addEventListener(
     "click",
     sendTextMessage
 );
+
 
 document
 .getElementById("messageInput")
@@ -2020,102 +2190,123 @@ document
     "change",
     async event=>{
 
-        const file =
-            event.target.files[0];
+        await uploadChatMedia(
+            event.target.files[0]
+        );
 
-        if(
-            !file ||
-            !currentChatUser
-        ){
-            return;
-        }
-
-        try{
-
-            const messageRef =
-                doc(
-                    collection(
-                        db,
-                        "chats",
-                        currentChatId,
-                        "messages"
-                    )
-                );
-
-            const extension =
-                getExtension(
-                    file.name,
-                    file.type
-                );
-
-            const storagePath =
-                `chatMedia/${currentChatId}/${messageRef.id}.${extension}`;
-
-            const storageRef =
-                ref(
-                    storage,
-                    storagePath
-                );
-
-            await uploadBytes(
-                storageRef,
-                file,
-                {
-                    contentType:
-                        file.type
-                }
-            );
-
-            const downloadURL =
-                await getDownloadURL(
-                    storageRef
-                );
-
-            const type =
-                file.type.startsWith(
-                    "video/"
-                )
-                ? "video"
-                : "image";
-
-            await setDoc(
-                messageRef,
-                {
-                    senderUid:
-                        currentUser.uid,
-
-                    receiverUid:
-                        currentChatUser.uid,
-
-                    type:
-                        type,
-
-                    mediaUrl:
-                        downloadURL,
-
-                    storagePath:
-                        storagePath,
-
-                    createdAt:
-                        serverTimestamp()
-                }
-            );
-
-            event.target.value =
-                "";
-
-        }catch(error){
-
-            console.error(error);
-
-            alert(
-                "Media could not be sent."
-            );
-
-        }
+        event.target.value =
+            "";
 
     }
 );
+
+
+/* ================= UPLOAD MEDIA ================= */
+
+async function uploadChatMedia(file){
+
+    if(
+        !file ||
+        !currentChatUser
+    ){
+        return;
+    }
+
+    if(
+        !file.type.startsWith("image/") &&
+        !file.type.startsWith("video/")
+    ){
+
+        alert(
+            "Please select an image or video."
+        );
+
+        return;
+    }
+
+    try{
+
+        const messageRef =
+            doc(
+                collection(
+                    db,
+                    "chats",
+                    currentChatId,
+                    "messages"
+                )
+            );
+
+        const extension =
+            getExtension(
+                file.name,
+                file.type
+            );
+
+        const storagePath =
+            `chatMedia/${currentChatId}/${messageRef.id}.${extension}`;
+
+        const storageRef =
+            ref(
+                storage,
+                storagePath
+            );
+
+        await uploadBytes(
+            storageRef,
+            file,
+            {
+                contentType:
+                    file.type
+            }
+        );
+
+        const downloadURL =
+            await getDownloadURL(
+                storageRef
+            );
+
+        const type =
+            file.type.startsWith(
+                "video/"
+            )
+            ? "video"
+            : "image";
+
+        await setDoc(
+            messageRef,
+            {
+                senderUid:
+                    currentUser.uid,
+
+                receiverUid:
+                    currentChatUser.uid,
+
+                type:
+                    type,
+
+                mediaUrl:
+                    downloadURL,
+
+                storagePath:
+                    storagePath,
+
+                createdAt:
+                    serverTimestamp()
+            }
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Media could not be sent: " +
+            error.message
+        );
+
+    }
+
+}
 
 
 /* ================= EXTENSION ================= */
@@ -2136,53 +2327,60 @@ function getExtension(
 
     }
 
-    if(
-        mimeType ===
-        "image/jpeg"
-    ){
+    if(mimeType === "image/jpeg"){
         return "jpg";
     }
 
-    if(
-        mimeType ===
-        "image/png"
-    ){
+    if(mimeType === "image/png"){
         return "png";
     }
 
-    if(
-        mimeType ===
-        "image/webp"
-    ){
+    if(mimeType === "image/webp"){
         return "webp";
     }
 
-    if(
-        mimeType.startsWith("video/")
-    ){
+    if(mimeType === "video/webm"){
+        return "webm";
+    }
+
+    if(mimeType === "video/mp4"){
         return "mp4";
+    }
+
+    if(mimeType.startsWith("video/")){
+        return "webm";
     }
 
     return "bin";
 }
 
 
-/* ================= CAMERA ================= */
+/* =========================================================
+   CAMERA
+========================================================= */
+
+
+/* ================= START CAMERA ================= */
 
 async function startCamera(){
 
     try{
+
+        stopVideoRecording();
 
         closeCamera();
 
         cameraStream =
             await navigator.mediaDevices
             .getUserMedia({
+
                 video:{
                     facingMode:
                         currentFacingMode
                 },
-                audio:false
+
+                audio:true
+
             });
 
         cameraVideo.srcObject =
@@ -2191,6 +2389,9 @@ async function startCamera(){
         await cameraVideo.play();
 
         resetPhotoPreview();
+        resetVideoPreview();
+
+        updateCameraControls();
 
     }catch(error){
 
@@ -2200,13 +2401,16 @@ async function startCamera(){
         );
 
         alert(
-            "Camera could not start. Please allow camera permission."
+            "Camera/microphone could not start.\n\n" +
+            "Please allow Camera and Microphone permissions."
         );
 
     }
 
 }
 
+
+/* ================= CLOSE CAMERA ================= */
 
 function closeCamera(){
 
@@ -2236,7 +2440,13 @@ document
     "click",
     async()=>{
 
-        if(capturedPhotoBlob){
+        if(videoRecorder &&
+           videoRecorder.state === "recording"){
+
+            alert(
+                "Stop recording before flipping the camera."
+            );
+
             return;
         }
 
@@ -2249,6 +2459,11 @@ document
 
     }
 );
+
+
+/* =========================================================
+   PHOTO
+========================================================= */
 
 
 /* ================= CAPTURE PHOTO ================= */
@@ -2322,11 +2537,16 @@ function capturePhoto(){
             photoPreview.style.display =
                 "block";
 
-            normalCameraControls.style.display =
-                "none";
-
             photoPreviewControls.style.display =
                 "flex";
+
+            photoCameraControls.classList.add(
+                "hidden"
+            );
+
+            videoCameraControls.classList.add(
+                "hidden"
+            );
 
         },
         "image/jpeg",
@@ -2336,7 +2556,7 @@ function capturePhoto(){
 }
 
 
-/* ================= ✕ DISCARD PHOTO ================= */
+/* ================= DISCARD PHOTO ================= */
 
 document
 .getElementById("discardPhoto")
@@ -2345,6 +2565,8 @@ document
     ()=>{
 
         resetPhotoPreview();
+
+        updateCameraControls();
 
     }
 );
@@ -2372,19 +2594,16 @@ function resetPhotoPreview(){
     photoPreview.style.display =
         "none";
 
-    cameraVideo.style.display =
-        "block";
-
-    normalCameraControls.style.display =
-        "flex";
-
     photoPreviewControls.style.display =
         "none";
+
+    cameraVideo.style.display =
+        "block";
 
 }
 
 
-/* ================= SEND CAPTURED PHOTO ================= */
+/* ================= SEND PHOTO ================= */
 
 document
 .getElementById("sendCapturedPhoto")
@@ -2500,7 +2719,7 @@ document
                 false;
 
             sendButton.textContent =
-                "Send ➤";
+                "Send Photo ➤";
 
         }
 
@@ -2508,32 +2727,347 @@ document
 );
 
 
-/* ================= GALLERY ================= */
+/* =========================================================
+   VIDEO RECORDING
+========================================================= */
+
+
+/* ================= START / STOP RECORDING ================= */
 
 document
-.getElementById("cameraGalleryInput")
+.getElementById("recordVideo")
 .addEventListener(
-    "change",
-    async event=>{
+    "click",
+    toggleVideoRecording
+);
 
-        const file =
-            event.target.files[0];
 
-        if(!file){
+function toggleVideoRecording(){
+
+    if(
+        videoRecorder &&
+        videoRecorder.state === "recording"
+    ){
+
+        stopVideoRecording();
+
+        return;
+
+    }
+
+    startVideoRecording();
+
+}
+
+
+/* ================= START VIDEO RECORDING ================= */
+
+function startVideoRecording(){
+
+    if(!cameraStream){
+
+        alert(
+            "Camera is not ready."
+        );
+
+        return;
+    }
+
+    if(
+        !cameraStream.getVideoTracks().length
+    ){
+
+        alert(
+            "Camera video is unavailable."
+        );
+
+        return;
+    }
+
+    videoChunks = [];
+
+    let mimeType = "";
+
+    if(
+        MediaRecorder.isTypeSupported(
+            "video/webm;codecs=vp9,opus"
+        )
+    ){
+
+        mimeType =
+            "video/webm;codecs=vp9,opus";
+
+    }else if(
+        MediaRecorder.isTypeSupported(
+            "video/webm;codecs=vp8,opus"
+        )
+    ){
+
+        mimeType =
+            "video/webm;codecs=vp8,opus";
+
+    }else if(
+        MediaRecorder.isTypeSupported(
+            "video/webm"
+        )
+    ){
+
+        mimeType =
+            "video/webm";
+
+    }
+
+    try{
+
+        videoRecorder =
+            mimeType
+            ? new MediaRecorder(
+                cameraStream,
+                {mimeType}
+            )
+            : new MediaRecorder(
+                cameraStream
+            );
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "This browser does not support camera video recording."
+        );
+
+        return;
+    }
+
+    videoRecorder.ondataavailable =
+        event=>{
+
+            if(
+                event.data &&
+                event.data.size > 0
+            ){
+
+                videoChunks.push(
+                    event.data
+                );
+
+            }
+
+        };
+
+
+    videoRecorder.onstop =
+        ()=>{
+
+            const finalType =
+                videoRecorder.mimeType ||
+                "video/webm";
+
+            capturedVideoBlob =
+                new Blob(
+                    videoChunks,
+                    {
+                        type:
+                            finalType
+                    }
+                );
+
+            const videoURL =
+                URL.createObjectURL(
+                    capturedVideoBlob
+                );
+
+            videoPreview.src =
+                videoURL;
+
+            videoPreview.style.display =
+                "block";
+
+            cameraVideo.style.display =
+                "none";
+
+            videoPreviewControls.style.display =
+                "flex";
+
+            recordingIndicator.style.display =
+                "none";
+
+            videoCameraControls.classList.add(
+                "hidden"
+            );
+
+            videoChunks = [];
+
+        };
+
+
+    videoRecorder.onerror =
+        event=>{
+
+            console.error(
+                "Recorder error:",
+                event
+            );
+
+            recordingIndicator.style.display =
+                "none";
+
+            recordVideoButton.classList.remove(
+                "recording"
+            );
+
+            alert(
+                "Video recording failed."
+            );
+
+        };
+
+
+    videoRecorder.start(
+        250
+    );
+
+    recordingIndicator.style.display =
+        "block";
+
+    recordVideoButton.classList.add(
+        "recording"
+    );
+
+    recordVideoButton.title =
+        "Stop recording";
+
+}
+
+
+/* ================= STOP RECORDING ================= */
+
+function stopVideoRecording(){
+
+    if(
+        videoRecorder &&
+        videoRecorder.state === "recording"
+    ){
+
+        videoRecorder.stop();
+
+        recordVideoButton.classList.remove(
+            "recording"
+        );
+
+        recordVideoButton.title =
+            "Start recording";
+
+        return true;
+    }
+
+    return false;
+
+}
+
+
+/* ================= RESET VIDEO ================= */
+
+function resetVideoPreview(){
+
+    if(
+        videoPreview.src &&
+        videoPreview.src.startsWith("blob:")
+    ){
+
+        URL.revokeObjectURL(
+            videoPreview.src
+        );
+
+    }
+
+    capturedVideoBlob =
+        null;
+
+    videoPreview.pause();
+
+    videoPreview.src =
+        "";
+
+    videoPreview.style.display =
+        "none";
+
+    videoPreviewControls.style.display =
+        "none";
+
+    cameraVideo.style.display =
+        "block";
+
+    recordingIndicator.style.display =
+        "none";
+
+    videoChunks = [];
+
+    if(
+        videoRecorder &&
+        videoRecorder.state === "inactive"
+    ){
+
+        videoRecorder =
+            null;
+
+    }
+
+    recordVideoButton.classList.remove(
+        "recording"
+    );
+
+}
+
+
+/* ================= DISCARD VIDEO ================= */
+
+document
+.getElementById("discardVideo")
+.addEventListener(
+    "click",
+    ()=>{
+
+        resetVideoPreview();
+
+        updateCameraControls();
+
+    }
+);
+
+
+/* ================= SEND VIDEO ================= */
+
+document
+.getElementById("sendCapturedVideo")
+.addEventListener(
+    "click",
+    async()=>{
+
+        if(!capturedVideoBlob){
             return;
         }
 
         if(!currentChatUser){
 
             alert(
-                "Open a chat first to send media."
+                "Open a chat first, then record a video."
             );
-
-            event.target.value =
-                "";
 
             return;
         }
+
+        const sendButton =
+            document.getElementById(
+                "sendCapturedVideo"
+            );
+
+        sendButton.disabled =
+            true;
+
+        sendButton.textContent =
+            "Sending...";
 
         try{
 
@@ -2548,10 +3082,11 @@ document
                 );
 
             const extension =
-                getExtension(
-                    file.name,
-                    file.type
-                );
+                capturedVideoBlob.type.includes(
+                    "mp4"
+                )
+                ? "mp4"
+                : "webm";
 
             const storagePath =
                 `chatMedia/${currentChatId}/${messageRef.id}.${extension}`;
@@ -2564,10 +3099,10 @@ document
 
             await uploadBytes(
                 storageRef,
-                file,
+                capturedVideoBlob,
                 {
                     contentType:
-                        file.type
+                        capturedVideoBlob.type
                 }
             );
 
@@ -2575,11 +3110,6 @@ document
                 await getDownloadURL(
                     storageRef
                 );
-
-            const type =
-                file.type.startsWith("video/")
-                ? "video"
-                : "image";
 
             await setDoc(
                 messageRef,
@@ -2591,7 +3121,7 @@ document
                         currentChatUser.uid,
 
                     type:
-                        type,
+                        "video",
 
                     mediaUrl:
                         downloadURL,
@@ -2604,16 +3134,33 @@ document
                 }
             );
 
-            event.target.value =
-                "";
+            resetVideoPreview();
+
+            closeCamera();
+
+            showScreen(
+                "chatScreen"
+            );
 
         }catch(error){
 
-            console.error(error);
+            console.error(
+                "Video send error:",
+                error
+            );
 
             alert(
-                "Media could not be sent."
+                "Video could not be sent: " +
+                error.message
             );
+
+        }finally{
+
+            sendButton.disabled =
+                false;
+
+            sendButton.textContent =
+                "Send Video ➤";
 
         }
 
@@ -2621,7 +3168,9 @@ document
 );
 
 
-/* ================= CAMERA MODE ================= */
+/* =========================================================
+   CAMERA MODES
+========================================================= */
 
 const photoModeBtn =
     document.getElementById(
@@ -2633,47 +3182,205 @@ const videoModeBtn =
         "videoModeBtn"
     );
 
+
 photoModeBtn.addEventListener(
     "click",
     ()=>{
-        photoModeBtn.classList.add(
-            "active"
-        );
 
-        videoModeBtn.classList.remove(
-            "active"
-        );
+        if(
+            videoRecorder &&
+            videoRecorder.state === "recording"
+        ){
+
+            alert(
+                "Stop recording first."
+            );
+
+            return;
+        }
+
+        cameraMode =
+            "photo";
+
+        resetVideoPreview();
+        resetPhotoPreview();
+
+        updateCameraControls();
+
     }
 );
+
 
 videoModeBtn.addEventListener(
     "click",
     ()=>{
-        videoModeBtn.classList.add(
-            "active"
-        );
 
-        photoModeBtn.classList.remove(
-            "active"
-        );
+        cameraMode =
+            "video";
 
-        alert(
-            "Video recording will be added next."
-        );
+        resetPhotoPreview();
+        resetVideoPreview();
+
+        updateCameraControls();
+
     }
 );
+
 
 document
 .getElementById("switchVideo")
 .addEventListener(
     "click",
     ()=>{
+
         videoModeBtn.click();
+
     }
 );
 
 
-/* ================= CLOSE CAMERA ================= */
+document
+.getElementById("switchPhoto")
+.addEventListener(
+    "click",
+    ()=>{
+
+        if(
+            videoRecorder &&
+            videoRecorder.state === "recording"
+        ){
+
+            alert(
+                "Stop recording first."
+            );
+
+            return;
+        }
+
+        photoModeBtn.click();
+
+    }
+);
+
+
+/* ================= UPDATE CAMERA CONTROLS ================= */
+
+function updateCameraControls(){
+
+    photoModeBtn.classList.toggle(
+        "active",
+        cameraMode === "photo"
+    );
+
+    videoModeBtn.classList.toggle(
+        "active",
+        cameraMode === "video"
+    );
+
+    if(
+        photoPreview.style.display ===
+        "block" ||
+        videoPreview.style.display ===
+        "block"
+    ){
+
+        photoCameraControls.classList.add(
+            "hidden"
+        );
+
+        videoCameraControls.classList.add(
+            "hidden"
+        );
+
+        return;
+    }
+
+    if(cameraMode === "photo"){
+
+        photoCameraControls.classList.remove(
+            "hidden"
+        );
+
+        videoCameraControls.classList.add(
+            "hidden"
+        );
+
+    }else{
+
+        photoCameraControls.classList.add(
+            "hidden"
+        );
+
+        videoCameraControls.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   GALLERY
+========================================================= */
+
+document
+.getElementById("cameraGalleryInput")
+.addEventListener(
+    "change",
+    async event=>{
+
+        await uploadGalleryMedia(
+            event.target.files[0]
+        );
+
+        event.target.value =
+            "";
+
+    }
+);
+
+
+document
+.getElementById("videoGalleryInput")
+.addEventListener(
+    "change",
+    async event=>{
+
+        await uploadGalleryMedia(
+            event.target.files[0]
+        );
+
+        event.target.value =
+            "";
+
+    }
+);
+
+
+async function uploadGalleryMedia(file){
+
+    if(!file){
+        return;
+    }
+
+    if(!currentChatUser){
+
+        alert(
+            "Open a chat first to send media."
+        );
+
+        return;
+    }
+
+    await uploadChatMedia(file);
+
+}
+
+
+/* =========================================================
+   CLOSE CAMERA
+========================================================= */
 
 document
 .getElementById("closeCamera")
@@ -2681,7 +3388,18 @@ document
     "click",
     ()=>{
 
+        if(
+            videoRecorder &&
+            videoRecorder.state === "recording"
+        ){
+
+            videoRecorder.stop();
+
+        }
+
         resetPhotoPreview();
+
+        resetVideoPreview();
 
         closeCamera();
 
@@ -2698,7 +3416,18 @@ document
 window.addEventListener(
     "beforeunload",
     ()=>{
+
+        if(
+            videoRecorder &&
+            videoRecorder.state === "recording"
+        ){
+
+            videoRecorder.stop();
+
+        }
+
         closeCamera();
+
     }
 );
 
