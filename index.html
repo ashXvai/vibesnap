@@ -55,8 +55,7 @@ button{border:0;cursor:pointer}.hidden{display:none!important}
 @media(min-width:700px){#app{max-width:620px;margin:auto;box-shadow:0 0 30px rgba(0,0,0,.15)}.bottomNav{max-width:620px;left:50%;right:auto;width:620px;transform:translateX(-50%)}}
 </style>
 </head>
-<body>
-<div id="loginScreen"><div class="loginBox">
+<body><div id="loginScreen"><div class="loginBox">
 <div class="loginBrand"><div class="loginGhost">👻</div></div>
 <div class="loginTitle">VibeSnap</div><div class="loginSub">Snap. Share. Vibe.</div>
 <button class="loginBtn googleBtn" id="googleLogin"><span class="googleMark">G</span> Continue with Google</button>
@@ -92,75 +91,6 @@ button{border:0;cursor:pointer}.hidden{display:none!important}
 <div class="bottomNav"><button class="navBtn" data-page="friends"><span>⌖</span>Discover</button><button class="navBtn active" data-page="chat"><span>▰</span>Chat</button><button class="navBtn" data-page="camera"><span>◉</span>Camera</button><button class="navBtn" data-page="friends"><span>♧</span>Friends</button><button class="navBtn" data-page="profile"><span>◉</span>Profile</button></div>
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera">◉</button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
 </div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="retakeBtn" id="retakeBtn">Retake</button><button class="sendBtn" id="sendMediaBtn">Send</button></div></div>
-<script
-<div id="cameraPage">
-<video id="cameraVideo" autoplay playsinline muted></video>
-<div class="cameraShade"></div>
-
-<div class="cameraTop">
-  <button class="cameraAvatar" id="profileQuick" title="Profile">V</button>
-  <button class="cameraIconBtn cameraSearch" id="searchQuick" title="Search">⌕</button>
-  <div class="cameraTopSpacer"></div>
-  <div class="cameraTopActions">
-    <button class="cameraIconBtn topBadge" id="notificationQuick" title="Notifications">♧</button>
-    <button class="cameraIconBtn topBadge" id="addFriendQuick" title="Friends">♧+</button>
-    <button class="cameraIconBtn" id="flipCamera" title="Switch camera">↻</button>
-  </div>
-</div>
-
-<div class="recipientBox"><select id="recipientSelect"><option value="">Choose a friend for sending</option></select></div>
-
-<div class="cameraSidePanel">
-  <button class="cameraTool" id="flashQuick"><span class="cameraToolIcon">⚡</span><span>Flash</span></button>
-  <button class="cameraTool" id="soundQuick"><span class="cameraToolIcon">♪</span><span>Sounds</span></button>
-  <button class="cameraTool" id="moreCameraTools"><span class="cameraToolIcon">⌄</span></button>
-</div>
-
-<div class="cameraQuickActions">
-  <button class="quickAction" id="aiQuick"><span>AI</span><span>Vibe AI</span></button>
-  <button class="quickAction" id="memoriesQuick"><span>▧</span><span>Memories</span></button>
-</div>
-
-<div class="lensStrip" id="lensStrip">
-  <button class="lensItem active" data-filter="none"><span class="lensCircle">◉</span>Normal</button>
-  <button class="lensItem" data-filter="vivid"><span class="lensCircle">✦</span>Vivid</button>
-  <button class="lensItem" data-filter="warm"><span class="lensCircle">☀</span>Warm</button>
-  <button class="lensItem" data-filter="cool"><span class="lensCircle">❄</span>Cool</button>
-  <button class="lensItem" data-filter="mono"><span class="lensCircle">◐</span>Mono</button>
-  <button class="lensItem" data-filter="sepia"><span class="lensCircle">◒</span>Sepia</button>
-</div>
-
-<div class="cameraControls">
-  <button class="cameraSideBtn" id="galleryBtn" title="Gallery">▧</button>
-  <button class="captureBtn" id="captureBtn" title="Take photo"></button>
-  <button class="cameraSideBtn" id="videoModeBtn" title="Record video">●</button>
-</div>
-<div class="cameraModeLabel">PHOTO</div>
-<input type="file" id="galleryInput" accept="image/*,video/*" class="hidden">
-</div>
-
-<div id="friendsPage" class="page hidden"><div class="pageTitle">Friends</div><div id="usersList"></div></div>
-
-<div id="chatPage" class="page hidden">
-<div class="chatHeader"><button id="backFromChat" style="background:none;color:white;font-size:22px;">←</button><div id="chatAvatar" class="avatar">?</div><div><div id="chatName">Chat</div></div></div>
-<div id="chatMessages" class="chatMessages"></div>
-<div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">Send</button></div>
-</div>
-
-<div id="profilePage" class="page hidden">
-<div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profileEmail" style="color:#999;margin-top:8px;"></p><button id="logoutBtn" class="logoutBtn">Log Out</button></div>
-</div>
-
-<div class="bottomNav">
-<button class="navBtn active" data-page="camera"><span>📸</span>Camera</button>
-<button class="navBtn" data-page="friends"><span>👥</span>Friends</button>
-<button class="navBtn" data-page="chat"><span>💬</span>Chat</button>
-<button class="navBtn" data-page="profile"><span>👤</span>Profile</button>
-</div>
-</div>
-
-<div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="retakeBtn" id="retakeBtn">Retake</button><button class="sendBtn" id="sendMediaBtn">Send</button></div></div>
-
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyA8d0zK0s17K6Vybn8ULOIuTwHXnHjJJDk",
@@ -325,6 +255,7 @@ $("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");sho
 $("conversationCamera").onclick=()=>{$("chatConversation").classList.add("hidden");showPage("camera")};
 $("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await auth.signOut()};
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+
 </script>
 </body>
 </html>
