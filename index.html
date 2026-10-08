@@ -53,10 +53,59 @@ button{border:0;cursor:pointer}.hidden{display:none!important}
 .profileBox{max-width:500px;margin:auto;background:#f6f7f8;padding:28px;border-radius:22px;text-align:center}.profileAvatar{width:94px;height:94px;border-radius:50%;background:#edf0f2;display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:700;margin:0 auto 15px}.logoutBtn{margin-top:25px;width:100%;padding:14px;background:#111;color:#fff;border-radius:24px;font-weight:800}
 #previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia{flex:1;width:100%;height:100%;object-fit:contain}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:24px;font-weight:bold}.retakeBtn{background:#333;color:#fff}.sendBtn{background:#fffc00;color:#111}
 @media(min-width:700px){#app{max-width:620px;margin:auto;box-shadow:0 0 30px rgba(0,0,0,.15)}.bottomNav{max-width:620px;left:50%;right:auto;width:620px;transform:translateX(-50%)}}
-</style>
+<style>
+:root{--primary:#6d4aff;--primary2:#4f8cff;--pink:#ef3d87;--ink:#101a35;--muted:#6d7893;--soft:#f2f5ff;--line:#e8ecf5}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--ink)}
+.loginBox{background:linear-gradient(180deg,#f7f9ff 0%,#fff 55%);padding-top:28px}
+.loginBrand{background:linear-gradient(135deg,#6d4aff,#4f8cff);box-shadow:0 14px 35px rgba(88,77,220,.24)}
+.loginTitle{color:var(--ink)} .loginSub{color:var(--muted)}
+.signupBtn{background:linear-gradient(135deg,#6d4aff,#4f8cff)}
+.loginLink button{color:var(--primary)}
+.topHeader{height:92px;padding:12px 20px;border-bottom:0;background:#fff}
+.brandHeader{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brandLogo{font-size:31px;font-weight:900;letter-spacing:-1.7px;white-space:nowrap;background:linear-gradient(90deg,#17234b,#6d4aff,#4f8cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brandSpark{color:#6d4aff;font-size:22px}
+.topAvatar{width:52px;height:52px;background:#eef1ff;border:3px solid #e4e8ff}
+.headerActions{gap:10px}
+.headerIcon{background:#eef2fa;color:#34415e;width:48px;height:48px}
+.headerActions .headerIcon:nth-child(2){background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff}
+.categoryRow{gap:12px;padding:10px 20px 16px;border-bottom:0;background:#fff}
+.categoryRow span{padding:10px 17px;border-radius:24px;background:#f3f5fb;color:#17213d}
+.categoryRow span:first-child{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff}
+.categoryRow span:nth-child(2){background:#fff0f6;color:#b51e60}
+.categoryRow span:nth-child(3){background:#eafaf7;color:#008c80}
+.categoryRow span:nth-child(4){background:#f4efff;color:#6d2bd8}
+.categoryRow span b{background:rgba(255,255,255,.25);padding:2px 7px;border-radius:12px}
+.searchBar{margin:0 20px 16px;height:58px;border-radius:30px;background:#f3f6ff;display:flex;align-items:center;padding:0 18px;gap:13px;color:#7180a0;flex:none}
+.searchBarIcon{font-size:28px}.searchBar input{border:0;outline:0;background:transparent;width:100%;font-size:17px;color:#24304d}
+.friendSuggestion{margin:0 20px 16px;padding:17px 20px;border-radius:24px;background:linear-gradient(100deg,#f1edff,#f5f9ff);display:flex;align-items:center;gap:15px;flex:none}
+.friendSuggestionIcon{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;font-size:23px;box-shadow:0 7px 18px rgba(92,78,225,.22)}
+.friendSuggestionText{flex:1}.friendSuggestionTitle{font-size:17px;font-weight:800}.friendSuggestionSub{font-size:14px;color:#66739a;margin-top:4px}.friendSuggestionArrow{font-size:28px;color:#6d4aff}
+.noticeBar{display:none}
+.chatRow{padding:12px 20px;min-height:88px;border-bottom:1px solid var(--line)}
+.rowAvatar{width:58px;height:58px;border:3px solid #fff;box-shadow:0 2px 9px rgba(35,45,80,.08)}
+.chatRowName{font-size:18px;color:#101a35}.chatRowMeta{font-size:14px;color:#65718e}
+.blueDot{background:#4f8cff;border-radius:5px}.purpleDot{background:#7d4cff;border-radius:5px}
+.rowAction{color:#53617e}
+.composeBtn{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;box-shadow:0 10px 25px rgba(92,78,225,.3)}
+.bottomNav{height:82px;border-top:1px solid #edf0f7;box-shadow:0 -8px 30px rgba(35,47,90,.05)}
+.navBtn{color:#68748e;font-size:11px}.navBtn span{font-size:25px}.navBtn.active{color:#6d4aff}
+.navBtn.active:after{content:"";width:36px;height:3px;border-radius:3px;background:#6d4aff;position:absolute;bottom:5px}
+.navBtn{position:relative}
+.chatInput button{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff}
+.mine{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff}
+.chatPageShell{display:flex;flex-direction:column;min-height:0;flex:1}
+#chatPage{background:#fff}
+#chatList{min-height:0}
+#friendsPage{background:#fff}
+.friendsHeader{padding-top:28px}
+.chatAddFriendIcon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6d4aff,#4f8cff);display:grid;place-items:center;box-shadow:0 8px 18px rgba(92,78,225,.25)}
+.friendSvg{width:28px;height:28px}
+@media(max-width:600px){.brandLogo{font-size:28px}.topHeader{padding-left:16px;padding-right:16px}.searchBar,.friendSuggestion{margin-left:16px;margin-right:16px}.categoryRow{padding-left:16px;padding-right:16px}}
+</style></style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
-<div class="loginBrand"><div class="loginGhost">👻</div></div>
+<div class="loginBrand"><div class="loginGhost">✦</div></div>
 <div class="loginTitle">VibeSnap</div><div class="loginSub">Snap. Share. Vibe.</div>
 <button class="loginBtn googleBtn" id="googleLogin"><span class="googleMark">G</span> Continue with Google</button>
 <button class="loginBtn signupBtn" id="requestAccount">Sign Up</button>
@@ -76,19 +125,36 @@ button{border:0;cursor:pointer}.hidden{display:none!important}
 <div class="cameraTop"><button class="cameraAvatar" id="profileQuick">V</button><button class="cameraIconBtn" id="searchQuick">⌕</button><div class="cameraTopSpacer"></div><div class="cameraTopActions"><button class="cameraIconBtn topBadge" id="notificationQuick">♧</button><button class="cameraIconBtn topBadge" id="addFriendQuick">♧+</button><button class="cameraIconBtn" id="flipCamera">↻</button></div></div>
 <div class="recipientBox"><select id="recipientSelect"><option value="">Choose a friend for sending</option></select></div>
 <div class="cameraSidePanel"><button class="cameraTool" id="flashQuick"><span class="cameraToolIcon">⚡</span>Flash</button><button class="cameraTool" id="soundQuick"><span class="cameraToolIcon">♪</span>Sounds</button><button class="cameraTool" id="moreCameraTools"><span class="cameraToolIcon">⌄</span>More</button></div>
-<div class="cameraQuickActions"><button class="quickAction" id="aiQuick"><span>AI</span><span>Vibe AI</span></button><button class="quickAction" id="memoriesQuick"><span>▧</span><span>Memories</span></button></div>
 <div class="lensStrip" id="lensStrip"><button class="lensItem active" data-filter="none"><span class="lensCircle">◉</span>Normal</button><button class="lensItem" data-filter="vivid"><span class="lensCircle">✦</span>Vivid</button><button class="lensItem" data-filter="warm"><span class="lensCircle">☀</span>Warm</button><button class="lensItem" data-filter="cool"><span class="lensCircle">❄</span>Cool</button><button class="lensItem" data-filter="mono"><span class="lensCircle">◐</span>Mono</button><button class="lensItem" data-filter="sepia"><span class="lensCircle">◒</span>Sepia</button></div>
 <div class="cameraControls"><button class="cameraSideBtn" id="galleryBtn">▧</button><button class="captureBtn" id="captureBtn"></button><button class="cameraSideBtn" id="videoModeBtn">●</button></div><div class="cameraModeLabel">PHOTO</div><input type="file" id="galleryInput" accept="image/*,video/*" class="hidden">
 </div>
 <div id="friendsPage" class="page hidden"><div class="friendsHeader">Friends</div><div id="usersList"></div></div>
 <div id="chatPage" class="page hidden">
-<div class="topHeader"><button class="topAvatar" id="chatProfileQuick">V</button><button class="headerIcon" id="chatSearch">⌕</button><div class="headerTitle">Chat</div><div class="headerActions"><button class="headerIcon headerBadge" id="chatNotifications">♧</button><button class="headerIcon" id="chatAddFriend">♧+</button><button class="headerIcon" id="chatMore">•••</button></div></div>
-<div class="categoryRow"><span>Unread <b id="unreadCount">0</b></span><span>My Vibe</span><span>Near me</span><span>Groups</span><span>Best friends</span></div>
-<div class="noticeBar"><span>🔔</span><span>Turn on notifications to never miss VibeSnaps!</span><button class="noticeClose" id="closeNotice">×</button></div>
-<div id="chatList" class="chatList"></div><button class="composeBtn" id="composeBtn">✎</button>
+<div class="topHeader">
+  <button class="topAvatar" id="chatProfileQuick">V</button>
+  <div class="brandHeader"><div class="brandLogo">VibeSnap</div><div class="brandSpark">✦</div></div>
+  <div class="headerActions">
+    <button class="headerIcon headerBadge" id="chatNotifications">♧</button>
+    <button class="headerIcon" id="chatSearch">⌕</button>
+    <button class="headerIcon" id="chatAddFriend" aria-label="Friends">
+      <span class="chatAddFriendIcon"><svg class="friendSvg" viewBox="0 0 32 32" fill="none"><circle cx="12" cy="11" r="5" stroke="white" stroke-width="2.5"/><path d="M3.5 25c.8-5 3.8-7.5 8.5-7.5s7.7 2.5 8.5 7.5" stroke="white" stroke-width="2.5" stroke-linecap="round"/><path d="M24 11v9M19.5 15.5h9" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></span>
+    </button>
+  </div>
+</div>
+<div class="searchBar"><span class="searchBarIcon">⌕</span><input id="chatSearchInput" type="search" placeholder="Search chats, friends..."></div>
+<div class="categoryRow"><span>Unread <b id="unreadCount">0</b></span><span>My Vibe</span><span>Near me</span><span>Groups</span></div>
+<div class="friendSuggestion"><div class="friendSuggestionIcon">♧</div><div class="friendSuggestionText"><div class="friendSuggestionTitle">New: Friend Suggestions!</div><div class="friendSuggestionSub">Find people you might know</div></div><div class="friendSuggestionArrow">›</div></div>
+<div id="chatList" class="chatList"></div>
+<button class="composeBtn" id="composeBtn">✎</button>
 </div>
 <div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profileEmail" style="color:#777;margin-top:8px;"></p><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
-<div class="bottomNav"><button class="navBtn" data-page="friends"><span>⌖</span>Discover</button><button class="navBtn active" data-page="chat"><span>▰</span>Chat</button><button class="navBtn" data-page="camera"><span>◉</span>Camera</button><button class="navBtn" data-page="friends"><span>♧</span>Friends</button><button class="navBtn" data-page="profile"><span>◉</span>Profile</button></div>
+<div class="bottomNav">
+<button class="navBtn active" data-page="chat"><span>▰</span>Chats</button>
+<button class="navBtn" data-page="camera"><span>◉</span>Camera</button>
+<button class="navBtn" data-page="friends"><span>♧</span>Friends</button>
+<button class="navBtn" data-page="profile"><span>◉</span>Profile</button>
+<button class="navBtn" data-page="friends"><span>⌕</span>Search</button>
+</div>
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera">◉</button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
 </div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="retakeBtn" id="retakeBtn">Retake</button><button class="sendBtn" id="sendMediaBtn">Send</button></div></div>
 <script>
@@ -140,6 +206,7 @@ document.querySelector('[data-page="'+page+'"]').classList.add("active");
 if(page==="camera")startCamera();else stopCamera();
 }
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
+$("chatSearchInput").oninput=()=>{const q=$("chatSearchInput").value.trim().toLowerCase();document.querySelectorAll(".chatRow").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none")};
 
 async function startCamera(){
 stopCamera();
@@ -157,8 +224,6 @@ $("searchQuick").onclick=()=>alert("VibeSnap search is coming soon.");
 $("flashQuick").onclick=()=>alert("Flash control will be available on supported cameras.");
 $("soundQuick").onclick=()=>alert("Sounds are currently on.");
 $("moreCameraTools").onclick=()=>document.querySelector(".lensStrip").classList.toggle("hidden");
-$("aiQuick").onclick=()=>alert("Vibe AI is coming soon.");
-$("memoriesQuick").onclick=()=>$("galleryBtn").click();
 
 $("captureBtn").onclick=async()=>{
 if(!currentStream)await startCamera();
