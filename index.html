@@ -180,7 +180,9 @@ const filterCSS={none:"none",vivid:"saturate(1.5) contrast(1.15)",warm:"sepia(.2
 const googleProvider=new firebase.auth.GoogleAuthProvider();
 async function doGoogleLogin(){try{await auth.signInWithPopup(googleProvider)}catch(e){alert(e.message)}}
 $("googleLogin").onclick=doGoogleLogin;
-$("showPhone").onclick=()=>$("phoneBox").classList.toggle("hidden");
+$("showLoginPanel").onclick=()=>$("loginPanel").classList.remove("hidden");
+$("hideLoginPanel").onclick=()=>$("loginPanel").classList.add("hidden");
+$("googleLogin2").onclick=doGoogleLogin;
 $("sendOTP").onclick=async()=>{const phone=$("phoneNumber").value.trim();if(!phone)return alert("Enter your phone number.");try{if(!window.recaptchaVerifier)window.recaptchaVerifier=new firebase.auth.RecaptchaVerifier("recaptcha-container",{size:"normal"});window.confirmationResult=await auth.signInWithPhoneNumber(phone,window.recaptchaVerifier);alert("OTP sent.")}catch(e){alert(e.message)}};
 $("verifyOTP").onclick=async()=>{const code=$("otpCode").value.trim();if(!window.confirmationResult)return alert("Send the OTP first.");try{await window.confirmationResult.confirm(code)}catch(e){alert(e.message)}};
 
@@ -272,7 +274,8 @@ let usersCache=[];
 async function loadUsers(){
 db.collection("users").onSnapshot(snapshot=>{
 usersCache=[];$("usersList").innerHTML="";$("recipientSelect").innerHTML='<option value="">Select friend to send to</option>';
-snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;const user={uid:doc.id,...doc.data()};usersCache.push(user);addUserCard(user);const option=document.createElement("option");option.value=user.uid;option.textContent=user.displayName||user.email||"VibeSnap User";$("recipientSelect").appendChild(option)})
+snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;const user={uid:doc.id,...doc.data()};usersCache.push(user);addUserCard(user);const option=document.createElement("option");option.value=user.uid;option.textContent=user.displayName||user.email||"VibeSnap User";$("recipientSelect").appendChild(option)});
+renderChatList()
 })
 }
 function avatarHTML(user,cls="rowAvatar"){
@@ -318,7 +321,8 @@ async function sendTextMessage(){
 const text=$("messageInput").value.trim();if(!text||!selectedFriend)return;
 try{const chatId=getChatId(currentUser.uid,selectedFriend.uid);await ensureChat(chatId,selectedFriend.uid);await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",text,createdAt:firebase.firestore.FieldValue.serverTimestamp()});$("messageInput").value=""}catch(e){alert(e.message)}
 }
-$("backFromChat").onclick=()=>showPage("camera");
+$("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");showPage("chat")};
+$("conversationCamera").onclick=()=>{$("chatConversation").classList.add("hidden");showPage("camera")};
 $("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await auth.signOut()};
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 </script>
