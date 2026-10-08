@@ -11,75 +11,88 @@
 <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-storage-compat.js"></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
-body{background:#000;color:#fff;min-height:100vh;overflow:hidden}
-button{border:0;cursor:pointer}
-.hidden{display:none!important}
-#loginScreen{min-height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#111,#35105c,#001c35);padding:20px}
-.loginBox{width:100%;max-width:420px;background:rgba(20,20,20,.92);border-radius:25px;padding:35px 25px;text-align:center;box-shadow:0 0 40px rgba(0,0,0,.5)}
-.logo{font-size:42px;font-weight:bold;margin-bottom:10px}
-.subtitle{color:#aaa;margin-bottom:30px}
-.loginBtn{width:100%;padding:15px;margin:8px 0;border-radius:14px;font-size:16px;font-weight:bold}
-.googleBtn{background:#fff;color:#111}.phoneBtn{background:#222;color:#fff;border:1px solid #555}.accountBtn{background:#6c2cff;color:white}
-#phoneBox{margin-top:15px}
-#phoneNumber,#otpCode{width:100%;padding:14px;border-radius:12px;border:1px solid #555;background:#111;color:white;margin:8px 0}
-#app{width:100%;height:100vh;position:relative;background:#000}
-#cameraPage{width:100%;height:100vh;position:relative;background:#000;overflow:hidden}
-#cameraVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111}
-.cameraShade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent 22%,transparent 68%,rgba(0,0,0,.72))}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+html,body{width:100%;height:100%;overflow:hidden}body{background:#fff;color:#17181c}
+button{border:0;cursor:pointer}.hidden{display:none!important}
+#loginScreen{min-height:100vh;background:#fff;display:flex;align-items:center;justify-content:center;padding:24px}
+.loginBox{width:min(430px,100%);min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:36px 18px 70px;text-align:center;background:#fff}
+.loginBrand{width:120px;height:120px;border-radius:38%;background:#fffc00;display:flex;align-items:center;justify-content:center;margin-bottom:26px;box-shadow:0 12px 30px rgba(0,0,0,.14)}
+.loginGhost{font-size:62px;filter:drop-shadow(0 3px 0 #111);color:#fff;text-shadow:2px 2px 0 #111,-2px -2px 0 #111,2px -2px 0 #111,-2px 2px 0 #111}
+.loginTitle{font-size:42px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}.loginSub{color:#777;font-size:16px;margin-bottom:30px}
+.loginBtn{width:100%;max-width:360px;height:58px;border-radius:30px;margin:7px 0;font-size:18px;font-weight:800;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.googleBtn{background:#fff;color:#24262b;border:1px solid #ddd}.googleMark{font-weight:900;margin-right:8px;color:#4285f4}.signupBtn{background:#17a9ee;color:#fff}
+.loginLink{margin-top:20px;font-size:17px}.loginLink button{background:none;color:#129fe7;font-weight:800;font-size:17px}
+#loginPanel{width:100%;max-width:360px;margin-top:12px;text-align:left}.loginLabel{display:block;color:#129fe7;font-size:13px;font-weight:800;margin:12px 0 6px}
+#phoneNumber,#otpCode{width:100%;height:54px;border:1px solid #ccd1d6;border-radius:14px;padding:0 16px;font-size:17px;background:#fff;color:#111}
+#sendOTP,#verifyOTP{width:100%;height:50px;margin-top:8px;border-radius:25px;background:#111;color:#fff}#recaptcha-container{margin-top:10px}
+#app{width:100%;height:100vh;background:#fff;position:relative}
+.page{height:100vh;overflow:hidden;background:#fff}
+#cameraPage{position:relative;background:#000;overflow:hidden}#cameraVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111}
+.cameraShade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.38),transparent 25%,transparent 70%,rgba(0,0,0,.72))}
 .cameraTop{position:absolute;top:0;left:0;right:0;padding:18px 16px;display:flex;align-items:center;gap:12px;z-index:8}
-.cameraTop button,.cameraIconBtn{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.32);backdrop-filter:blur(8px);color:white;font-size:23px;display:flex;align-items:center;justify-content:center}
-.cameraAvatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#777,#222);border:2px solid rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-size:23px;overflow:hidden}
-.cameraAvatar img{width:100%;height:100%;object-fit:cover}
-.cameraSearch{font-size:28px!important}
-.cameraTopSpacer{flex:1}
-.cameraTopActions{display:flex;gap:10px}
-.topBadge{position:relative}.topBadge:after{content:"";position:absolute;right:-2px;top:-2px;width:12px;height:12px;background:#ff3158;border-radius:50%;border:2px solid white}
-.cameraTitle{display:none}
-.cameraSidePanel{position:absolute;right:13px;top:112px;z-index:8;display:flex;flex-direction:column;gap:14px;align-items:center}
-.cameraTool{min-width:58px;color:#fff;background:transparent;text-shadow:0 2px 8px #000;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:700;font-size:13px}
-.cameraToolIcon{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.24);backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;font-size:24px}
-.cameraTool.active .cameraToolIcon{background:rgba(255,255,255,.2)}
-.recipientBox{position:absolute;top:92px;left:16px;right:76px;z-index:8}.recipientBox select{width:100%;padding:10px 13px;border-radius:18px;background:rgba(0,0,0,.38);backdrop-filter:blur(8px);color:white;border:1px solid rgba(255,255,255,.25);outline:none}
-.lensStrip{position:absolute;left:0;right:0;bottom:132px;display:flex;align-items:center;gap:12px;overflow-x:auto;padding:8px 18px;z-index:8;scrollbar-width:none}.lensStrip::-webkit-scrollbar{display:none}
-.lensItem{flex:none;width:70px;text-align:center;color:white;font-size:11px;font-weight:700;text-shadow:0 2px 6px #000}.lensItem .lensCircle{width:62px;height:62px;margin:auto auto 4px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center;font-size:27px;overflow:hidden}.lensItem.active .lensCircle{border:3px solid white;background:rgba(255,255,255,.2)}
-.filterBar{display:none}
-.cameraControls{position:absolute;left:0;right:0;bottom:57px;display:flex;justify-content:center;align-items:center;gap:32px;z-index:9}
-.cameraSideBtn{width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.3);backdrop-filter:blur(8px);color:white;font-size:22px;display:flex;align-items:center;justify-content:center}
-.captureBtn{width:84px;height:84px;border-radius:50%;background:white;border:5px solid rgba(255,255,255,.55);box-shadow:0 0 0 3px rgba(0,0,0,.18) inset}.recording{background:#ff3030!important}
-.cameraModeLabel{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:white;font-size:13px;font-weight:700;text-shadow:0 2px 6px #000;z-index:9}
-.cameraQuickActions{position:absolute;left:20px;bottom:170px;z-index:9;display:flex;gap:14px}.quickAction{color:#fff;background:none;text-shadow:0 2px 8px #000;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:4px}.quickAction span:first-child{font-size:28px}
-.page{height:100vh;overflow:auto;padding:85px 20px 90px;background:#0b0b0b}.pageTitle{font-size:28px;margin-bottom:20px}
-.userCard{display:flex;align-items:center;gap:12px;padding:14px;background:#171717;border-radius:15px;margin-bottom:10px}
-.avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#743cff,#ff2e88);display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:20px}
-.userInfo{flex:1}.userName{font-weight:bold}.userEmail{color:#999;font-size:13px}.chatOpenBtn{background:#6c2cff;color:#fff;padding:9px 13px;border-radius:10px}
-#chatPage{padding:0 0 82px;display:flex;flex-direction:column}.chatHeader{padding:15px;background:#151515;display:flex;align-items:center;gap:12px}.chatMessages{flex:1;overflow:auto;padding:15px}
-.message{max-width:78%;padding:10px 13px;border-radius:16px;margin-bottom:9px;word-break:break-word}.mine{margin-left:auto;background:#6c2cff}.theirs{background:#222}
-.message img,.message video{max-width:100%;border-radius:12px;margin-top:5px}.chatInput{display:flex;gap:8px;padding:10px;background:#151515}.chatInput input{flex:1;padding:13px;border-radius:12px;border:1px solid #444;background:#0d0d0d;color:#fff}.chatInput button{padding:0 16px;border-radius:12px;background:#6c2cff;color:#fff}
-.profileBox{max-width:500px;margin:auto;background:#171717;padding:25px;border-radius:20px;text-align:center}.profileAvatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#743cff,#ff2e88);display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:bold;margin:0 auto 15px}.logoutBtn{margin-top:25px;width:100%;padding:14px;background:#d92929;color:white;border-radius:12px}
-.bottomNav{position:absolute;bottom:0;left:0;right:0;height:72px;background:rgba(8,8,8,.86);backdrop-filter:blur(10px);border-top:1px solid rgba(255,255,255,.08);display:grid;grid-template-columns:repeat(4,1fr);z-index:20}
-.navBtn{background:none;color:#aaa;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;font-weight:700}.navBtn span{font-size:25px}.navBtn.active{color:#fff}
-#previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia{flex:1;width:100%;height:100%;object-fit:contain}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:12px;font-weight:bold}.retakeBtn{background:#333;color:white}.sendBtn{background:#6c2cff;color:white}
-@media(min-width:700px){#cameraPage{max-width:600px;margin:auto}.bottomNav{max-width:600px;left:50%;transform:translateX(-50%)}}
-
+.cameraTop button,.cameraIconBtn{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.88);color:#111;font-size:23px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.18)}
+.cameraAvatar{overflow:hidden;font-size:22px;background:#eee}.cameraAvatar img{width:100%;height:100%;object-fit:cover}.cameraTopSpacer{flex:1}.cameraTopActions{display:flex;gap:9px}
+.topBadge{position:relative}.topBadge:after{content:"";position:absolute;right:0;top:0;width:11px;height:11px;background:#ff3158;border:2px solid #fff;border-radius:50%}
+.recipientBox{position:absolute;top:78px;left:16px;right:72px;z-index:8}.recipientBox select{width:100%;padding:10px 13px;border-radius:20px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.3);outline:none}
+.cameraSidePanel{position:absolute;right:12px;top:120px;z-index:8;display:flex;flex-direction:column;gap:12px}.cameraTool{background:none;color:#fff;text-shadow:0 2px 6px #000;font-size:12px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cameraToolIcon{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-size:22px}
+.cameraQuickActions{position:absolute;left:16px;bottom:175px;z-index:9;display:flex;gap:14px}.quickAction{background:rgba(0,0,0,.28);border-radius:18px;padding:8px 10px;color:#fff;text-shadow:0 2px 5px #000;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:2px}.quickAction span:first-child{font-size:22px}
+.lensStrip{position:absolute;left:0;right:0;bottom:130px;display:flex;gap:10px;overflow-x:auto;padding:8px 18px;z-index:8;scrollbar-width:none}.lensStrip::-webkit-scrollbar{display:none}
+.lensItem{flex:none;width:64px;text-align:center;color:#fff;font-size:10px;font-weight:800;text-shadow:0 2px 6px #000;background:none}.lensCircle{width:58px;height:58px;margin:0 auto 3px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:24px}.lensItem.active .lensCircle{border:3px solid #fffc00}
+.cameraControls{position:absolute;left:0;right:0;bottom:58px;display:flex;justify-content:center;align-items:center;gap:30px;z-index:9}.cameraSideBtn{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.86);font-size:22px}.captureBtn{width:84px;height:84px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.55);box-shadow:0 0 0 3px rgba(0,0,0,.18) inset}.recording{background:#ff3158!important}.cameraModeLabel{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff;font-size:12px;font-weight:800;text-shadow:0 2px 6px #000;z-index:9}
+#friendsPage{padding:0 0 82px;overflow:auto}#chatPage{padding:0 0 82px;display:flex;flex-direction:column;overflow:hidden}#profilePage{padding:86px 18px 100px;overflow:auto}
+.topHeader{height:88px;display:flex;align-items:center;padding:14px 16px;gap:12px;border-bottom:1px solid #eceef0;background:#fff;flex:none}.topAvatar{width:48px;height:48px;border-radius:50%;background:#e9edf0;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden}.topAvatar img{width:100%;height:100%;object-fit:cover}
+.headerIcon{width:48px;height:48px;border-radius:50%;background:#edf0f2;display:flex;align-items:center;justify-content:center;font-size:25px;color:#454b52}.headerTitle{flex:1;text-align:center;font-size:27px;font-weight:500}.headerActions{display:flex;gap:8px}.headerActions .headerIcon:nth-child(2){background:#fffc00;color:#111}.headerBadge{position:relative}.headerBadge:after{content:"";position:absolute;right:2px;top:0;width:10px;height:10px;background:#ff3158;border-radius:50%;border:2px solid #fff}
+.categoryRow{display:flex;gap:26px;overflow-x:auto;padding:14px 20px 12px;font-size:16px;font-weight:700;white-space:nowrap;border-bottom:1px solid #eee;scrollbar-width:none}.categoryRow::-webkit-scrollbar{display:none}.noticeBar{margin:0;background:#fffc00;padding:13px 18px;font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px}.noticeClose{margin-left:auto;background:none;font-size:22px}
+.chatList{overflow:auto;flex:1}.chatRow{display:flex;align-items:center;gap:13px;padding:13px 18px;border-bottom:1px solid #ececec;min-height:82px;background:#fff}.chatRowBody{min-width:0;flex:1}.chatRowName{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatRowMeta{font-size:14px;color:#737b83;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rowAvatar{width:56px;height:56px;border-radius:50%;background:#eef1f3;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;overflow:hidden}.rowAvatar img{width:100%;height:100%;object-fit:cover}.blueDot{display:inline-block;width:10px;height:10px;background:#1ba9f5;border-radius:3px;margin-right:7px}.purpleDot{display:inline-block;width:10px;height:10px;background:#a83cff;border-radius:3px;margin-right:7px}
+.rowAction{width:45px;height:45px;border-radius:50%;background:none;font-size:25px;color:#394047;flex:none}.composeBtn{position:absolute;right:20px;bottom:88px;width:62px;height:62px;border-radius:50%;background:#fffc00;box-shadow:0 6px 18px rgba(0,0,0,.2);font-size:27px;z-index:21}
+.bottomNav{position:absolute;bottom:0;left:0;right:0;height:72px;background:#fff;border-top:1px solid #e8e9eb;display:grid;grid-template-columns:repeat(5,1fr);z-index:20}.navBtn{background:none;color:#40454a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;font-weight:700}.navBtn span{font-size:25px}.navBtn.active{color:#111}
+#chatConversation{position:absolute;inset:0;background:#fff;z-index:25;display:flex;flex-direction:column}.conversationHeader{height:76px;display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #eee}.conversationHeader button{background:none;font-size:27px}.conversationTitle{flex:1;font-size:18px;font-weight:700}.chatMessages{flex:1;overflow:auto;padding:16px;background:#fff}.message{max-width:78%;padding:10px 13px;border-radius:18px;margin-bottom:9px;word-break:break-word}.mine{margin-left:auto;background:#fffc00;color:#111}.theirs{background:#edf0f2}.message img,.message video{max-width:100%;border-radius:12px;margin-top:5px}.chatInput{display:flex;gap:8px;padding:10px;border-top:1px solid #eee;background:#fff}.chatInput input{flex:1;padding:13px;border-radius:24px;border:1px solid #d9dde1;background:#f4f5f6}.chatInput button{width:52px;border-radius:50%;background:#fffc00}
+.pageTitle{font-size:28px;font-weight:700;margin:0 0 20px}.friendsHeader{padding:86px 18px 15px;font-size:28px;font-weight:700}.userCard{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid #eee;background:#fff}.avatar{width:50px;height:50px;border-radius:50%;background:#e9edf0;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px}.userInfo{flex:1}.userName{font-weight:700}.userEmail{color:#7b8289;font-size:13px;margin-top:3px}.chatOpenBtn{background:#fffc00;color:#111;padding:10px 16px;border-radius:22px;font-weight:800}
+.profileBox{max-width:500px;margin:auto;background:#f6f7f8;padding:28px;border-radius:22px;text-align:center}.profileAvatar{width:94px;height:94px;border-radius:50%;background:#edf0f2;display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:700;margin:0 auto 15px}.logoutBtn{margin-top:25px;width:100%;padding:14px;background:#111;color:#fff;border-radius:24px;font-weight:800}
+#previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia{flex:1;width:100%;height:100%;object-fit:contain}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:24px;font-weight:bold}.retakeBtn{background:#333;color:#fff}.sendBtn{background:#fffc00;color:#111}
+@media(min-width:700px){#app{max-width:620px;margin:auto;box-shadow:0 0 30px rgba(0,0,0,.15)}.bottomNav{max-width:620px;left:50%;right:auto;width:620px;transform:translateX(-50%)}}
 </style>
 </head>
 <body>
 <div id="loginScreen"><div class="loginBox">
-<div class="logo">VibeSnap</div><div class="subtitle">Snap. Share. Vibe.</div>
-<button class="loginBtn googleBtn" id="googleLogin">Continue with Google</button>
-<button class="loginBtn phoneBtn" id="showPhone">📱 Phone Number</button>
-<button class="loginBtn accountBtn" id="requestAccount">Request Account</button>
-<div id="phoneBox" class="hidden">
-<input id="phoneNumber" type="tel" placeholder="+91XXXXXXXXXX">
-<button class="loginBtn phoneBtn" id="sendOTP">Send OTP</button>
-<input id="otpCode" type="text" placeholder="Enter OTP">
-<button class="loginBtn accountBtn" id="verifyOTP">Verify OTP</button>
-</div>
-<div id="recaptcha-container"></div>
+<div class="loginBrand"><div class="loginGhost">👻</div></div>
+<div class="loginTitle">VibeSnap</div><div class="loginSub">Snap. Share. Vibe.</div>
+<button class="loginBtn googleBtn" id="googleLogin"><span class="googleMark">G</span> Continue with Google</button>
+<button class="loginBtn signupBtn" id="requestAccount">Sign Up</button>
+<div class="loginLink">Already have an account? <button id="showLoginPanel">Log in</button></div>
+<div id="loginPanel" class="hidden">
+<label class="loginLabel">PHONE NUMBER</label><input id="phoneNumber" type="tel" placeholder="+91XXXXXXXXXX">
+<button class="loginBtn" id="sendOTP">Send OTP</button>
+<label class="loginLabel">ONE-TIME PASSWORD</label><input id="otpCode" type="text" inputmode="numeric" placeholder="Enter OTP">
+<button class="loginBtn" id="verifyOTP">Verify OTP</button>
+<button class="loginBtn googleBtn" id="googleLogin2"><span class="googleMark">G</span> Continue with Google</button>
+<button class="loginBtn" id="hideLoginPanel" style="background:#edf0f2;color:#222">Back</button>
+</div><div id="recaptcha-container"></div>
 </div></div>
-
 <div id="app" class="hidden">
+<div id="cameraPage" class="page">
+<video id="cameraVideo" autoplay playsinline muted></video><div class="cameraShade"></div>
+<div class="cameraTop"><button class="cameraAvatar" id="profileQuick">V</button><button class="cameraIconBtn" id="searchQuick">⌕</button><div class="cameraTopSpacer"></div><div class="cameraTopActions"><button class="cameraIconBtn topBadge" id="notificationQuick">♧</button><button class="cameraIconBtn topBadge" id="addFriendQuick">♧+</button><button class="cameraIconBtn" id="flipCamera">↻</button></div></div>
+<div class="recipientBox"><select id="recipientSelect"><option value="">Choose a friend for sending</option></select></div>
+<div class="cameraSidePanel"><button class="cameraTool" id="flashQuick"><span class="cameraToolIcon">⚡</span>Flash</button><button class="cameraTool" id="soundQuick"><span class="cameraToolIcon">♪</span>Sounds</button><button class="cameraTool" id="moreCameraTools"><span class="cameraToolIcon">⌄</span>More</button></div>
+<div class="cameraQuickActions"><button class="quickAction" id="aiQuick"><span>AI</span><span>Vibe AI</span></button><button class="quickAction" id="memoriesQuick"><span>▧</span><span>Memories</span></button></div>
+<div class="lensStrip" id="lensStrip"><button class="lensItem active" data-filter="none"><span class="lensCircle">◉</span>Normal</button><button class="lensItem" data-filter="vivid"><span class="lensCircle">✦</span>Vivid</button><button class="lensItem" data-filter="warm"><span class="lensCircle">☀</span>Warm</button><button class="lensItem" data-filter="cool"><span class="lensCircle">❄</span>Cool</button><button class="lensItem" data-filter="mono"><span class="lensCircle">◐</span>Mono</button><button class="lensItem" data-filter="sepia"><span class="lensCircle">◒</span>Sepia</button></div>
+<div class="cameraControls"><button class="cameraSideBtn" id="galleryBtn">▧</button><button class="captureBtn" id="captureBtn"></button><button class="cameraSideBtn" id="videoModeBtn">●</button></div><div class="cameraModeLabel">PHOTO</div><input type="file" id="galleryInput" accept="image/*,video/*" class="hidden">
+</div>
+<div id="friendsPage" class="page hidden"><div class="friendsHeader">Friends</div><div id="usersList"></div></div>
+<div id="chatPage" class="page hidden">
+<div class="topHeader"><button class="topAvatar" id="chatProfileQuick">V</button><button class="headerIcon" id="chatSearch">⌕</button><div class="headerTitle">Chat</div><div class="headerActions"><button class="headerIcon headerBadge" id="chatNotifications">♧</button><button class="headerIcon" id="chatAddFriend">♧+</button><button class="headerIcon" id="chatMore">•••</button></div></div>
+<div class="categoryRow"><span>Unread <b id="unreadCount">0</b></span><span>My Vibe</span><span>Near me</span><span>Groups</span><span>Best friends</span></div>
+<div class="noticeBar"><span>🔔</span><span>Turn on notifications to never miss VibeSnaps!</span><button class="noticeClose" id="closeNotice">×</button></div>
+<div id="chatList" class="chatList"></div><button class="composeBtn" id="composeBtn">✎</button>
+</div>
+<div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profileEmail" style="color:#777;margin-top:8px;"></p><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
+<div class="bottomNav"><button class="navBtn" data-page="friends"><span>⌖</span>Discover</button><button class="navBtn active" data-page="chat"><span>▰</span>Chat</button><button class="navBtn" data-page="camera"><span>◉</span>Camera</button><button class="navBtn" data-page="friends"><span>♧</span>Friends</button><button class="navBtn" data-page="profile"><span>◉</span>Profile</button></div>
+<div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera">◉</button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
+</div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="retakeBtn" id="retakeBtn">Retake</button><button class="sendBtn" id="sendMediaBtn">Send</button></div></div>
+<script
 <div id="cameraPage">
 <video id="cameraVideo" autoplay playsinline muted></video>
 <div class="cameraShade"></div>
@@ -164,7 +177,9 @@ let currentUser=null,selectedFriend=null,currentStream=null,facingMode="user",cu
 const $=id=>document.getElementById(id);
 const filterCSS={none:"none",vivid:"saturate(1.5) contrast(1.15)",warm:"sepia(.25) saturate(1.3)",cool:"saturate(.9) hue-rotate(15deg)",mono:"grayscale(1)",sepia:"sepia(.8)"};
 
-$("googleLogin").onclick=async()=>{try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}catch(e){alert(e.message)}};
+const googleProvider=new firebase.auth.GoogleAuthProvider();
+async function doGoogleLogin(){try{await auth.signInWithPopup(googleProvider)}catch(e){alert(e.message)}}
+$("googleLogin").onclick=doGoogleLogin;
 $("showPhone").onclick=()=>$("phoneBox").classList.toggle("hidden");
 $("sendOTP").onclick=async()=>{const phone=$("phoneNumber").value.trim();if(!phone)return alert("Enter your phone number.");try{if(!window.recaptchaVerifier)window.recaptchaVerifier=new firebase.auth.RecaptchaVerifier("recaptcha-container",{size:"normal"});window.confirmationResult=await auth.signInWithPhoneNumber(phone,window.recaptchaVerifier);alert("OTP sent.")}catch(e){alert(e.message)}};
 $("verifyOTP").onclick=async()=>{const code=$("otpCode").value.trim();if(!window.confirmationResult)return alert("Send the OTP first.");try{await window.confirmationResult.confirm(code)}catch(e){alert(e.message)}};
@@ -260,18 +275,32 @@ usersCache=[];$("usersList").innerHTML="";$("recipientSelect").innerHTML='<optio
 snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;const user={uid:doc.id,...doc.data()};usersCache.push(user);addUserCard(user);const option=document.createElement("option");option.value=user.uid;option.textContent=user.displayName||user.email||"VibeSnap User";$("recipientSelect").appendChild(option)})
 })
 }
+function avatarHTML(user,cls="rowAvatar"){
+const name=user.displayName||user.email||"VibeSnap User";
+return user.photoURL?'<div class="'+cls+'"><img src="'+escapeHTML(user.photoURL)+'" alt=""></div>':'<div class="'+cls+'">'+escapeHTML(name.charAt(0).toUpperCase())+'</div>';
+}
 function addUserCard(user){
 const card=document.createElement("div");card.className="userCard";const name=user.displayName||user.email||"VibeSnap User";
-card.innerHTML=`<div class="avatar">${name.charAt(0).toUpperCase()}</div><div class="userInfo"><div class="userName">${escapeHTML(name)}</div><div class="userEmail">${escapeHTML(user.email||"")}</div></div><button class="chatOpenBtn">Chat</button>`;
-card.querySelector(".chatOpenBtn").onclick=()=>openChat(user);$("usersList").appendChild(card)
+card.innerHTML=avatarHTML(user,"avatar")+'<div class="userInfo"><div class="userName">'+escapeHTML(name)+'</div><div class="userEmail">'+escapeHTML(user.email||user.phone||"")+'</div></div><button class="chatOpenBtn">Chat</button>';
+card.querySelector(".chatOpenBtn").onclick=()=>openChat(user);$("usersList").appendChild(card);
+}
+function renderChatList(){
+const list=$("chatList");if(!list)return;list.innerHTML="";
+usersCache.forEach((user,i)=>{
+const row=document.createElement("div");row.className="chatRow";
+const name=user.displayName||user.email||user.phone||"VibeSnap User";
+const dot=i%3===0?"blueDot":i%3===1?"purpleDot":"blueDot";
+row.innerHTML=avatarHTML(user,"rowAvatar")+'<div class="chatRowBody"><div class="chatRowName">'+escapeHTML(name)+'</div><div class="chatRowMeta"><span class="'+dot+'"></span>Start a VibeSnap · tap to chat</div></div><button class="rowAction">▱</button>';
+row.onclick=()=>openChat(user);list.appendChild(row);
+});
 }
 $("recipientSelect").onchange=async()=>{const uid=$("recipientSelect").value;selectedFriend=uid?usersCache.find(u=>u.uid===uid):null};
 
 function getChatId(uid1,uid2){return[uid1,uid2].sort().join("_")}
 async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
 async function openChat(user){
-selectedFriend=user;$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").textContent=(user.displayName||user.email||"U").charAt(0).toUpperCase();showPage("chat");
-const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.uid);loadMessages(chatId)
+selectedFriend=user;$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");showPage("chat");$("chatConversation").classList.remove("hidden");
+const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.uid);loadMessages(chatId);
 }
 function loadMessages(chatId){
 if(currentChatUnsubscribe)currentChatUnsubscribe();
