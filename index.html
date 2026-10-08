@@ -113,7 +113,7 @@ let currentUser=null,selectedFriend=null,currentStream=null,facingMode="user",cu
 const $=id=>document.getElementById(id);
 const filterCSS={none:"none",vivid:"saturate(1.5) contrast(1.15)",warm:"sepia(.25) saturate(1.3)",cool:"saturate(.9) hue-rotate(15deg)",mono:"grayscale(1)",sepia:"sepia(.8)"};
 
-$("googleLogin").onclick=async()=>{try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}catch(e){alert(e.message)}};
+$("googleLogin").onclick=async()=>{try{await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider())}catch(e){alert(e.message)}};
 $("showPhone").onclick=()=>$("phoneBox").classList.toggle("hidden");
 $("sendOTP").onclick=async()=>{const phone=$("phoneNumber").value.trim();if(!phone)return alert("Enter your phone number.");try{if(!window.recaptchaVerifier)window.recaptchaVerifier=new firebase.auth.RecaptchaVerifier("recaptcha-container",{size:"normal"});window.confirmationResult=await auth.signInWithPhoneNumber(phone,window.recaptchaVerifier);alert("OTP sent.")}catch(e){alert(e.message)}};
 $("verifyOTP").onclick=async()=>{const code=$("otpCode").value.trim();if(!window.confirmationResult)return alert("Send the OTP first.");try{await window.confirmationResult.confirm(code)}catch(e){alert(e.message)}};
