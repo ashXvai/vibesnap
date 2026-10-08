@@ -24,28 +24,44 @@ button{border:0;cursor:pointer}
 #phoneBox{margin-top:15px}
 #phoneNumber,#otpCode{width:100%;padding:14px;border-radius:12px;border:1px solid #555;background:#111;color:white;margin:8px 0}
 #app{width:100%;height:100vh;position:relative;background:#000}
-#cameraPage{width:100%;height:calc(100vh - 72px);position:relative;background:#000;overflow:hidden}
-#cameraVideo{width:100%;height:100%;object-fit:cover;background:#111}
-.cameraTop{position:absolute;top:0;left:0;right:0;padding:18px;display:flex;justify-content:space-between;align-items:center;z-index:5;background:linear-gradient(rgba(0,0,0,.65),transparent)}
-.cameraTitle{font-size:22px;font-weight:bold}.cameraTop button{width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.5);color:white;font-size:20px}
-.filterBar{position:absolute;bottom:110px;left:0;right:0;display:flex;gap:10px;overflow-x:auto;padding:10px 15px;z-index:5}.filterBar::-webkit-scrollbar{display:none}
-.filterBtn{flex:none;padding:9px 15px;border-radius:20px;background:rgba(0,0,0,.65);color:#fff;border:1px solid rgba(255,255,255,.3)}.filterBtn.active{background:#fff;color:#000}
-.cameraControls{position:absolute;bottom:15px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:20px;z-index:6}
-.cameraSideBtn{width:50px;height:50px;border-radius:50%;background:rgba(0,0,0,.65);color:white;font-size:21px}
-.captureBtn{width:72px;height:72px;border-radius:50%;background:white;border:6px solid rgba(255,255,255,.4);box-shadow:0 0 0 3px #fff inset}.recording{background:#ff3030!important}
-.recipientBox{position:absolute;top:70px;left:15px;right:15px;z-index:7}.recipientBox select{width:100%;padding:12px;border-radius:12px;background:rgba(0,0,0,.75);color:white;border:1px solid #777}
-.page{height:calc(100vh - 72px);overflow:auto;padding:20px;background:#0b0b0b}.pageTitle{font-size:28px;margin-bottom:20px}
+#cameraPage{width:100%;height:100vh;position:relative;background:#000;overflow:hidden}
+#cameraVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111}
+.cameraShade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent 22%,transparent 68%,rgba(0,0,0,.72))}
+.cameraTop{position:absolute;top:0;left:0;right:0;padding:18px 16px;display:flex;align-items:center;gap:12px;z-index:8}
+.cameraTop button,.cameraIconBtn{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.32);backdrop-filter:blur(8px);color:white;font-size:23px;display:flex;align-items:center;justify-content:center}
+.cameraAvatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#777,#222);border:2px solid rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-size:23px;overflow:hidden}
+.cameraAvatar img{width:100%;height:100%;object-fit:cover}
+.cameraSearch{font-size:28px!important}
+.cameraTopSpacer{flex:1}
+.cameraTopActions{display:flex;gap:10px}
+.topBadge{position:relative}.topBadge:after{content:"";position:absolute;right:-2px;top:-2px;width:12px;height:12px;background:#ff3158;border-radius:50%;border:2px solid white}
+.cameraTitle{display:none}
+.cameraSidePanel{position:absolute;right:13px;top:112px;z-index:8;display:flex;flex-direction:column;gap:14px;align-items:center}
+.cameraTool{min-width:58px;color:#fff;background:transparent;text-shadow:0 2px 8px #000;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:700;font-size:13px}
+.cameraToolIcon{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.24);backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;font-size:24px}
+.cameraTool.active .cameraToolIcon{background:rgba(255,255,255,.2)}
+.recipientBox{position:absolute;top:92px;left:16px;right:76px;z-index:8}.recipientBox select{width:100%;padding:10px 13px;border-radius:18px;background:rgba(0,0,0,.38);backdrop-filter:blur(8px);color:white;border:1px solid rgba(255,255,255,.25);outline:none}
+.lensStrip{position:absolute;left:0;right:0;bottom:132px;display:flex;align-items:center;gap:12px;overflow-x:auto;padding:8px 18px;z-index:8;scrollbar-width:none}.lensStrip::-webkit-scrollbar{display:none}
+.lensItem{flex:none;width:70px;text-align:center;color:white;font-size:11px;font-weight:700;text-shadow:0 2px 6px #000}.lensItem .lensCircle{width:62px;height:62px;margin:auto auto 4px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center;font-size:27px;overflow:hidden}.lensItem.active .lensCircle{border:3px solid white;background:rgba(255,255,255,.2)}
+.filterBar{display:none}
+.cameraControls{position:absolute;left:0;right:0;bottom:57px;display:flex;justify-content:center;align-items:center;gap:32px;z-index:9}
+.cameraSideBtn{width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.3);backdrop-filter:blur(8px);color:white;font-size:22px;display:flex;align-items:center;justify-content:center}
+.captureBtn{width:84px;height:84px;border-radius:50%;background:white;border:5px solid rgba(255,255,255,.55);box-shadow:0 0 0 3px rgba(0,0,0,.18) inset}.recording{background:#ff3030!important}
+.cameraModeLabel{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:white;font-size:13px;font-weight:700;text-shadow:0 2px 6px #000;z-index:9}
+.cameraQuickActions{position:absolute;left:20px;bottom:170px;z-index:9;display:flex;gap:14px}.quickAction{color:#fff;background:none;text-shadow:0 2px 8px #000;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:4px}.quickAction span:first-child{font-size:28px}
+.page{height:100vh;overflow:auto;padding:85px 20px 90px;background:#0b0b0b}.pageTitle{font-size:28px;margin-bottom:20px}
 .userCard{display:flex;align-items:center;gap:12px;padding:14px;background:#171717;border-radius:15px;margin-bottom:10px}
 .avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#743cff,#ff2e88);display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:20px}
 .userInfo{flex:1}.userName{font-weight:bold}.userEmail{color:#999;font-size:13px}.chatOpenBtn{background:#6c2cff;color:#fff;padding:9px 13px;border-radius:10px}
-#chatPage{padding:0;display:flex;flex-direction:column}.chatHeader{padding:15px;background:#151515;display:flex;align-items:center;gap:12px}.chatMessages{flex:1;overflow:auto;padding:15px}
+#chatPage{padding:0 0 82px;display:flex;flex-direction:column}.chatHeader{padding:15px;background:#151515;display:flex;align-items:center;gap:12px}.chatMessages{flex:1;overflow:auto;padding:15px}
 .message{max-width:78%;padding:10px 13px;border-radius:16px;margin-bottom:9px;word-break:break-word}.mine{margin-left:auto;background:#6c2cff}.theirs{background:#222}
 .message img,.message video{max-width:100%;border-radius:12px;margin-top:5px}.chatInput{display:flex;gap:8px;padding:10px;background:#151515}.chatInput input{flex:1;padding:13px;border-radius:12px;border:1px solid #444;background:#0d0d0d;color:#fff}.chatInput button{padding:0 16px;border-radius:12px;background:#6c2cff;color:#fff}
 .profileBox{max-width:500px;margin:auto;background:#171717;padding:25px;border-radius:20px;text-align:center}.profileAvatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#743cff,#ff2e88);display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:bold;margin:0 auto 15px}.logoutBtn{margin-top:25px;width:100%;padding:14px;background:#d92929;color:white;border-radius:12px}
-.bottomNav{position:absolute;bottom:0;left:0;right:0;height:72px;background:rgba(10,10,10,.97);border-top:1px solid #222;display:grid;grid-template-columns:repeat(4,1fr);z-index:20}
-.navBtn{background:none;color:#777;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px}.navBtn span{font-size:24px}.navBtn.active{color:#fff}
+.bottomNav{position:absolute;bottom:0;left:0;right:0;height:72px;background:rgba(8,8,8,.86);backdrop-filter:blur(10px);border-top:1px solid rgba(255,255,255,.08);display:grid;grid-template-columns:repeat(4,1fr);z-index:20}
+.navBtn{background:none;color:#aaa;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;font-weight:700}.navBtn span{font-size:25px}.navBtn.active{color:#fff}
 #previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia{flex:1;width:100%;height:100%;object-fit:contain}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:12px;font-weight:bold}.retakeBtn{background:#333;color:white}.sendBtn{background:#6c2cff;color:white}
 @media(min-width:700px){#cameraPage{max-width:600px;margin:auto}.bottomNav{max-width:600px;left:50%;transform:translateX(-50%)}}
+
 </style>
 </head>
 <body>
@@ -66,12 +82,47 @@ button{border:0;cursor:pointer}
 <div id="app" class="hidden">
 <div id="cameraPage">
 <video id="cameraVideo" autoplay playsinline muted></video>
-<div class="cameraTop"><div class="cameraTitle">VibeSnap</div><button id="flipCamera">🔄</button></div>
-<div class="recipientBox"><select id="recipientSelect"><option value="">Select friend to send to</option></select></div>
-<div class="filterBar">
-<button class="filterBtn active" data-filter="none">Normal</button><button class="filterBtn" data-filter="vivid">Vivid</button><button class="filterBtn" data-filter="warm">Warm</button><button class="filterBtn" data-filter="cool">Cool</button><button class="filterBtn" data-filter="mono">Mono</button><button class="filterBtn" data-filter="sepia">Sepia</button>
+<div class="cameraShade"></div>
+
+<div class="cameraTop">
+  <button class="cameraAvatar" id="profileQuick" title="Profile">V</button>
+  <button class="cameraIconBtn cameraSearch" id="searchQuick" title="Search">⌕</button>
+  <div class="cameraTopSpacer"></div>
+  <div class="cameraTopActions">
+    <button class="cameraIconBtn topBadge" id="notificationQuick" title="Notifications">♧</button>
+    <button class="cameraIconBtn topBadge" id="addFriendQuick" title="Friends">♧+</button>
+    <button class="cameraIconBtn" id="flipCamera" title="Switch camera">↻</button>
+  </div>
 </div>
-<div class="cameraControls"><button class="cameraSideBtn" id="galleryBtn">🖼️</button><button class="captureBtn" id="captureBtn"></button><button class="cameraSideBtn" id="videoModeBtn">🎥</button></div>
+
+<div class="recipientBox"><select id="recipientSelect"><option value="">Choose a friend for sending</option></select></div>
+
+<div class="cameraSidePanel">
+  <button class="cameraTool" id="flashQuick"><span class="cameraToolIcon">⚡</span><span>Flash</span></button>
+  <button class="cameraTool" id="soundQuick"><span class="cameraToolIcon">♪</span><span>Sounds</span></button>
+  <button class="cameraTool" id="moreCameraTools"><span class="cameraToolIcon">⌄</span></button>
+</div>
+
+<div class="cameraQuickActions">
+  <button class="quickAction" id="aiQuick"><span>AI</span><span>Vibe AI</span></button>
+  <button class="quickAction" id="memoriesQuick"><span>▧</span><span>Memories</span></button>
+</div>
+
+<div class="lensStrip" id="lensStrip">
+  <button class="lensItem active" data-filter="none"><span class="lensCircle">◉</span>Normal</button>
+  <button class="lensItem" data-filter="vivid"><span class="lensCircle">✦</span>Vivid</button>
+  <button class="lensItem" data-filter="warm"><span class="lensCircle">☀</span>Warm</button>
+  <button class="lensItem" data-filter="cool"><span class="lensCircle">❄</span>Cool</button>
+  <button class="lensItem" data-filter="mono"><span class="lensCircle">◐</span>Mono</button>
+  <button class="lensItem" data-filter="sepia"><span class="lensCircle">◒</span>Sepia</button>
+</div>
+
+<div class="cameraControls">
+  <button class="cameraSideBtn" id="galleryBtn" title="Gallery">▧</button>
+  <button class="captureBtn" id="captureBtn" title="Take photo"></button>
+  <button class="cameraSideBtn" id="videoModeBtn" title="Record video">●</button>
+</div>
+<div class="cameraModeLabel">PHOTO</div>
 <input type="file" id="galleryInput" accept="image/*,video/*" class="hidden">
 </div>
 
@@ -151,7 +202,16 @@ catch(e){console.error(e);alert("Camera permission is required for VibeSnap Came
 function stopCamera(){if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null}if($("cameraVideo"))$("cameraVideo").srcObject=null}
 $("flipCamera").onclick=()=>{facingMode=facingMode==="user"?"environment":"user";startCamera()};
 function applyFilter(){$("cameraVideo").style.filter=filterCSS[currentFilter]}
-document.querySelectorAll(".filterBtn").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".filterBtn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");currentFilter=btn.dataset.filter;applyFilter()});
+document.querySelectorAll(".lensItem").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".lensItem").forEach(b=>b.classList.remove("active"));btn.classList.add("active");currentFilter=btn.dataset.filter;applyFilter()});
+$("profileQuick").onclick=()=>showPage("profile");
+$("addFriendQuick").onclick=()=>showPage("friends");
+$("notificationQuick").onclick=()=>alert("No new VibeSnap notifications.");
+$("searchQuick").onclick=()=>alert("VibeSnap search is coming soon.");
+$("flashQuick").onclick=()=>alert("Flash control will be available on supported cameras.");
+$("soundQuick").onclick=()=>alert("Sounds are currently on.");
+$("moreCameraTools").onclick=()=>document.querySelector(".lensStrip").classList.toggle("hidden");
+$("aiQuick").onclick=()=>alert("Vibe AI is coming soon.");
+$("memoriesQuick").onclick=()=>$("galleryBtn").click();
 
 $("captureBtn").onclick=async()=>{
 if(!currentStream)await startCamera();
