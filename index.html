@@ -105,7 +105,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 
 /* Camera polish */
 .cameraTop button,.cameraIconBtn{background:rgba(248,250,255,.94);color:#28365c;border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(14px);transition:transform .18s ease,background .18s ease}
-.cameraTop button:active,.cameraSideBtn:active,.cameraTool:active,.lensItem:active{transform:scale(.94)}
+.cameraTop button:active,.cameraSideBtn:active,.cameraTool:active,.lensItem:active{transform:scale(.94)}.cameraTool.toolActive .cameraToolIcon{background:linear-gradient(135deg,#6d4aff,#4f8cff);border-color:rgba(255,255,255,.7)}
 .cameraTop button svg,.cameraSideBtn svg,.cameraToolIcon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .cameraTop .cameraAvatar{background:linear-gradient(135deg,#eee9ff,#e4f0ff);border:2px solid rgba(255,255,255,.9);font-weight:800}
 .cameraTopActions{gap:9px}.topBadge:after{box-shadow:0 0 0 1px rgba(255,255,255,.5)}
@@ -130,6 +130,42 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .chatOpenBtn{padding:11px 17px;min-width:76px;border-radius:14px;background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;font-size:13px;font-weight:800;box-shadow:0 5px 12px rgba(92,78,225,.22);transition:transform .18s ease}
 .chatOpenBtn:active{transform:scale(.96)}
 @media(min-width:700px){#friendsPage{max-width:760px;margin:0 auto;border-left:1px solid #edf0f7;border-right:1px solid #edf0f7}.friendsHeader{padding-left:26px}#usersList{padding:18px 22px}}
+
+
+/* VibeSnap UI finishing pass */
+#loginScreen{background:radial-gradient(circle at 20% 15%,#ece8ff 0,transparent 34%),radial-gradient(circle at 90% 85%,#e5f0ff 0,transparent 35%),#f8f9ff}
+.loginBox{min-height:100svh;background:transparent}
+.loginBrand{background:linear-gradient(135deg,#6d4aff,#4f8cff);border-radius:34px;box-shadow:0 18px 42px rgba(92,78,225,.28)}
+.loginTitle{color:#20243a}.loginSub{color:#777f98}
+.signupBtn{background:linear-gradient(135deg,#6d4aff,#4f8cff);box-shadow:0 10px 22px rgba(92,78,225,.24)}
+#chatPage{background:#f7f8fd}
+.topHeader{background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-bottom:1px solid #eef0f8}
+.brandLogo{letter-spacing:-.7px}
+.searchBar{border:1px solid #e8eaf4;background:#fff;box-shadow:0 4px 14px rgba(35,47,90,.035);border-radius:16px}
+.searchBar input{outline:none}
+.categoryRow span{border-radius:999px;padding:8px 13px;background:#fff;border:1px solid #eceefa;color:#68718c}
+.categoryRow span:first-child{background:#eee9ff;border-color:#ddd4ff;color:#6545dc}
+.friendSuggestion{border:1px solid #e7e4ff;border-radius:18px;background:linear-gradient(120deg,#f0edff,#f2f7ff);cursor:pointer;transition:transform .18s ease}
+.friendSuggestion:active{transform:scale(.99)}
+.chatRow{background:#fff;border-bottom:1px solid #f0f1f8;padding-top:13px;padding-bottom:13px}
+.chatRow:active{background:#f7f6ff}
+.rowAvatar{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;font-weight:800}
+.composeBtn{border-radius:18px;width:56px;height:56px;font-size:25px}
+#profilePage{background:linear-gradient(180deg,#f0edff 0,#f8f9fd 220px,#f8f9fd 100%)}
+.pageTitle{font-size:28px;font-weight:800;color:#24283b}
+.profileBox{background:#fff;border:1px solid #e9eaf5;border-radius:24px;box-shadow:0 12px 34px rgba(43,53,100,.07);padding:28px 20px}
+.profileAvatar{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;box-shadow:0 8px 20px rgba(92,78,225,.22)}
+.logoutBtn{background:#fff0f2;color:#d63355;border:1px solid #ffdce3;border-radius:14px}
+#chatConversation{background:#f7f8fd}
+.conversationHeader{background:#fff;border-bottom:1px solid #eceef7}
+.chatMessages{background:linear-gradient(180deg,#f8f9ff,#f2f5fc)}
+.chatInput{background:#fff;border-top:1px solid #eceef7;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.chatInput input{border:1px solid #e6e8f3;border-radius:16px;padding:13px 15px;outline:none}
+.chatInput input:focus{border-color:#9b89ff;box-shadow:0 0 0 3px rgba(109,74,255,.1)}
+.message{border-radius:18px;padding:11px 14px;max-width:82%;overflow-wrap:anywhere}
+.mine{border-bottom-right-radius:5px}.theirs{border-bottom-left-radius:5px;background:#fff;color:#252a3c;box-shadow:0 3px 12px rgba(35,47,90,.05)}
+.bottomNav{background:rgba(255,255,255,.96);backdrop-filter:blur(18px);padding-bottom:env(safe-area-inset-bottom);height:calc(82px + env(safe-area-inset-bottom))}
+@media(max-width:600px){.friendsHeader{padding-top:22px}.chatRow{padding-left:16px;padding-right:16px}.categoryRow{gap:8px}}
 
 </style></style>
 </head>
@@ -211,7 +247,7 @@ $("googleLogin2").onclick=doGoogleLogin;
 $("sendOTP").onclick=async()=>{const phone=$("phoneNumber").value.trim();if(!phone)return alert("Enter your phone number.");try{if(!window.recaptchaVerifier)window.recaptchaVerifier=new firebase.auth.RecaptchaVerifier("recaptcha-container",{size:"normal"});window.confirmationResult=await auth.signInWithPhoneNumber(phone,window.recaptchaVerifier);alert("OTP sent.")}catch(e){alert(e.message)}};
 $("verifyOTP").onclick=async()=>{const code=$("otpCode").value.trim();if(!window.confirmationResult)return alert("Send the OTP first.");try{await window.confirmationResult.confirm(code)}catch(e){alert(e.message)}};
 
-$("requestAccount").onclick=async()=>{const email=prompt("Enter the Gmail address you want to use:");if(email===null)return;const cleanEmail=email.trim().toLowerCase();if(!cleanEmail)return alert("Please enter your email address.");const emailPattern=/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/;if(!emailPattern.test(cleanEmail))return alert("Please enter a valid email address, for example name@gmail.com.");if(!cleanEmail.endsWith("@gmail.com"))return alert("Please use a valid Gmail address ending in @gmail.com.");try{await db.collection("signupRequests").add({email:cleanEmail,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:"pending"});alert("Your account request has been sent.")}catch(e){alert(e.message)}};
+$("requestAccount").onclick=async()=>{const email=prompt("Enter the Gmail address you want to use:");if(email===null)return;const cleanEmail=email.trim().toLowerCase();if(!cleanEmail)return alert("Please enter your email address.");const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;if(!emailPattern.test(cleanEmail))return alert("Please enter a valid email address, for example name@gmail.com.");if(!cleanEmail.endsWith("@gmail.com"))return alert("Please use a valid Gmail address ending in @gmail.com.");try{await db.collection("signupRequests").add({email:cleanEmail,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:"pending"});alert("Your account request has been sent.")}catch(e){alert(e.message)}};
 
 auth.onAuthStateChanged(async user=>{
 if(user){currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");await createProfile();await loadUsers();showPage("camera");startCamera()}
@@ -235,7 +271,13 @@ document.querySelector('[data-page="'+page+'"]').classList.add("active");
 if(page==="camera")startCamera();else stopCamera();
 }
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
-$("chatSearchInput").oninput=()=>{const q=$("chatSearchInput").value.trim().toLowerCase();document.querySelectorAll(".chatRow").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none")};
+function filterPeople(query){const q=query.trim().toLowerCase();document.querySelectorAll(".chatRow").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none");document.querySelectorAll(".userCard").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none")}
+$("chatSearchInput").oninput=()=>filterPeople($("chatSearchInput").value);
+$("chatSearch").onclick=()=>{$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"})};
+$("chatAddFriend").onclick=()=>showPage("friends");
+document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
+$("composeBtn").onclick=()=>showPage("friends");
+
 
 async function startCamera(){
 stopCamera();
@@ -248,10 +290,12 @@ function applyFilter(){$("cameraVideo").style.filter=filterCSS[currentFilter]}
 document.querySelectorAll(".lensItem").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".lensItem").forEach(b=>b.classList.remove("active"));btn.classList.add("active");currentFilter=btn.dataset.filter;applyFilter()});
 $("profileQuick").onclick=()=>showPage("profile");
 $("addFriendQuick").onclick=()=>showPage("friends");
-$("notificationQuick").onclick=()=>alert("No new VibeSnap notifications.");
-$("searchQuick").onclick=()=>alert("VibeSnap search is coming soon.");
-$("flashQuick").onclick=()=>alert("Flash control will be available on supported cameras.");
-$("soundQuick").onclick=()=>alert("Sounds are currently on.");
+$("notificationQuick").onclick=()=>showPage("chat");
+$("searchQuick").onclick=()=>{showPage("chat");$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"})};
+$("flashQuick").onclick=async()=>{try{const track=currentStream&&currentStream.getVideoTracks()[0];if(!track||!track.getCapabilities||!track.getCapabilities().torch){alert("Flash is not supported by this camera. Try your phone's rear camera.");return}const on=!track.getSettings().torch;await track.applyConstraints({advanced:[{torch:on}]});$("flashQuick").classList.toggle("toolActive",on)}catch(e){alert("This device does not allow camera flash control in the browser.")}};
+let cameraSoundOn=true;
+$("soundQuick").onclick=()=>{cameraSoundOn=!cameraSoundOn;if(currentStream)currentStream.getAudioTracks().forEach(t=>t.enabled=cameraSoundOn);$("soundQuick").classList.toggle("toolActive",!cameraSoundOn);$("soundQuick").setAttribute("aria-pressed",String(!cameraSoundOn));$("soundQuick").lastChild.textContent=cameraSoundOn?"Sounds":"Muted"};
+
 $("moreCameraTools").onclick=()=>document.querySelector(".lensStrip").classList.toggle("hidden");
 
 $("captureBtn").onclick=async()=>{
