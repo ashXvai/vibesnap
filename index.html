@@ -114,6 +114,23 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .lensStrip{bottom:139px;gap:9px;padding:10px 16px 8px;mask-image:linear-gradient(90deg,transparent,#000 3%,#000 96%,transparent)}.lensItem{width:66px;font-size:11px;color:#fff}.lensCircle{width:58px;height:58px;border-color:rgba(255,255,255,.72);background:rgba(25,30,48,.48);backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(0,0,0,.15)}.lensItem.active .lensCircle{border:3px solid #8c72ff;box-shadow:0 0 0 3px rgba(140,114,255,.22),0 5px 18px rgba(0,0,0,.2)}
 .cameraControls{bottom:58px;gap:34px}.cameraSideBtn{width:54px;height:54px;color:#354365;background:rgba(248,250,255,.94);box-shadow:0 5px 18px rgba(0,0,0,.18)}.cameraSideBtn svg{width:23px;height:23px}.captureBtn{width:82px;height:82px;border:5px solid #fff;box-shadow:0 0 0 2px rgba(255,255,255,.65),0 8px 25px rgba(0,0,0,.25);position:relative}.captureBtn:after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid rgba(30,35,55,.13)}.cameraModeLabel{bottom:16px;letter-spacing:1.8px;font-size:11px;color:#fff}
 @media(max-height:720px){.lensStrip{bottom:124px}.cameraControls{bottom:46px}.cameraModeLabel{bottom:10px}.cameraSidePanel{top:128px;gap:8px}.cameraToolIcon{width:42px;height:42px}}
+
+/* Friends screen refresh */
+#friendsPage{background:#f6f7fc;padding:0 0 92px;overflow:auto}
+.friendsHeader{position:sticky;top:0;z-index:4;padding:28px 22px 18px;background:linear-gradient(135deg,#f8f7ff 0%,#eef3ff 100%);color:#20243a;font-size:30px;font-weight:800;letter-spacing:-.8px;border-bottom:1px solid #e9eaf4}
+.friendsHeader:after{content:"Your people, your vibe ✨";display:block;font-size:13px;font-weight:500;letter-spacing:0;color:#7b8198;margin-top:5px}
+#usersList{padding:14px 14px 22px;display:flex;flex-direction:column;gap:10px}
+.userCard{display:flex;align-items:center;gap:13px;padding:13px 14px;background:#fff;border:1px solid #eceef7;border-radius:20px;box-shadow:0 5px 18px rgba(43,53,100,.045);min-height:92px;transition:transform .18s ease,box-shadow .18s ease}
+.userCard:active{transform:scale(.99)}
+.userCard .avatar{width:60px;height:60px;flex:0 0 60px;border-radius:19px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,#6d4aff,#4f8cff);color:white;font-size:25px;font-weight:800;box-shadow:0 5px 12px rgba(92,78,225,.2)}
+.userCard .avatar img{width:100%;height:100%;object-fit:cover}
+.userInfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.userName{font-size:15px;font-weight:800;color:#24283b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userEmail{font-size:12px;color:#858ba1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chatOpenBtn{padding:11px 17px;min-width:76px;border-radius:14px;background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;font-size:13px;font-weight:800;box-shadow:0 5px 12px rgba(92,78,225,.22);transition:transform .18s ease}
+.chatOpenBtn:active{transform:scale(.96)}
+@media(min-width:700px){#friendsPage{max-width:760px;margin:0 auto;border-left:1px solid #edf0f7;border-right:1px solid #edf0f7}.friendsHeader{padding-left:26px}#usersList{padding:18px 22px}}
+
 </style></style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
