@@ -276,6 +276,14 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 #saveEditFriend{background:linear-gradient(135deg,#704dff,#4e83ff);color:#fff;box-shadow:0 6px 14px rgba(92,78,225,.2)}
 .editFriendStatus{min-height:16px;margin-top:10px;font-size:12px;color:#c13c60}
 
+
+/* Put nickname pencil beside each chat, not as a floating chat-page action */
+.editFriendInline{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:11px;background:#f0edff;color:#6545dc;cursor:pointer;padding:0}
+.editFriendInline svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.editFriendInline:active{background:#e2dbff;transform:scale(.94)}
+.composeBtn{display:none!important}
+.chatRow{gap:10px}
+
 </style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
@@ -410,17 +418,20 @@ $("chatNotifications").onclick=toggleNotifications;$("notificationQuick").onclic
 function renderNotifications(){const host=$("notificationItems");host.innerHTML="";const recent=usersCache.slice(0,8);if(!recent.length){host.innerHTML='<div class="notificationEmpty">No recent activity yet. Start a chat with a friend!</div>';return}recent.forEach(user=>{const item=document.createElement("div");item.className="notificationItem";const name=user.displayName||user.email||"VibeSnap friend";item.innerHTML='<div>'+avatarHTML(user,"rowAvatar")+'</div><div><b>'+escapeHTML(name)+'</b><small>Open conversation</small></div>';item.onclick=()=>{$("notificationPanel").classList.add("hidden");openChat(user)};host.appendChild(item)})}
 $("chatAddFriend").onclick=()=>showPage("friends");
 document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
-function openEditFriendModal(){
+function openEditFriendModal(friendUid=""){
 if(!currentUser)return;
 const select=$("editFriendSelect");select.innerHTML='<option value="">Choose a friend</option>';
 usersCache.forEach(friend=>{const option=document.createElement("option");option.value=friend.uid;option.textContent=(friend.displayName||friend.email||"VibeSnap friend")+(friend.email?" · "+friend.email:"");select.appendChild(option)});
 $("editFriendStatus").textContent="";
 $("editFriendName").value="";
+select.value=friendUid||"";
+const chosen=usersCache.find(u=>u.uid===select.value);
+if(chosen)$("editFriendName").value=(currentUser.friendNicknames||{})[chosen.uid]||chosen.displayName||chosen.email||"";
 $("editFriendModal").classList.remove("hidden");
 if(usersCache.length===0){$("editFriendStatus").textContent="No other users found yet. Ask your friend to sign in first."}
 }
 function selectedEditFriend(){return usersCache.find(u=>u.uid===$("editFriendSelect").value)}
-$("composeBtn").onclick=openEditFriendModal;
+$("composeBtn").onclick=()=>openEditFriendModal();
 $("closeEditFriend").onclick=$("cancelEditFriend").onclick=()=>{$("editFriendModal").classList.add("hidden")};
 $("editFriendModal").addEventListener("click",e=>{if(e.target===$("editFriendModal"))$("editFriendModal").classList.add("hidden")});
 $("editFriendSelect").onchange=()=>{const friend=selectedEditFriend();$("editFriendName").value=friend?((currentUser.friendNicknames||{})[friend.uid]||friend.displayName||friend.email||""):"";$("editFriendStatus").textContent=""};
@@ -536,7 +547,8 @@ usersCache.forEach((user,i)=>{
 const row=document.createElement("div");row.className="chatRow";
 const name=user.displayName||user.email||user.phone||"VibeSnap User";
 const dot=i%3===0?"blueDot":i%3===1?"purpleDot":"blueDot";
-row.innerHTML=avatarHTML(user,"rowAvatar")+'<div class="chatRowBody"><div class="chatRowName">'+escapeHTML(name)+'</div><div class="chatRowMeta"><span class="'+dot+'"></span>Start a VibeSnap · tap to chat</div></div><button class="rowAction" type="button" aria-label="Open chat with '+escapeHTML(name)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.2A2.5 2.5 0 0 1 5 12.5z"/></svg></button>';
+row.innerHTML='<button class="editFriendInline" type="button" aria-label="Edit nickname for '+escapeHTML(name)+'" title="Edit friend name"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button>'+avatarHTML(user,"rowAvatar")+'<div class="chatRowBody"><div class="chatRowName">'+escapeHTML(name)+'</div><div class="chatRowMeta"><span class="'+dot+'"></span>Start a VibeSnap · tap to chat</div></div><button class="rowAction" type="button" aria-label="Open chat with '+escapeHTML(name)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.2A2.5 2.5 0 0 1 5 12.5z"/></svg></button>';
+row.querySelector('.editFriendInline').onclick=(e)=>{e.stopPropagation();openEditFriendModal(user.uid)};
 row.onclick=()=>openChat(user);list.appendChild(row);
 });
 }
