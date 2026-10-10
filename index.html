@@ -53,8 +53,9 @@ button{border:0;cursor:pointer}.hidden{display:none!important}
 #chatConversation{position:absolute;inset:0;background:#fff;z-index:25;display:flex;flex-direction:column}.conversationHeader{height:76px;display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #eee}.conversationHeader button{background:none;font-size:27px}.conversationTitle{flex:1;font-size:18px;font-weight:700}.chatMessages{flex:1;overflow:auto;padding:16px;background:#fff}.message{max-width:78%;padding:10px 13px;border-radius:18px;margin-bottom:9px;word-break:break-word}.mine{margin-left:auto;background:#6d4aff;color:#111}.theirs{background:#edf0f2}.message img,.message video{max-width:100%;border-radius:12px;margin-top:5px}.chatInput{display:flex;gap:8px;padding:10px;border-top:1px solid #eee;background:#fff}.chatInput input{flex:1;padding:13px;border-radius:24px;border:1px solid #d9dde1;background:#f4f5f6}.chatInput button{width:52px;border-radius:50%;background:#6d4aff}
 .pageTitle{font-size:28px;font-weight:700;margin:0 0 20px}.friendsHeader{padding:86px 18px 15px;font-size:28px;font-weight:700}.userCard{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid #eee;background:#fff}.avatar{width:50px;height:50px;border-radius:50%;background:#e9edf0;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px}.userInfo{flex:1}.userName{font-weight:700}.userEmail{color:#7b8289;font-size:13px;margin-top:3px}.chatOpenBtn{background:#6d4aff;color:#111;padding:10px 16px;border-radius:22px;font-weight:800}
 .profileBox{max-width:500px;margin:auto;background:#f6f7f8;padding:28px;border-radius:22px;text-align:center}.profileAvatar{width:94px;height:94px;border-radius:50%;background:#edf0f2;display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:700;margin:0 auto 15px}.logoutBtn{margin-top:25px;width:100%;padding:14px;background:#111;color:#fff;border-radius:24px;font-weight:800}
-#previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia{flex:1;width:100%;height:100%;object-fit:contain}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:24px;font-weight:bold}.retakeBtn{background:#333;color:#fff}.sendBtn{background:#6d4aff;color:#111}
+#previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia, #previewImage, #previewVideo{flex:1;width:100%;height:100%;object-fit:contain}.previewMediaElement{flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:24px;font-weight:bold}.retakeBtn{background:#333;color:#fff}.sendBtn{background:#6d4aff;color:#111}
 @media(min-width:700px){#app{max-width:620px;margin:auto;box-shadow:0 0 30px rgba(0,0,0,.15)}.bottomNav{max-width:620px;left:50%;right:auto;width:620px;transform:translateX(-50%)}}
+</style>
 <style>
 :root{--primary:#6d4aff;--primary2:#4f8cff;--pink:#ef3d87;--ink:#101a35;--muted:#6d7893;--soft:#f2f5ff;--line:#e8ecf5}
 body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--ink)}
@@ -239,7 +240,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 
 /* Reliable photo/video preview actions */
 #previewModal{box-sizing:border-box;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:#101016}
-#previewMedia{display:block;flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}
+#previewMedia, #previewImage, #previewVideo{display:block;flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}
 .previewButtons{position:relative;z-index:3;display:flex;flex:0 0 auto;align-items:center;gap:12px;padding:16px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(16,16,22,.88),#101016);box-sizing:border-box}
 .previewButtons button{display:flex;align-items:center;justify-content:center;min-height:52px;border:0;border-radius:17px;font-size:15px;font-weight:800;cursor:pointer;touch-action:manipulation}
 .previewButtons .cancelPreviewBtn{flex:0 0 54px;width:54px;background:#292936;color:#fff;font-size:23px}
@@ -366,7 +367,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 <div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
 <div id="conversationProfilePanel" class="conversationProfilePanel hidden"><div id="conversationProfileAvatar" class="rowAvatar">?</div><strong id="conversationProfileName">Friend</strong><p id="conversationProfileContact"></p><button id="closeConversationProfile" type="button">Close</button></div>
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera" type="button" aria-label="Open camera to send a photo or video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
-</div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
+</div><div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyA8d0zK0s17K6Vybn8ULOIuTwHXnHjJJDk",
@@ -516,7 +517,7 @@ ctx.fillStyle="rgba(18,20,38,.72)";ctx.beginPath();ctx.moveTo(x+radius,y);ctx.ar
 const grad=ctx.createLinearGradient(x,y,x+stampW,y+stampH);grad.addColorStop(0,"#8b6cff");grad.addColorStop(1,"#4f8cff");ctx.fillStyle=grad;ctx.beginPath();ctx.arc(x+padX+fontSize*.18,y+stampH/2,fontSize*.28,0,Math.PI*2);ctx.fill();
 ctx.fillStyle="#fff";ctx.fillText(stampText,x+padX+fontSize*.55,y+stampH/2);ctx.restore();
 }
-canvas.toBlob(blob=>{currentMediaBlob=blob;currentMediaType="image";$("previewMedia").src=URL.createObjectURL(blob);$("previewMedia").controls=false;$("previewModal").classList.remove("hidden")},"image/jpeg",.92);
+canvas.toBlob(blob=>{if(!blob){alert("Could not create photo preview. Please try again.");return}showMediaPreview(blob,"image")},"image/jpeg",.92);
 };
 
 $("videoModeBtn").onclick=()=>mediaRecorder?stopRecording():startRecording();
@@ -529,13 +530,15 @@ const videoStream=canvas.captureStream(30);currentStream.getAudioTracks().forEac
 let options={};if(MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus"))options.mimeType="video/webm;codecs=vp9,opus";else if(MediaRecorder.isTypeSupported("video/webm"))options.mimeType="video/webm";
 mediaRecorder=new MediaRecorder(videoStream,options);
 mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data)};
-mediaRecorder.onstop=()=>{const blob=new Blob(recordedChunks,{type:mediaRecorder.mimeType||"video/webm"});currentMediaBlob=blob;currentMediaType="video";$("previewMedia").src=URL.createObjectURL(blob);$("previewMedia").controls=true;$("previewModal").classList.remove("hidden");mediaRecorder=null;$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording")};
+mediaRecorder.onstop=()=>{const blob=new Blob(recordedChunks,{type:mediaRecorder.mimeType||"video/webm"});if(blob.size)showMediaPreview(blob,"video");else alert("No video was recorded. Please try again.");mediaRecorder=null;$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording")};
 mediaRecorder.start();$("videoModeBtn").textContent="⏹️";$("videoModeBtn").classList.add("recording");drawFrame();
 }catch(e){console.error(e);alert("Video recording is not supported on this browser.")}
 }
 function stopRecording(){if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop()}
 
-function closeMediaPreview(){if($("previewMedia").src.startsWith("blob:"))URL.revokeObjectURL($("previewMedia").src);$("previewMedia").pause();$("previewMedia").removeAttribute("src");$("previewMedia").load();$("previewModal").classList.add("hidden");currentMediaBlob=null;currentMediaType=null}
+function showMediaPreview(blob,type){if(currentPreviewUrl)URL.revokeObjectURL(currentPreviewUrl);currentMediaBlob=blob;currentMediaType=type;currentPreviewUrl=URL.createObjectURL(blob);const photo=$("previewImage"),video=$("previewVideo");video.pause();video.removeAttribute("src");video.load();photo.removeAttribute("src");photo.classList.toggle("hidden",type!=="image");video.classList.toggle("hidden",type!=="video");if(type==="image")photo.src=currentPreviewUrl;else{video.src=currentPreviewUrl;video.load();video.play().catch(()=>{})}$("previewModal").classList.remove("hidden")}
+let currentPreviewUrl=null;
+function closeMediaPreview(){if(currentPreviewUrl){URL.revokeObjectURL(currentPreviewUrl);currentPreviewUrl=null}$("previewImage").removeAttribute("src");$("previewVideo").pause();$("previewVideo").removeAttribute("src");$("previewVideo").load();$("previewModal").classList.add("hidden");currentMediaBlob=null;currentMediaType=null}
 $("cancelPreviewBtn").onclick=()=>{closeMediaPreview();if(!currentStream&&!$("cameraPage").classList.contains("hidden"))startCamera()};
 $("retakeBtn").onclick=()=>{closeMediaPreview();if(!$("cameraPage").classList.contains("hidden"))startCamera()};
 $("sendMediaBtn").onclick=async()=>{
@@ -551,7 +554,7 @@ $("previewModal").classList.add("hidden");currentMediaBlob=null;alert("Media sen
 }catch(e){console.error(e);alert("Could not send media: "+e.message)}finally{$("sendMediaBtn").disabled=false}
 };
 $("galleryBtn").onclick=()=>$("galleryInput").click();
-$("galleryInput").onchange=e=>{const file=e.target.files[0];if(!file)return;currentMediaBlob=file;currentMediaType=file.type.startsWith("video")?"video":"image";$("previewMedia").src=URL.createObjectURL(file);$("previewMedia").controls=currentMediaType==="video";$("previewModal").classList.remove("hidden")};
+$("galleryInput").onchange=e=>{const file=e.target.files[0];if(!file)return;const type=file.type.startsWith("video")?"video":"image";showMediaPreview(file,type);e.target.value="";};
 
 let usersCache=[];
 async function loadUsers(){
