@@ -284,6 +284,13 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .composeBtn{display:none!important}
 .chatRow{gap:10px}
 
+
+/* Edit nickname button sits immediately before the Chat button */
+.editFriendInline{order:3;margin-left:auto;flex:0 0 40px;width:40px;height:40px;border-radius:14px;background:#f0edff;color:#6545dc;display:grid;place-items:center;border:0;padding:0;cursor:pointer}
+.rowAction{order:4;flex:0 0 44px}
+.chatRowBody{order:2;min-width:0}
+.rowAvatar{order:1}
+
 </style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
@@ -547,7 +554,7 @@ usersCache.forEach((user,i)=>{
 const row=document.createElement("div");row.className="chatRow";
 const name=user.displayName||user.email||user.phone||"VibeSnap User";
 const dot=i%3===0?"blueDot":i%3===1?"purpleDot":"blueDot";
-row.innerHTML='<button class="editFriendInline" type="button" aria-label="Edit nickname for '+escapeHTML(name)+'" title="Edit friend name"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button>'+avatarHTML(user,"rowAvatar")+'<div class="chatRowBody"><div class="chatRowName">'+escapeHTML(name)+'</div><div class="chatRowMeta"><span class="'+dot+'"></span>Start a VibeSnap · tap to chat</div></div><button class="rowAction" type="button" aria-label="Open chat with '+escapeHTML(name)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.2A2.5 2.5 0 0 1 5 12.5z"/></svg></button>';
+row.innerHTML=avatarHTML(user,"rowAvatar")+'<div class="chatRowBody"><div class="chatRowName">'+escapeHTML(name)+'</div><div class="chatRowMeta"><span class="'+dot+'"></span>Start a VibeSnap · tap to chat</div></div><button class="editFriendInline" type="button" aria-label="Edit nickname for '+escapeHTML(name)+'" title="Edit friend name"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button><button class="rowAction" type="button" aria-label="Open chat with '+escapeHTML(name)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.2A2.5 2.5 0 0 1 5 12.5z"/></svg></button>';
 row.querySelector('.editFriendInline').onclick=(e)=>{e.stopPropagation();openEditFriendModal(user.uid)};
 row.onclick=()=>openChat(user);list.appendChild(row);
 });
