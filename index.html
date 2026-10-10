@@ -662,7 +662,7 @@ if(!text)return;
 if(!selectedFriend){alert("Open a friend's chat before sending a message.");return}
 if(selectedFriend.uid===currentUser.uid){alert("You cannot send a message to yourself.");return}
 try{button.disabled=true;const chatId=getChatId(currentUser.uid,selectedFriend.uid);await ensureChat(chatId,selectedFriend.uid);await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",text,createdAt:firebase.firestore.FieldValue.serverTimestamp()});input.value="";input.focus()}
-catch(e){console.error(e);alert("Message could not be sent. Check your connection and Firebase permissions.")}
+catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent. Firebase error: "+(e.code||"unknown")+" — "+(e.message||"Check your connection and Firebase permissions."))}
 finally{button.disabled=false}
 }
 $("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("chat")};
