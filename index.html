@@ -499,7 +499,7 @@ let mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true;
 $("moreCameraTools").setAttribute("aria-expanded","false");
 $("moreCameraTools").onclick=()=>{const menu=$("cameraMoreMenu");menu.classList.toggle("hidden");$("moreCameraTools").setAttribute("aria-expanded",String(!menu.classList.contains("hidden")));};
 $("stampToggle").onclick=()=>{vibeSnapStampOn=!vibeSnapStampOn;$("stampState").textContent=vibeSnapStampOn?"On":"Off";$("stampToggle").setAttribute("aria-pressed",String(vibeSnapStampOn));};
-$("timerCycle").onclick=()=>{photoTimerSeconds=photoTimerSeconds===0?3:photoTimerSeconds===3?10:0;$("timerState").textContent=photoTimerSeconds?photoTimerSeconds+" sec":"Off";$("timerCycle").setAttribute("aria-label","Photo timer "+$("timerState").textContent);};
+$("timerCycle").onclick=()=>{photoTimerSeconds=photoTimerSeconds===0?3:photoTimerSeconds===3?5:photoTimerSeconds===5?10:0;$("timerState").textContent=photoTimerSeconds?photoTimerSeconds+" sec":"Off";$("timerCycle").setAttribute("aria-label","Photo timer "+$("timerState").textContent);};
 $("showFilters").onclick=()=>{$("lensStrip").classList.toggle("hidden");$("showFilters").querySelector(".cameraMoreValue").textContent=$("lensStrip").classList.contains("hidden")?"Open ›":"Hide";};
 document.addEventListener("click",e=>{const menu=$("cameraMoreMenu");if(!menu.classList.contains("hidden")&&!menu.contains(e.target)&&!$("moreCameraTools").contains(e.target)){menu.classList.add("hidden");$("moreCameraTools").setAttribute("aria-expanded","false");}});
 
