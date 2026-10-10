@@ -204,6 +204,24 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .notificationPanelHead button{width:32px;height:32px;border-radius:11px;background:#f0edff;color:#6545dc;font-size:22px}
 .notificationItems{display:flex;flex-direction:column;gap:8px;padding-top:10px}.notificationItem{display:flex;gap:10px;padding:11px;border-radius:14px;background:#f8f9ff;cursor:pointer}.notificationItem:active{background:#eeeaff}.notificationItem b{display:block;font-size:13px;color:#24283b}.notificationItem small{display:block;font-size:12px;color:#858ba1;margin-top:4px}.notificationEmpty{padding:18px 8px;text-align:center;font-size:13px;color:#858ba1}
 
+
+/* Conversation action polish */
+#chatConversation .conversationHeader button{display:grid;place-items:center;min-width:38px;height:38px;border-radius:13px;background:#f0edff;color:#6545dc;font-size:23px;transition:transform .15s,background .15s}
+#chatConversation .conversationHeader button:active,#sendMessage:active{transform:scale(.94)}
+#chatAvatar{cursor:pointer;flex-shrink:0}
+#chatName{cursor:pointer}
+#chatMessages img,#chatMessages video{display:block;max-width:min(260px,65vw);max-height:360px;border-radius:14px;object-fit:contain}
+#sendMessage{min-width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,#704dff,#4e83ff);color:white;box-shadow:0 6px 15px rgba(92,78,225,.22)}
+#sendMessage:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.chatInput{gap:10px}
+#messageInput{min-width:0;flex:1}
+.conversationProfilePanel{position:absolute;z-index:30;top:80px;left:50%;transform:translateX(-50%);width:min(310px,calc(100vw - 36px));padding:20px;border:1px solid #e7e9f5;border-radius:22px;background:#fff;box-shadow:0 16px 45px rgba(25,32,72,.18);text-align:center}
+.conversationProfilePanel .rowAvatar{width:66px;height:66px;margin:0 auto 10px;border-radius:22px;display:grid;place-items:center;overflow:hidden}
+.conversationProfilePanel .rowAvatar img{width:100%;height:100%;object-fit:cover}
+.conversationProfilePanel strong{display:block;font-size:17px;color:#252a40}
+.conversationProfilePanel p{margin:6px 0 14px;font-size:12px;color:#858ba1;overflow-wrap:anywhere}
+.conversationProfilePanel button{padding:10px 15px;border-radius:13px;background:#f0edff;color:#6545dc;font-weight:800}
+
 </style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
@@ -259,6 +277,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
  <button class="navBtn" id="searchNavBtn" data-page="search" aria-label="Search"><span><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></span>Search</button>
 </div>
 <div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
+<div id="conversationProfilePanel" class="conversationProfilePanel hidden"><div id="conversationProfileAvatar" class="rowAvatar">?</div><strong id="conversationProfileName">Friend</strong><p id="conversationProfileContact"></p><button id="closeConversationProfile" type="button">Close</button></div>
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera">◉</button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
 </div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="retakeBtn" id="retakeBtn">Retake</button><button class="sendBtn" id="sendMediaBtn">Send</button></div></div>
 <script>
@@ -323,6 +342,8 @@ $("chatAddFriend").onclick=()=>showPage("friends");
 document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
 $("composeBtn").onclick=()=>{showPage("friends");const first=usersCache[0];if(first&&usersCache.length===1){}};
 $("chatProfileQuick").onclick=()=>showPage("profile");
+function toggleConversationProfile(){if(!selectedFriend)return;const panel=$("conversationProfilePanel");$("conversationProfileAvatar").innerHTML=avatarHTML(selectedFriend,"rowAvatar");$("conversationProfileName").textContent=selectedFriend.displayName||selectedFriend.email||"VibeSnap friend";$("conversationProfileContact").textContent=selectedFriend.email||selectedFriend.phone||"VibeSnap member";panel.classList.toggle("hidden")}
+$("chatAvatar").onclick=toggleConversationProfile;$("chatName").onclick=toggleConversationProfile;$("closeConversationProfile").onclick=()=>$("conversationProfilePanel").classList.add("hidden");
 document.addEventListener("click",e=>{const panel=$("notificationPanel");if(!panel.classList.contains("hidden")&&!panel.contains(e.target)&&!$("chatNotifications").contains(e.target)&&!$("notificationQuick").contains(e.target))panel.classList.add("hidden")});
 
 
@@ -433,11 +454,16 @@ $("chatMessages").scrollTop=$("chatMessages").scrollHeight
 $("sendMessage").onclick=sendTextMessage;
 $("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendTextMessage()});
 async function sendTextMessage(){
-const text=$("messageInput").value.trim();if(!text||!selectedFriend)return;
-try{const chatId=getChatId(currentUser.uid,selectedFriend.uid);await ensureChat(chatId,selectedFriend.uid);await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",text,createdAt:firebase.firestore.FieldValue.serverTimestamp()});$("messageInput").value=""}catch(e){alert(e.message)}
+const input=$("messageInput"),button=$("sendMessage"),text=input.value.trim();
+if(!text)return;
+if(!selectedFriend){alert("Open a friend's chat before sending a message.");return}
+if(selectedFriend.uid===currentUser.uid){alert("You cannot send a message to yourself.");return}
+try{button.disabled=true;const chatId=getChatId(currentUser.uid,selectedFriend.uid);await ensureChat(chatId,selectedFriend.uid);await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",text,createdAt:firebase.firestore.FieldValue.serverTimestamp()});input.value="";input.focus()}
+catch(e){console.error(e);alert("Message could not be sent. Check your connection and Firebase permissions.")}
+finally{button.disabled=false}
 }
-$("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");showPage("chat")};
-$("conversationCamera").onclick=()=>{$("chatConversation").classList.add("hidden");showPage("camera")};
+$("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("chat")};
+$("conversationCamera").onclick=async()=>{if(!selectedFriend){alert("Open a conversation first.");return}$("recipientSelect").value=selectedFriend.uid;$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("camera");await startCamera()};
 $("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await auth.signOut()};
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 
