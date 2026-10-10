@@ -197,6 +197,13 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .searchEmptyState>span{border-radius:20px;background:linear-gradient(135deg,#eee9ff,#e6f0ff);box-shadow:0 6px 15px rgba(92,78,225,.09)}
 @media(min-width:700px){#searchPage{max-width:760px;margin:0 auto;border-left:1px solid #edf0f7;border-right:1px solid #edf0f7}.searchPageHeader{padding-left:28px}.searchPageBox{margin-left:22px;margin-right:22px}#globalSearchResults{padding:0 22px}}
 
+
+.notificationPanel{position:fixed;z-index:100;top:78px;right:14px;width:min(350px,calc(100vw - 28px));max-height:min(65vh,520px);overflow:auto;background:#fff;border:1px solid #e8eaf5;border-radius:22px;box-shadow:0 18px 55px rgba(25,32,72,.2);padding:16px;color:#252a40}
+.notificationPanelHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid #eef0f8}
+.notificationPanelHead strong{font-size:18px}.notificationPanelHead p{margin-top:4px;color:#858ba1;font-size:12px}
+.notificationPanelHead button{width:32px;height:32px;border-radius:11px;background:#f0edff;color:#6545dc;font-size:22px}
+.notificationItems{display:flex;flex-direction:column;gap:8px;padding-top:10px}.notificationItem{display:flex;gap:10px;padding:11px;border-radius:14px;background:#f8f9ff;cursor:pointer}.notificationItem:active{background:#eeeaff}.notificationItem b{display:block;font-size:13px;color:#24283b}.notificationItem small{display:block;font-size:12px;color:#858ba1;margin-top:4px}.notificationEmpty{padding:18px 8px;text-align:center;font-size:13px;color:#858ba1}
+
 </style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
@@ -251,6 +258,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
  <button class="navBtn" data-page="profile"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span>Profile</button>
  <button class="navBtn" id="searchNavBtn" data-page="search" aria-label="Search"><span><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></span>Search</button>
 </div>
+<div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera">◉</button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
 </div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="retakeBtn" id="retakeBtn">Retake</button><button class="sendBtn" id="sendMediaBtn">Send</button></div></div>
 <script>
@@ -302,14 +310,20 @@ document.querySelector('[data-page="'+page+'"]').classList.add("active");
 if(page==="camera")startCamera();else stopCamera();
 }
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
-function renderGlobalSearch(query=""){const q=query.trim().toLowerCase(),results=$("globalSearchResults"),empty=$("searchEmptyState");results.innerHTML="";const matches=usersCache.filter(u=>[u.displayName,u.email,u.phone].some(v=>(v||"").toLowerCase().includes(q)));matches.forEach(user=>{const card=document.createElement("div");card.className="searchResultCard";const name=user.displayName||user.email||user.phone||"VibeSnap User";card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(user.email||user.phone||"VibeSnap user")+'</div></div><button type="button">Chat</button>';card.querySelector("button").onclick=()=>openChat(user);results.appendChild(card)});empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another name, email or phone number.":"Type a name, email or phone number to search."; $("searchResultsLabel").textContent=q?"Search results":"People you can chat with"}
+function renderGlobalSearch(query=""){const q=query.trim().toLowerCase(),results=$("globalSearchResults"),empty=$("searchEmptyState");results.innerHTML="";const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&[u.displayName,u.email,u.phone].some(v=>(v||"").toLowerCase().includes(q)));matches.forEach(user=>{const card=document.createElement("div");card.className="searchResultCard";const name=user.displayName||user.email||user.phone||"VibeSnap User";card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(user.email||user.phone||"VibeSnap user")+'</div></div><button type="button">Chat</button>';card.querySelector("button").onclick=()=>openChat(user);results.appendChild(card)});empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another name, email or phone number.":"Type a name, email or phone number to search."; $("searchResultsLabel").textContent=q?"Search results":"People you can chat with"}
 function filterPeople(query){const q=query.trim().toLowerCase();document.querySelectorAll(".chatRow").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none");document.querySelectorAll(".userCard").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none")}
 $("chatSearchInput").oninput=()=>filterPeople($("chatSearchInput").value);
 $("searchNavBtn").onclick=()=>{showPage("search");renderGlobalSearch("");$("globalSearchInput").focus()};$("globalSearchInput").oninput=()=>renderGlobalSearch($("globalSearchInput").value);
-$("chatSearch").onclick=()=>{$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"})};
+$("chatSearch").onclick=()=>{showPage("chat");$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"})};
+$("searchQuick").onclick=()=>{showPage("search");renderGlobalSearch("");$("globalSearchInput").focus()};
+function toggleNotifications(){const panel=$("notificationPanel");panel.classList.toggle("hidden");if(!panel.classList.contains("hidden"))renderNotifications()}
+$("chatNotifications").onclick=toggleNotifications;$("notificationQuick").onclick=toggleNotifications;$("closeNotifications").onclick=()=>$("notificationPanel").classList.add("hidden");
+function renderNotifications(){const host=$("notificationItems");host.innerHTML="";const recent=usersCache.slice(0,8);if(!recent.length){host.innerHTML='<div class="notificationEmpty">No recent activity yet. Start a chat with a friend!</div>';return}recent.forEach(user=>{const item=document.createElement("div");item.className="notificationItem";const name=user.displayName||user.email||"VibeSnap friend";item.innerHTML='<div>'+avatarHTML(user,"rowAvatar")+'</div><div><b>'+escapeHTML(name)+'</b><small>Open conversation</small></div>';item.onclick=()=>{$("notificationPanel").classList.add("hidden");openChat(user)};host.appendChild(item)})}
 $("chatAddFriend").onclick=()=>showPage("friends");
 document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
-$("composeBtn").onclick=()=>showPage("friends");
+$("composeBtn").onclick=()=>{showPage("friends");const first=usersCache[0];if(first&&usersCache.length===1){}};
+$("chatProfileQuick").onclick=()=>showPage("profile");
+document.addEventListener("click",e=>{const panel=$("notificationPanel");if(!panel.classList.contains("hidden")&&!panel.contains(e.target)&&!$("chatNotifications").contains(e.target)&&!$("notificationQuick").contains(e.target))panel.classList.add("hidden")});
 
 
 async function startCamera(){
@@ -329,7 +343,7 @@ $("flashQuick").onclick=async()=>{try{const track=currentStream&&currentStream.g
 let cameraSoundOn=true;
 $("soundQuick").onclick=()=>{cameraSoundOn=!cameraSoundOn;if(currentStream)currentStream.getAudioTracks().forEach(t=>t.enabled=cameraSoundOn);$("soundQuick").classList.toggle("toolActive",!cameraSoundOn);$("soundQuick").setAttribute("aria-pressed",String(!cameraSoundOn));$("soundQuick").lastChild.textContent=cameraSoundOn?"Sounds":"Muted"};
 
-$("moreCameraTools").onclick=()=>document.querySelector(".lensStrip").classList.toggle("hidden");
+$("moreCameraTools").onclick=()=>{const strip=$("lensStrip");strip.classList.toggle("hidden");$("moreCameraTools").setAttribute("aria-expanded",String(!strip.classList.contains("hidden")));};
 
 $("captureBtn").onclick=async()=>{
 if(!currentStream)await startCamera();
