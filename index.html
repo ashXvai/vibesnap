@@ -513,10 +513,6 @@ try{
 if(!currentStream)await startCamera();
 if(!currentStream)return;
 const video=$("cameraVideo");
-if(!video.videoWidth||!video.videoHeight){
-await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;video.removeEventListener("loadeddata",finish);resolve()};video.addEventListener("loadeddata",finish,{once:true});setTimeout(finish,1500)});
-}
-if(!video.videoWidth||!video.videoHeight){alert("Camera is still starting. Please try again.");return}
 if(photoTimerSeconds>0){
 const delay=photoTimerSeconds,overlay=$("photoCountdownOverlay"),number=$("photoCountdownNumber"),caption=$("photoCountdownCaption");
 $("cameraMoreMenu").classList.add("hidden");
@@ -530,6 +526,13 @@ number.textContent="✦";caption.textContent="SMILE!";label.textContent="SMILE!"
 await new Promise(resolve=>setTimeout(resolve,250));
 overlay.classList.add("hidden");
 }
+if(!video.videoWidth||!video.videoHeight){
+try{await video.play()}catch(e){}
+if(!video.videoWidth||!video.videoHeight){
+await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;video.removeEventListener("loadeddata",finish);resolve()};video.addEventListener("loadeddata",finish,{once:true});setTimeout(finish,2500)});
+}
+}
+if(!video.videoWidth||!video.videoHeight){alert("Camera is still starting. Please try again.");return}
 const canvas=document.createElement("canvas");canvas.width=video.videoWidth;canvas.height=video.videoHeight;const ctx=canvas.getContext("2d");ctx.filter=filterCSS[currentFilter];
 if(facingMode==="user"&&mirrorSelfieOn){ctx.save();ctx.translate(canvas.width,0);ctx.scale(-1,1);ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore()}else{ctx.drawImage(video,0,0,canvas.width,canvas.height)}
 if(vibeSnapStampOn){
