@@ -503,11 +503,32 @@ $("timerCycle").onclick=()=>{photoTimerSeconds=photoTimerSeconds===0?3:photoTime
 $("showFilters").onclick=()=>{$("lensStrip").classList.toggle("hidden");$("showFilters").querySelector(".cameraMoreValue").textContent=$("lensStrip").classList.contains("hidden")?"Open ›":"Hide";};
 document.addEventListener("click",e=>{const menu=$("cameraMoreMenu");if(!menu.classList.contains("hidden")&&!menu.contains(e.target)&&!$("moreCameraTools").contains(e.target)){menu.classList.add("hidden");$("moreCameraTools").setAttribute("aria-expanded","false");}});
 
+let captureInProgress=false;
 $("captureBtn").onclick=async()=>{
+if(captureInProgress)return;
+captureInProgress=true;
+const captureButton=$("captureBtn"),label=document.querySelector(".cameraModeLabel");
+captureButton.disabled=true;
+try{
 if(!currentStream)await startCamera();
 if(!currentStream)return;
-if(photoTimerSeconds>0){const delay=photoTimerSeconds;photoTimerSeconds=0;$("timerState").textContent="Off";$("cameraMoreMenu").classList.add("hidden");$("cameraModeLabel");const label=document.querySelector(".cameraModeLabel");label.textContent="PHOTO · "+delay;await new Promise(resolve=>setTimeout(resolve,delay*1000));label.textContent="PHOTO";if(!currentStream)return;}
-const video=$("cameraVideo"),canvas=document.createElement("canvas");canvas.width=video.videoWidth;canvas.height=video.videoHeight;const ctx=canvas.getContext("2d");ctx.filter=filterCSS[currentFilter];
+const video=$("cameraVideo");
+if(!video.videoWidth||!video.videoHeight){
+await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;video.removeEventListener("loadeddata",finish);resolve()};video.addEventListener("loadeddata",finish,{once:true});setTimeout(finish,1500)});
+}
+if(!video.videoWidth||!video.videoHeight){alert("Camera is still starting. Please try again.");return}
+if(photoTimerSeconds>0){
+const delay=photoTimerSeconds;
+$("cameraMoreMenu").classList.add("hidden");
+for(let remaining=delay;remaining>0;remaining--){
+label.textContent="PHOTO IN "+remaining;
+await new Promise(resolve=>setTimeout(resolve,1000));
+if(!currentStream||$("cameraPage").classList.contains("hidden"))return;
+}
+label.textContent="SMILE!";
+await new Promise(resolve=>setTimeout(resolve,250));
+}
+const canvas=document.createElement("canvas");canvas.width=video.videoWidth;canvas.height=video.videoHeight;const ctx=canvas.getContext("2d");ctx.filter=filterCSS[currentFilter];
 if(facingMode==="user"&&mirrorSelfieOn){ctx.save();ctx.translate(canvas.width,0);ctx.scale(-1,1);ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore()}else{ctx.drawImage(video,0,0,canvas.width,canvas.height)}
 if(vibeSnapStampOn){
 const stampText="VibeSnap ✦",fontSize=Math.max(14,Math.round(canvas.width*.022)),padX=fontSize*.75,padY=fontSize*.48;
@@ -518,6 +539,11 @@ const grad=ctx.createLinearGradient(x,y,x+stampW,y+stampH);grad.addColorStop(0,"
 ctx.fillStyle="#fff";ctx.fillText(stampText,x+padX+fontSize*.55,y+stampH/2);ctx.restore();
 }
 canvas.toBlob(blob=>{if(!blob){alert("Could not create photo preview. Please try again.");return}showMediaPreview(blob,"image")},"image/jpeg",.92);
+}finally{
+captureButton.disabled=false;
+captureInProgress=false;
+label.textContent="PHOTO";
+}
 };
 
 $("videoModeBtn").onclick=()=>mediaRecorder?stopRecording():startRecording();
