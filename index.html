@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VibeSnap</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%236d4aff'/%3E%3Cstop offset='1' stop-color='%234f8cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='2' y='2' width='60' height='60' rx='19' fill='url(%23g)'/%3E%3Cpath d='M15 23a4 4 0 0 1 4-4h7l3-4h8l3 4h5a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4z' fill='none' stroke='white' stroke-width='3.5' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='none' stroke='white' stroke-width='3.5'/%3E%3Cpath d='M45 13l1.5 4.5L51 19l-4.5 1.5L45 25l-1.5-4.5L39 19l4.5-1.5z' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%236d4aff'/%3E%3Cstop offset='1' stop-color='%234f8cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='2' y='2' width='60' height='60' rx='19' fill='url(%23g)'/%3E%3Cpath d='M15 23a4 4 0 0 1 4-4h7l3-4h8l3 4h5a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4z' fill='none' stroke='white' stroke-width='3.5' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='white' stroke-width='3.5'/%3E%3Cpath d='M27 27l5 11 6-11' fill='none' stroke='%23b8f4ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M45 13l1.5 4.5L51 19l-4.5 1.5L45 25l-1.5-4.5L39 19l4.5-1.5z' fill='white'/%3E%3C/svg%3E">
 
 <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
@@ -230,10 +230,15 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .loginBrand:after{content:"";position:absolute;width:95px;height:95px;right:-42px;bottom:-48px;border-radius:50%;background:rgba(255,255,255,.12);filter:blur(1px);pointer-events:none}
 .loginCameraLogo{position:relative;z-index:1;width:78px;height:78px;filter:drop-shadow(0 3px 3px rgba(35,24,115,.16))}
 
+
+/* Final VibeSnap brand refinement: camera + V lens mark */
+.loginBrand{background:linear-gradient(145deg,#7b3fff 0%,#654bff 45%,#328bff 100%);box-shadow:0 20px 45px rgba(92,78,225,.32),inset 0 1px 0 rgba(255,255,255,.45)}
+.loginCameraLogo{width:82px;height:82px;filter:drop-shadow(0 4px 4px rgba(35,24,115,.18))}
+
 </style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
-<div class="loginBrand" aria-label="VibeSnap camera logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap camera"><path d="M17 34a8 8 0 0 1 8-8h13l7-9h18l7 9h5a8 8 0 0 1 8 8v39a8 8 0 0 1-8 8H25a8 8 0 0 1-8-8z" fill="none" stroke="white" stroke-width="7" stroke-linejoin="round"/><circle cx="51" cy="53" r="16" fill="none" stroke="white" stroke-width="7"/><circle cx="51" cy="53" r="7" fill="#b8f4ff"/><path d="M77 14l3.5 9.5L90 27l-9.5 3.5L77 40l-3.5-9.5L64 27l9.5-3.5z" fill="white"/></svg></div>
+<div class="loginBrand" aria-label="VibeSnap camera logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap camera"><path d="M17 35a8 8 0 0 1 8-8h12l7-9h16l7 9h5a8 8 0 0 1 8 8v37a8 8 0 0 1-8 8H25a8 8 0 0 1-8-8z" fill="none" stroke="white" stroke-width="6.5" stroke-linejoin="round"/><circle cx="49" cy="53" r="17" fill="none" stroke="white" stroke-width="6"/><path d="M40 44l9 18 10-18" fill="none" stroke="#b8f4ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M79 12l3.4 9.6L92 25l-9.6 3.4L79 38l-3.4-9.6L66 25l9.6-3.4z" fill="white"/></svg></div>
 <div class="loginTitle">VibeSnap</div><div class="loginSub">Snap. Share. Vibe.</div>
 <button class="loginBtn googleBtn" id="googleLogin"><span class="googleMark">G</span> Continue with Google</button>
 <button class="loginBtn signupBtn" id="requestAccount">Sign Up</button>
