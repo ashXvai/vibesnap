@@ -256,6 +256,26 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 #conversationCamera svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 #conversationCamera:active{transform:scale(.93);background:#e3dcff}
 
+
+/* In-app friend nickname editor */
+.editFriendModal{position:fixed;inset:0;z-index:120;background:rgba(20,24,45,.48);backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;padding:22px;box-sizing:border-box}
+.editFriendModal.hidden{display:none}
+.editFriendCard{position:relative;width:min(100%,380px);box-sizing:border-box;background:#fff;border:1px solid #e9e9f8;border-radius:26px;padding:27px 22px 22px;box-shadow:0 24px 70px rgba(29,30,78,.25);animation:editFriendIn .18s ease-out}
+@keyframes editFriendIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.editFriendClose{position:absolute;right:15px;top:13px;width:34px;height:34px;border-radius:12px;background:#f2f3fa;color:#66708b;font-size:24px}
+.editFriendIcon{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,#704dff,#4e83ff);display:grid;place-items:center;color:white;margin-bottom:14px}
+.editFriendIcon svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.editFriendCard h2{margin:0;font-size:22px;color:#202746}
+.editFriendHint{margin:8px 0 20px;font-size:13px;line-height:1.5;color:#78819b}
+.editFriendCard label{display:block;margin:13px 0 7px;font-size:12px;font-weight:800;color:#48516d}
+.editFriendCard select,.editFriendCard input{display:block;width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #e0e4f1;border-radius:14px;background:#f9faff;color:#202746;font-size:15px;outline:none}
+.editFriendCard select:focus,.editFriendCard input:focus{border-color:#7556ff;box-shadow:0 0 0 3px rgba(112,77,255,.12)}
+.editFriendActions{display:flex;gap:10px;margin-top:20px}
+.editFriendActions button{flex:1;padding:13px 12px;border-radius:14px;font-weight:800}
+#cancelEditFriend{background:#f0f2f8;color:#626b83}
+#saveEditFriend{background:linear-gradient(135deg,#704dff,#4e83ff);color:#fff;box-shadow:0 6px 14px rgba(92,78,225,.2)}
+.editFriendStatus{min-height:16px;margin-top:10px;font-size:12px;color:#c13c60}
+
 </style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
@@ -309,6 +329,22 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
  <button class="navBtn" data-page="friends"><span><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5A4.5 4.5 0 0 1 7 14h4a4.5 4.5 0 0 1 4.5 4.5V20M17 5.5a3 3 0 0 1 0 5.8M18 14.5a4 4 0 0 1 3.5 4V20"/></svg></span>Friends</button>
  <button class="navBtn" data-page="profile"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span>Profile</button>
  <button class="navBtn" id="searchNavBtn" data-page="search" aria-label="Search"><span><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></span>Search</button>
+</div>
+<div id="editFriendModal" class="editFriendModal hidden" role="dialog" aria-modal="true" aria-labelledby="editFriendTitle">
+<div class="editFriendCard">
+<button id="closeEditFriend" class="editFriendClose" type="button" aria-label="Close">×</button>
+<div class="editFriendIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></div>
+<h2 id="editFriendTitle">Edit a friend's name</h2>
+<p class="editFriendHint">Choose a friend and give them a nickname only you can see.</p>
+<form id="editFriendForm">
+<label for="editFriendSelect">Friend</label>
+<select id="editFriendSelect" required><option value="">Choose a friend</option></select>
+<label for="editFriendName">Name shown to you</label>
+<input id="editFriendName" type="text" maxlength="40" placeholder="Enter a nickname" required>
+<div class="editFriendActions"><button id="cancelEditFriend" type="button">Cancel</button><button id="saveEditFriend" type="submit">Save name</button></div>
+<div id="editFriendStatus" class="editFriendStatus" aria-live="polite"></div>
+</form>
+</div>
 </div>
 <div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
 <div id="conversationProfilePanel" class="conversationProfilePanel hidden"><div id="conversationProfileAvatar" class="rowAvatar">?</div><strong id="conversationProfileName">Friend</strong><p id="conversationProfileContact"></p><button id="closeConversationProfile" type="button">Close</button></div>
@@ -374,28 +410,37 @@ $("chatNotifications").onclick=toggleNotifications;$("notificationQuick").onclic
 function renderNotifications(){const host=$("notificationItems");host.innerHTML="";const recent=usersCache.slice(0,8);if(!recent.length){host.innerHTML='<div class="notificationEmpty">No recent activity yet. Start a chat with a friend!</div>';return}recent.forEach(user=>{const item=document.createElement("div");item.className="notificationItem";const name=user.displayName||user.email||"VibeSnap friend";item.innerHTML='<div>'+avatarHTML(user,"rowAvatar")+'</div><div><b>'+escapeHTML(name)+'</b><small>Open conversation</small></div>';item.onclick=()=>{$("notificationPanel").classList.add("hidden");openChat(user)};host.appendChild(item)})}
 $("chatAddFriend").onclick=()=>showPage("friends");
 document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
-$("composeBtn").onclick=async()=>{
-if(!currentUser){alert("Please sign in first.");return}
-const choice=prompt("Edit which friend's name? Enter their exact current name or email:");
-if(!choice||!choice.trim())return;
-const friend=usersCache.find(u=>(u.displayName||"").toLowerCase()===choice.trim().toLowerCase()||(u.email||"").toLowerCase()===choice.trim().toLowerCase());
-if(!friend){alert("I couldn't find that friend. Use their exact name or email shown in VibeSnap.");return}
-const existing=(currentUser.friendNicknames||{})[friend.uid]||friend.displayName||friend.email||"Friend";
-const nickname=prompt("Choose the name to show for this friend:",existing);
-if(nickname===null)return;
-const clean=nickname.trim();
-if(!clean){alert("The friend's display name cannot be empty.");return}
-if(clean.length>40){alert("Please use 40 characters or fewer.");return}
+function openEditFriendModal(){
+if(!currentUser)return;
+const select=$("editFriendSelect");select.innerHTML='<option value="">Choose a friend</option>';
+usersCache.forEach(friend=>{const option=document.createElement("option");option.value=friend.uid;option.textContent=(friend.displayName||friend.email||"VibeSnap friend")+(friend.email?" · "+friend.email:"");select.appendChild(option)});
+$("editFriendStatus").textContent="";
+$("editFriendName").value="";
+$("editFriendModal").classList.remove("hidden");
+if(usersCache.length===0){$("editFriendStatus").textContent="No other users found yet. Ask your friend to sign in first."}
+}
+function selectedEditFriend(){return usersCache.find(u=>u.uid===$("editFriendSelect").value)}
+$("composeBtn").onclick=openEditFriendModal;
+$("closeEditFriend").onclick=$("cancelEditFriend").onclick=()=>{$("editFriendModal").classList.add("hidden")};
+$("editFriendModal").addEventListener("click",e=>{if(e.target===$("editFriendModal"))$("editFriendModal").classList.add("hidden")});
+$("editFriendSelect").onchange=()=>{const friend=selectedEditFriend();$("editFriendName").value=friend?((currentUser.friendNicknames||{})[friend.uid]||friend.displayName||friend.email||""):"";$("editFriendStatus").textContent=""};
+$("editFriendForm").onsubmit=async e=>{
+e.preventDefault();
+const friend=selectedEditFriend(),clean=$("editFriendName").value.trim(),button=$("saveEditFriend");
+if(!friend){$("editFriendStatus").textContent="Choose a friend first.";return}
+if(!clean){$("editFriendStatus").textContent="Enter a name.";return}
 try{
+button.disabled=true;button.textContent="Saving…";
 const nicknames={...(currentUser.friendNicknames||{}),[friend.uid]:clean};
 await db.collection("users").doc(currentUser.uid).update({friendNicknames:nicknames});
 currentUser.friendNicknames=nicknames;
-renderChatList();
-$("usersList").innerHTML="";usersCache.forEach(addUserCard);
+renderChatList();$("usersList").innerHTML="";usersCache.forEach(addUserCard);
 renderGlobalSearch($("globalSearchInput").value||"");
 if(selectedFriend&&selectedFriend.uid===friend.uid){selectedFriend.displayName=clean;$("chatName").textContent=clean}
-alert("Friend name updated!");
-}catch(e){console.error(e);alert("Couldn't save the name. Check your connection and Firestore permissions.")}
+$("editFriendStatus").style.color="#25845b";$("editFriendStatus").textContent="Name saved!";
+setTimeout(()=>{$("editFriendModal").classList.add("hidden");$("editFriendStatus").style.color=""},650);
+}catch(err){console.error(err);$("editFriendStatus").textContent="Couldn't save. Check your connection and Firestore permissions."}
+finally{button.disabled=false;button.textContent="Save name"}
 };
 $("chatProfileQuick").onclick=()=>showPage("profile");
 function toggleConversationProfile(){if(!selectedFriend)return;const panel=$("conversationProfilePanel");$("conversationProfileAvatar").innerHTML=avatarHTML(selectedFriend,"rowAvatar");$("conversationProfileName").textContent=selectedFriend.displayName||selectedFriend.email||"VibeSnap friend";$("conversationProfileContact").textContent=selectedFriend.email||selectedFriend.phone||"VibeSnap member";panel.classList.toggle("hidden")}
