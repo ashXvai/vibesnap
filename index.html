@@ -235,6 +235,18 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .loginBrand{background:linear-gradient(145deg,#7b3fff 0%,#654bff 45%,#328bff 100%);box-shadow:0 20px 45px rgba(92,78,225,.32),inset 0 1px 0 rgba(255,255,255,.45)}
 .loginCameraLogo{width:82px;height:82px;filter:drop-shadow(0 4px 4px rgba(35,24,115,.18))}
 
+
+/* Reliable photo/video preview actions */
+#previewModal{box-sizing:border-box;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:#101016}
+#previewMedia{display:block;flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}
+.previewButtons{position:relative;z-index:3;display:flex;flex:0 0 auto;align-items:center;gap:12px;padding:16px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(16,16,22,.88),#101016);box-sizing:border-box}
+.previewButtons button{display:flex;align-items:center;justify-content:center;min-height:52px;border:0;border-radius:17px;font-size:15px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.previewButtons .cancelPreviewBtn{flex:0 0 54px;width:54px;background:#292936;color:#fff;font-size:23px}
+.previewButtons .retakeBtn{flex:1;background:#292936;color:#fff;border:1px solid rgba(255,255,255,.18)}
+.previewButtons .sendBtn{flex:1;background:linear-gradient(135deg,#704dff,#4e83ff);color:#fff;box-shadow:0 6px 18px rgba(92,78,225,.28)}
+.previewButtons button:disabled{opacity:.55}
+@media(max-height:520px){.previewButtons{padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.previewButtons button{min-height:44px}}
+
 </style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
@@ -292,7 +304,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 <div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
 <div id="conversationProfilePanel" class="conversationProfilePanel hidden"><div id="conversationProfileAvatar" class="rowAvatar">?</div><strong id="conversationProfileName">Friend</strong><p id="conversationProfileContact"></p><button id="closeConversationProfile" type="button">Close</button></div>
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera">◉</button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
-</div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="retakeBtn" id="retakeBtn">Retake</button><button class="sendBtn" id="sendMediaBtn">Send</button></div></div>
+</div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyA8d0zK0s17K6Vybn8ULOIuTwHXnHjJJDk",
@@ -406,7 +418,9 @@ mediaRecorder.start();$("videoModeBtn").textContent="⏹️";$("videoModeBtn").c
 }
 function stopRecording(){if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop()}
 
-$("retakeBtn").onclick=()=>{$("previewModal").classList.add("hidden");currentMediaBlob=null;currentMediaType=null;startCamera()};
+function closeMediaPreview(){if($("previewMedia").src.startsWith("blob:"))URL.revokeObjectURL($("previewMedia").src);$("previewMedia").pause();$("previewMedia").removeAttribute("src");$("previewMedia").load();$("previewModal").classList.add("hidden");currentMediaBlob=null;currentMediaType=null}
+$("cancelPreviewBtn").onclick=()=>{closeMediaPreview();if(!currentStream&&!$("cameraPage").classList.contains("hidden"))startCamera()};
+$("retakeBtn").onclick=()=>{closeMediaPreview();if(!$("cameraPage").classList.contains("hidden"))startCamera()};
 $("sendMediaBtn").onclick=async()=>{
 if(!currentMediaBlob)return;
 if(!selectedFriend){const uid=$("recipientSelect").value;if(uid){const snap=await db.collection("users").doc(uid).get();if(snap.exists)selectedFriend={uid:snap.id,...snap.data()}}}
