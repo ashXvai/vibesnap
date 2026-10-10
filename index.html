@@ -409,9 +409,63 @@ currentUser.friendNicknames={};
 const profile=snap.data()||{};
 currentUser.friendNicknames=profile.friendNicknames||{};
 }
+await ensureEncryptionKeys();
 $("profileName").textContent=currentUser.displayName||"VibeSnap User";
 $("profileEmail").textContent=currentUser.email||currentUser.phoneNumber||"";
 $("profileAvatar").textContent=(currentUser.displayName||currentUser.email||"U").charAt(0).toUpperCase();
+}
+
+// Text-message end-to-end encryption (ECDH P-256 + HKDF + AES-GCM).
+// Private keys remain in this browser's local storage; they are not uploaded.
+let localEncryptionPrivateKey=null;
+const encoder=new TextEncoder(),decoder=new TextDecoder();
+function bytesToBase64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s)}
+function base64ToBytes(s){return Uint8Array.from(atob(s),ch=>ch.charCodeAt(0))}
+async function ensureEncryptionKeys(){
+if(!window.crypto||!crypto.subtle)throw new Error("Secure browser encryption is unavailable.");
+const keyName="vibesnap-e2ee-private-"+currentUser.uid;
+let privateJwk=null;
+try{privateJwk=JSON.parse(localStorage.getItem(keyName)||"null")}catch(_){}
+if(privateJwk){
+localEncryptionPrivateKey=await crypto.subtle.importKey("jwk",privateJwk,{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
+}else{
+const pair=await crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveBits"]);
+privateJwk=await crypto.subtle.exportKey("jwk",pair.privateKey);
+localStorage.setItem(keyName,JSON.stringify(privateJwk));
+localEncryptionPrivateKey=await crypto.subtle.importKey("jwk",privateJwk,{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
+}
+const publicJwk=await crypto.subtle.exportKey("jwk",await (async()=>{
+if(!privateJwk)throw new Error("Encryption key setup failed.");
+return await crypto.subtle.importKey("jwk",{kty:privateJwk.kty,crv:privateJwk.crv,x:privateJwk.x,y:privateJwk.y,ext:true,key_ops:[]},{name:"ECDH",namedCurve:"P-256"},true,[]);
+})());
+const profileRef=db.collection("users").doc(currentUser.uid),profileSnap=await profileRef.get();
+if(!profileSnap.exists)throw new Error("Your profile is not ready for encryption.");
+if(!profileSnap.data().encryptionPublicKey||JSON.stringify(profileSnap.data().encryptionPublicKey)!==JSON.stringify(publicJwk)){
+await profileRef.update({encryptionPublicKey:publicJwk});
+}
+}
+async function deriveChatEncryptionKey(otherPublicJwk,chatId){
+if(!localEncryptionPrivateKey)throw new Error("Your encryption key is not loaded. Sign out and sign in again.");
+if(!otherPublicJwk)throw new Error("This friend has not set up encrypted messaging yet. Ask them to sign in again.");
+const publicKey=await crypto.subtle.importKey("jwk",otherPublicJwk,{name:"ECDH",namedCurve:"P-256"},false,[]);
+const sharedBits=await crypto.subtle.deriveBits({name:"ECDH",public:publicKey},localEncryptionPrivateKey,256);
+const hkdfKey=await crypto.subtle.importKey("raw",sharedBits,"HKDF",false,["deriveKey"]);
+return crypto.subtle.deriveKey({name:"HKDF",hash:"SHA-256",salt:encoder.encode(chatId),info:encoder.encode("VibeSnap text E2EE v1")},hkdfKey,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function encryptChatText(plainText,friend,chatId){
+const key=await deriveChatEncryptionKey(friend.encryptionPublicKey,chatId),iv=crypto.getRandomValues(new Uint8Array(12));
+const ciphertext=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,encoder.encode(plainText));
+return {encryptedText:bytesToBase64(new Uint8Array(ciphertext)),iv:bytesToBase64(iv),cryptoVersion:1};
+}
+async function decryptChatText(message,chatId){
+if(message.cryptoVersion!==1||!message.encryptedText||!message.iv)return message.text||"[Older unencrypted message]";
+const otherUid=message.senderUid===currentUser.uid?message.receiverUid:message.senderUid;
+let other=otherUid===currentUser.uid?null:usersCache.find(u=>u.uid===otherUid);
+if(!other&&otherUid){const snap=await db.collection("users").doc(otherUid).get();if(snap.exists)other={uid:snap.id,...snap.data()};}
+if(!other||!other.encryptionPublicKey)throw new Error("The other participant's encryption key is unavailable.");
+const key=await deriveChatEncryptionKey(other.encryptionPublicKey,chatId);
+const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:base64ToBytes(message.iv)},key,base64ToBytes(message.encryptedText));
+return decoder.decode(plain);
 }
 
 function showPage(page){
@@ -646,11 +700,13 @@ const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.ui
 }
 function loadMessages(chatId){
 if(currentChatUnsubscribe)currentChatUnsubscribe();
-currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt").onSnapshot(snapshot=>{
+currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt").onSnapshot(async snapshot=>{
 $("chatMessages").innerHTML="";
-snapshot.forEach(doc=>{const message=doc.data(),box=document.createElement("div");box.className="message "+(message.senderUid===currentUser.uid?"mine":"theirs");
-if(message.type==="image")box.innerHTML=`<img src="${message.mediaUrl}" alt="Photo">`;else if(message.type==="video")box.innerHTML=`<video src="${message.mediaUrl}" controls></video>`;else box.textContent=message.text||"";
-$("chatMessages").appendChild(box)});
+for(const doc of snapshot.docs){const message=doc.data(),box=document.createElement("div");box.className="message "+(message.senderUid===currentUser.uid?"mine":"theirs");
+if(message.type==="image")box.innerHTML=`<img src="${message.mediaUrl}" alt="Photo">`;
+else if(message.type==="video")box.innerHTML=`<video src="${message.mediaUrl}" controls></video>`;
+else {try{box.textContent=await decryptChatText(message,chatId)}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
+$("chatMessages").appendChild(box)}
 $("chatMessages").scrollTop=$("chatMessages").scrollHeight
 })
 }
@@ -661,7 +717,7 @@ const input=$("messageInput"),button=$("sendMessage"),text=input.value.trim();
 if(!text)return;
 if(!selectedFriend){alert("Open a friend's chat before sending a message.");return}
 if(selectedFriend.uid===currentUser.uid){alert("You cannot send a message to yourself.");return}
-try{button.disabled=true;const chatId=getChatId(currentUser.uid,selectedFriend.uid);await ensureChat(chatId,selectedFriend.uid);await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",text,createdAt:firebase.firestore.FieldValue.serverTimestamp()});input.value="";input.focus()}
+try{button.disabled=true;const chatId=getChatId(currentUser.uid,selectedFriend.uid);await ensureChat(chatId,selectedFriend.uid);const encrypted=await encryptChatText(text,selectedFriend,chatId);await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:firebase.firestore.FieldValue.serverTimestamp()});input.value="";input.focus()}
 catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent. Firebase error: "+(e.code||"unknown")+" — "+(e.message||"Check your connection and Firebase permissions."))}
 finally{button.disabled=false}
 }
