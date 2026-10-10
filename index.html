@@ -167,6 +167,8 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .bottomNav{background:rgba(255,255,255,.96);backdrop-filter:blur(18px);padding-bottom:env(safe-area-inset-bottom);height:calc(82px + env(safe-area-inset-bottom))}
 @media(max-width:600px){.friendsHeader{padding-top:22px}.chatRow{padding-left:16px;padding-right:16px}.categoryRow{gap:8px}}
 
+
+#searchPage{background:#f7f8fd;overflow:auto;padding-bottom:100px}.searchPageHeader{padding:26px 22px 18px;background:linear-gradient(135deg,#f0edff,#edf4ff);border-bottom:1px solid #e7eaf5}.searchPageTitle{font-size:30px;font-weight:850;color:#222742;letter-spacing:-.7px}.searchPageSubtitle{font-size:13px;color:#78809a;margin-top:5px}.searchPageBox{display:flex;align-items:center;gap:12px;margin:18px 16px 22px;padding:0 16px;height:54px;background:#fff;border:1px solid #e7e9f4;border-radius:18px;box-shadow:0 6px 20px rgba(35,47,90,.05)}.searchPageBox span{font-size:28px;color:#777f9c}.searchPageBox input{border:0;outline:0;background:transparent;flex:1;min-width:0;font-size:15px;color:#24283b}.searchSectionLabel{padding:0 20px 12px;font-size:12px;font-weight:800;color:#838aa2;text-transform:uppercase;letter-spacing:.8px}#globalSearchResults{padding:0 14px;display:flex;flex-direction:column;gap:10px}.searchResultCard{display:flex;align-items:center;gap:12px;padding:13px;background:#fff;border:1px solid #eceef7;border-radius:18px;box-shadow:0 4px 14px rgba(35,47,90,.04)}.searchResultInfo{flex:1;min-width:0}.searchResultName{font-size:15px;font-weight:800;color:#24283b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.searchResultMeta{font-size:12px;color:#858ba1;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.searchResultCard button{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:white;font-size:12px;font-weight:800;padding:10px 15px;border-radius:13px}.searchEmptyState{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 24px;color:#858ba1}.searchEmptyState>span{display:grid;place-items:center;width:58px;height:58px;border-radius:20px;background:#eee9ff;color:#6d4aff;font-size:32px;margin-bottom:14px}.searchEmptyState b{color:#343a55;font-size:16px}.searchEmptyState p{font-size:13px;line-height:1.5;margin-top:6px;max-width:260px}
 </style>
 </head>
 <body><div id="loginScreen"><div class="loginBox">
@@ -212,13 +214,14 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 <div id="chatList" class="chatList"></div>
 <button class="composeBtn" id="composeBtn">✎</button>
 </div>
+<div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find your friends on VibeSnap</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by name, email or phone" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can chat with</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Type a name, email or phone number to search.</p></div></div>
 <div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profileEmail" style="color:#777;margin-top:8px;"></p><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
 <div class="bottomNav">
 <button class="navBtn active" data-page="chat"><span><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5.5 4v-4.3A2.5 2.5 0 0 1 4 14.5z"/></svg></span>Chats</button>
  <button class="navBtn" data-page="camera"><span><svg viewBox="0 0 24 24"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></span>Camera</button>
  <button class="navBtn" data-page="friends"><span><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5A4.5 4.5 0 0 1 7 14h4a4.5 4.5 0 0 1 4.5 4.5V20M17 5.5a3 3 0 0 1 0 5.8M18 14.5a4 4 0 0 1 3.5 4V20"/></svg></span>Friends</button>
  <button class="navBtn" data-page="profile"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span>Profile</button>
- <button class="navBtn" id="searchNavBtn" data-page="chat" aria-label="Search"><span><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></span>Search</button>
+ <button class="navBtn" id="searchNavBtn" data-page="search" aria-label="Search"><span><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></span>Search</button>
 </div>
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera">◉</button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
 </div><div id="previewModal" class="hidden"><video id="previewMedia" controls playsinline></video><div class="previewButtons"><button class="retakeBtn" id="retakeBtn">Retake</button><button class="sendBtn" id="sendMediaBtn">Send</button></div></div>
@@ -263,17 +266,18 @@ $("profileAvatar").textContent=(currentUser.displayName||currentUser.email||"U")
 }
 
 function showPage(page){
-["cameraPage","friendsPage","chatPage","profilePage"].forEach(id=>$(id).classList.add("hidden"));
+["cameraPage","friendsPage","chatPage","profilePage","searchPage"].forEach(id=>$(id).classList.add("hidden"));
 document.querySelectorAll(".navBtn").forEach(btn=>btn.classList.remove("active"));
-const map={camera:"cameraPage",friends:"friendsPage",chat:"chatPage",profile:"profilePage"};
+const map={camera:"cameraPage",friends:"friendsPage",chat:"chatPage",profile:"profilePage",search:"searchPage"};
 $(map[page]).classList.remove("hidden");
 document.querySelector('[data-page="'+page+'"]').classList.add("active");
 if(page==="camera")startCamera();else stopCamera();
 }
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
+function renderGlobalSearch(query=""){const q=query.trim().toLowerCase(),results=$("globalSearchResults"),empty=$("searchEmptyState");results.innerHTML="";const matches=usersCache.filter(u=>[u.displayName,u.email,u.phone].some(v=>(v||"").toLowerCase().includes(q)));matches.forEach(user=>{const card=document.createElement("div");card.className="searchResultCard";const name=user.displayName||user.email||user.phone||"VibeSnap User";card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(user.email||user.phone||"VibeSnap user")+'</div></div><button type="button">Chat</button>';card.querySelector("button").onclick=()=>openChat(user);results.appendChild(card)});empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another name, email or phone number.":"Type a name, email or phone number to search."; $("searchResultsLabel").textContent=q?"Search results":"People you can chat with"}
 function filterPeople(query){const q=query.trim().toLowerCase();document.querySelectorAll(".chatRow").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none");document.querySelectorAll(".userCard").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none")}
 $("chatSearchInput").oninput=()=>filterPeople($("chatSearchInput").value);
-$("searchNavBtn").onclick=()=>{showPage("chat");$("searchNavBtn").classList.add("active");document.querySelectorAll(".navBtn:not(#searchNavBtn)").forEach(btn=>btn.classList.remove("active"));$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"});};
+$("searchNavBtn").onclick=()=>{showPage("search");renderGlobalSearch("");$("globalSearchInput").focus()};$("globalSearchInput").oninput=()=>renderGlobalSearch($("globalSearchInput").value);
 $("chatSearch").onclick=()=>{$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"})};
 $("chatAddFriend").onclick=()=>showPage("friends");
 document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
