@@ -374,7 +374,29 @@ $("chatNotifications").onclick=toggleNotifications;$("notificationQuick").onclic
 function renderNotifications(){const host=$("notificationItems");host.innerHTML="";const recent=usersCache.slice(0,8);if(!recent.length){host.innerHTML='<div class="notificationEmpty">No recent activity yet. Start a chat with a friend!</div>';return}recent.forEach(user=>{const item=document.createElement("div");item.className="notificationItem";const name=user.displayName||user.email||"VibeSnap friend";item.innerHTML='<div>'+avatarHTML(user,"rowAvatar")+'</div><div><b>'+escapeHTML(name)+'</b><small>Open conversation</small></div>';item.onclick=()=>{$("notificationPanel").classList.add("hidden");openChat(user)};host.appendChild(item)})}
 $("chatAddFriend").onclick=()=>showPage("friends");
 document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
-$("composeBtn").onclick=()=>{showPage("search");renderGlobalSearch("");$("globalSearchInput").value="";$("globalSearchInput").focus();$("globalSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"});};
+$("composeBtn").onclick=async()=>{
+if(!currentUser){alert("Please sign in first.");return}
+const choice=prompt("Edit which friend's name? Enter their exact current name or email:");
+if(!choice||!choice.trim())return;
+const friend=usersCache.find(u=>(u.displayName||"").toLowerCase()===choice.trim().toLowerCase()||(u.email||"").toLowerCase()===choice.trim().toLowerCase());
+if(!friend){alert("I couldn't find that friend. Use their exact name or email shown in VibeSnap.");return}
+const existing=(currentUser.friendNicknames||{})[friend.uid]||friend.displayName||friend.email||"Friend";
+const nickname=prompt("Choose the name to show for this friend:",existing);
+if(nickname===null)return;
+const clean=nickname.trim();
+if(!clean){alert("The friend's display name cannot be empty.");return}
+if(clean.length>40){alert("Please use 40 characters or fewer.");return}
+try{
+const nicknames={...(currentUser.friendNicknames||{}),[friend.uid]:clean};
+await db.collection("users").doc(currentUser.uid).update({friendNicknames:nicknames});
+currentUser.friendNicknames=nicknames;
+renderChatList();
+$("usersList").innerHTML="";usersCache.forEach(addUserCard);
+renderGlobalSearch($("globalSearchInput").value||"");
+if(selectedFriend&&selectedFriend.uid===friend.uid){selectedFriend.displayName=clean;$("chatName").textContent=clean}
+alert("Friend name updated!");
+}catch(e){console.error(e);alert("Couldn't save the name. Check your connection and Firestore permissions.")}
+};
 $("chatProfileQuick").onclick=()=>showPage("profile");
 function toggleConversationProfile(){if(!selectedFriend)return;const panel=$("conversationProfilePanel");$("conversationProfileAvatar").innerHTML=avatarHTML(selectedFriend,"rowAvatar");$("conversationProfileName").textContent=selectedFriend.displayName||selectedFriend.email||"VibeSnap friend";$("conversationProfileContact").textContent=selectedFriend.email||selectedFriend.phone||"VibeSnap member";panel.classList.toggle("hidden")}
 $("chatAvatar").onclick=toggleConversationProfile;$("chatName").onclick=toggleConversationProfile;$("closeConversationProfile").onclick=()=>$("conversationProfilePanel").classList.add("hidden");
@@ -453,12 +475,13 @@ snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;const user={uid:doc.id
 renderChatList()
 })
 }
+function friendLabel(user){return (currentUser&&currentUser.friendNicknames&&currentUser.friendNicknames[user.uid])||user.displayName||user.email||"VibeSnap User"}
 function avatarHTML(user,cls="rowAvatar"){
 const name=user.displayName||user.email||"VibeSnap User";
 return user.photoURL?'<div class="'+cls+'"><img src="'+escapeHTML(user.photoURL)+'" alt=""></div>':'<div class="'+cls+'">'+escapeHTML(name.charAt(0).toUpperCase())+'</div>';
 }
 function addUserCard(user){
-const card=document.createElement("div");card.className="userCard";const name=user.displayName||user.email||"VibeSnap User";
+const card=document.createElement("div");card.className="userCard";const name=friendLabel(user);
 card.innerHTML=avatarHTML(user,"avatar")+'<div class="userInfo"><div class="userName">'+escapeHTML(name)+'</div><div class="userEmail">'+escapeHTML(user.email||user.phone||"")+'</div></div><button class="chatOpenBtn">Chat</button>';
 card.querySelector(".chatOpenBtn").onclick=()=>openChat(user);$("usersList").appendChild(card);
 }
