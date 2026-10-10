@@ -316,7 +316,7 @@ $("verifyOTP").onclick=async()=>{const code=$("otpCode").value.trim();if(!window
 $("requestAccount").onclick=async()=>{const email=prompt("Enter the Gmail address you want to use:");if(email===null)return;const cleanEmail=email.trim().toLowerCase();if(!cleanEmail)return alert("Please enter your email address.");const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;if(!emailPattern.test(cleanEmail))return alert("Please enter a valid email address, for example name@gmail.com.");if(!cleanEmail.endsWith("@gmail.com"))return alert("Please use a valid Gmail address ending in @gmail.com.");try{await db.collection("signupRequests").add({email:cleanEmail,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:"pending"});alert("Your account request has been sent.")}catch(e){alert(e.message)}};
 
 auth.onAuthStateChanged(async user=>{
-if(user){currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");await createProfile();await loadUsers();showPage("camera");startCamera()}
+if(user){currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");await createProfile();await loadUsers();showPage("chat")}
 else{currentUser=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
 });
 
@@ -357,12 +357,15 @@ document.addEventListener("click",e=>{const panel=$("notificationPanel");if(!pan
 
 async function startCamera(){
 stopCamera();
-try{currentStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facingMode},audio:true});$("cameraVideo").srcObject=currentStream;applyFilter()}
+try{currentStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facingMode},audio:false});$("cameraVideo").srcObject=currentStream;applyFilter()}
 catch(e){console.error(e);alert("Camera permission is required for VibeSnap Camera.")}
 }
 function stopCamera(){if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null}if($("cameraVideo"))$("cameraVideo").srcObject=null}
 $("flipCamera").onclick=()=>{facingMode=facingMode==="user"?"environment":"user";startCamera()};
 function applyFilter(){$("cameraVideo").style.filter=filterCSS[currentFilter]}
+document.addEventListener("visibilitychange",()=>{if(document.hidden){stopCamera()}else if(!$("cameraPage").classList.contains("hidden")){startCamera()}});
+window.addEventListener("pagehide",stopCamera);
+
 document.querySelectorAll(".lensItem").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".lensItem").forEach(b=>b.classList.remove("active"));btn.classList.add("active");currentFilter=btn.dataset.filter;applyFilter()});
 $("profileQuick").onclick=()=>showPage("profile");
 $("addFriendQuick").onclick=()=>showPage("friends");
