@@ -552,19 +552,38 @@ label.textContent="PHOTO";
 }
 };
 
-$("videoModeBtn").onclick=()=>mediaRecorder?stopRecording():startRecording();
-function startRecording(){
-if(!currentStream)return alert("Camera is not ready.");recordedChunks=[];
+let videoCountdownInProgress=false,videoCountdownCancelled=false;
+$("videoModeBtn").onclick=()=>{if(mediaRecorder){stopRecording();return}if(videoCountdownInProgress){videoCountdownCancelled=true;$("photoCountdownOverlay").classList.add("hidden");$("videoModeBtn").classList.remove("recording");$("videoModeBtn").textContent="🎥";return}startRecording()};
+async function startRecording(){
+if(!currentStream)return alert("Camera is not ready.");
+if(typeof MediaRecorder==="undefined"||!HTMLCanvasElement.prototype.captureStream)return alert("Video recording is not supported on this browser.");
+videoCountdownInProgress=true;videoCountdownCancelled=false;
+const video=$("cameraVideo"),overlay=$("photoCountdownOverlay"),number=$("photoCountdownNumber"),caption=$("photoCountdownCaption"),label=document.querySelector(".cameraModeLabel");
 try{
-const canvas=document.createElement("canvas"),video=$("cameraVideo");canvas.width=video.videoWidth||1280;canvas.height=video.videoHeight||720;const ctx=canvas.getContext("2d");
+if(photoTimerSeconds>0){
+const delay=photoTimerSeconds;
+$("cameraMoreMenu").classList.add("hidden");overlay.classList.remove("hidden");$("videoModeBtn").classList.add("recording");$("videoModeBtn").textContent="✕";
+for(let remaining=delay;remaining>0;remaining--){
+number.textContent=String(remaining);caption.textContent="VIDEO STARTS IN";label.textContent="VIDEO IN "+remaining;
+await new Promise(resolve=>setTimeout(resolve,1000));
+if(videoCountdownCancelled||!currentStream||$("cameraPage").classList.contains("hidden"))return;
+}
+number.textContent="●";caption.textContent="RECORDING";label.textContent="RECORDING";
+await new Promise(resolve=>setTimeout(resolve,250));
+overlay.classList.add("hidden");
+}
+if(videoCountdownCancelled||!currentStream||$("cameraPage").classList.contains("hidden"))return;
+recordedChunks=[];
+const canvas=document.createElement("canvas");canvas.width=video.videoWidth||1280;canvas.height=video.videoHeight||720;const ctx=canvas.getContext("2d");
 const drawFrame=()=>{if(!mediaRecorder||mediaRecorder.state!=="recording")return;ctx.filter=filterCSS[currentFilter];if(facingMode==="user"&&mirrorSelfieOn){ctx.save();ctx.translate(canvas.width,0);ctx.scale(-1,1);ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore()}else ctx.drawImage(video,0,0,canvas.width,canvas.height);requestAnimationFrame(drawFrame)};
 const videoStream=canvas.captureStream(30);currentStream.getAudioTracks().forEach(t=>videoStream.addTrack(t));
 let options={};if(MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus"))options.mimeType="video/webm;codecs=vp9,opus";else if(MediaRecorder.isTypeSupported("video/webm"))options.mimeType="video/webm";
 mediaRecorder=new MediaRecorder(videoStream,options);
 mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data)};
-mediaRecorder.onstop=()=>{const blob=new Blob(recordedChunks,{type:mediaRecorder.mimeType||"video/webm"});if(blob.size)showMediaPreview(blob,"video");else alert("No video was recorded. Please try again.");mediaRecorder=null;$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording")};
-mediaRecorder.start();$("videoModeBtn").textContent="⏹️";$("videoModeBtn").classList.add("recording");drawFrame();
-}catch(e){console.error(e);alert("Video recording is not supported on this browser.")}
+mediaRecorder.onstop=()=>{const recorder=mediaRecorder;const blob=new Blob(recordedChunks,{type:recorder.mimeType||"video/webm"});if(blob.size)showMediaPreview(blob,"video");else alert("No video was recorded. Please try again.");mediaRecorder=null;$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording");label.textContent="PHOTO";videoStream.getTracks().forEach(t=>t.stop())};
+mediaRecorder.start();$("videoModeBtn").textContent="⏹️";$("videoModeBtn").classList.add("recording");label.textContent="RECORDING";drawFrame();
+}catch(e){console.error(e);alert("Video recording is not supported on this browser.");$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording")}
+finally{videoCountdownInProgress=false;overlay.classList.add("hidden");if(!mediaRecorder){$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording");label.textContent="PHOTO"}}
 }
 function stopRecording(){if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop()}
 
