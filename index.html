@@ -625,7 +625,7 @@ return "none";
 function stopFriendListeners(){friendRequestUnsubscribers.forEach(fn=>{try{fn()}catch(_){}});friendRequestUnsubscribers=[]}
 function startFriendListeners(){
 stopFriendListeners();if(!currentUser)return;
-const rerender=()=>{renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");renderFriendRequests();renderNotifications();};
+const rerender=()=>{renderAcceptedFriendList();renderChatList();renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");renderFriendRequests();renderNotifications();};
 friendRequestUnsubscribers.push(db.collection("friendRequests").where("toUid","==",currentUser.uid).onSnapshot(snap=>{incomingFriendRequests=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Incoming friend requests listener:",err)));
 friendRequestUnsubscribers.push(db.collection("friendRequests").where("fromUid","==",currentUser.uid).onSnapshot(snap=>{outgoingFriendRequests=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Outgoing friend requests listener:",err)));
 friendRequestUnsubscribers.push(db.collection("friendships").where("members","array-contains",currentUser.uid).onSnapshot(snap=>{acceptedFriendships=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Friendships listener:",err)));
@@ -900,8 +900,9 @@ let usersCache=[];
 async function loadUsers(){
 if(window.vibeSnapUsersUnsubscribe)window.vibeSnapUsersUnsubscribe();
 window.vibeSnapUsersUnsubscribe=db.collection("users").onSnapshot(snapshot=>{
-usersCache=[];$("usersList").innerHTML="";$("recipientSelect").innerHTML='<option value="">Select friend to send to</option>';
-snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;const user={uid:doc.id,...doc.data()};usersCache.push(user);addUserCard(user);const option=document.createElement("option");option.value=user.uid;option.textContent=user.displayName||"VibeSnap User";$("recipientSelect").appendChild(option)});
+usersCache=[];
+snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;usersCache.push({uid:doc.id,...doc.data()})});
+renderAcceptedFriendList();
 renderChatList();
 renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
 },err=>{console.error("VibeSnap users listener error:",err);alert("Could not load VibeSnap users: "+(err.code||"Firebase error")+". Check Firestore rules and connection.");})
@@ -911,6 +912,13 @@ function avatarHTML(user,cls="rowAvatar"){
 const name=user.displayName||user.email||"VibeSnap User";
 return user.photoURL?'<div class="'+cls+'"><img src="'+escapeHTML(user.photoURL)+'" alt=""></div>':'<div class="'+cls+'">'+escapeHTML(name.charAt(0).toUpperCase())+'</div>';
 }
+function renderAcceptedFriendList(){
+const list=$("usersList");if(!list)return;list.innerHTML="";
+const friends=usersCache.filter(user=>getRelationshipState(user.uid)==="friends");
+$("recipientSelect").innerHTML='<option value="">Select friend to send to</option>';
+friends.forEach(user=>{addUserCard(user);const option=document.createElement("option");option.value=user.uid;option.textContent=friendLabel(user);$("recipientSelect").appendChild(option)});
+if(!friends.length){const empty=document.createElement("div");empty.className="friendRequestEmpty";empty.textContent="Your accepted friends will appear here. Search for people and send a friend request to get started.";list.appendChild(empty)}
+}
 function addUserCard(user){
 const card=document.createElement("div");card.className="userCard";const name=friendLabel(user);
 card.innerHTML=avatarHTML(user,"avatar")+'<div class="userInfo"><div class="userName">'+escapeHTML(name)+'</div><div class="userEmail">'+escapeHTML(user.email||user.phone||"")+'</div></div><button class="chatOpenBtn">Chat</button>';
@@ -918,7 +926,7 @@ card.querySelector(".chatOpenBtn").onclick=()=>openChat(user);$("usersList").app
 }
 function renderChatList(){
 const list=$("chatList");if(!list)return;list.innerHTML="";
-usersCache.forEach((user,i)=>{
+usersCache.filter(user=>getRelationshipState(user.uid)==="friends").forEach((user,i)=>{
 const row=document.createElement("div");row.className="chatRow";
 const name=friendLabel(user);
 const dot=i%3===0?"blueDot":i%3===1?"purpleDot":"blueDot";
