@@ -34,7 +34,7 @@ button{border:0;cursor:pointer}.hidden{display:none!important}
 .cameraTop button,.cameraIconBtn{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.88);color:#111;font-size:23px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.18)}
 .cameraAvatar{overflow:hidden;font-size:22px;background:#eee}.cameraAvatar img{width:100%;height:100%;object-fit:cover}.cameraTopSpacer{flex:1}.cameraTopActions{display:flex;gap:9px}
 .topBadge{position:relative}.topBadge:after{content:"";position:absolute;right:0;top:0;width:11px;height:11px;background:#ff3158;border:2px solid #fff;border-radius:50%}
-.recipientBox{position:absolute;top:78px;left:16px;right:72px;z-index:8}.recipientBox select{width:100%;padding:10px 13px;border-radius:20px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.3);outline:none}
+.recipientBox{display:none;position:absolute;top:78px;left:16px;right:72px;z-index:8}.recipientBox select{width:100%;padding:10px 13px;border-radius:20px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.3);outline:none}
 .cameraSidePanel{position:absolute;right:12px;top:120px;z-index:8;display:flex;flex-direction:column;gap:12px}.cameraTool{background:none;color:#fff;text-shadow:0 2px 6px #000;font-size:12px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px}
 .cameraMoreMenu{position:absolute;right:12px;top:315px;z-index:20;width:210px;padding:12px;border:1px solid rgba(255,255,255,.18);border-radius:18px;background:rgba(20,20,28,.94);color:#fff;box-shadow:0 12px 32px rgba(0,0,0,.35);backdrop-filter:blur(14px)}.cameraMoreTitle{font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:3px 5px 10px}.cameraMoreOption{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 7px;border-radius:10px;background:transparent;color:#fff;text-align:left;font-size:14px;font-weight:700}.cameraMoreOption:active{background:rgba(255,255,255,.12)}.cameraMoreValue{color:#c5b8ff;font-size:12px;font-weight:800}.cameraMoreDivider{height:1px;background:rgba(255,255,255,.16);margin:3px 0}.cameraTool.toolActive .cameraToolIcon{outline:2px solid #bca8ff}
 .cameraToolIcon{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-size:22px}
@@ -53,7 +53,7 @@ button{border:0;cursor:pointer}.hidden{display:none!important}
 #chatConversation{position:absolute;inset:0;background:#fff;z-index:25;display:flex;flex-direction:column}.conversationHeader{height:76px;display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #eee}.conversationHeader button{background:none;font-size:27px}.conversationTitle{flex:1;font-size:18px;font-weight:700}.chatMessages{flex:1;overflow:auto;padding:16px;background:#fff}.message{max-width:78%;padding:10px 13px;border-radius:18px;margin-bottom:9px;word-break:break-word}.mine{margin-left:auto;background:#6d4aff;color:#111}.theirs{background:#edf0f2}.message img,.message video{max-width:100%;border-radius:12px;margin-top:5px}.chatInput{display:flex;gap:8px;padding:10px;border-top:1px solid #eee;background:#fff}.chatInput input{flex:1;padding:13px;border-radius:24px;border:1px solid #d9dde1;background:#f4f5f6}.chatInput button{width:52px;border-radius:50%;background:#6d4aff}
 .pageTitle{font-size:28px;font-weight:700;margin:0 0 20px}.friendsHeader{padding:86px 18px 15px;font-size:28px;font-weight:700}.userCard{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid #eee;background:#fff}.avatar{width:50px;height:50px;border-radius:50%;background:#e9edf0;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px}.userInfo{flex:1}.userName{font-weight:700}.userEmail{color:#7b8289;font-size:13px;margin-top:3px}.chatOpenBtn{background:#6d4aff;color:#111;padding:10px 16px;border-radius:22px;font-weight:800}
 .profileBox{max-width:500px;margin:auto;background:#f6f7f8;padding:28px;border-radius:22px;text-align:center}.profileAvatar{width:94px;height:94px;border-radius:50%;background:#edf0f2;display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:700;margin:0 auto 15px}.logoutBtn{margin-top:25px;width:100%;padding:14px;background:#111;color:#fff;border-radius:24px;font-weight:800}
-#previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia, #previewImage, #previewVideo{flex:1;width:100%;height:100%;object-fit:contain}.previewMediaElement{flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:24px;font-weight:bold}.retakeBtn{background:#333;color:#fff}.sendBtn{background:#6d4aff;color:#111}
+#recipientPickerModal{position:fixed;inset:0;z-index:120;background:rgba(10,12,25,.72);display:flex;align-items:center;justify-content:center;padding:18px}#recipientPickerCard{width:min(100%,460px);max-height:82vh;display:flex;flex-direction:column;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.3)}.recipientPickerHead{padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px}.recipientPickerHead h2{margin:0;font-size:21px}.recipientPickerHead p{margin:5px 0 0;color:#737b8c;font-size:13px}.recipientPickerClose{font-size:26px;background:#f0f2f7;border-radius:50%;width:38px;height:38px}.recipientPickerList{overflow:auto;padding:4px 14px 12px}.recipientChoice{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid #edf0f5;cursor:pointer}.recipientChoice .rowAvatar{width:44px;height:44px}.recipientChoiceInfo{flex:1;min-width:0}.recipientChoiceName{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.recipientChoiceMeta{font-size:12px;color:#737b8c;margin-top:3px}.recipientChoice input{width:20px;height:20px;accent-color:#6d4aff}.recipientPickerFoot{padding:14px 18px 18px;border-top:1px solid #edf0f5;display:flex;gap:10px}.recipientPickerFoot button{flex:1;padding:13px;border-radius:20px;font-weight:800}.recipientPickerCancel{background:#edf0f5;color:#333}.recipientPickerSend{background:linear-gradient(120deg,#7657ff,#4b9cff);color:#fff}.recipientPickerEmpty{padding:28px 18px;text-align:center;color:#737b8c}#previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia, #previewImage, #previewVideo{flex:1;width:100%;height:100%;object-fit:contain}.previewMediaElement{flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:24px;font-weight:bold}.retakeBtn{background:#333;color:#fff}.sendBtn{background:#6d4aff;color:#111}
 @media(min-width:700px){#app{max-width:620px;margin:auto;box-shadow:0 0 30px rgba(0,0,0,.15)}.bottomNav{max-width:620px;left:50%;right:auto;width:620px;transform:translateX(-50%)}}
 </style>
 <style>
@@ -112,7 +112,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .cameraTop button svg,.cameraSideBtn svg,.cameraToolIcon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .cameraTop .cameraAvatar{background:linear-gradient(135deg,#eee9ff,#e4f0ff);border:2px solid rgba(255,255,255,.9);font-weight:800}
 .cameraTopActions{gap:9px}.topBadge:after{box-shadow:0 0 0 1px rgba(255,255,255,.5)}
-.recipientBox{top:82px;left:16px;right:16px}.recipientBox select{min-height:48px;padding:0 16px;border-radius:17px;background:rgba(20,24,42,.55);border:1px solid rgba(255,255,255,.48);box-shadow:0 8px 25px rgba(0,0,0,.12);backdrop-filter:blur(16px);font-size:14px}
+.recipientBox{display:none;top:82px;left:16px;right:16px}.recipientBox select{min-height:48px;padding:0 16px;border-radius:17px;background:rgba(20,24,42,.55);border:1px solid rgba(255,255,255,.48);box-shadow:0 8px 25px rgba(0,0,0,.12);backdrop-filter:blur(16px);font-size:14px}
 .cameraSidePanel{right:12px;top:145px;gap:14px}.cameraTool{font-size:11px;letter-spacing:.2px;gap:5px;color:#fff}.cameraToolIcon{width:48px;height:48px;border:1px solid rgba(255,255,255,.18);background:rgba(23,28,48,.52);backdrop-filter:blur(14px);box-shadow:0 5px 18px rgba(0,0,0,.18)}
 .lensStrip{bottom:139px;gap:9px;padding:10px 16px 8px;mask-image:linear-gradient(90deg,transparent,#000 3%,#000 96%,transparent)}.lensItem{width:66px;font-size:11px;color:#fff}.lensCircle{width:58px;height:58px;border-color:rgba(255,255,255,.72);background:rgba(25,30,48,.48);backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(0,0,0,.15)}.lensItem.active .lensCircle{border:3px solid #8c72ff;box-shadow:0 0 0 3px rgba(140,114,255,.22),0 5px 18px rgba(0,0,0,.2)}
 .cameraControls{bottom:58px;gap:34px}.cameraSideBtn{width:54px;height:54px;color:#354365;background:rgba(248,250,255,.94);box-shadow:0 5px 18px rgba(0,0,0,.18)}.cameraSideBtn svg{width:23px;height:23px}.captureBtn{width:82px;height:82px;border:5px solid #fff;box-shadow:0 0 0 2px rgba(255,255,255,.65),0 8px 25px rgba(0,0,0,.25);position:relative}.captureBtn:after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid rgba(30,35,55,.13)}.cameraModeLabel{bottom:16px;letter-spacing:1.8px;font-size:11px;color:#fff}
@@ -463,7 +463,8 @@ button:active{transform:scale(.97)}
 <div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
 <div id="conversationProfilePanel" class="conversationProfilePanel hidden"><div id="conversationProfileAvatar" class="rowAvatar">?</div><strong id="conversationProfileName">Friend</strong><p id="conversationProfileContact"></p><button id="closeConversationProfile" type="button">Close</button></div>
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera" type="button" aria-label="Open camera to send a photo or video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
-</div><div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
+</div><div id="recipientPickerModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="recipientPickerTitle"><div id="recipientPickerCard"><div class="recipientPickerHead"><div><h2 id="recipientPickerTitle">Send to friends</h2><p>Choose one or more friends for this snap.</p></div><button type="button" id="recipientPickerClose" class="recipientPickerClose" aria-label="Close">×</button></div><div id="recipientPickerList" class="recipientPickerList"></div><div class="recipientPickerFoot"><button type="button" id="recipientPickerCancel" class="recipientPickerCancel">Cancel</button><button type="button" id="recipientPickerSend" class="recipientPickerSend">Send to selected</button></div></div></div>
+<div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyA8d0zK0s17K6Vybn8ULOIuTwHXnHjJJDk",
@@ -763,18 +764,50 @@ let currentPreviewUrl=null;
 function closeMediaPreview(){if(currentPreviewUrl){URL.revokeObjectURL(currentPreviewUrl);currentPreviewUrl=null}$("previewImage").removeAttribute("src");$("previewVideo").pause();$("previewVideo").removeAttribute("src");$("previewVideo").load();$("previewModal").classList.add("hidden");currentMediaBlob=null;currentMediaType=null}
 $("cancelPreviewBtn").onclick=()=>{closeMediaPreview();if(!currentStream&&!$("cameraPage").classList.contains("hidden"))startCamera()};
 $("retakeBtn").onclick=()=>{closeMediaPreview();if(!$("cameraPage").classList.contains("hidden"))startCamera()};
-$("sendMediaBtn").onclick=async()=>{
+function openRecipientPicker(){
 if(!currentMediaBlob)return;
-if(!selectedFriend){const uid=$("recipientSelect").value;if(uid){const snap=await db.collection("users").doc(uid).get();if(snap.exists)selectedFriend={uid:snap.id,...snap.data()}}}
-if(!selectedFriend)return alert("Select a friend first.");
+const list=$("recipientPickerList");list.innerHTML="";
+const friends=usersCache.filter(user=>user.uid!==currentUser.uid);
+if(!friends.length){list.innerHTML='<div class="recipientPickerEmpty">No other accounts found yet. Ask a friend to create a VibeSnap account first.</div>';}
+else friends.forEach(user=>{
+const label=document.createElement("label");label.className="recipientChoice";
+const check=document.createElement("input");check.type="checkbox";check.value=user.uid;check.name="mediaRecipient";
+const avatar=document.createElement("div");avatar.innerHTML=avatarHTML(user,"rowAvatar");
+const info=document.createElement("div");info.className="recipientChoiceInfo";
+const name=document.createElement("div");name.className="recipientChoiceName";name.textContent=(currentUser.friendNicknames||{})[user.uid]||user.displayName||"VibeSnap User";
+const meta=document.createElement("div");meta.className="recipientChoiceMeta";meta.textContent="VibeSnap friend";
+info.append(name,meta);label.append(avatar.firstElementChild||avatar,info,check);list.appendChild(label);
+});
+$("recipientPickerModal").classList.remove("hidden");
+}
+$("sendMediaBtn").onclick=openRecipientPicker;
+function closeRecipientPicker(){$("recipientPickerModal").classList.add("hidden")}
+$("recipientPickerClose").onclick=closeRecipientPicker;
+$("recipientPickerCancel").onclick=closeRecipientPicker;
+$("recipientPickerModal").addEventListener("click",e=>{if(e.target===$("recipientPickerModal"))closeRecipientPicker()});
+$("recipientPickerSend").onclick=async()=>{
+if(!currentMediaBlob)return;
+const ids=[...$("recipientPickerList").querySelectorAll('input[name="mediaRecipient"]:checked')].map(input=>input.value);
+if(!ids.length)return alert("Select at least one friend to send to.");
+const recipients=ids.map(uid=>usersCache.find(user=>user.uid===uid)).filter(Boolean);
+if(!recipients.length)return alert("No valid friends selected. Please try again.");
+const sendButton=$("recipientPickerSend");sendButton.disabled=true;sendButton.textContent="Sending…";
+let sent=0;const failures=[];
 try{
-$("sendMediaBtn").disabled=true;const chatId=getChatId(currentUser.uid,selectedFriend.uid);await ensureChat(chatId,selectedFriend.uid);
+for(const friend of recipients){
+try{
+const chatId=getChatId(currentUser.uid,friend.uid);await ensureChat(chatId,friend.uid);
 const extension=currentMediaType==="image"?"jpg":"webm",messageRef=db.collection("chats").doc(chatId).collection("messages").doc(),path=`chatMedia/${chatId}/${messageRef.id}.${extension}`,uploadRef=storage.ref().child(path);
 await uploadRef.put(currentMediaBlob);const mediaUrl=await uploadRef.getDownloadURL();
-await messageRef.set({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-$("previewModal").classList.add("hidden");currentMediaBlob=null;alert("Media sent!")
-}catch(e){console.error(e);alert("Could not send media: "+e.message)}finally{$("sendMediaBtn").disabled=false}
+await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,createdAt:firebase.firestore.FieldValue.serverTimestamp()});sent++;
+}catch(err){console.error("Could not send media to",friend.uid,err);failures.push((friend.displayName||"A friend")+": "+(err.message||"send failed"))}
+}
+if(sent>0){closeRecipientPicker();closeMediaPreview();if(failures.length)alert("Sent to "+sent+" friend(s). Some sends failed:\\n"+failures.join("\\n"));else alert("Media sent to "+sent+" friend(s)!")}
+else alert("Could not send media. "+failures.join("; "));
+}catch(e){console.error(e);alert("Could not send media: "+(e.message||"Unknown error"))}
+finally{sendButton.disabled=false;sendButton.textContent="Send to selected"}
 };
+
 $("galleryBtn").onclick=()=>$("galleryInput").click();
 $("galleryInput").onchange=e=>{const file=e.target.files[0];if(!file)return;const type=file.type.startsWith("video")?"video":"image";showMediaPreview(file,type);e.target.value="";};
 
