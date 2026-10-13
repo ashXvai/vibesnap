@@ -313,6 +313,11 @@ button:active{transform:scale(.97)}
 .loginSub{font-size:14px;line-height:1.55;color:#77758e;text-align:center;margin-bottom:20px}
 .loginLabel{color:#45415f;font-size:11px;letter-spacing:.12em;margin:16px 0 7px}
 #accountUsername,#accountPassword{display:block;width:100%;height:54px;padding:0 16px;border:1px solid #e5e2f0;border-radius:15px;outline:none;background:#f8f7fc;color:#201d3a;font-size:15px;transition:border-color .2s,box-shadow .2s,background .2s}
+.passwordField{position:relative;width:100%}
+.passwordField #accountPassword{padding-right:58px}
+.passwordToggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:11px;background:transparent;color:#77738e;transition:background .2s,color .2s}
+.passwordToggle:hover,.passwordToggle:focus-visible{background:#eeeaff;color:#6d4aff;outline:2px solid #8a72ff;outline-offset:1px}
+.passwordToggle svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 #accountUsername::placeholder,#accountPassword::placeholder{color:#a19eb3}
 #accountUsername:focus,#accountPassword:focus{border-color:#8a72ff;background:#fff;box-shadow:0 0 0 4px rgba(118,87,255,.12)}
 .loginBtn{max-width:none;width:100%;height:53px;margin:10px 0 0;border-radius:15px;font-size:15px;font-weight:800;box-shadow:none}
@@ -394,7 +399,7 @@ button:active{transform:scale(.97)}
 <div class="loginBrand" aria-label="VibeSnap logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap Neon Core logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
 <div class="loginTitle"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="loginSub">Snap. Share. Vibe.</div>
 <label class="loginLabel" for="accountUsername">USERNAME</label><input id="accountUsername" type="text" autocomplete="username" autocapitalize="none" maxlength="24" placeholder="Choose a username">
-<label class="loginLabel" for="accountPassword">PASSWORD</label><input id="accountPassword" type="password" autocomplete="current-password" placeholder="Create a password (6+ characters)">
+<label class="loginLabel" for="accountPassword">PASSWORD</label><div class="passwordField"><input id="accountPassword" type="password" autocomplete="current-password" placeholder="Enter your password"><button class="passwordToggle" id="togglePassword" type="button" aria-label="Show password" aria-pressed="false" title="Show password"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
 <button class="loginBtn" id="emailLogin">Log In</button>
 <button class="loginBtn signupBtn" id="emailSignup">Create Account</button>
 <div class="loginSub" style="margin-top:12px">Username and password only. No email, Google sign-in, or phone OTP.</div>
@@ -494,6 +499,8 @@ await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,use
 alert("Your VibeSnap account has been created. Save your username and password safely.");
 }catch(e){console.error("VibeSnap username signup error:",e);alert(e.code==="auth/email-already-in-use"?"That username is already taken. Choose another.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must remain enabled in Firebase Authentication; you do not need to enter an email in VibeSnap.":e.message||"Could not create account.")}
 };
+const passwordInput=$("accountPassword"),passwordToggle=$("togglePassword");
+passwordToggle.addEventListener("click",()=>{const show=passwordInput.type==="password";passwordInput.type=show?"text":"password";passwordToggle.setAttribute("aria-label",show?"Hide password":"Show password");passwordToggle.setAttribute("title",show?"Hide password":"Show password");passwordToggle.setAttribute("aria-pressed",String(show));passwordToggle.innerHTML=show?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.1 3.8M6.2 6.2C3.5 8.1 2 12 2 12s3.5 7 10 7a10.7 10.7 0 0 0 4-.8"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';});
 $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailLogin").click()});
 
 tener("keydown",e=>{if(e.key==="Enter")$("emailLogin").click()});
