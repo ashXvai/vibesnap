@@ -118,6 +118,10 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 .cameraControls{bottom:58px;gap:34px}.cameraSideBtn{width:54px;height:54px;color:#354365;background:rgba(248,250,255,.94);box-shadow:0 5px 18px rgba(0,0,0,.18)}.cameraSideBtn svg{width:23px;height:23px}.captureBtn{width:82px;height:82px;border:5px solid #fff;box-shadow:0 0 0 2px rgba(255,255,255,.65),0 8px 25px rgba(0,0,0,.25);position:relative}.captureBtn:after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid rgba(30,35,55,.13)}.cameraModeLabel{bottom:16px;letter-spacing:1.8px;font-size:11px;color:#fff}
 @media(max-height:720px){.lensStrip{bottom:124px}.cameraControls{bottom:46px}.cameraModeLabel{bottom:10px}.cameraSidePanel{top:128px;gap:8px}.cameraToolIcon{width:42px;height:42px}}
 
+
+/* Friend request UI */
+.friendRequestsSection{padding:18px 14px 6px}.friendRequestsHeading{display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px;font-size:17px;font-weight:850;color:#252a40}.friendRequestsHeading span{display:grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:99px;background:#eee9ff;color:#6545dc;font-size:12px}.friendRequestCard{display:flex;align-items:center;gap:11px;padding:12px;margin-bottom:9px;background:#fff;border:1px solid #e7e9f5;border-radius:18px;box-shadow:0 4px 14px rgba(35,47,90,.04)}.friendRequestInfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.friendRequestInfo strong{font-size:14px;color:#252a40;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.friendRequestInfo small{font-size:11px;color:#858ba1}.friendRequestActions{display:flex;gap:6px}.friendRequestActions button{padding:9px 11px;border-radius:11px;background:#6d4aff;color:white;font-size:12px;font-weight:800}.friendRequestActions .declineRequest{background:#f1f2f8;color:#68718c}.friendRequestEmpty{padding:13px 4px 17px;font-size:12px;color:#858ba1}
+
 /* Friends screen refresh */
 #friendsPage{background:#f6f7fc;padding:0 0 92px;overflow:auto}
 .friendsHeader{position:sticky;top:0;z-index:4;padding:28px 22px 18px;background:linear-gradient(135deg,#f8f7ff 0%,#eef3ff 100%);color:#20243a;font-size:30px;font-weight:800;letter-spacing:-.8px;border-bottom:1px solid #e9eaf4}
@@ -513,9 +517,9 @@ auth.onAuthStateChanged(async user=>{
 if(user){
 currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
 try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);alert("Your account signed in, but encryption setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Firestore permissions, then refresh.");}
-await loadUsers();showPage("camera")
+await loadUsers();startFriendListeners();showPage("camera")
 }
-else{currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
+else{stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
 });
 
 async function createProfile(){
@@ -595,7 +599,83 @@ document.querySelector('[data-page="'+page+'"]').classList.add("active");
 if(page==="camera")startCamera();else stopCamera();
 }
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
-function renderGlobalSearch(query=""){const q=query.trim().toLowerCase(),results=$("globalSearchResults"),empty=$("searchEmptyState");results.innerHTML="";const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&[u.displayName,u.email,u.phone].some(v=>(v||"").toLowerCase().includes(q)));matches.forEach(user=>{const card=document.createElement("div");card.className="searchResultCard";const name=user.displayName||user.email||user.phone||"VibeSnap User";card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(user.email||user.phone||"VibeSnap user")+'</div></div><button type="button">Chat</button>';card.querySelector("button").onclick=()=>openChat(user);results.appendChild(card)});empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another name, email or phone number.":"Type a name, email or phone number to search."; $("searchResultsLabel").textContent=q?"Search results":"People you can chat with"}
+function renderGlobalSearch(query=""){
+const q=query.trim().toLowerCase(),results=$("globalSearchResults"),empty=$("searchEmptyState");if(!results||!empty)return;results.innerHTML="";
+const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&[u.displayName,u.username,u.email,u.phone].some(v=>(v||"").toLowerCase().includes(q)));
+matches.forEach(user=>{
+const card=document.createElement("div");card.className="searchResultCard";
+const name=user.displayName||user.username||"VibeSnap User",meta=user.username?"@"+user.username:(user.email||"VibeSnap member");
+const state=getRelationshipState(user.uid);
+const buttonLabel=state==="friends"?"Message":state==="incoming"?"Accept request":state==="outgoing"?"Requested":"Add friend";
+card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(meta)+'</div></div><button type="button">'+buttonLabel+'</button>';
+card.querySelector("button").onclick=async()=>{const button=card.querySelector("button");button.disabled=true;try{if(state==="friends")await openChat(user);else if(state==="incoming")await acceptFriendRequest(user.uid);else if(state==="outgoing"){button.textContent="Requested";}else await sendFriendRequest(user)}catch(e){console.error("Friend action failed",e);alert("Couldn't update friend request: "+(e.message||e.code||"Check Firestore permissions."))}finally{button.disabled=false;renderGlobalSearch($("globalSearchInput").value||"");}};
+results.appendChild(card);
+});
+empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another username or name.":"Search usernames to find people and send friend requests."; $("searchResultsLabel").textContent=q?"Search results":"People on VibeSnap";
+}
+
+// Friend requests and accepted friendships are stored separately from public profiles.
+let incomingFriendRequests=[],outgoingFriendRequests=[],acceptedFriendships=[],friendRequestUnsubscribers=[];
+function getRelationshipState(uid){
+if(acceptedFriendships.some(f=>(f.members||[]).includes(uid)))return "friends";
+if(incomingFriendRequests.some(r=>r.fromUid===uid&&r.status==="pending"))return "incoming";
+if(outgoingFriendRequests.some(r=>r.toUid===uid&&r.status==="pending"))return "outgoing";
+return "none";
+}
+function stopFriendListeners(){friendRequestUnsubscribers.forEach(fn=>{try{fn()}catch(_){}});friendRequestUnsubscribers=[]}
+function startFriendListeners(){
+stopFriendListeners();if(!currentUser)return;
+const rerender=()=>{renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");renderFriendRequests();renderNotifications();};
+friendRequestUnsubscribers.push(db.collection("friendRequests").where("toUid","==",currentUser.uid).onSnapshot(snap=>{incomingFriendRequests=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Incoming friend requests listener:",err)));
+friendRequestUnsubscribers.push(db.collection("friendRequests").where("fromUid","==",currentUser.uid).onSnapshot(snap=>{outgoingFriendRequests=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Outgoing friend requests listener:",err)));
+friendRequestUnsubscribers.push(db.collection("friendships").where("members","array-contains",currentUser.uid).onSnapshot(snap=>{acceptedFriendships=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Friendships listener:",err)));
+}
+async function sendFriendRequest(user){
+if(!currentUser||!user||user.uid===currentUser.uid)throw new Error("Choose another VibeSnap user.");
+if(getRelationshipState(user.uid)==="friends")return;
+const requestId=currentUser.uid+"_"+user.uid;
+await db.collection("friendRequests").doc(requestId).set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+alert("Friend request sent to "+(user.displayName||"this user")+"!");
+}
+async function acceptFriendRequest(uid){
+const request=incomingFriendRequests.find(r=>r.fromUid===uid&&r.status==="pending");if(!request)throw new Error("This request is no longer pending.");
+const members=[currentUser.uid,uid].sort(),friendshipId=members.join("_");
+const batch=db.batch();
+batch.set(db.collection("friendships").doc(friendshipId),{members,status:"accepted",createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+batch.update(db.collection("friendRequests").doc(request.id),{status:"accepted",acceptedAt:firebase.firestore.FieldValue.serverTimestamp()});
+await batch.commit();
+alert("Friend request accepted!");
+}
+async function declineFriendRequest(uid){
+const request=incomingFriendRequests.find(r=>r.fromUid===uid&&r.status==="pending");if(!request)return;
+await db.collection("friendRequests").doc(request.id).update({status:"declined",respondedAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
+function ensureFriendRequestSection(){
+const page=$("friendsPage");if(!page||$("friendRequestsSection"))return;
+const section=document.createElement("section");section.id="friendRequestsSection";section.className="friendRequestsSection";
+section.innerHTML='<div class="friendRequestsHeading">Friend requests <span id="friendRequestCount">0</span></div><div id="friendRequestsList"></div>';
+const list=$("usersList");if(list)page.insertBefore(section,list);
+}
+function renderFriendRequests(){
+ensureFriendRequestSection();const list=$("friendRequestsList");if(!list)return;list.innerHTML="";
+const pending=incomingFriendRequests.filter(r=>r.status==="pending");
+$("friendRequestCount").textContent=String(pending.length);
+if(!pending.length){list.innerHTML='<div class="friendRequestEmpty">No pending requests. Search for people to add.</div>';return;}
+pending.forEach(request=>{
+const user=usersCache.find(u=>u.uid===request.fromUid);if(!user)return;
+const row=document.createElement("div");row.className="friendRequestCard";
+const info=document.createElement("div");info.className="friendRequestInfo";
+const name=document.createElement("strong");name.textContent=user.displayName||user.username||"VibeSnap user";
+const meta=document.createElement("small");meta.textContent=user.username?"@"+user.username:"Wants to connect with you";
+info.append(name,meta);
+const actions=document.createElement("div");actions.className="friendRequestActions";
+const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){alert("Couldn't accept request: "+(e.message||e.code||"Check Firestore rules."))}finally{accept.disabled=false}};
+const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid)}catch(e){alert("Couldn't decline request: "+(e.message||e.code||"Check Firestore rules."))}finally{decline.disabled=false}};
+actions.append(accept,decline);row.append(avatarNodeForFriend(user),info,actions);list.appendChild(row);
+});
+}
+function avatarNodeForFriend(user){const wrap=document.createElement("div");wrap.innerHTML=avatarHTML(user,"rowAvatar");return wrap.firstElementChild;}
+
 function filterPeople(query){const q=query.trim().toLowerCase();document.querySelectorAll(".chatRow").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none");document.querySelectorAll(".userCard").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none")}
 $("chatSearchInput").oninput=()=>filterPeople($("chatSearchInput").value);
 $("searchNavBtn").onclick=()=>{showPage("search");renderGlobalSearch("");$("globalSearchInput").focus()};$("globalSearchInput").oninput=()=>renderGlobalSearch($("globalSearchInput").value);
