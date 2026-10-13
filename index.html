@@ -654,7 +654,7 @@ catch(e){console.error(e);alert("Camera permission is required for VibeSnap Came
 function stopCamera(){if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null}if($("cameraVideo"))$("cameraVideo").srcObject=null}
 $("flipCamera").onclick=()=>{facingMode=facingMode==="user"?"environment":"user";startCamera()};
 function applyFilter(){$("cameraVideo").style.filter=filterCSS[currentFilter];$("cameraVideo").style.transform=facingMode==="user"&&mirrorSelfieOn?"scaleX(-1)":"none"}
-document.addEventListener("visibilitychange",()=>{if(document.hidden){stopCamera()}else if(!$("cameraPage").classList.contains("hidden")){startCamera()}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden){stopCamera()}else if(currentUser&&!$("app").classList.contains("hidden")&&!$("cameraPage").classList.contains("hidden")){startCamera()}});
 window.addEventListener("pagehide",stopCamera);
 
 document.querySelectorAll(".lensItem").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".lensItem").forEach(b=>b.classList.remove("active"));btn.classList.add("active");currentFilter=btn.dataset.filter;applyFilter()});
