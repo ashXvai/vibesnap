@@ -512,7 +512,7 @@ auth.onAuthStateChanged(async user=>{
 if(user){
 currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
 try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);alert("Your account signed in, but encryption setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Firestore permissions, then refresh.");}
-await loadUsers();showPage("chat")
+await loadUsers();showPage("camera")
 }
 else{currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
 });
