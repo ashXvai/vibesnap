@@ -505,8 +505,8 @@ catch(e){console.error("VibeSnap email login error:",e);alert(e.code==="auth/inv
 $("emailSignup").onclick=async()=>{
 const credentials=readEmailPassword(true);if(!credentials)return;
 try{
-const usernameMatch=await db.collection("users").where("username","==",credentials.username).limit(1).get();
-if(!usernameMatch.empty)return alert("That username is already taken. Choose another.");
+// Firebase Auth enforces email uniqueness. Do not query Firestore before signup:
+ // a new visitor may not have permission to read user profiles yet.
 const created=await auth.createUserWithEmailAndPassword(credentials.email,credentials.password);
 await created.user.updateProfile({displayName:credentials.username});
 await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:credentials.email,phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
