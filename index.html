@@ -368,9 +368,20 @@ button:active{transform:scale(.97)}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
 </style>
 
+
+<style id="vibesnap-logo-upgrade">
+.loginBrand{background:radial-gradient(circle at 25% 18%,#4d36ff 0%,#19123c 58%,#0a0b20 100%)!important;border:1px solid rgba(255,255,255,.18);box-shadow:0 0 0 8px rgba(129,88,255,.07),0 18px 50px rgba(94,60,255,.38),inset 0 1px 0 rgba(255,255,255,.2)!important}
+.loginCameraLogo{width:88px!important;height:88px!important;filter:drop-shadow(0 0 12px rgba(110,108,255,.45))!important}
+.loginTitle{font-weight:900;letter-spacing:-2px!important}
+.loginTitle{background:linear-gradient(100deg,#f8f7ff 0%,#d9d0ff 52%,#ffd74d 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brandLogo{background:linear-gradient(100deg,#252044 0%,#7857ff 55%,#ffb92e 100%)!important;-webkit-background-clip:text!important;background-clip:text!important}
+.brandSpark{color:#ffbf35!important;text-shadow:0 0 12px rgba(255,191,53,.4)}
+@media(max-width:480px){.loginBrand{width:112px!important;height:112px!important;border-radius:32px!important}.loginCameraLogo{width:80px!important;height:80px!important}}
+</style>
+
 </head>
 <body><div id="loginScreen"><div class="loginBox">
-<div class="loginBrand" aria-label="VibeSnap camera logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap camera"><path d="M17 35a8 8 0 0 1 8-8h12l7-9h16l7 9h5a8 8 0 0 1 8 8v37a8 8 0 0 1-8 8H25a8 8 0 0 1-8-8z" fill="none" stroke="white" stroke-width="6.5" stroke-linejoin="round"/><circle cx="49" cy="53" r="17" fill="none" stroke="white" stroke-width="6"/><path d="M40 44l9 18 10-18" fill="none" stroke="#b8f4ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M79 12l3.4 9.6L92 25l-9.6 3.4L79 38l-3.4-9.6L66 25l9.6-3.4z" fill="white"/></svg></div>
+<div class="loginBrand" aria-label="VibeSnap camera and chat logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap neon camera chat mark"><defs><linearGradient id="vsBody" x1="12%" y1="0%" x2="90%" y2="100%"><stop stop-color="#7cf7ff"/><stop offset=".42" stop-color="#8b5cff"/><stop offset=".76" stop-color="#ff69c8"/><stop offset="1" stop-color="#ffc94a"/></linearGradient><linearGradient id="vsLens" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#4ff4ff"/><stop offset=".48" stop-color="#9c70ff"/><stop offset="1" stop-color="#ff78d7"/></linearGradient></defs><path d="M19 29Q19 20 29 20H40L47 12H62L69 20H75Q84 20 84 30V68Q84 78 74 78H47L34 89V78H29Q19 78 19 68Z" fill="url(#vsBody)" stroke="white" stroke-opacity=".7" stroke-width="2.5" stroke-linejoin="round"/><path d="M28 34Q28 29 34 29H69Q75 29 75 35V63Q75 69 69 69H34Q28 69 28 63Z" fill="#17143e" fill-opacity=".92"/><circle cx="51.5" cy="49" r="17" fill="url(#vsLens)"/><circle cx="51.5" cy="49" r="11.5" fill="#17143e" stroke="#e8ffff" stroke-opacity=".9" stroke-width="2"/><circle cx="47.5" cy="44.5" r="4" fill="white"/><path d="M78 11l2.8 7.5 7.5 2.8-7.5 2.8-2.8 7.5-2.8-7.5-7.5-2.8 7.5-2.8z" fill="#ffe45c"/><path d="M18 12l1.7 4.6 4.6 1.7-4.6 1.7-1.7 4.6-1.7-4.6-4.6-1.7 4.6-1.7z" fill="#69f6ff"/></svg></div>
 <div class="loginTitle">VibeSnap</div><div class="loginSub">Snap. Share. Vibe.</div>
 <label class="loginLabel" for="accountUsername">USERNAME</label><input id="accountUsername" type="text" autocomplete="username" autocapitalize="none" maxlength="24" placeholder="Choose a username">
 <label class="loginLabel" for="accountPassword">PASSWORD</label><input id="accountPassword" type="password" autocomplete="current-password" placeholder="Create a password (6+ characters)">
