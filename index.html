@@ -396,8 +396,12 @@ $("verifyOTP").onclick=async()=>{const code=$("otpCode").value.trim();if(!window
 $("requestAccount").onclick=async()=>{const email=prompt("Enter the Gmail address you want to use:");if(email===null)return;const cleanEmail=email.trim().toLowerCase();if(!cleanEmail)return alert("Please enter your email address.");const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;if(!emailPattern.test(cleanEmail))return alert("Please enter a valid email address, for example name@gmail.com.");if(!cleanEmail.endsWith("@gmail.com"))return alert("Please use a valid Gmail address ending in @gmail.com.");try{await db.collection("signupRequests").add({email:cleanEmail,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:"pending"});alert("Your account request has been sent.")}catch(e){alert(e.message)}};
 
 auth.onAuthStateChanged(async user=>{
-if(user){currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");await createProfile();await loadUsers();showPage("chat")}
-else{currentUser=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
+if(user){
+currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
+try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);alert("Your account signed in, but encryption setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Firestore permissions, then refresh.");}
+await loadUsers();showPage("chat")
+}
+else{currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
 });
 
 async function createProfile(){
@@ -717,8 +721,22 @@ const input=$("messageInput"),button=$("sendMessage"),text=input.value.trim();
 if(!text)return;
 if(!selectedFriend){alert("Open a friend's chat before sending a message.");return}
 if(selectedFriend.uid===currentUser.uid){alert("You cannot send a message to yourself.");return}
-try{button.disabled=true;const chatId=getChatId(currentUser.uid,selectedFriend.uid);await ensureChat(chatId,selectedFriend.uid);const encrypted=await encryptChatText(text,selectedFriend,chatId);await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:firebase.firestore.FieldValue.serverTimestamp()});input.value="";input.focus()}
-catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent. Firebase error: "+(e.code||"unknown")+" — "+(e.message||"Check your connection and Firebase permissions."))}
+try{
+button.disabled=true;
+const chatId=getChatId(currentUser.uid,selectedFriend.uid);
+await ensureChat(chatId,selectedFriend.uid);
+// Refresh the recipient profile before encrypting; the usersCache can be stale.
+const friendSnap=await db.collection("users").doc(selectedFriend.uid).get();
+if(!friendSnap.exists)throw new Error("This friend's VibeSnap profile could not be found.");
+const freshFriend={uid:friendSnap.id,...friendSnap.data()};
+selectedFriend={...selectedFriend,...freshFriend};
+usersCache=usersCache.map(u=>u.uid===freshFriend.uid?{...u,...freshFriend}:u);
+if(!freshFriend.encryptionPublicKey)throw new Error("This friend has not set up encrypted messaging yet. Their account must sign in to publish its encryption public key.");
+const encrypted=await encryptChatText(text,selectedFriend,chatId);
+await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+input.value="";input.focus()
+}
+catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Firebase permissions."))}
 finally{button.disabled=false}
 }
 $("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("chat")};
