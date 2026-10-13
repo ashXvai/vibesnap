@@ -797,10 +797,15 @@ try{
 for(const friend of recipients){
 try{
 const chatId=getChatId(currentUser.uid,friend.uid);await ensureChat(chatId,friend.uid);
-const extension=currentMediaType==="image"?"jpg":"webm",messageRef=db.collection("chats").doc(chatId).collection("messages").doc(),path=`chatMedia/${chatId}/${messageRef.id}.${extension}`,uploadRef=storage.ref().child(path);
-await uploadRef.put(currentMediaBlob);const mediaUrl=await uploadRef.getDownloadURL();
-await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,createdAt:firebase.firestore.FieldValue.serverTimestamp()});sent++;
-}catch(err){console.error("Could not send media to",friend.uid,err);failures.push((friend.displayName||"A friend")+": "+(err.message||"send failed"))}
+const mimeType=currentMediaBlob.type||(currentMediaType==="image"?"image/jpeg":"video/webm");
+const extension=mimeType.includes("mp4")?"mp4":mimeType.includes("quicktime")?"mov":mimeType.includes("webm")?"webm":currentMediaType==="image"?"jpg":"webm";
+const messageRef=db.collection("chats").doc(chatId).collection("messages").doc();
+const path=`chatMedia/${chatId}/${messageRef.id}.${extension}`;
+const uploadRef=storage.ref().child(path);
+await uploadRef.put(currentMediaBlob,{contentType:mimeType});
+const mediaUrl=await uploadRef.getDownloadURL();
+await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:currentMediaBlob.size||0,createdAt:firebase.firestore.FieldValue.serverTimestamp()});sent++;
+}catch(err){console.error("Could not send media to",friend.uid,err);const code=err.code?(" ["+err.code+"]"):"";failures.push((friend.displayName||"A friend")+": "+(err.message||"send failed")+code)}
 }
 if(sent>0){closeRecipientPicker();closeMediaPreview();if(failures.length)alert("Sent to "+sent+" friend(s). Some sends failed:\\n"+failures.join("\\n"));else alert("Media sent to "+sent+" friend(s)!")}
 else alert("Could not send media. "+failures.join("; "));
@@ -813,11 +818,13 @@ $("galleryInput").onchange=e=>{const file=e.target.files[0];if(!file)return;cons
 
 let usersCache=[];
 async function loadUsers(){
-db.collection("users").onSnapshot(snapshot=>{
+if(window.vibeSnapUsersUnsubscribe)window.vibeSnapUsersUnsubscribe();
+window.vibeSnapUsersUnsubscribe=db.collection("users").onSnapshot(snapshot=>{
 usersCache=[];$("usersList").innerHTML="";$("recipientSelect").innerHTML='<option value="">Select friend to send to</option>';
-snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;const user={uid:doc.id,...doc.data()};usersCache.push(user);addUserCard(user);const option=document.createElement("option");option.value=user.uid;option.textContent=user.displayName||user.email||"VibeSnap User";$("recipientSelect").appendChild(option)});
-renderChatList()
-})
+snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;const user={uid:doc.id,...doc.data()};usersCache.push(user);addUserCard(user);const option=document.createElement("option");option.value=user.uid;option.textContent=user.displayName||"VibeSnap User";$("recipientSelect").appendChild(option)});
+renderChatList();
+renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
+},err=>{console.error("VibeSnap users listener error:",err);alert("Could not load VibeSnap users: "+(err.code||"Firebase error")+". Check Firestore rules and connection.");})
 }
 function friendLabel(user){return (currentUser&&currentUser.friendNicknames&&currentUser.friendNicknames[user.uid])||user.displayName||user.email||"VibeSnap User"}
 function avatarHTML(user,cls="rowAvatar"){
@@ -853,12 +860,12 @@ if(currentChatUnsubscribe)currentChatUnsubscribe();
 currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt").onSnapshot(async snapshot=>{
 $("chatMessages").innerHTML="";
 for(const doc of snapshot.docs){const message=doc.data(),box=document.createElement("div");box.className="message "+(message.senderUid===currentUser.uid?"mine":"theirs");
-if(message.type==="image")box.innerHTML=`<img src="${message.mediaUrl}" alt="Photo">`;
-else if(message.type==="video")box.innerHTML=`<video src="${message.mediaUrl}" controls></video>`;
+if(message.type==="image"&&message.mediaUrl){const media=document.createElement("img");media.src=message.mediaUrl;media.alt="Shared photo";media.loading="lazy";box.appendChild(media)}
+else if(message.type==="video"&&message.mediaUrl){const media=document.createElement("video");media.src=message.mediaUrl;media.controls=true;media.playsInline=true;media.preload="metadata";box.appendChild(media)}
 else {try{box.textContent=await decryptChatText(message,chatId)}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
 $("chatMessages").appendChild(box)}
 $("chatMessages").scrollTop=$("chatMessages").scrollHeight
-})
+},err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Firestore rules and connection.</div>';})
 }
 $("sendMessage").onclick=sendTextMessage;
 $("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendTextMessage()});
