@@ -315,10 +315,10 @@ button:active{transform:scale(.97)}
 #accountUsername,#accountPassword{display:block;width:100%;height:54px;padding:0 16px;border:1px solid #e5e2f0;border-radius:15px;outline:none;background:#f8f7fc;color:#201d3a;font-size:15px;transition:border-color .2s,box-shadow .2s,background .2s}
 .passwordField{position:relative;width:100%}
 .passwordField #accountPassword{padding-right:58px}
-.passwordToggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border-radius:11px;border:0;appearance:none;-webkit-appearance:none;background:transparent;color:#77738e;transition:color .15s,background-color .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;outline:none;box-shadow:none}
+.passwordToggle{position:absolute;right:8px;top:50%;transform:translateY(-50%)!important;display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border-radius:11px;border:0;appearance:none;-webkit-appearance:none;background:transparent;color:#77738e;transition:background-color .15s,color .15s!important;touch-action:manipulation;-webkit-tap-highlight-color:transparent;outline:none;box-shadow:none;vertical-align:middle}
 .passwordToggle:hover{background:#eeeaff;color:#6d4aff}
 .passwordToggle:focus-visible{outline:2px solid #8a72ff;outline-offset:2px}
-.passwordToggle:active{transform:translateY(-50%);background:#eeeaff}
+.passwordToggle:active{transform:translateY(-50%)!important;background:#eeeaff}
 .passwordToggle svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 #accountUsername::placeholder,#accountPassword::placeholder{color:#a19eb3}
 #accountUsername:focus,#accountPassword:focus{border-color:#8a72ff;background:#fff;box-shadow:0 0 0 4px rgba(118,87,255,.12)}
