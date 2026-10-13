@@ -400,12 +400,11 @@ button:active{transform:scale(.97)}
 <body><div id="loginScreen"><div class="loginBox">
 <div class="loginBrand" aria-label="VibeSnap logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap Neon Core logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
 <div class="loginTitle"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="loginSub">Snap. Share. Vibe.</div>
-<label class="loginLabel" for="accountUsername">USERNAME (FOR YOUR PROFILE)</label><input id="accountUsername" type="text" autocomplete="username" autocapitalize="none" maxlength="24" placeholder="Choose a username">
-<label class="loginLabel" for="accountEmail">EMAIL ADDRESS</label><input id="accountEmail" type="email" autocomplete="email" autocapitalize="none" placeholder="you@example.com">
+<label class="loginLabel" for="accountUsername">USERNAME</label><input id="accountUsername" type="text" autocomplete="username" autocapitalize="none" maxlength="24" placeholder="Enter your username">
 <label class="loginLabel" for="accountPassword">PASSWORD</label><div class="passwordField"><input id="accountPassword" type="password" autocomplete="current-password" placeholder="Enter your password"><button class="passwordToggle" id="togglePassword" type="button" aria-label="Show password" aria-pressed="false" title="Show password"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
 <button class="loginBtn" id="emailLogin">Log In</button>
 <button class="loginBtn signupBtn" id="emailSignup">Create Account</button>
-<div class="loginSub" style="margin-top:12px">Log in with your email and password. New accounts need a username too. No email verification code is required.</div>
+<div class="loginSub" style="margin-top:12px">Log in or create an account with your username and password.</div>
 </div></div>
 <div id="app" class="hidden">
 <div id="cameraPage" class="page">
@@ -481,37 +480,28 @@ let currentUser=null,selectedFriend=null,currentStream=null,facingMode="user",cu
 const $=id=>document.getElementById(id);
 const filterCSS={none:"none",vivid:"saturate(1.5) contrast(1.15)",warm:"sepia(.25) saturate(1.3)",cool:"saturate(.9) hue-rotate(15deg)",mono:"grayscale(1)",sepia:"sepia(.8)"};
 
-function readEmailPassword(forSignup=false){
-const emailInput=$("accountEmail").value.trim().toLowerCase();
+function readUsernamePassword(forSignup=false){
 const username=$("accountUsername").value.trim().toLowerCase();
 const password=$("accountPassword").value;
-const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-if(!emailInput)return alert("Enter your email address."),null;
-if(forSignup&&!emailPattern.test(emailInput))return alert("Enter a valid email address."),null;
-if(forSignup&&!/^[a-z0-9_]{3,24}$/.test(username))return alert("Username must be 3–24 characters and use only letters, numbers, or underscores."),null;
+if(!/^[a-z0-9_]{3,24}$/.test(username))return alert("Username must be 3–24 characters and use only letters, numbers, or underscores."),null;
 if(!password)return alert("Enter your password."),null;
 if(forSignup&&password.length<6)return alert("Choose a password with at least 6 characters."),null;
-// Backward compatibility: older VibeSnap accounts used username@users.vibesnap.invalid.
-const legacyLogin=!emailInput.includes("@");
-if(legacyLogin&&!/^[a-z0-9_]{3,24}$/.test(emailInput))return alert("Enter a valid email address."),null;
-if(!legacyLogin&&!emailPattern.test(emailInput))return alert("Enter a valid email address."),null;
-return {username,password,email:legacyLogin?emailInput+"@users.vibesnap.invalid":emailInput,legacyLogin};
+// Firebase Email/Password is used behind the scenes; the interface only asks for username and password.
+return {username,password,email:username+"@users.vibesnap.invalid"};
 }
 $("emailLogin").onclick=async()=>{
-const credentials=readEmailPassword(false);if(!credentials)return;
+const credentials=readUsernamePassword(false);if(!credentials)return;
 try{await auth.signInWithEmailAndPassword(credentials.email,credentials.password)}
-catch(e){console.error("VibeSnap email login error:",e);alert(e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"||e.code==="auth/user-not-found"?"Email/username or password is incorrect.":e.code==="auth/invalid-email"?"Enter a valid email address.":e.message||"Could not log in.")}
+catch(e){console.error("VibeSnap username login error:",e);alert(e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"||e.code==="auth/user-not-found"?"Username or password is incorrect.":e.message||"Could not log in.")}
 };
 $("emailSignup").onclick=async()=>{
-const credentials=readEmailPassword(true);if(!credentials)return;
+const credentials=readUsernamePassword(true);if(!credentials)return;
 try{
-// Firebase Auth enforces email uniqueness. Do not query Firestore before signup:
- // a new visitor may not have permission to read user profiles yet.
 const created=await auth.createUserWithEmailAndPassword(credentials.email,credentials.password);
 await created.user.updateProfile({displayName:credentials.username});
-await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:credentials.email,phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-alert("Your VibeSnap account has been created. You can log in with your email and password; no email verification code is required.");
-}catch(e){console.error("VibeSnap email signup error:",e);alert(e.code==="auth/email-already-in-use"?"That email address already has a VibeSnap account. Try logging in.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must be enabled in Firebase Authentication. No email verification code is needed.":e.code==="auth/permission-denied"?"VibeSnap could not check or save your profile because of Firestore permissions. Check your Firebase Firestore rules.":e.message||"Could not create account.")}
+await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+alert("Your VibeSnap account has been created. Log in with your username and password.");
+}catch(e){console.error("VibeSnap username signup error:",e);alert(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must be enabled in Firebase Authentication.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile because of Firestore permissions. Check your Firebase Firestore rules.":e.message||"Could not create account.")}
 };
 const passwordInput=$("accountPassword"),passwordToggle=$("togglePassword");
 passwordToggle.addEventListener("click",()=>{const show=passwordInput.type==="password";passwordInput.type=show?"text":"password";passwordToggle.setAttribute("aria-label",show?"Hide password":"Show password");passwordToggle.setAttribute("title",show?"Hide password":"Show password");passwordToggle.setAttribute("aria-pressed",String(show));passwordToggle.innerHTML=show?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.1 3.8M6.2 6.2C3.5 8.1 2 12 2 12s3.5 7 10 7a10.7 10.7 0 0 0 4-.8"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';});
