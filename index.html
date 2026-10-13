@@ -309,7 +309,7 @@ button:active{transform:scale(.97)}
 .loginBrand{width:76px;height:76px;flex:none;border-radius:25px;margin:0 auto 18px;background:linear-gradient(140deg,#8869ff,#4d9eff);box-shadow:0 12px 26px rgba(105,91,255,.3)}
 .loginCameraLogo{width:52px;height:52px}
 .loginTitle{width:100%;font-size:36px;line-height:1.1;text-align:center;letter-spacing:-1.7px;color:#191633;margin-bottom:8px}
-.loginTitle:after{content:"";display:inline-block;width:7px;height:7px;margin:0 0 3px 3px;border-radius:50%;background:#ff6ba6}
+.loginTitle:after{content:"";display:inline-block;width:5px;height:5px;margin:0 0 5px 5px;border-radius:50%;background:#b7ff5a}
 .loginSub{font-size:14px;line-height:1.55;color:#77758e;text-align:center;margin-bottom:20px}
 .loginLabel{color:#45415f;font-size:11px;letter-spacing:.12em;margin:16px 0 7px}
 #accountUsername,#accountPassword{display:block;width:100%;height:54px;padding:0 16px;border:1px solid #e5e2f0;border-radius:15px;outline:none;background:#f8f7fc;color:#201d3a;font-size:15px;transition:border-color .2s,box-shadow .2s,background .2s}
@@ -370,12 +370,12 @@ button:active{transform:scale(.97)}
 
 
 <style id="vibesnap-logo-theme-match">
-/* VibeSnap identity: Neon Core — violet geometry, ink-dark V, electric-lime spark */
+/* VibeSnap identity: Neon Split — ink-and-violet wordmark with electric-lime accent */
 .loginBrand{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 .loginCameraLogo{width:104px!important;height:104px!important;filter:drop-shadow(0 8px 16px rgba(167,139,250,.22))!important}
-.loginTitle{color:#242044!important;background:none!important;-webkit-text-fill-color:#242044!important;letter-spacing:-1.6px!important;font-weight:800!important}
+.loginTitle{color:#242044!important;background:none!important;-webkit-text-fill-color:#242044!important;letter-spacing:-1.6px!important;font-weight:900!important}\n.wordVibe{color:#242044!important;-webkit-text-fill-color:#242044!important}\n.wordSnap{color:#6d4aff!important;-webkit-text-fill-color:#6d4aff!important}
 .loginSub{color:#77738e!important}
-.brandLogo{background:none!important;color:#242044!important;-webkit-text-fill-color:#242044!important;letter-spacing:-.5px}
+.brandLogo{background:none!important;color:#242044!important;-webkit-text-fill-color:#242044!important;letter-spacing:-.8px}\n.brandLogo .wordVibe{color:#242044!important;-webkit-text-fill-color:#242044!important}\n.brandLogo .wordSnap{color:#6d4aff!important;-webkit-text-fill-color:#6d4aff!important}
 .brandSpark{color:#a78bfa!important;text-shadow:none!important}
 @media(max-width:480px){.loginBrand{width:auto!important;height:auto!important}.loginCameraLogo{width:96px!important;height:96px!important}}
 </style>
@@ -383,7 +383,7 @@ button:active{transform:scale(.97)}
 </head>
 <body><div id="loginScreen"><div class="loginBox">
 <div class="loginBrand" aria-label="VibeSnap logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap Neon Core logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-<div class="loginTitle">VibeSnap</div><div class="loginSub">Snap. Share. Vibe.</div>
+<div class="loginTitle"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="loginSub">Snap. Share. Vibe.</div>
 <label class="loginLabel" for="accountUsername">USERNAME</label><input id="accountUsername" type="text" autocomplete="username" autocapitalize="none" maxlength="24" placeholder="Choose a username">
 <label class="loginLabel" for="accountPassword">PASSWORD</label><input id="accountPassword" type="password" autocomplete="current-password" placeholder="Create a password (6+ characters)">
 <button class="loginBtn" id="emailLogin">Log In</button>
@@ -404,7 +404,7 @@ button:active{transform:scale(.97)}
 <div id="chatPage" class="page hidden">
 <div class="topHeader">
   <button class="topAvatar" id="chatProfileQuick">V</button>
-  <div class="brandHeader"><div class="brandLogo">VibeSnap</div><div class="brandSpark">✦</div></div>
+  <div class="brandHeader"><div class="brandLogo"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="brandSpark" aria-hidden="true">✦</div></div>
   <div class="headerActions">
     <button class="headerIcon headerBadge" id="chatNotifications" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>
     <button class="headerIcon" id="chatSearch" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
