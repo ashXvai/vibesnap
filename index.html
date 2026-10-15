@@ -552,17 +552,27 @@ else{stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];a
 
 async function createProfile(){
 const ref=db.collection("users").doc(currentUser.uid),snap=await ref.get();
+let profile={};
 if(!snap.exists){
-await ref.set({uid:currentUser.uid,displayName:currentUser.displayName||"VibeSnap User",email:currentUser.email||"",phone:currentUser.phoneNumber||"",photoURL:currentUser.photoURL||"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+const inferredUsername=(currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"";
+profile={uid:currentUser.uid,username:inferredUsername,displayName:currentUser.displayName||inferredUsername||"VibeSnap User",email:"",phone:currentUser.phoneNumber||"",photoURL:currentUser.photoURL||"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+await ref.set(profile);
 currentUser.friendNicknames={};
 }else{
-const profile=snap.data()||{};
+profile=snap.data()||{};
 currentUser.friendNicknames=profile.friendNicknames||{};
 }
+// Username is the public identity; the synthetic Firebase login email is private.
+const publicName=profile.username||profile.displayName||currentUser.displayName||((currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"")||"VibeSnap User";
+currentUser.publicUsername=profile.username||publicName;
+currentUser.displayName=publicName;
+if(currentUser.displayName!==currentUser.authDisplayName){
+try{await currentUser.updateProfile({displayName:publicName});}catch(e){console.warn("Could not sync profile display name:",e);}
+}
 await ensureEncryptionKeys();
-$("profileName").textContent=currentUser.displayName||"VibeSnap User";
-$("profileEmail").textContent=currentUser.email||currentUser.phoneNumber||"";
-$("profileAvatar").textContent=(currentUser.displayName||currentUser.email||"U").charAt(0).toUpperCase();
+$("profileName").textContent=publicName;
+$("profileEmail").textContent=currentUser.phoneNumber||"";
+$("profileAvatar").textContent=publicName.charAt(0).toUpperCase();
 }
 
 // Text-message end-to-end encryption (ECDH P-256 + HKDF + AES-GCM).
