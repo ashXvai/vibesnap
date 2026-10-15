@@ -127,7 +127,7 @@ body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--in
 
 /* Friend request UI */
 .friendRequestsSection{padding:18px 14px 6px}.friendRequestsHeading{display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px;font-size:17px;font-weight:850;color:#252a40}.friendRequestsHeading span{display:grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:99px;background:#eee9ff;color:#6545dc;font-size:12px}.friendRequestCard{display:flex;align-items:center;gap:11px;padding:12px;margin-bottom:9px;background:#fff;border:1px solid #e7e9f5;border-radius:18px;box-shadow:0 4px 14px rgba(35,47,90,.04);justify-content:flex-start}.friendRequestCard>.rowAvatar{order:0;flex:0 0 56px}.friendRequestCard>.friendRequestInfo{order:1;flex:1;min-width:0;text-align:left}.friendRequestCard>.friendRequestActions{order:2;flex:0 0 auto;margin-left:auto}.friendRequestInfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.friendRequestInfo strong{font-size:14px;color:#252a40;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.friendRequestInfo small{font-size:11px;color:#858ba1}.friendRequestActions{display:flex;gap:6px}.friendRequestActions button{padding:9px 11px;border-radius:11px;background:#6d4aff;color:white;font-size:12px;font-weight:800}.friendRequestActions .declineRequest{background:#f1f2f8;color:#68718c}.friendRequestEmpty{padding:13px 4px 17px;font-size:12px;color:#858ba1}
-.friendRequestsPopover{margin:10px 14px;padding:14px;background:#fff;border:1px solid #e7e9f5;border-radius:18px;box-shadow:0 12px 30px rgba(35,47,90,.12);position:relative;z-index:5}.friendRequestsPopoverTop{display:flex;align-items:center;justify-content:space-between;gap:12px}.friendRequestsPopoverTop #closeFriendRequests{border:0;background:#f1f2f8;color:#68718c;border-radius:9px;width:30px;height:30px;font-size:22px;line-height:1}.friendRequestsPopover .friendRequestsHeading{margin-bottom:10px}
+.friendRequestsPopover{margin:10px 14px;padding:14px;background:#fff;border:1px solid #e7e9f5;border-radius:18px;box-shadow:0 12px 30px rgba(35,47,90,.12);position:relative;z-index:5}.friendRequestsPopoverTop{display:flex;align-items:center;justify-content:space-between;gap:12px}.friendRequestsPopoverTop #closeFriendRequests{border:0;background:#f1f2f8;color:#68718c;border-radius:9px;width:30px;height:30px;font-size:22px;line-height:1}.friendRequestsPopover .friendRequestsHeading{margin-bottom:10px}.friendDirectorySubtitle{font-size:12px;color:#8288a0;margin-top:3px}.friendDirectorySearch{display:flex;align-items:center;gap:9px;margin:12px 0;padding:11px 13px;border:1px solid #e6e8f2;border-radius:13px;background:#f8f9fd;color:#737b98}.friendDirectorySearch input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#242940;font:inherit;font-size:14px}.friendDirectorySectionLabel{font-size:12px;font-weight:800;color:#7b8198;text-transform:uppercase;letter-spacing:.5px;margin:12px 2px 7px}.friendDirectoryRequestsHeading{display:flex;align-items:center;justify-content:space-between;margin:16px 0 7px;padding-top:13px;border-top:1px solid #eceef6;font-size:14px;font-weight:850;color:#292e45}.friendDirectoryCount{display:grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border-radius:99px;background:#eee9ff;color:#6545dc;font-size:12px}.friendRequestsPopover #friendDirectoryResults .searchResultCard{margin:0;padding:11px 2px;border-bottom:1px solid #f0f1f7}.friendRequestsPopover #friendDirectoryResults .searchResultCard button{max-width:150px;white-space:nowrap}.friendRequestsPopover #friendDirectoryResults .searchResultInfo{min-width:0}.friendRequestsPopover #friendDirectoryResults .searchResultName{overflow-wrap:anywhere}.friendRequestsPopover #friendRequestsList:empty{display:none}
 
 /* Friends screen refresh */
 #friendsPage{background:#f6f7fc;padding:0 0 92px;overflow:auto}
@@ -638,8 +638,8 @@ document.querySelector('[data-page="'+page+'"]').classList.add("active");
 if(page==="camera")startCamera();else stopCamera();
 }
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
-function renderGlobalSearch(query=""){
-const q=query.trim().toLowerCase(),results=$("globalSearchResults"),empty=$("searchEmptyState");if(!results||!empty)return;results.innerHTML="";
+function renderGlobalSearch(query="",target="search"){
+const panel=target==="directory",results=$(panel?"friendDirectoryResults":"globalSearchResults"),empty=$(panel?"friendDirectoryEmpty":"searchEmptyState"),label=panel?null:$("searchResultsLabel");if(!results||!empty)return;results.innerHTML="";const q=query.trim().toLowerCase();
 const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&[u.username,u.displayName,u.phone].some(v=>(v||"").toLowerCase().includes(q)));
 matches.forEach(user=>{
 const card=document.createElement("div");card.className="searchResultCard";
@@ -671,7 +671,8 @@ showVibeNotice("Could not update friend request: "+(e.message||e.code||"Check Fi
 };
 results.appendChild(card);
 });
-empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another username or name.":"Search usernames to find people and send friend requests."; $("searchResultsLabel").textContent=q?"Search results":"People on VibeSnap";
+if(panel){$("directoryUserCount").textContent=String(matches.length);empty.style.display=matches.length?"none":"block";empty.textContent=q?"No users match that search.":"No other users found yet.";}
+else{empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another username or name.":"Search usernames to find people and send friend requests.";if(label)label.textContent=q?"Search results":"People on VibeSnap";}
 }
 
 // Friend requests and accepted friendships are stored separately from public profiles.
@@ -686,7 +687,7 @@ return "none";
 function stopFriendListeners(){friendRequestUnsubscribers.forEach(fn=>{try{fn()}catch(_){}});friendRequestUnsubscribers=[]}
 function startFriendListeners(){
 stopFriendListeners();if(!currentUser)return;
-const rerender=()=>{renderAcceptedFriendList();renderChatList();renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");renderFriendRequests();renderNotifications();};
+const rerender=()=>{renderAcceptedFriendList();renderChatList();renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");renderGlobalSearch($("friendDirectorySearchInput")?$("friendDirectorySearchInput").value:"","directory");renderFriendRequests();renderNotifications();};
 friendRequestUnsubscribers.push(db.collection("friendRequests").where("toUid","==",currentUser.uid).onSnapshot(snap=>{incomingFriendRequests=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Incoming friend requests listener:",err)));
 friendRequestUnsubscribers.push(db.collection("friendRequests").where("fromUid","==",currentUser.uid).onSnapshot(snap=>{outgoingFriendRequests=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Outgoing friend requests listener:",err)));
 friendRequestUnsubscribers.push(db.collection("friendships").where("members","array-contains",currentUser.uid).onSnapshot(snap=>{acceptedFriendships=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Friendships listener:",err)));
@@ -728,7 +729,7 @@ const page=$("chatPage");if(!page)return;
 let section=$("friendRequestsSection");
 if(!section){
 section=document.createElement("section");section.id="friendRequestsSection";section.className="friendRequestsSection friendRequestsPopover hidden";
-section.innerHTML='<div class="friendRequestsPopoverTop"><div class="friendRequestsHeading">Friend requests <span id="friendRequestCount">0</span></div><button type="button" id="closeFriendRequests" aria-label="Close friend requests">×</button></div><div id="friendRequestsList"></div>';
+section.innerHTML='<div class="friendRequestsPopoverTop"><div><div class="friendRequestsHeading">Find people <span id="directoryUserCount">0</span></div><div class="friendDirectorySubtitle">Search everyone on VibeSnap and manage requests here</div></div><button type="button" id="closeFriendRequests" aria-label="Close people panel">×</button></div><div class="friendDirectorySearch"><span>⌕</span><input id="friendDirectorySearchInput" type="search" placeholder="Search usernames and names" autocomplete="off"></div><div class="friendDirectorySectionLabel">People on VibeSnap</div><div id="friendDirectoryResults"></div><div id="friendDirectoryEmpty" class="friendRequestEmpty">Loading people…</div><div class="friendDirectoryRequestsHeading"><span>Friend requests</span><span id="friendRequestCount" class="friendDirectoryCount">0</span></div><div id="friendRequestsList"></div>';
 const header=page.querySelector(".topHeader");if(header)header.insertAdjacentElement("afterend",section);else page.prepend(section);
 const close=section.querySelector("#closeFriendRequests");if(close)close.onclick=()=>section.classList.add("hidden");
 }
@@ -761,7 +762,7 @@ $("searchQuick").onclick=()=>{showPage("search");renderGlobalSearch("");$("globa
 function toggleNotifications(){const panel=$("notificationPanel");panel.classList.toggle("hidden");if(!panel.classList.contains("hidden"))renderNotifications()}
 $("chatNotifications").onclick=toggleNotifications;$("notificationQuick").onclick=toggleNotifications;$("closeNotifications").onclick=()=>$("notificationPanel").classList.add("hidden");
 function renderNotifications(){const host=$("notificationItems");host.innerHTML="";const recent=usersCache.slice(0,8);if(!recent.length){host.innerHTML='<div class="notificationEmpty">No recent activity yet. Start a chat with a friend!</div>';return}recent.forEach(user=>{const item=document.createElement("div");item.className="notificationItem";const name=user.displayName||user.email||"VibeSnap friend";item.innerHTML='<div>'+avatarHTML(user,"rowAvatar")+'</div><div><b>'+escapeHTML(name)+'</b><small>Open conversation</small></div>';item.onclick=()=>{$("notificationPanel").classList.add("hidden");openChat(user)};host.appendChild(item)})}
-$("chatAddFriend").onclick=()=>{ensureFriendRequestSection();const panel=$("friendRequestsSection");if(panel)panel.classList.toggle("hidden");if(panel&&!panel.classList.contains("hidden"))renderFriendRequests();};
+$("chatAddFriend").onclick=()=>{ensureFriendRequestSection();const panel=$("friendRequestsSection");if(panel)panel.classList.toggle("hidden");if(panel&&!panel.classList.contains("hidden")){renderGlobalSearch($("friendDirectorySearchInput").value||"","directory");renderFriendRequests();}};document.addEventListener("input",event=>{if(event.target&&event.target.id==="friendDirectorySearchInput")renderGlobalSearch(event.target.value,"directory");});
 document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
 function openEditFriendModal(friendUid=""){
 if(!currentUser)return;
