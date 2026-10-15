@@ -499,14 +499,28 @@ const credentials=readUsernamePassword(false);if(!credentials)return;
 try{await auth.signInWithEmailAndPassword(credentials.email,credentials.password)}
 catch(e){console.error("VibeSnap username login error:",e);alert(e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"||e.code==="auth/user-not-found"?"Username or password is incorrect.":e.message||"Could not log in.")}
 };
+let signupInProgress=false;
 $("emailSignup").onclick=async()=>{
+if(signupInProgress)return;
 const credentials=readUsernamePassword(true);if(!credentials)return;
+const signupButton=$("emailSignup");
+signupInProgress=true;
+signupButton.disabled=true;
+signupButton.setAttribute("aria-busy","true");
+const originalSignupLabel=signupButton.textContent;
+signupButton.textContent="Creating account…";
 try{
 const created=await auth.createUserWithEmailAndPassword(credentials.email,credentials.password);
 await created.user.updateProfile({displayName:credentials.username});
 await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-alert("Your VibeSnap account has been created. Log in with your username and password.");
+alert("Account created successfully. You're now signed in to VibeSnap.");
 }catch(e){console.error("VibeSnap username signup error:",e);alert(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must be enabled in Firebase Authentication.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile because of Firestore permissions. Check your Firebase Firestore rules.":e.message||"Could not create account.")}
+finally{
+signupInProgress=false;
+signupButton.disabled=false;
+signupButton.removeAttribute("aria-busy");
+signupButton.textContent=originalSignupLabel;
+}
 };
 const passwordInput=$("accountPassword"),passwordToggle=$("togglePassword");
 passwordToggle.addEventListener("click",()=>{const show=passwordInput.type==="password";passwordInput.type=show?"text":"password";passwordToggle.setAttribute("aria-label",show?"Hide password":"Show password");passwordToggle.setAttribute("title",show?"Hide password":"Show password");passwordToggle.setAttribute("aria-pressed",String(show));passwordToggle.innerHTML=show?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.1 3.8M6.2 6.2C3.5 8.1 2 12 2 12s3.5 7 10 7a10.7 10.7 0 0 0 4-.8"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';});
