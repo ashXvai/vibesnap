@@ -16,6 +16,7 @@
 html,body{width:100%;height:100%;overflow:hidden}body{background:#fff;color:#17181c}
 button{border:0;cursor:pointer}.hidden{display:none!important}
 #loginScreen{min-height:100vh;background:#fff;display:flex;align-items:center;justify-content:center;padding:24px}
+#authLoading{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:linear-gradient(135deg,#111329 0%,#1b1940 52%,#25234f 100%);color:#fff;font-weight:800;letter-spacing:.2px}#authLoading.hidden{display:none!important}.authLoadingMark{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#6d4aff,#4f8cff);box-shadow:0 12px 30px rgba(92,78,225,.35);font-size:28px}.authLoadingSpinner{width:22px;height:22px;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:authSpin .8s linear infinite}@keyframes authSpin{to{transform:rotate(360deg)}}
 .loginBox{width:min(430px,100%);min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:36px 18px 70px;text-align:center;background:#fff}
 .loginBrand{width:120px;height:120px;border-radius:38%;background:#6d4aff;display:flex;align-items:center;justify-content:center;margin-bottom:26px;box-shadow:0 12px 30px rgba(0,0,0,.14)}
 .loginGhost{font-size:62px;filter:drop-shadow(0 3px 0 #111);color:#fff;text-shadow:2px 2px 0 #111,-2px -2px 0 #111,2px -2px 0 #111,-2px 2px 0 #111}
@@ -409,7 +410,8 @@ button:active{transform:scale(.97)}
 
 </head>
 <body>
-<div id="vibeNotice" role="status" aria-live="polite"></div><div id="loginScreen"><div class="loginBox">
+<div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
+<div id="loginScreen" class="hidden"><div class="loginBox">
 <div class="loginBrand" aria-label="VibeSnap logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap Neon Core logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
 <div class="loginTitle"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="loginSub">Snap. Share. Vibe.</div>
 <label class="loginLabel" for="accountUsername">USERNAME</label><input id="accountUsername" type="text" autocomplete="username" autocapitalize="none" maxlength="24" placeholder="Enter your username">
@@ -543,12 +545,18 @@ $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailL
 
 
 auth.onAuthStateChanged(async user=>{
+$("authLoading").classList.add("hidden");
 if(user){
 currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
-try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);alert("Your account signed in, but encryption setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Firestore permissions, then refresh.");}
+try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Firestore permissions, then refresh.","error");}
 await loadUsers();startFriendListeners();showPage("camera")
 }
 else{stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
+},error=>{
+console.error("VibeSnap auth state error:",error);
+$("authLoading").classList.add("hidden");
+$("app").classList.add("hidden");
+$("loginScreen").classList.remove("hidden");
 });
 
 async function createProfile(){
