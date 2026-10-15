@@ -683,7 +683,7 @@ const [requestSnap,friendshipSnap]=await Promise.all([requestRef.get(),friendshi
 if(friendshipSnap.exists&&friendshipSnap.data().status==="accepted")return;
 if(requestSnap.exists&&requestSnap.data().status==="pending")return;
 await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-showVibeNotice("Friend request sent to "+(user.username||user.displayName||"this user")+".","success");
+showVibeNotice("Friend request sent to "+(user.username||user.displayName||"this user")+"!","success");
 }
 async function acceptFriendRequest(uid){
 if(!currentUser||!uid||uid===currentUser.uid)throw new Error("This friend request is invalid.");
