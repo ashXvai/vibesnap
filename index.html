@@ -657,25 +657,29 @@ const buttonLabel=state==="friends"?"Message":state==="incoming"?"Accept request
 card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(meta)+'</div></div><button type="button">'+buttonLabel+'</button>';
 card.querySelector("button").onclick=async()=>{
 const button=card.querySelector("button");
-if(state==="outgoing"){button.textContent="Waiting for acceptance";button.disabled=true;return;}
+const currentState=getRelationshipState(user.uid);
+if(currentState==="outgoing"){showVibeNotice("Your request is still waiting for acceptance.","info");return;}
 button.disabled=true;
 try{
-if(state==="friends")await openChat(user);
-else if(state==="incoming")await acceptFriendRequest(user.uid);
-else await sendFriendRequest(user);
-if(state==="none"){
-button.textContent="Waiting for acceptance";
-showVibeNotice("Friend request sent. Waiting for "+(user.username||user.displayName||"this user")+" to accept.","success");
+if(currentState==="friends"){
+  await openChat(user);
+}else if(currentState==="incoming"){
+  await acceptFriendRequest(user.uid);
+}else{
+  const result=await sendFriendRequest(user);
+  if(result&&result.status==="sent")showVibeNotice("Friend request sent. Waiting for "+(user.username||user.displayName||"this user")+" to accept.","success");
+  else if(result&&result.status==="pending")showVibeNotice("Your friend request is already pending.","info");
+  else if(result&&result.status==="accepted")showVibeNotice("Friend request accepted. You're now friends!","success");
+  else if(result&&result.status==="friends")showVibeNotice("You're already friends.","info");
 }
 }catch(e){
 console.error("Friend action failed",e);
-if(e.code==="permission-denied"||e.code==="firestore/permission-denied"){
-button.textContent="Waiting for acceptance";
-showVibeNotice("This request may already be pending. Refreshing its status…","success");
-}else{
 showVibeNotice("Could not update friend request: "+(e.message||e.code||"Check Firestore permissions."),"error");
+}finally{
+button.disabled=false;
+renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
+renderGlobalSearch($("friendDirectorySearchInput")?$("friendDirectorySearchInput").value:"","directory");
 }
-}finally{button.disabled=false;renderGlobalSearch($("globalSearchInput").value||"");}
 };
 results.appendChild(card);
 });
@@ -703,18 +707,22 @@ friendRequestUnsubscribers.push(db.collection("friendships").where("members","ar
 async function sendFriendRequest(user){
 if(!currentUser||!user||!user.uid||user.uid===currentUser.uid)throw new Error("Choose another VibeSnap user.");
 const state=getRelationshipState(user.uid);
-if(state==="friends")return;
-if(state==="incoming"){await acceptFriendRequest(user.uid);return;}
-if(state==="outgoing")return;
+if(state==="friends")return {status:"friends"};
+if(state==="incoming"){await acceptFriendRequest(user.uid);return {status:"accepted"};}
+if(state==="outgoing")return {status:"pending"};
 const requestId=currentUser.uid+"_"+user.uid;
 const requestRef=db.collection("friendRequests").doc(requestId);
 const friendshipId=[currentUser.uid,user.uid].sort().join("_");
 const friendshipRef=db.collection("friendships").doc(friendshipId);
 const [requestSnap,friendshipSnap]=await Promise.all([requestRef.get(),friendshipRef.get()]);
-if(friendshipSnap.exists&&friendshipSnap.data().status==="accepted")return;
-if(requestSnap.exists&&requestSnap.data().status==="pending")return;
+if(friendshipSnap.exists&&friendshipSnap.data().status==="accepted")return {status:"friends"};
+if(requestSnap.exists&&requestSnap.data().status==="pending")return {status:"pending"};
+if(requestSnap.exists){
+  if(requestSnap.data().status==="declined")throw new Error("This request was declined before. Resending needs a Firestore rule that allows the sender to reopen a declined request.");
+  throw new Error("A previous request record already exists. Refresh and check its status.");
+}
 await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-showVibeNotice("Friend request sent to "+(user.username||user.displayName||"this user")+"!","success");
+return {status:"sent"};
 }
 async function acceptFriendRequest(uid){
 if(!currentUser||!uid||uid===currentUser.uid)throw new Error("This friend request is invalid.");
@@ -755,8 +763,8 @@ const name=document.createElement("strong");name.textContent=user.displayName||u
 const meta=document.createElement("small");meta.textContent=user.username?"@"+user.username:"Wants to connect with you";
 info.append(name,meta);
 const actions=document.createElement("div");actions.className="friendRequestActions";
-const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){alert("Couldn't accept request: "+(e.message||e.code||"Check Firestore rules."))}finally{accept.disabled=false}};
-const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid)}catch(e){alert("Couldn't decline request: "+(e.message||e.code||"Check Firestore rules."))}finally{decline.disabled=false}};
+const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){console.error("Accept friend request failed:",e);showVibeNotice("Couldn't accept request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{accept.disabled=false}};
+const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid);showVibeNotice("Friend request declined.","success")}catch(e){console.error("Decline friend request failed:",e);showVibeNotice("Couldn't decline request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{decline.disabled=false}};
 actions.append(accept,decline);row.append(avatarNodeForFriend(user),info,actions);list.appendChild(row);
 });
 }
