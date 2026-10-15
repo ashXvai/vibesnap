@@ -55,6 +55,12 @@ button{border:0;cursor:pointer}.hidden{display:none!important}
 .profileBox{max-width:500px;margin:auto;background:#f6f7f8;padding:28px;border-radius:22px;text-align:center}.profileAvatar{width:94px;height:94px;border-radius:50%;background:#edf0f2;display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:700;margin:0 auto 15px}.logoutBtn{margin-top:25px;width:100%;padding:14px;background:#111;color:#fff;border-radius:24px;font-weight:800}
 #recipientPickerModal{position:fixed;inset:0;z-index:120;background:rgba(10,12,25,.72);display:flex;align-items:center;justify-content:center;padding:18px}#recipientPickerCard{width:min(100%,460px);max-height:82vh;display:flex;flex-direction:column;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.3)}.recipientPickerHead{padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px}.recipientPickerHead h2{margin:0;font-size:21px}.recipientPickerHead p{margin:5px 0 0;color:#737b8c;font-size:13px}.recipientPickerClose{font-size:26px;background:#f0f2f7;border-radius:50%;width:38px;height:38px}.recipientPickerList{overflow:auto;padding:4px 14px 12px}.recipientChoice{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid #edf0f5;cursor:pointer}.recipientChoice .rowAvatar{width:44px;height:44px}.recipientChoiceInfo{flex:1;min-width:0}.recipientChoiceName{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.recipientChoiceMeta{font-size:12px;color:#737b8c;margin-top:3px}.recipientChoice input{width:20px;height:20px;accent-color:#6d4aff}.recipientPickerFoot{padding:14px 18px 18px;border-top:1px solid #edf0f5;display:flex;gap:10px}.recipientPickerFoot button{flex:1;padding:13px;border-radius:20px;font-weight:800}.recipientPickerCancel{background:#edf0f5;color:#333}.recipientPickerSend{background:linear-gradient(120deg,#7657ff,#4b9cff);color:#fff}.recipientPickerEmpty{padding:28px 18px;text-align:center;color:#737b8c}#previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia, #previewImage, #previewVideo{flex:1;width:100%;height:100%;object-fit:contain}.previewMediaElement{flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:24px;font-weight:bold}.retakeBtn{background:#333;color:#fff}.sendBtn{background:#6d4aff;color:#111}
 @media(min-width:700px){#app{max-width:620px;margin:auto;box-shadow:0 0 30px rgba(0,0,0,.15)}.bottomNav{max-width:620px;left:50%;right:auto;width:620px;transform:translateX(-50%)}}
+
+#vibeNotice{position:fixed;z-index:10000;left:50%;bottom:24px;transform:translate(-50%,16px);width:min(calc(100% - 32px),420px);padding:14px 16px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:#191923;color:#fff;box-shadow:0 12px 36px rgba(0,0,0,.38);font-size:14px;line-height:1.45;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+#vibeNotice.show{opacity:1;transform:translate(-50%,0)}
+#vibeNotice.success{border-color:rgba(74,222,128,.55)}
+#vibeNotice.error{border-color:rgba(248,113,113,.6)}
+@media(prefers-reduced-motion:reduce){#vibeNotice{transition:none}}
 </style>
 <style>
 :root{--primary:#6d4aff;--primary2:#4f8cff;--pink:#ef3d87;--ink:#101a35;--muted:#6d7893;--soft:#f2f5ff;--line:#e8ecf5}
@@ -401,7 +407,8 @@ button:active{transform:scale(.97)}
 </style>
 
 </head>
-<body><div id="loginScreen"><div class="loginBox">
+<body>
+<div id="vibeNotice" role="status" aria-live="polite"></div><div id="loginScreen"><div class="loginBox">
 <div class="loginBrand" aria-label="VibeSnap logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap Neon Core logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
 <div class="loginTitle"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="loginSub">Snap. Share. Vibe.</div>
 <label class="loginLabel" for="accountUsername">USERNAME</label><input id="accountUsername" type="text" autocomplete="username" autocapitalize="none" maxlength="24" placeholder="Enter your username">
@@ -485,6 +492,13 @@ let currentUser=null,selectedFriend=null,currentStream=null,facingMode="user",cu
 const $=id=>document.getElementById(id);
 const filterCSS={none:"none",vivid:"saturate(1.5) contrast(1.15)",warm:"sepia(.25) saturate(1.3)",cool:"saturate(.9) hue-rotate(15deg)",mono:"grayscale(1)",sepia:"sepia(.8)"};
 
+function showVibeNotice(message,type="success"){
+const notice=$("vibeNotice");if(!notice){console.warn(message);return;}
+notice.textContent=message;notice.className=type+" show";
+if(notice._hideTimer)clearTimeout(notice._hideTimer);
+notice._hideTimer=setTimeout(()=>{notice.classList.remove("show");},4200);
+}
+
 function readUsernamePassword(forSignup=false){
 const username=$("accountUsername").value.trim().toLowerCase();
 const password=$("accountPassword").value;
@@ -513,8 +527,8 @@ try{
 const created=await auth.createUserWithEmailAndPassword(credentials.email,credentials.password);
 await created.user.updateProfile({displayName:credentials.username});
 await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-alert("Account created successfully. You're now signed in to VibeSnap.");
-}catch(e){console.error("VibeSnap username signup error:",e);alert(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must be enabled in Firebase Authentication.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile because of Firestore permissions. Check your Firebase Firestore rules.":e.message||"Could not create account.")}
+showVibeNotice("Account created successfully. You're now signed in to VibeSnap.","success");
+}catch(e){console.error("VibeSnap username signup error:",e);showVibeNotice(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must be enabled in Firebase Authentication.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile because of Firestore permissions. Check your Firebase Firestore rules.":e.message||"Could not create account.","error")}
 finally{
 signupInProgress=false;
 signupButton.disabled=false;
