@@ -847,8 +847,8 @@ $("retakeBtn").onclick=()=>{closeMediaPreview();if(!$("cameraPage").classList.co
 function openRecipientPicker(){
 if(!currentMediaBlob)return;
 const list=$("recipientPickerList");list.innerHTML="";
-const friends=usersCache.filter(user=>user.uid!==currentUser.uid);
-if(!friends.length){list.innerHTML='<div class="recipientPickerEmpty">No other accounts found yet. Ask a friend to create a VibeSnap account first.</div>';}
+const friends=usersCache.filter(user=>user.uid!==currentUser.uid&&getRelationshipState(user.uid)==="friends");
+if(!friends.length){list.innerHTML='<div class="recipientPickerEmpty">No accepted friends yet. Add someone from Friends and wait for them to accept before sending media.</div>';}
 else friends.forEach(user=>{
 const label=document.createElement("label");label.className="recipientChoice";
 const check=document.createElement("input");check.type="checkbox";check.value=user.uid;check.name="mediaRecipient";
