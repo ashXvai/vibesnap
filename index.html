@@ -644,9 +644,30 @@ matches.forEach(user=>{
 const card=document.createElement("div");card.className="searchResultCard";
 const name=user.displayName||user.username||"VibeSnap User",meta=user.username?"@"+user.username:(user.email||"VibeSnap member");
 const state=getRelationshipState(user.uid);
-const buttonLabel=state==="friends"?"Message":state==="incoming"?"Accept request":state==="outgoing"?"Requested":"Add friend";
+const buttonLabel=state==="friends"?"Message":state==="incoming"?"Accept request":state==="outgoing"?"Waiting for acceptance":"Add friend";
 card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(meta)+'</div></div><button type="button">'+buttonLabel+'</button>';
-card.querySelector("button").onclick=async()=>{const button=card.querySelector("button");button.disabled=true;try{if(state==="friends")await openChat(user);else if(state==="incoming")await acceptFriendRequest(user.uid);else if(state==="outgoing"){button.textContent="Requested";}else await sendFriendRequest(user)}catch(e){console.error("Friend action failed",e);alert("Couldn't update friend request: "+(e.message||e.code||"Check Firestore permissions."))}finally{button.disabled=false;renderGlobalSearch($("globalSearchInput").value||"");}};
+card.querySelector("button").onclick=async()=>{
+const button=card.querySelector("button");
+if(state==="outgoing"){button.textContent="Waiting for acceptance";button.disabled=true;return;}
+button.disabled=true;
+try{
+if(state==="friends")await openChat(user);
+else if(state==="incoming")await acceptFriendRequest(user.uid);
+else await sendFriendRequest(user);
+if(state==="none"){
+button.textContent="Waiting for acceptance";
+showVibeNotice("Friend request sent. Waiting for "+(user.username||user.displayName||"this user")+" to accept.","success");
+}
+}catch(e){
+console.error("Friend action failed",e);
+if(e.code==="permission-denied"||e.code==="firestore/permission-denied"){
+button.textContent="Waiting for acceptance";
+showVibeNotice("This request may already be pending. Refreshing its status…","success");
+}else{
+showVibeNotice("Could not update friend request: "+(e.message||e.code||"Check Firestore permissions."),"error");
+}
+}finally{button.disabled=false;renderGlobalSearch($("globalSearchInput").value||"");}
+};
 results.appendChild(card);
 });
 empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another username or name.":"Search usernames to find people and send friend requests."; $("searchResultsLabel").textContent=q?"Search results":"People on VibeSnap";
