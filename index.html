@@ -639,7 +639,7 @@ if(page==="camera")startCamera();else stopCamera();
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
 function renderGlobalSearch(query=""){
 const q=query.trim().toLowerCase(),results=$("globalSearchResults"),empty=$("searchEmptyState");if(!results||!empty)return;results.innerHTML="";
-const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&[u.displayName,u.username,u.email,u.phone].some(v=>(v||"").toLowerCase().includes(q)));
+const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&[u.username,u.displayName,u.phone].some(v=>(v||"").toLowerCase().includes(q)));
 matches.forEach(user=>{
 const card=document.createElement("div");card.className="searchResultCard";
 const name=user.displayName||user.username||"VibeSnap User",meta=user.username?"@"+user.username:(user.email||"VibeSnap member");
@@ -655,9 +655,10 @@ empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textCo
 // Friend requests and accepted friendships are stored separately from public profiles.
 let incomingFriendRequests=[],outgoingFriendRequests=[],acceptedFriendships=[],friendRequestUnsubscribers=[];
 function getRelationshipState(uid){
-if(acceptedFriendships.some(f=>(f.members||[]).includes(uid)))return "friends";
-if(incomingFriendRequests.some(r=>r.fromUid===uid&&r.status==="pending"))return "incoming";
-if(outgoingFriendRequests.some(r=>r.toUid===uid&&r.status==="pending"))return "outgoing";
+if(!currentUser||!uid||uid===currentUser.uid)return "none";
+if(acceptedFriendships.some(f=>f.status==="accepted"&&(f.members||[]).includes(currentUser.uid)&&(f.members||[]).includes(uid)))return "friends";
+if(incomingFriendRequests.some(r=>r.fromUid===uid&&r.toUid===currentUser.uid&&r.status==="pending"))return "incoming";
+if(outgoingFriendRequests.some(r=>r.fromUid===currentUser.uid&&r.toUid===uid&&r.status==="pending"))return "outgoing";
 return "none";
 }
 function stopFriendListeners(){friendRequestUnsubscribers.forEach(fn=>{try{fn()}catch(_){}});friendRequestUnsubscribers=[]}
@@ -669,20 +670,32 @@ friendRequestUnsubscribers.push(db.collection("friendRequests").where("fromUid",
 friendRequestUnsubscribers.push(db.collection("friendships").where("members","array-contains",currentUser.uid).onSnapshot(snap=>{acceptedFriendships=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Friendships listener:",err)));
 }
 async function sendFriendRequest(user){
-if(!currentUser||!user||user.uid===currentUser.uid)throw new Error("Choose another VibeSnap user.");
-if(getRelationshipState(user.uid)==="friends")return;
+if(!currentUser||!user||!user.uid||user.uid===currentUser.uid)throw new Error("Choose another VibeSnap user.");
+const state=getRelationshipState(user.uid);
+if(state==="friends")return;
+if(state==="incoming"){await acceptFriendRequest(user.uid);return;}
+if(state==="outgoing")return;
 const requestId=currentUser.uid+"_"+user.uid;
-await db.collection("friendRequests").doc(requestId).set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-alert("Friend request sent to "+(user.displayName||"this user")+"!");
+const requestRef=db.collection("friendRequests").doc(requestId);
+const friendshipId=[currentUser.uid,user.uid].sort().join("_");
+const friendshipRef=db.collection("friendships").doc(friendshipId);
+const [requestSnap,friendshipSnap]=await Promise.all([requestRef.get(),friendshipRef.get()]);
+if(friendshipSnap.exists&&friendshipSnap.data().status==="accepted")return;
+if(requestSnap.exists&&requestSnap.data().status==="pending")return;
+await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+showVibeNotice("Friend request sent to "+(user.username||user.displayName||"this user")+".","success");
 }
 async function acceptFriendRequest(uid){
-const request=incomingFriendRequests.find(r=>r.fromUid===uid&&r.status==="pending");if(!request)throw new Error("This request is no longer pending.");
+if(!currentUser||!uid||uid===currentUser.uid)throw new Error("This friend request is invalid.");
+const requestRef=db.collection("friendRequests").doc(uid+"_"+currentUser.uid);
+const requestSnap=await requestRef.get();
+if(!requestSnap.exists||requestSnap.data().status!=="pending"||requestSnap.data().fromUid!==uid||requestSnap.data().toUid!==currentUser.uid)throw new Error("This request is no longer pending. Refresh your friend requests.");
 const members=[currentUser.uid,uid].sort(),friendshipId=members.join("_");
 const batch=db.batch();
-batch.set(db.collection("friendships").doc(friendshipId),{members,status:"accepted",createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-batch.update(db.collection("friendRequests").doc(request.id),{status:"accepted",acceptedAt:firebase.firestore.FieldValue.serverTimestamp()});
+batch.set(db.collection("friendships").doc(friendshipId),{members,status:"accepted",createdAt:firebase.firestore.FieldValue.serverTimestamp(),acceptedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+batch.update(requestRef,{status:"accepted",acceptedAt:firebase.firestore.FieldValue.serverTimestamp()});
 await batch.commit();
-alert("Friend request accepted!");
+showVibeNotice("Friend request accepted! You're now friends.","success");
 }
 async function declineFriendRequest(uid){
 const request=incomingFriendRequests.find(r=>r.fromUid===uid&&r.status==="pending");if(!request)return;
