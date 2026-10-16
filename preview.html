@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VibeSnap</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 56 18v28L32 60 8 46V18Z' fill='%23a78bfa'/%3E%3Cpath d='m19 20 13 25 13-25' fill='none' stroke='%23171522' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-storage-compat.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+html,body{width:100%;height:100%;overflow:hidden}body{background:#fff;color:#17181c}
+button{border:0;cursor:pointer}.hidden{display:none!important}
+#loginScreen{min-height:100vh;background:#fff;display:flex;align-items:center;justify-content:center;padding:24px}
+#authLoading{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:linear-gradient(135deg,#111329 0%,#1b1940 52%,#25234f 100%);color:#fff;font-weight:800;letter-spacing:.2px}#authLoading.hidden{display:none!important}.authLoadingMark{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#6d4aff,#4f8cff);box-shadow:0 12px 30px rgba(92,78,225,.35);font-size:28px}.authLoadingSpinner{width:22px;height:22px;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:authSpin .8s linear infinite}@keyframes authSpin{to{transform:rotate(360deg)}}
+.loginBox{width:min(430px,100%);min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:36px 18px 70px;text-align:center;background:#fff}
+.loginBrand{width:120px;height:120px;border-radius:38%;background:#6d4aff;display:flex;align-items:center;justify-content:center;margin-bottom:26px;box-shadow:0 12px 30px rgba(0,0,0,.14)}
+.loginGhost{font-size:62px;filter:drop-shadow(0 3px 0 #111);color:#fff;text-shadow:2px 2px 0 #111,-2px -2px 0 #111,2px -2px 0 #111,-2px 2px 0 #111}
+.loginTitle{font-size:42px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}.loginSub{color:#777;font-size:16px;margin-bottom:30px}
+.loginBtn{width:100%;max-width:360px;height:58px;border-radius:30px;margin:7px 0;font-size:18px;font-weight:800;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.googleBtn{background:#fff;color:#24262b;border:1px solid #ddd}.googleMark{font-weight:900;margin-right:8px;color:#4285f4}.signupBtn{background:#17a9ee;color:#fff}
+.loginLink{margin-top:20px;font-size:17px}.loginLink button{background:none;color:#129fe7;font-weight:800;font-size:17px}
+#loginPanel{width:100%;max-width:360px;margin-top:12px;text-align:left}.loginLabel{display:block;color:#129fe7;font-size:13px;font-weight:800;margin:12px 0 6px}
+#phoneNumber,#otpCode{width:100%;height:54px;border:1px solid #ccd1d6;border-radius:14px;padding:0 16px;font-size:17px;background:#fff;color:#111}
+#sendOTP,#verifyOTP{width:100%;height:50px;margin-top:8px;border-radius:25px;background:#111;color:#fff}#recaptcha-container{margin-top:10px}
+#app{width:100%;height:100vh;background:#fff;position:relative}
+.page{height:100vh;overflow:hidden;background:#fff}
+#cameraPage{position:relative;background:#000;overflow:hidden}#cameraVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111}
+.cameraShade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.38),transparent 25%,transparent 70%,rgba(0,0,0,.72))}
+.cameraTop{position:absolute;top:0;left:0;right:0;padding:18px 16px;display:flex;align-items:center;gap:12px;z-index:8}
+.cameraTop button,.cameraIconBtn{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.88);color:#111;font-size:23px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.18)}
+.cameraAvatar{overflow:hidden;font-size:22px;background:#eee}.cameraAvatar img{width:100%;height:100%;object-fit:cover}.cameraTopSpacer{flex:1}.cameraTopActions{display:flex;gap:9px}
+.topBadge{position:relative}.topBadge:after{content:"";position:absolute;right:0;top:0;width:11px;height:11px;background:#ff3158;border:2px solid #fff;border-radius:50%}
+.recipientBox{display:none;position:absolute;top:78px;left:16px;right:72px;z-index:8}.recipientBox select{width:100%;padding:10px 13px;border-radius:20px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.3);outline:none}
+.cameraSidePanel{position:absolute;right:12px;top:120px;z-index:8;display:flex;flex-direction:column;gap:12px}.cameraTool{background:none;color:#fff;text-shadow:0 2px 6px #000;font-size:12px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cameraMoreMenu{position:absolute;right:12px;top:315px;z-index:20;width:210px;padding:12px;border:1px solid rgba(255,255,255,.18);border-radius:18px;background:rgba(20,20,28,.94);color:#fff;box-shadow:0 12px 32px rgba(0,0,0,.35);backdrop-filter:blur(14px)}.cameraMoreTitle{font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:3px 5px 10px}.cameraMoreOption{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 7px;border-radius:10px;background:transparent;color:#fff;text-align:left;font-size:14px;font-weight:700}.cameraMoreOption:active{background:rgba(255,255,255,.12)}.cameraMoreValue{color:#c5b8ff;font-size:12px;font-weight:800}.cameraMoreDivider{height:1px;background:rgba(255,255,255,.16);margin:3px 0}.cameraTool.toolActive .cameraToolIcon{outline:2px solid #bca8ff}
+.cameraToolIcon{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-size:22px}
+.cameraQuickActions{position:absolute;left:16px;bottom:175px;z-index:9;display:flex;gap:14px}.quickAction{background:rgba(0,0,0,.28);border-radius:18px;padding:8px 10px;color:#fff;text-shadow:0 2px 5px #000;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:2px}.quickAction span:first-child{font-size:22px}
+.lensStrip{position:absolute;left:0;right:0;bottom:130px;display:flex;gap:10px;overflow-x:auto;padding:8px 18px;z-index:8;scrollbar-width:none}.lensStrip::-webkit-scrollbar{display:none}
+.lensItem{flex:none;width:64px;text-align:center;color:#fff;font-size:10px;font-weight:800;text-shadow:0 2px 6px #000;background:none}.lensCircle{width:58px;height:58px;margin:0 auto 3px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:24px}.lensItem.active .lensCircle{border:3px solid #6d4aff}
+.cameraControls{position:absolute;left:0;right:0;bottom:58px;display:flex;justify-content:center;align-items:center;gap:30px;z-index:9}.cameraSideBtn{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.86);font-size:22px}.captureBtn{width:84px;height:84px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.55);box-shadow:0 0 0 3px rgba(0,0,0,.18) inset}.recording{background:#ff3158!important}.cameraModeLabel{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff;font-size:12px;font-weight:800;text-shadow:0 2px 6px #000;z-index:9}.photoCountdownOverlay{position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(8,10,22,.18);color:#fff;text-align:center;pointer-events:none;text-shadow:0 3px 18px rgba(0,0,0,.8)}.photoCountdownNumber{font-size:clamp(84px,22vw,150px);line-height:1;font-weight:900;letter-spacing:-.06em}.photoCountdownCaption{font-size:13px;font-weight:900;letter-spacing:.22em}
+#friendsPage{padding:0 0 82px;overflow:auto}#chatPage{padding:0 0 82px;display:flex;flex-direction:column;overflow:hidden}#profilePage{padding:86px 18px 100px;overflow:auto}
+.topHeader{height:88px;display:flex;align-items:center;padding:14px 16px;gap:12px;border-bottom:1px solid #eceef0;background:#fff;flex:none}.topAvatar{width:48px;height:48px;border-radius:50%;background:#e9edf0;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden}.topAvatar img{width:100%;height:100%;object-fit:cover}
+.headerIcon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.friendSuggestionIcon svg{width:30px;height:30px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.headerIcon{width:48px;height:48px;border-radius:50%;background:#edf0f2;display:flex;align-items:center;justify-content:center;font-size:25px;color:#454b52}.headerTitle{flex:1;text-align:center;font-size:27px;font-weight:500}.headerActions{display:flex;gap:8px}.headerActions .headerIcon:nth-child(2){background:#6d4aff;color:#111}.headerBadge{position:relative}.headerBadge:after{content:"";position:absolute;right:2px;top:0;width:10px;height:10px;background:#ff3158;border-radius:50%;border:2px solid #fff}
+.categoryRow{display:flex;gap:26px;overflow-x:auto;padding:14px 20px 12px;font-size:16px;font-weight:700;white-space:nowrap;border-bottom:1px solid #eee;scrollbar-width:none}.categoryRow::-webkit-scrollbar{display:none}.noticeBar{margin:0;background:#6d4aff;padding:13px 18px;font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px}.noticeClose{margin-left:auto;background:none;font-size:22px}
+.chatList{overflow:auto;flex:1}.chatRow{display:flex;align-items:center;gap:13px;padding:13px 18px;border-bottom:1px solid #ececec;min-height:82px;background:#fff}.chatRowBody{min-width:0;flex:1}.chatRowName{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatRowMeta{font-size:14px;color:#737b83;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rowAvatar{width:56px;height:56px;border-radius:50%;background:#eef1f3;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;overflow:hidden}.rowAvatar img{width:100%;height:100%;object-fit:cover}.blueDot{display:inline-block;width:10px;height:10px;background:#1ba9f5;border-radius:3px;margin-right:7px}.purpleDot{display:inline-block;width:10px;height:10px;background:#a83cff;border-radius:3px;margin-right:7px}
+.rowAction{width:45px;height:45px;border-radius:50%;background:none;font-size:25px;color:#394047;flex:none}.composeBtn{position:absolute;right:20px;bottom:88px;width:62px;height:62px;border-radius:50%;background:#6d4aff;box-shadow:0 6px 18px rgba(0,0,0,.2);font-size:27px;z-index:21}
+.bottomNav{position:absolute;bottom:0;left:0;right:0;height:72px;background:#fff;border-top:1px solid #e8e9eb;display:grid;grid-template-columns:repeat(5,1fr);z-index:20}.navBtn{background:none;color:#40454a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;font-weight:700}.navBtn span{font-size:25px;display:flex;align-items:center;justify-content:center}.navBtn span svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.navBtn.active{color:#6d4aff}
+#chatConversation{position:absolute;inset:0;background:#fff;z-index:25;display:flex;flex-direction:column}.conversationHeader{height:76px;display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #eee}.conversationHeader button{background:none;font-size:27px}.conversationTitle{flex:1;font-size:18px;font-weight:700}.chatMessages{flex:1;overflow:auto;padding:16px;background:#fff}.message{max-width:78%;padding:10px 13px;border-radius:18px;margin-bottom:9px;word-break:break-word}.mine{margin-left:auto;background:#6d4aff;color:#111}.theirs{background:#edf0f2}.message img,.message video{max-width:100%;border-radius:12px;margin-top:5px}.chatInput{display:flex;gap:8px;padding:10px;border-top:1px solid #eee;background:#fff}.chatInput input{flex:1;padding:13px;border-radius:24px;border:1px solid #d9dde1;background:#f4f5f6}.chatInput button{width:52px;border-radius:50%;background:#6d4aff}
+.pageTitle{font-size:28px;font-weight:700;margin:0 0 20px}.friendsHeader{padding:86px 18px 15px;font-size:28px;font-weight:700}.userCard{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid #eee;background:#fff}.avatar{width:50px;height:50px;border-radius:50%;background:#e9edf0;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px}.userInfo{flex:1}.userName{font-weight:700}.userEmail{color:#7b8289;font-size:13px;margin-top:3px}.chatOpenBtn{background:#6d4aff;color:#111;padding:10px 16px;border-radius:22px;font-weight:800}
+.profileBox{max-width:500px;margin:auto;background:#f6f7f8;padding:28px;border-radius:22px;text-align:center}.profileAvatar{width:94px;height:94px;border-radius:50%;background:#edf0f2;display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:700;margin:0 auto 15px}.logoutBtn{margin-top:25px;width:100%;padding:14px;background:#111;color:#fff;border-radius:24px;font-weight:800}
+#recipientPickerModal{position:fixed;inset:0;z-index:120;background:rgba(10,12,25,.72);display:flex;align-items:center;justify-content:center;padding:18px}#recipientPickerCard{width:min(100%,460px);max-height:82vh;display:flex;flex-direction:column;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.3)}.recipientPickerHead{padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px}.recipientPickerHead h2{margin:0;font-size:21px}.recipientPickerHead p{margin:5px 0 0;color:#737b8c;font-size:13px}.recipientPickerClose{font-size:26px;background:#f0f2f7;border-radius:50%;width:38px;height:38px}.recipientPickerList{overflow:auto;padding:4px 14px 12px}.recipientChoice{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid #edf0f5;cursor:pointer}.recipientChoice .rowAvatar{width:44px;height:44px}.recipientChoiceInfo{flex:1;min-width:0}.recipientChoiceName{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.recipientChoiceMeta{font-size:12px;color:#737b8c;margin-top:3px}.recipientChoice input{width:20px;height:20px;accent-color:#6d4aff}.recipientPickerFoot{padding:14px 18px 18px;border-top:1px solid #edf0f5;display:flex;gap:10px}.recipientPickerFoot button{flex:1;padding:13px;border-radius:20px;font-weight:800}.recipientPickerCancel{background:#edf0f5;color:#333}.recipientPickerSend{background:linear-gradient(120deg,#7657ff,#4b9cff);color:#fff}.recipientPickerEmpty{padding:28px 18px;text-align:center;color:#737b8c}#previewModal{position:fixed;inset:0;background:#000;z-index:100;display:flex;flex-direction:column}#previewMedia, #previewImage, #previewVideo{flex:1;width:100%;height:100%;object-fit:contain}.previewMediaElement{flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}.previewButtons{display:flex;gap:10px;padding:15px}.previewButtons button{flex:1;padding:14px;border-radius:24px;font-weight:bold}.retakeBtn{background:#333;color:#fff}.sendBtn{background:#6d4aff;color:#111}
+@media(min-width:700px){#app{max-width:620px;margin:auto;box-shadow:0 0 30px rgba(0,0,0,.15)}.bottomNav{max-width:620px;left:50%;right:auto;width:620px;transform:translateX(-50%)}}
+
+#vibeNotice{position:fixed;z-index:10000;left:50%;bottom:24px;transform:translate(-50%,16px);width:min(calc(100% - 32px),420px);padding:14px 16px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:#191923;color:#fff;box-shadow:0 12px 36px rgba(0,0,0,.38);font-size:14px;line-height:1.45;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+#vibeNotice.show{opacity:1;transform:translate(-50%,0)}
+#vibeNotice.success{border-color:rgba(74,222,128,.55)}
+#vibeNotice.error{border-color:rgba(248,113,113,.6)}
+@media(prefers-reduced-motion:reduce){#vibeNotice{transition:none}}
+</style>
+<style>
+:root{--primary:#6d4aff;--primary2:#4f8cff;--pink:#ef3d87;--ink:#101a35;--muted:#6d7893;--soft:#f2f5ff;--line:#e8ecf5}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--ink)}
+.loginBox{background:linear-gradient(180deg,#f7f9ff 0%,#fff 55%);padding-top:28px}
+.loginBrand{background:linear-gradient(135deg,#6d4aff,#4f8cff);box-shadow:0 14px 35px rgba(88,77,220,.24)}
+.loginTitle{color:var(--ink)} .loginSub{color:var(--muted)}
+.signupBtn{background:linear-gradient(135deg,#6d4aff,#4f8cff)}
+.loginLink button{color:var(--primary)}
+.topHeader{height:92px;padding:12px 20px;border-bottom:0;background:#fff}
+.brandHeader{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brandLogo{font-size:31px;font-weight:900;letter-spacing:-1.7px;white-space:nowrap;background:linear-gradient(90deg,#17234b,#6d4aff,#4f8cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brandSpark{color:#6d4aff;font-size:22px}
+.topAvatar{width:52px;height:52px;background:#eef1ff;border:3px solid #e4e8ff}
+.headerActions{gap:10px}
+.headerIcon{background:#eef2fa;color:#34415e;width:48px;height:48px}
+.headerActions .headerIcon:nth-child(2){background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff}
+.categoryRow{gap:12px;padding:10px 20px 16px;border-bottom:0;background:#fff}
+.categoryRow span{padding:10px 17px;border-radius:24px;background:#f3f5fb;color:#17213d}
+.categoryRow span:first-child{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff}
+.categoryRow span:nth-child(2){background:#fff0f6;color:#b51e60}
+.categoryRow span:nth-child(3){background:#eafaf7;color:#008c80}
+.categoryRow span:nth-child(4){background:#f4efff;color:#6d2bd8}
+.categoryRow span b{background:rgba(255,255,255,.25);padding:2px 7px;border-radius:12px}
+.searchBar{margin:0 20px 16px;height:58px;border-radius:30px;background:#f3f6ff;display:flex;align-items:center;padding:0 18px;gap:13px;color:#7180a0;flex:none}
+.searchBarIcon{font-size:28px}.searchBar input{border:0;outline:0;background:transparent;width:100%;font-size:17px;color:#24304d}
+.friendSuggestion{margin:0 20px 16px;padding:17px 20px;border-radius:24px;background:linear-gradient(100deg,#f1edff,#f5f9ff);display:flex;align-items:center;gap:15px;flex:none}
+.friendSuggestionIcon{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;font-size:23px;box-shadow:0 7px 18px rgba(92,78,225,.22)}
+.friendSuggestionText{flex:1}.friendSuggestionTitle{font-size:17px;font-weight:800}.friendSuggestionSub{font-size:14px;color:#66739a;margin-top:4px}.friendSuggestionArrow{font-size:28px;color:#6d4aff}
+.noticeBar{display:none}
+.chatRow{padding:12px 20px;min-height:88px;border-bottom:1px solid var(--line)}
+.rowAvatar{width:58px;height:58px;border:3px solid #fff;box-shadow:0 2px 9px rgba(35,45,80,.08)}
+.chatRowName{font-size:18px;color:#101a35}.chatRowMeta{font-size:14px;color:#65718e}
+.blueDot{background:#4f8cff;border-radius:5px}.purpleDot{background:#7d4cff;border-radius:5px}
+.rowAction{color:#53617e}
+.composeBtn{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;box-shadow:0 10px 25px rgba(92,78,225,.3)}
+.bottomNav{height:82px;border-top:1px solid #edf0f7;box-shadow:0 -8px 30px rgba(35,47,90,.05)}
+.navBtn{color:#68748e;font-size:11px}.navBtn span{font-size:25px}.navBtn.active{color:#6d4aff}
+.navBtn.active:after{content:"";width:36px;height:3px;border-radius:3px;background:#6d4aff;position:absolute;bottom:5px}
+.navBtn{position:relative}
+.chatInput button{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff}
+.mine{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff}
+.chatPageShell{display:flex;flex-direction:column;min-height:0;flex:1}
+#chatPage{background:#fff}
+#chatList{min-height:0}
+#friendsPage{background:#fff}
+.friendsHeader{padding-top:28px}
+.chatAddFriendIcon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6d4aff,#4f8cff);display:grid;place-items:center;box-shadow:0 8px 18px rgba(92,78,225,.25)}
+.friendSvg{width:28px;height:28px}
+@media(max-width:600px){.brandLogo{font-size:28px}.topHeader{padding-left:16px;padding-right:16px}.searchBar,.friendSuggestion{margin-left:16px;margin-right:16px}.categoryRow{padding-left:16px;padding-right:16px}}
+
+/* Camera polish */
+.cameraTop button,.cameraIconBtn{background:rgba(248,250,255,.94);color:#28365c;border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(14px);transition:transform .18s ease,background .18s ease}
+.cameraTop button:active,.cameraSideBtn:active,.cameraTool:active,.lensItem:active{transform:scale(.94)}.cameraTool.toolActive .cameraToolIcon{background:linear-gradient(135deg,#6d4aff,#4f8cff);border-color:rgba(255,255,255,.7)}
+.cameraTop button svg,.cameraSideBtn svg,.cameraToolIcon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.cameraTop .cameraAvatar{background:linear-gradient(135deg,#eee9ff,#e4f0ff);border:2px solid rgba(255,255,255,.9);font-weight:800}
+.cameraTopActions{gap:9px}.topBadge:after{box-shadow:0 0 0 1px rgba(255,255,255,.5)}
+.recipientBox{display:none;top:82px;left:16px;right:16px}.recipientBox select{min-height:48px;padding:0 16px;border-radius:17px;background:rgba(20,24,42,.55);border:1px solid rgba(255,255,255,.48);box-shadow:0 8px 25px rgba(0,0,0,.12);backdrop-filter:blur(16px);font-size:14px}
+.cameraSidePanel{right:12px;top:145px;gap:14px}.cameraTool{font-size:11px;letter-spacing:.2px;gap:5px;color:#fff}.cameraToolIcon{width:48px;height:48px;border:1px solid rgba(255,255,255,.18);background:rgba(23,28,48,.52);backdrop-filter:blur(14px);box-shadow:0 5px 18px rgba(0,0,0,.18)}
+.lensStrip{bottom:139px;gap:9px;padding:10px 16px 8px;mask-image:linear-gradient(90deg,transparent,#000 3%,#000 96%,transparent)}.lensItem{width:66px;font-size:11px;color:#fff}.lensCircle{width:58px;height:58px;border-color:rgba(255,255,255,.72);background:rgba(25,30,48,.48);backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(0,0,0,.15)}.lensItem.active .lensCircle{border:3px solid #8c72ff;box-shadow:0 0 0 3px rgba(140,114,255,.22),0 5px 18px rgba(0,0,0,.2)}
+.cameraControls{bottom:58px;gap:34px}.cameraSideBtn{width:54px;height:54px;color:#354365;background:rgba(248,250,255,.94);box-shadow:0 5px 18px rgba(0,0,0,.18)}.cameraSideBtn svg{width:23px;height:23px}.captureBtn{width:82px;height:82px;border:5px solid #fff;box-shadow:0 0 0 2px rgba(255,255,255,.65),0 8px 25px rgba(0,0,0,.25);position:relative}.captureBtn:after{content:"";position:absolute;inset:5px;border-radius:50%;border:1px solid rgba(30,35,55,.13)}.cameraModeLabel{bottom:16px;letter-spacing:1.8px;font-size:11px;color:#fff}
+@media(max-height:720px){.lensStrip{bottom:124px}.cameraControls{bottom:46px}.cameraModeLabel{bottom:10px}.cameraSidePanel{top:128px;gap:8px}.cameraToolIcon{width:42px;height:42px}}
+
+
+/* Friend request UI */
+.friendRequestsSection{padding:18px 14px 6px}.friendRequestsHeading{display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px;font-size:17px;font-weight:850;color:#252a40}.friendRequestsHeading span{display:grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:99px;background:#eee9ff;color:#6545dc;font-size:12px}.friendRequestCard{display:flex;align-items:center;gap:11px;padding:12px;margin-bottom:9px;background:#fff;border:1px solid #e7e9f5;border-radius:18px;box-shadow:0 4px 14px rgba(35,47,90,.04);justify-content:flex-start}.friendRequestCard>.rowAvatar{order:0;flex:0 0 56px}.friendRequestCard>.friendRequestInfo{order:1;flex:1;min-width:0;text-align:left}.friendRequestCard>.friendRequestActions{order:2;flex:0 0 auto;margin-left:auto}.friendRequestInfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.friendRequestInfo strong{font-size:14px;color:#252a40;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.friendRequestInfo small{font-size:11px;color:#858ba1}.friendRequestActions{display:flex;gap:6px}.friendRequestActions button{padding:9px 11px;border-radius:11px;background:#6d4aff;color:white;font-size:12px;font-weight:800}.friendRequestActions .declineRequest{background:#f1f2f8;color:#68718c}.friendRequestEmpty{padding:13px 4px 17px;font-size:12px;color:#858ba1}
+.friendRequestsPopover{margin:10px 14px;padding:14px;background:#fff;border:1px solid #e7e9f5;border-radius:18px;box-shadow:0 12px 30px rgba(35,47,90,.12);position:relative;z-index:5}.friendRequestsPopoverTop{display:flex;align-items:center;justify-content:space-between;gap:12px}.friendRequestsPopoverTop #closeFriendRequests{border:0;background:#f1f2f8;color:#68718c;border-radius:9px;width:30px;height:30px;font-size:22px;line-height:1}.friendRequestsPopover .friendRequestsHeading{margin-bottom:10px}.friendDirectorySubtitle{font-size:12px;color:#8288a0;margin-top:3px}.friendDirectorySearch{display:flex;align-items:center;gap:9px;margin:12px 0;padding:11px 13px;border:1px solid #e6e8f2;border-radius:13px;background:#f8f9fd;color:#737b98}.friendDirectorySearch input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#242940;font:inherit;font-size:14px}.friendDirectorySectionLabel{font-size:12px;font-weight:800;color:#7b8198;text-transform:uppercase;letter-spacing:.5px;margin:12px 2px 7px}.friendDirectoryRequestsHeading{display:flex;align-items:center;justify-content:space-between;margin:16px 0 7px;padding-top:13px;border-top:1px solid #eceef6;font-size:14px;font-weight:850;color:#292e45}.friendDirectoryCount{display:grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border-radius:99px;background:#eee9ff;color:#6545dc;font-size:12px}.friendRequestsPopover #friendDirectoryResults .searchResultCard{margin:0;padding:11px 2px;border-bottom:1px solid #f0f1f7}.friendRequestsPopover #friendDirectoryResults .searchResultCard button{max-width:150px;white-space:nowrap}.friendRequestsPopover #friendDirectoryResults .searchResultInfo{min-width:0}.friendRequestsPopover #friendDirectoryResults .searchResultName{overflow-wrap:anywhere}.friendRequestsPopover #friendRequestsList:empty{display:none}
+
+/* Friends screen refresh */
+#friendsPage{background:#f6f7fc;padding:0 0 92px;overflow:auto}
+.friendsHeader{position:sticky;top:0;z-index:4;padding:28px 22px 18px;background:linear-gradient(135deg,#f8f7ff 0%,#eef3ff 100%);color:#20243a;font-size:30px;font-weight:800;letter-spacing:-.8px;border-bottom:1px solid #e9eaf4}
+.friendsHeader:after{content:"Your people, your vibe ✨";display:block;font-size:13px;font-weight:500;letter-spacing:0;color:#7b8198;margin-top:5px}
+#usersList{padding:14px 14px 22px;display:flex;flex-direction:column;gap:10px}
+.userCard{display:flex;align-items:center;gap:13px;padding:13px 14px;background:#fff;border:1px solid #eceef7;border-radius:20px;box-shadow:0 5px 18px rgba(43,53,100,.045);min-height:92px;transition:transform .18s ease,box-shadow .18s ease}
+.userCard:active{transform:scale(.99)}
+.userCard .avatar{width:60px;height:60px;flex:0 0 60px;border-radius:19px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,#6d4aff,#4f8cff);color:white;font-size:25px;font-weight:800;box-shadow:0 5px 12px rgba(92,78,225,.2)}
+.userCard .avatar img{width:100%;height:100%;object-fit:cover}
+.userInfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.userName{font-size:15px;font-weight:800;color:#24283b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userEmail{font-size:12px;color:#858ba1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chatOpenBtn{padding:11px 17px;min-width:76px;border-radius:14px;background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;font-size:13px;font-weight:800;box-shadow:0 5px 12px rgba(92,78,225,.22);transition:transform .18s ease}
+.chatOpenBtn:active{transform:scale(.96)}
+@media(min-width:700px){#friendsPage{max-width:760px;margin:0 auto;border-left:1px solid #edf0f7;border-right:1px solid #edf0f7}.friendsHeader{padding-left:26px}#usersList{padding:18px 22px}}
+
+
+/* VibeSnap UI finishing pass */
+#loginScreen{background:radial-gradient(circle at 20% 15%,#ece8ff 0,transparent 34%),radial-gradient(circle at 90% 85%,#e5f0ff 0,transparent 35%),#f8f9ff}
+.loginBox{min-height:100svh;background:transparent}
+.loginBrand{background:linear-gradient(135deg,#6d4aff,#4f8cff);border-radius:34px;box-shadow:0 18px 42px rgba(92,78,225,.28)}
+.loginTitle{color:#20243a}.loginSub{color:#777f98}
+.signupBtn{background:linear-gradient(135deg,#6d4aff,#4f8cff);box-shadow:0 10px 22px rgba(92,78,225,.24)}
+#chatPage{background:#f7f8fd}
+.topHeader{background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-bottom:1px solid #eef0f8}
+.brandLogo{letter-spacing:-.7px}
+.searchBar{border:1px solid #e8eaf4;background:#fff;box-shadow:0 4px 14px rgba(35,47,90,.035);border-radius:16px}
+.searchBar input{outline:none}
+.categoryRow span{border-radius:999px;padding:8px 13px;background:#fff;border:1px solid #eceefa;color:#68718c}
+.categoryRow span:first-child{background:#eee9ff;border-color:#ddd4ff;color:#6545dc}
+.friendSuggestion{border:1px solid #e7e4ff;border-radius:18px;background:linear-gradient(120deg,#f0edff,#f2f7ff);cursor:pointer;transition:transform .18s ease}
+.friendSuggestion:active{transform:scale(.99)}
+.chatRow{background:#fff;border-bottom:1px solid #f0f1f8;padding-top:13px;padding-bottom:13px}
+.chatRow:active{background:#f7f6ff}
+.rowAvatar{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;font-weight:800}
+.composeBtn{border-radius:18px;width:56px;height:56px;font-size:25px}
+#profilePage{background:linear-gradient(180deg,#f0edff 0,#f8f9fd 220px,#f8f9fd 100%)}
+.pageTitle{font-size:28px;font-weight:800;color:#24283b}
+.profileBox{background:#fff;border:1px solid #e9eaf5;border-radius:24px;box-shadow:0 12px 34px rgba(43,53,100,.07);padding:28px 20px}
+.profileAvatar{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;box-shadow:0 8px 20px rgba(92,78,225,.22)}
+.logoutBtn{background:#fff0f2;color:#d63355;border:1px solid #ffdce3;border-radius:14px}
+#chatConversation{background:#f7f8fd}
+.conversationHeader{background:#fff;border-bottom:1px solid #eceef7}
+.chatMessages{background:linear-gradient(180deg,#f8f9ff,#f2f5fc)}
+.chatInput{background:#fff;border-top:1px solid #eceef7;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.chatInput input{border:1px solid #e6e8f3;border-radius:16px;padding:13px 15px;outline:none}
+.chatInput input:focus{border-color:#9b89ff;box-shadow:0 0 0 3px rgba(109,74,255,.1)}
+.message{border-radius:18px;padding:11px 14px;max-width:82%;overflow-wrap:anywhere}
+.mine{border-bottom-right-radius:5px}.theirs{border-bottom-left-radius:5px;background:#fff;color:#252a3c;box-shadow:0 3px 12px rgba(35,47,90,.05)}
+.bottomNav{background:rgba(255,255,255,.96);backdrop-filter:blur(18px);padding-bottom:env(safe-area-inset-bottom);height:calc(82px + env(safe-area-inset-bottom))}
+@media(max-width:600px){.friendsHeader{padding-top:22px}.chatRow{padding-left:16px;padding-right:16px}.categoryRow{gap:8px}}
+
+
+#searchPage{background:#f7f8fd;overflow:auto;padding-bottom:100px}.searchPageHeader{padding:26px 22px 18px;background:linear-gradient(135deg,#f0edff,#edf4ff);border-bottom:1px solid #e7eaf5}.searchPageTitle{font-size:30px;font-weight:850;color:#222742;letter-spacing:-.7px}.searchPageSubtitle{font-size:13px;color:#78809a;margin-top:5px}.searchPageBox{display:flex;align-items:center;gap:12px;margin:18px 16px 22px;padding:0 16px;height:54px;background:#fff;border:1px solid #e7e9f4;border-radius:18px;box-shadow:0 6px 20px rgba(35,47,90,.05)}.searchPageBox span{font-size:28px;color:#777f9c}.searchPageBox input{border:0;outline:0;background:transparent;flex:1;min-width:0;font-size:15px;color:#24283b}.searchSectionLabel{padding:0 20px 12px;font-size:12px;font-weight:800;color:#838aa2;text-transform:uppercase;letter-spacing:.8px}#globalSearchResults{padding:0 14px;display:flex;flex-direction:column;gap:10px}.searchResultCard{display:flex;align-items:center;gap:12px;padding:13px;background:#fff;border:1px solid #eceef7;border-radius:18px;box-shadow:0 4px 14px rgba(35,47,90,.04)}.searchResultInfo{flex:1;min-width:0}.searchResultName{font-size:15px;font-weight:800;color:#24283b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.searchResultMeta{font-size:12px;color:#858ba1;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.searchResultCard button{background:linear-gradient(135deg,#6d4aff,#4f8cff);color:white;font-size:12px;font-weight:800;padding:10px 15px;border-radius:13px}.searchEmptyState{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 24px;color:#858ba1}.searchEmptyState>span{display:grid;place-items:center;width:58px;height:58px;border-radius:20px;background:#eee9ff;color:#6d4aff;font-size:32px;margin-bottom:14px}.searchEmptyState b{color:#343a55;font-size:16px}.searchEmptyState p{font-size:13px;line-height:1.5;margin-top:6px;max-width:260px}
+
+/* Search screen visual refinement */
+#searchPage{background:linear-gradient(180deg,#f4f6ff 0%,#f8f9fd 260px,#f8f9fd 100%);padding-bottom:110px}
+.searchPageHeader{padding:30px 22px 22px;background:linear-gradient(135deg,#ebe8ff 0%,#eaf2ff 100%);border-bottom:1px solid #e6e9f7}
+.searchPageTitle{font-size:32px;line-height:1.15;font-weight:850;letter-spacing:-1px}
+.searchPageSubtitle{font-size:14px;line-height:1.45;margin-top:8px;color:#747d9b}
+.searchPageBox{margin:20px 16px 24px;height:58px;padding:0 17px;border-radius:19px;border:1px solid #e3e7f5;box-shadow:0 8px 24px rgba(55,65,120,.07);transition:border-color .2s,box-shadow .2s}
+.searchPageBox:focus-within{border-color:#a99aff;box-shadow:0 0 0 4px rgba(109,74,255,.09),0 8px 24px rgba(55,65,120,.06)}
+.searchPageBox>span{display:grid;place-items:center;width:24px;height:24px;font-size:0;flex:0 0 24px}
+.searchPageBox>span:before{content:"";width:14px;height:14px;border:2px solid #7781a0;border-radius:50%;display:block;transform:translate(-2px,-2px)}
+.searchPageBox>span:after{content:"";width:8px;height:2px;background:#7781a0;display:block;transform:translate(7px,-5px) rotate(48deg);border-radius:2px}
+.searchPageBox input{font-size:15px}
+.searchPageBox input::placeholder{color:#9aa1b5}
+.searchSectionLabel{padding:0 20px 13px;font-size:11px;letter-spacing:1px;color:#828aa4}
+#globalSearchResults{padding:0 15px;gap:11px}
+.searchResultCard{display:flex;align-items:center;gap:13px;padding:13px;min-height:86px;border:1px solid #e9ecf7;border-radius:21px;background:rgba(255,255,255,.96);box-shadow:0 7px 22px rgba(38,49,98,.045);transition:transform .18s,box-shadow .18s}
+.searchResultCard:active{transform:scale(.99)}
+.searchResultCard .avatar{width:58px;height:58px;min-width:58px;flex:0 0 58px;display:grid;place-items:center;overflow:hidden;border-radius:19px;background:linear-gradient(135deg,#6d4aff,#4f8cff);color:#fff;font-size:24px;font-weight:800;box-shadow:0 6px 15px rgba(92,78,225,.2)}
+.searchResultCard .avatar img{width:100%;height:100%;display:block;object-fit:cover}
+.searchResultInfo{flex:1;min-width:0;padding:0 2px}
+.searchResultName{font-size:15px;line-height:1.3;font-weight:800;color:#24283b}
+.searchResultMeta{font-size:12px;line-height:1.4;margin-top:5px;color:#838ba3;overflow-wrap:anywhere}
+.searchResultCard button{flex:0 0 auto;min-width:69px;padding:11px 15px;border-radius:14px;background:linear-gradient(135deg,#704dff,#4e83ff);box-shadow:0 5px 13px rgba(92,78,225,.19);font-size:12px;transition:transform .15s}
+.searchResultCard button:active{transform:scale(.95)}
+.searchEmptyState{margin:6px 16px 0;padding:30px 22px;border:1px dashed #d9def0;border-radius:22px;background:rgba(255,255,255,.65)}
+.searchEmptyState>span{border-radius:20px;background:linear-gradient(135deg,#eee9ff,#e6f0ff);box-shadow:0 6px 15px rgba(92,78,225,.09)}
+@media(min-width:700px){#searchPage{max-width:760px;margin:0 auto;border-left:1px solid #edf0f7;border-right:1px solid #edf0f7}.searchPageHeader{padding-left:28px}.searchPageBox{margin-left:22px;margin-right:22px}#globalSearchResults{padding:0 22px}}
+
+
+.notificationPanel{position:fixed;z-index:100;top:78px;right:14px;width:min(350px,calc(100vw - 28px));max-height:min(65vh,520px);overflow:auto;background:#fff;border:1px solid #e8eaf5;border-radius:22px;box-shadow:0 18px 55px rgba(25,32,72,.2);padding:16px;color:#252a40}
+.notificationPanelHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid #eef0f8}
+.notificationPanelHead strong{font-size:18px}.notificationPanelHead p{margin-top:4px;color:#858ba1;font-size:12px}
+.notificationPanelHead button{width:32px;height:32px;border-radius:11px;background:#f0edff;color:#6545dc;font-size:22px}
+.notificationItems{display:flex;flex-direction:column;gap:8px;padding-top:10px}.notificationItem{display:flex;gap:10px;padding:11px;border-radius:14px;background:#f8f9ff;cursor:pointer}.notificationItem:active{background:#eeeaff}.notificationItem b{display:block;font-size:13px;color:#24283b}.notificationItem small{display:block;font-size:12px;color:#858ba1;margin-top:4px}.notificationEmpty{padding:18px 8px;text-align:center;font-size:13px;color:#858ba1}
+
+
+/* Conversation action polish */
+#chatConversation .conversationHeader button{display:grid;place-items:center;min-width:38px;height:38px;border-radius:13px;background:#f0edff;color:#6545dc;font-size:23px;transition:transform .15s,background .15s}
+#chatConversation .conversationHeader button:active,#sendMessage:active{transform:scale(.94)}
+#chatAvatar{cursor:pointer;flex-shrink:0}
+#chatName{cursor:pointer}
+#chatMessages img,#chatMessages video{display:block;max-width:min(260px,65vw);max-height:360px;border-radius:14px;object-fit:contain}
+#sendMessage{min-width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,#704dff,#4e83ff);color:white;box-shadow:0 6px 15px rgba(92,78,225,.22)}
+#sendMessage:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.chatInput{gap:10px}
+#messageInput{min-width:0;flex:1}
+.conversationProfilePanel{position:absolute;z-index:30;top:80px;left:50%;transform:translateX(-50%);width:min(310px,calc(100vw - 36px));padding:20px;border:1px solid #e7e9f5;border-radius:22px;background:#fff;box-shadow:0 16px 45px rgba(25,32,72,.18);text-align:center}
+.conversationProfilePanel .rowAvatar{width:66px;height:66px;margin:0 auto 10px;border-radius:22px;display:grid;place-items:center;overflow:hidden}
+.conversationProfilePanel .rowAvatar img{width:100%;height:100%;object-fit:cover}
+.conversationProfilePanel strong{display:block;font-size:17px;color:#252a40}
+.conversationProfilePanel p{margin:6px 0 14px;font-size:12px;color:#858ba1;overflow-wrap:anywhere}
+.conversationProfilePanel button{padding:10px 15px;border-radius:13px;background:#f0edff;color:#6545dc;font-weight:800}
+
+
+/* VibeSnap brand mark */
+.loginBrand{position:relative;isolation:isolate;width:124px;height:124px;border-radius:36px;background:linear-gradient(140deg,#762dff 0%,#514dff 48%,#149bff 100%);box-shadow:0 18px 42px rgba(92,78,225,.3),inset 0 1px 0 rgba(255,255,255,.35);overflow:hidden}
+.loginBrand:before{content:"";position:absolute;inset:1px;border-radius:35px;background:linear-gradient(145deg,rgba(255,255,255,.22),transparent 48%,rgba(255,255,255,.08));pointer-events:none}
+.loginBrand:after{content:"";position:absolute;width:95px;height:95px;right:-42px;bottom:-48px;border-radius:50%;background:rgba(255,255,255,.12);filter:blur(1px);pointer-events:none}
+.loginCameraLogo{position:relative;z-index:1;width:78px;height:78px;filter:drop-shadow(0 3px 3px rgba(35,24,115,.16))}
+
+
+/* Final VibeSnap brand refinement: camera + V lens mark */
+.loginBrand{background:linear-gradient(145deg,#7b3fff 0%,#654bff 45%,#328bff 100%);box-shadow:0 20px 45px rgba(92,78,225,.32),inset 0 1px 0 rgba(255,255,255,.45)}
+.loginCameraLogo{width:82px;height:82px;filter:drop-shadow(0 4px 4px rgba(35,24,115,.18))}
+
+
+/* Reliable photo/video preview actions */
+#previewModal{box-sizing:border-box;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:#101016}
+#previewMedia, #previewImage, #previewVideo{display:block;flex:1 1 auto;min-height:0;width:100%;height:auto;max-height:100%;object-fit:contain;background:#101016}
+.previewButtons{position:relative;z-index:3;display:flex;flex:0 0 auto;align-items:center;gap:12px;padding:16px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(16,16,22,.88),#101016);box-sizing:border-box}
+.previewButtons button{display:flex;align-items:center;justify-content:center;min-height:52px;border:0;border-radius:17px;font-size:15px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.previewButtons .cancelPreviewBtn{flex:0 0 54px;width:54px;background:#292936;color:#fff;font-size:23px}
+.previewButtons .retakeBtn{flex:1;background:#292936;color:#fff;border:1px solid rgba(255,255,255,.18)}
+.previewButtons .sendBtn{flex:1;background:linear-gradient(135deg,#704dff,#4e83ff);color:#fff;box-shadow:0 6px 18px rgba(92,78,225,.28)}
+.previewButtons button:disabled{opacity:.55}
+@media(max-height:520px){.previewButtons{padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}.previewButtons button{min-height:44px}}
+
+
+/* Consistent, recognizable chat and camera action icons */
+.rowAction{width:44px;height:44px;min-width:44px;border:0;border-radius:15px;background:#f0edff;color:#6545dc;display:grid;place-items:center;cursor:pointer;transition:background .15s,transform .15s}
+.rowAction svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.rowAction:active{transform:scale(.93);background:#e3dcff}
+#conversationCamera{width:44px;height:44px;min-width:44px;border:0;border-radius:15px;background:#f0edff;color:#6545dc;display:grid;place-items:center;cursor:pointer;transition:background .15s,transform .15s}
+#conversationCamera svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#conversationCamera:active{transform:scale(.93);background:#e3dcff}
+
+
+/* In-app friend nickname editor */
+.editFriendModal{position:fixed;inset:0;z-index:120;background:rgba(20,24,45,.48);backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;padding:22px;box-sizing:border-box}
+.editFriendModal.hidden{display:none}
+.editFriendCard{position:relative;width:min(100%,380px);box-sizing:border-box;background:#fff;border:1px solid #e9e9f8;border-radius:26px;padding:27px 22px 22px;box-shadow:0 24px 70px rgba(29,30,78,.25);animation:editFriendIn .18s ease-out}
+@keyframes editFriendIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.editFriendClose{position:absolute;right:15px;top:13px;width:34px;height:34px;border-radius:12px;background:#f2f3fa;color:#66708b;font-size:24px}
+.editFriendIcon{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,#704dff,#4e83ff);display:grid;place-items:center;color:white;margin-bottom:14px}
+.editFriendIcon svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.editFriendCard h2{margin:0;font-size:22px;color:#202746}
+.editFriendHint{margin:8px 0 20px;font-size:13px;line-height:1.5;color:#78819b}
+.editFriendCard label{display:block;margin:13px 0 7px;font-size:12px;font-weight:800;color:#48516d}
+.editFriendCard select,.editFriendCard input{display:block;width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #e0e4f1;border-radius:14px;background:#f9faff;color:#202746;font-size:15px;outline:none}
+.editFriendCard select:focus,.editFriendCard input:focus{border-color:#7556ff;box-shadow:0 0 0 3px rgba(112,77,255,.12)}
+.editFriendActions{display:flex;gap:10px;margin-top:20px}
+.editFriendActions button{flex:1;padding:13px 12px;border-radius:14px;font-weight:800}
+#cancelEditFriend{background:#f0f2f8;color:#626b83}
+#saveEditFriend{background:linear-gradient(135deg,#704dff,#4e83ff);color:#fff;box-shadow:0 6px 14px rgba(92,78,225,.2)}
+.editFriendStatus{min-height:16px;margin-top:10px;font-size:12px;color:#c13c60}
+
+
+/* Put nickname pencil beside each chat, not as a floating chat-page action */
+.editFriendInline{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:11px;background:#f0edff;color:#6545dc;cursor:pointer;padding:0}
+.editFriendInline svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.editFriendInline:active{background:#e2dbff;transform:scale(.94)}
+.composeBtn{display:none!important}
+.chatRow{gap:10px}
+
+
+/* Edit nickname button sits immediately before the Chat button */
+.editFriendInline{order:3;margin-left:auto;flex:0 0 40px;width:40px;height:40px;border-radius:14px;background:#f0edff;color:#6545dc;display:grid;place-items:center;border:0;padding:0;cursor:pointer}
+.rowAction{order:4;flex:0 0 44px}
+.chatRowBody{order:2;min-width:0}
+.rowAvatar{order:1}
+
+</style>
+
+<style id="vibesnap-premium-refresh">
+:root{--vs-ink:#17152b;--vs-muted:#77758e;--vs-violet:#7657ff;--vs-blue:#4b9cff;--vs-pink:#ff6ba6;--vs-line:#e9e7f3;--vs-card:#fff}
+*{ -webkit-tap-highlight-color:transparent }
+button,input,select,textarea{font:inherit}
+button{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+button:active{transform:scale(.97)}
+#loginScreen{position:relative;isolation:isolate;min-height:100svh;overflow:auto;padding:30px 20px;background:radial-gradient(ellipse at 14% 14%,rgba(145,117,255,.35),transparent 32%),radial-gradient(ellipse at 88% 82%,rgba(88,175,255,.28),transparent 35%),linear-gradient(135deg,#111329 0%,#1b1940 52%,#25234f 100%)}
+#loginScreen:before,#loginScreen:after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(2px);pointer-events:none}
+#loginScreen:before{width:260px;height:260px;top:-95px;right:8%;background:linear-gradient(135deg,rgba(255,107,166,.28),rgba(118,87,255,.05))}
+#loginScreen:after{width:330px;height:330px;bottom:-160px;left:-100px;background:linear-gradient(135deg,rgba(75,156,255,.26),rgba(118,87,255,.08))}
+.loginBox{position:relative;width:min(440px,100%);min-height:0;align-self:center;justify-content:center;padding:34px 34px 30px;border:1px solid rgba(255,255,255,.72);border-radius:30px;background:rgba(255,255,255,.97);box-shadow:0 30px 90px rgba(5,7,30,.38);backdrop-filter:blur(20px);text-align:left}
+.loginBrand{width:76px;height:76px;flex:none;border-radius:25px;margin:0 auto 18px;background:linear-gradient(140deg,#8869ff,#4d9eff);box-shadow:0 12px 26px rgba(105,91,255,.3)}
+.loginCameraLogo{width:52px;height:52px}
+.loginTitle{width:100%;font-size:36px;line-height:1.1;text-align:center;letter-spacing:-1.7px;color:#191633;margin-bottom:8px}
+.loginTitle:after{content:none!important;display:none!important}
+.loginSub{font-size:14px;line-height:1.55;color:#77758e;text-align:center;margin-bottom:20px}
+.loginLabel{color:#45415f;font-size:11px;letter-spacing:.12em;margin:16px 0 7px}
+#accountUsername,#accountEmail,#accountPassword{display:block;width:100%;height:54px;padding:0 16px;border:1px solid #e5e2f0;border-radius:15px;outline:none;background:#f8f7fc;color:#201d3a;font-size:15px;transition:border-color .2s,box-shadow .2s,background .2s}
+.passwordField{position:relative;width:100%}
+.passwordField #accountPassword{padding-right:58px}
+.passwordToggle{position:absolute;right:8px;top:50%;transform:translateY(-50%)!important;display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border-radius:11px;border:0;appearance:none;-webkit-appearance:none;background:transparent;color:#77738e;transition:none!important;touch-action:manipulation;-webkit-tap-highlight-color:transparent;outline:none;box-shadow:none;vertical-align:middle}
+.passwordToggle:hover{transform:translateY(-50%)!important;background:#eeeaff;color:#6d4aff}
+.passwordToggle:focus-visible{transform:translateY(-50%)!important;outline:2px solid #8a72ff;outline-offset:2px}
+.passwordToggle:active{transform:translateY(-50%)!important;background:#eeeaff}
+.passwordToggle svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#accountUsername::placeholder,#accountEmail::placeholder,#accountPassword::placeholder{color:#a19eb3}
+#accountUsername:focus,#accountEmail:focus,#accountPassword:focus{border-color:#8a72ff;background:#fff;box-shadow:0 0 0 4px rgba(118,87,255,.12)}
+.loginBtn{max-width:none;width:100%;height:53px;margin:10px 0 0;border-radius:15px;font-size:15px;font-weight:800;box-shadow:none}
+#emailLogin{background:#f0edff;color:#5f43e8;border:1px solid #e1d9ff}
+#emailLogin:hover{background:#e7e1ff}
+.signupBtn{color:#fff;background:linear-gradient(110deg,#7657ff,#4b9cff);box-shadow:0 10px 20px rgba(103,87,255,.24)}
+.signupBtn:hover{filter:brightness(1.04);box-shadow:0 13px 25px rgba(103,87,255,.3)}
+.loginBox>.loginSub:last-child{margin:17px 0 0;font-size:11px;color:#9290a5}
+#app{background:#f6f7fc;color:var(--vs-ink)}
+.page{background:#f8f9fd}
+#chatPage,#friendsPage,#profilePage{background:#f8f9fd}
+.topHeader{background:rgba(255,255,255,.92);backdrop-filter:blur(18px);box-shadow:0 1px 0 rgba(26,24,65,.05)}
+.brandLogo{font-size:29px;letter-spacing:-1.5px}
+.headerIcon,.topAvatar{box-shadow:0 5px 14px rgba(40,38,90,.08)}
+.categoryRow{background:#fff}
+.bottomNav{background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-top:1px solid rgba(224,226,240,.85);box-shadow:0 -8px 28px rgba(34,33,74,.05)}
+.bottomNav button{transition:color .2s,transform .2s}
+.bottomNav button.active{color:#7052f4}
+#friendsPage{background:#f8f9fd}
+.friendsHeader{font-size:30px;letter-spacing:-1px;padding:34px 20px 18px}
+.userCard{margin:0 14px 10px;padding:14px;border:1px solid #eeedf6;border-radius:18px;background:#fff;box-shadow:0 4px 14px rgba(31,28,70,.035)}
+.avatar,.profileAvatar{background:linear-gradient(135deg,#e9e3ff,#dceeff);color:#624ce0}
+.chatOpenBtn{background:linear-gradient(120deg,#7657ff,#4b9cff);color:#fff;box-shadow:0 6px 14px rgba(105,87,255,.2)}
+#profilePage{padding-top:30px}
+.profileBox{background:#fff;border:1px solid #eeedf6;box-shadow:0 10px 35px rgba(31,28,70,.06)}
+.profileAvatar{border:4px solid #f3f0ff}
+.chatMessages{background:#f7f8fd}
+.mine{background:linear-gradient(135deg,#7657ff,#568bff);color:#fff;border-bottom-right-radius:6px}
+.theirs{background:#fff;border:1px solid #ecebf5;border-bottom-left-radius:6px}
+.chatInput{background:rgba(255,255,255,.95);border-top:1px solid #e9e8f2}
+.chatInput input{border:1px solid #e6e5f0;background:#f8f8fc;outline:none}
+.chatInput input:focus{border-color:#8a72ff;box-shadow:0 0 0 3px rgba(118,87,255,.1)}
+.chatInput button{background:linear-gradient(135deg,#7657ff,#4b9cff);color:#fff}
+#chatConversation{background:#f8f9fd}
+.conversationHeader{background:#fff;border-bottom:1px solid #ecebf5}
+.previewButtons{background:#101016}
+.sendBtn{background:linear-gradient(120deg,#7657ff,#4b9cff);color:#fff}
+@media(max-width:480px){
+ #loginScreen{padding:18px}
+ .loginBox{padding:28px 23px 24px;border-radius:26px}
+ .loginBrand{width:68px;height:68px;border-radius:22px;margin-bottom:15px}
+ .loginCameraLogo{width:46px;height:46px}
+ .loginTitle{font-size:33px}
+ .loginSub{font-size:13px;margin-bottom:15px}
+ #accountUsername,#accountEmail,#accountPassword{height:51px}
+ .loginBtn{height:51px}
+ .friendsHeader{padding-top:28px}
+}
+@media(min-width:700px){
+ #app{border-radius:24px;overflow:hidden;margin-top:12px;height:calc(100vh - 24px);box-shadow:0 20px 70px rgba(30,28,70,.12)}
+ #loginScreen{min-height:100vh}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+</style>
+
+
+<style id="vibesnap-logo-theme-match">
+/* Match the Snap wordmark to VibeSnap's violet-to-blue theme. */
+.loginBrand{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+.loginCameraLogo{width:104px!important;height:104px!important;filter:drop-shadow(0 8px 16px rgba(109,74,255,.22))!important}
+.loginTitle{color:#242044!important;background:none!important;-webkit-text-fill-color:#242044!important;letter-spacing:-1.6px!important;font-weight:900!important}
+.loginTitle .wordVibe,.brandLogo .wordVibe{color:#242044!important;-webkit-text-fill-color:#242044!important}
+.loginTitle .wordSnap,.brandLogo .wordSnap{
+  background:linear-gradient(100deg,#6d4aff 0%,#4f8cff 100%)!important;
+  background-image:linear-gradient(100deg,#6d4aff 0%,#4f8cff 100%)!important;
+  background-clip:text!important;
+  -webkit-background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
+.loginSub{color:#77738e!important}
+.brandLogo{background:none!important;color:#242044!important;-webkit-text-fill-color:#242044!important;letter-spacing:-.8px}
+.brandSpark{color:#6d4aff!important;text-shadow:none!important}
+@media(max-width:480px){.loginBrand{width:auto!important;height:auto!important}.loginCameraLogo{width:96px!important;height:96px!important}}
+</style>
+
+
+<style id="vibesnap-polished-preview">
+/* VibeSnap polished preview — visual-only overrides; app logic and Firebase config remain unchanged. */
+:root{
+  --primary:#7054f5;
+  --primary2:#4f8df8;
+  --ink:#20233c;
+  --muted:#7b829d;
+  --line:#e8eaf5;
+  --surface:#ffffff;
+  --surface-soft:#f7f8ff;
+  --shadow-soft:0 10px 30px rgba(42,48,100,.07);
+}
+*{ -webkit-tap-highlight-color:transparent; }
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(ellipse at 8% 0%,rgba(122,95,255,.10),transparent 30%),
+    radial-gradient(ellipse at 100% 100%,rgba(75,151,255,.09),transparent 34%),
+    #f5f6fc;
+}
+button,input,textarea,select{font:inherit}
+button{transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+button:hover{filter:brightness(1.025)}
+button:active{transform:scale(.975)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:3px solid rgba(112,84,245,.32);
+  outline-offset:3px;
+}
+#app{
+  max-width:760px;
+  background:var(--surface);
+  box-shadow:0 0 0 1px rgba(67,75,135,.04),0 22px 70px rgba(41,48,96,.12);
+}
+.page{background:var(--surface)}
+#loginScreen{
+  background:
+    radial-gradient(circle at 14% 18%,rgba(143,119,255,.20),transparent 32%),
+    radial-gradient(circle at 88% 78%,rgba(95,165,255,.18),transparent 34%),
+    linear-gradient(145deg,#fbfaff,#f5f7ff);
+}
+.loginBox{max-width:480px;padding-left:26px;padding-right:26px}
+.loginBrand{
+  position:relative;
+  width:104px;height:104px;border-radius:32px;
+  background:linear-gradient(140deg,#7b5cff 0%,#5a82ff 100%);
+  box-shadow:0 20px 44px rgba(102,82,239,.28),inset 0 1px 0 rgba(255,255,255,.35);
+}
+.loginBrand:after{
+  content:"";position:absolute;inset:-8px;border:1px solid rgba(112,84,245,.15);border-radius:39px;
+}
+.loginTitle{font-size:clamp(36px,6vw,44px);letter-spacing:-1.8px}
+.loginSub{max-width:300px;line-height:1.6;font-size:15px}
+.loginBtn{height:56px;border-radius:17px;font-size:16px;box-shadow:0 8px 20px rgba(42,48,100,.08)}
+.signupBtn{box-shadow:0 12px 24px rgba(100,82,235,.24)}
+#chatPage{background:linear-gradient(180deg,#fbfbff 0%,#f7f8fd 100%)}
+.topHeader{
+  height:88px;padding:12px 22px;
+  background:rgba(255,255,255,.9);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(232,234,245,.85);
+}
+.brandLogo{font-size:30px;letter-spacing:-1.25px}
+.brandSpark{filter:drop-shadow(0 3px 8px rgba(112,84,245,.2))}
+.topAvatar{box-shadow:0 0 0 4px #f0edff;border:2px solid white}
+.headerIcon{border:1px solid #e9ebf7;box-shadow:0 3px 9px rgba(40,48,95,.04)}
+.headerActions .headerIcon:nth-child(2){color:#fff;border-color:transparent;box-shadow:0 7px 18px rgba(98,79,236,.25)}
+.categoryRow{padding-top:13px;padding-bottom:15px;gap:9px}
+.categoryRow span{font-size:13px;font-weight:750;box-shadow:0 2px 7px rgba(40,48,95,.025)}
+.searchBar{height:54px;border-radius:17px;margin-bottom:15px;box-shadow:0 6px 18px rgba(40,48,95,.04)}
+.searchBar input{font-size:15px}
+.friendSuggestion{
+  padding:15px 17px;border-radius:20px;
+  box-shadow:0 8px 22px rgba(81,83,166,.055);
+}
+.friendSuggestionTitle{font-size:15px;letter-spacing:-.2px}
+.friendSuggestionSub{font-size:12px;line-height:1.45}
+.chatList{padding:2px 10px 12px}
+.chatRow{
+  border:1px solid transparent;border-radius:18px;
+  margin:3px 5px;padding:12px 13px;min-height:82px;
+  background:rgba(255,255,255,.88);
+  transition:background .18s ease,transform .18s ease,border-color .18s ease;
+}
+.chatRow:hover{background:#fff;border-color:#efedff;box-shadow:0 5px 16px rgba(42,48,100,.035)}
+.chatRowName{font-size:16px;letter-spacing:-.2px}
+.chatRowMeta{font-size:12px;line-height:1.45}
+.rowAvatar{box-shadow:0 3px 10px rgba(63,68,128,.10);border:2px solid #fff}
+.composeBtn{
+  width:60px;height:60px;border-radius:21px;
+  box-shadow:0 12px 26px rgba(100,82,235,.32);
+}
+.bottomNav{
+  border-top:1px solid rgba(232,234,245,.9);
+  box-shadow:0 -10px 28px rgba(42,48,100,.045);
+}
+.navBtn{gap:4px;font-size:10px;letter-spacing:.1px}
+.navBtn.active{color:var(--primary)}
+.navBtn.active span{filter:drop-shadow(0 3px 7px rgba(112,84,245,.16))}
+#friendsPage,#searchPage{
+  background:linear-gradient(180deg,#f7f7ff 0%,#f8f9fd 280px,#f8f9fd 100%);
+}
+.friendsHeader,.searchPageHeader{
+  background:linear-gradient(135deg,#eeebff 0%,#edf4ff 100%);
+}
+.friendsHeader{letter-spacing:-1px}
+#usersList{padding-top:17px}
+.userCard,.searchResultCard{
+  border-radius:20px;
+  box-shadow:0 6px 20px rgba(42,48,100,.045);
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+}
+.userCard:hover,.searchResultCard:hover{box-shadow:0 12px 28px rgba(42,48,100,.08);border-color:#e1ddff}
+.userCard .avatar,.searchResultCard .avatar{border-radius:18px}
+.userName,.searchResultName{letter-spacing:-.2px}
+.chatOpenBtn,.searchResultCard button{border-radius:13px}
+#profilePage{background:linear-gradient(180deg,#eeebff 0,#f7f8fd 245px,#f7f8fd 100%)}
+.profileBox{box-shadow:0 16px 42px rgba(42,48,100,.075);padding:30px 24px}
+.profileAvatar{border-radius:29px}
+.pageTitle{letter-spacing:-.7px}
+#chatConversation{background:#f7f8fd}
+.conversationHeader{height:78px;box-shadow:0 4px 14px rgba(42,48,100,.025)}
+.conversationTitle{letter-spacing:-.25px}
+.chatMessages{gap:2px;padding:18px 15px}
+.message{box-shadow:0 3px 12px rgba(42,48,100,.045);line-height:1.5}
+.mine{box-shadow:0 5px 14px rgba(99,79,230,.16)}
+.theirs{border:1px solid #eceef7}
+.chatInput{gap:10px;padding:12px}
+.chatInput input{min-height:46px;background:#f8f9ff}
+.chatInput button{box-shadow:0 6px 14px rgba(100,82,235,.2)}
+#recipientPickerCard{border:1px solid rgba(255,255,255,.7);box-shadow:0 28px 90px rgba(12,18,46,.32)}
+.recipientPickerHead{padding-top:22px}
+.recipientChoice{border-radius:13px;padding:11px 8px}
+.recipientPickerSend{box-shadow:0 7px 17px rgba(100,82,235,.2)}
+#vibeNotice{border-radius:17px;backdrop-filter:blur(18px);box-shadow:0 16px 45px rgba(20,24,60,.24)}
+@media(min-width:700px){
+  body{overflow:hidden}
+  #app{max-width:760px}
+  .bottomNav{width:min(100%,760px);max-width:760px}
+  #chatPage,#cameraPage,#profilePage{border-left:1px solid #f0f1fa;border-right:1px solid #f0f1fa}
+}
+@media(max-width:420px){
+  .loginBox{padding-left:22px;padding-right:22px}
+  .topHeader{padding-left:14px;padding-right:14px}
+  .brandLogo{font-size:27px}
+  .headerActions{gap:6px}
+  .headerIcon{width:43px;height:43px}
+  .chatList{padding-left:4px;padding-right:4px}
+  .chatRow{margin-left:2px;margin-right:2px;padding-left:10px;padding-right:10px}
+  .friendSuggestion{gap:10px;padding:13px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
+</style>
+
+</head>
+<body>
+<div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
+<div id="loginScreen" class="hidden"><div class="loginBox">
+<div class="loginBrand" aria-label="VibeSnap logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap Neon Core logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div class="loginTitle"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="loginSub">Snap. Share. Vibe.</div>
+<label class="loginLabel" for="accountUsername">USERNAME</label><input id="accountUsername" type="text" autocomplete="username" autocapitalize="none" maxlength="24" placeholder="Enter your username">
+<label class="loginLabel" for="accountPassword">PASSWORD</label><div class="passwordField"><input id="accountPassword" type="password" autocomplete="current-password" placeholder="Enter your password"><button class="passwordToggle" id="togglePassword" type="button" aria-label="Show password" aria-pressed="false" title="Show password"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+<button class="loginBtn" id="emailLogin">Log In</button>
+<button class="loginBtn signupBtn" id="emailSignup">Create Account</button>
+<div class="loginSub" style="margin-top:12px">Log in or create an account with your username and password.</div>
+</div></div>
+<div id="app" class="hidden">
+<div id="cameraPage" class="page">
+<video id="cameraVideo" autoplay playsinline muted></video><div class="cameraShade"></div><div id="photoCountdownOverlay" class="photoCountdownOverlay hidden" aria-live="assertive" aria-atomic="true"><span id="photoCountdownNumber" class="photoCountdownNumber">3</span><span id="photoCountdownCaption" class="photoCountdownCaption">GET READY</span></div>
+<div class="cameraTop"><button class="cameraAvatar" id="profileQuick">V</button><button class="cameraIconBtn" id="searchQuick" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button><div class="cameraTopSpacer"></div><div class="cameraTopActions"><button class="cameraIconBtn topBadge" id="notificationQuick" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button><button class="cameraIconBtn topBadge" id="addFriendQuick" aria-label="Add friend"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5A4.5 4.5 0 0 1 7 14h4a4.5 4.5 0 0 1 4.5 4.5V20M19 7v7M15.5 10.5h7"/></svg></button><button class="cameraIconBtn" id="flipCamera" aria-label="Flip camera"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7 7 0 0 1 18 6l2 2M4 16l2 2a7 7 0 0 0 12.5-3"/></svg></button></div></div>
+<div class="recipientBox"><select id="recipientSelect"><option value="">Choose a friend for sending</option></select></div>
+<div class="cameraSidePanel"><button class="cameraTool" id="flashQuick"><span class="cameraToolIcon"><svg viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-13h-7z"/></svg></span>Flash</button><button class="cameraTool" id="soundQuick"><span class="cameraToolIcon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>Sounds</button><button class="cameraTool" id="moreCameraTools"><span class="cameraToolIcon"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></span>More</button></div>
+<div id="cameraMoreMenu" class="cameraMoreMenu hidden" role="dialog" aria-label="More camera settings"><div class="cameraMoreTitle">Camera tools</div><button class="cameraMoreOption" id="stampToggle" aria-pressed="true"><span>VibeSnap Stamp</span><span class="cameraMoreValue" id="stampState">On</span></button><div class="cameraMoreDivider"></div><button class="cameraMoreOption" id="timerCycle"><span>Timer</span><span class="cameraMoreValue" id="timerState">Off</span></button><div class="cameraMoreDivider"></div><button class="cameraMoreOption" id="showFilters"><span>Filters and lenses</span><span class="cameraMoreValue">Open ›</span></button></div>
+<div class="lensStrip" id="lensStrip"><button class="lensItem active" data-filter="none"><span class="lensCircle">◉</span>Normal</button><button class="lensItem" data-filter="vivid"><span class="lensCircle">✦</span>Vivid</button><button class="lensItem" data-filter="warm"><span class="lensCircle">☀</span>Warm</button><button class="lensItem" data-filter="cool"><span class="lensCircle">❄</span>Cool</button><button class="lensItem" data-filter="mono"><span class="lensCircle">◐</span>Mono</button><button class="lensItem" data-filter="sepia"><span class="lensCircle">◒</span>Sepia</button></div>
+<div class="cameraControls"><button class="cameraSideBtn" id="galleryBtn" aria-label="Open gallery"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></button><button class="captureBtn" id="captureBtn" aria-label="Take photo"></button><button class="cameraSideBtn" id="videoModeBtn" aria-label="Switch to video"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg></button></div><div class="cameraModeLabel">PHOTO</div><input type="file" id="galleryInput" accept="image/*,video/*" class="hidden">
+</div>
+<div id="friendsPage" class="page hidden"><div class="friendsHeader">Friends</div><div id="usersList"></div></div>
+<div id="chatPage" class="page hidden">
+<div class="topHeader">
+  <button class="topAvatar" id="chatProfileQuick">V</button>
+  <div class="brandHeader"><div class="brandLogo"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="brandSpark" aria-hidden="true">✦</div></div>
+  <div class="headerActions">
+    <button class="headerIcon headerBadge" id="chatNotifications" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>
+    <button class="headerIcon" id="chatSearch" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
+    <button class="headerIcon" id="chatAddFriend" aria-label="Friends">
+      <span class="chatAddFriendIcon"><svg class="friendSvg" viewBox="0 0 32 32" fill="none"><circle cx="12" cy="11" r="5" stroke="white" stroke-width="2.5"/><path d="M3.5 25c.8-5 3.8-7.5 8.5-7.5s7.7 2.5 8.5 7.5" stroke="white" stroke-width="2.5" stroke-linecap="round"/><path d="M24 11v9M19.5 15.5h9" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></span>
+    </button>
+  </div>
+</div>
+<div class="searchBar"><span class="searchBarIcon">⌕</span><input id="chatSearchInput" type="search" placeholder="Search chats, friends..."></div>
+<div class="categoryRow"><span>Unread <b id="unreadCount">0</b></span><span>Groups</span></div>
+<div class="friendSuggestion"><div class="friendSuggestionIcon" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="12" cy="10" r="4.5"/><path d="M3.5 25c.8-5 3.8-7.5 8.5-7.5s7.7 2.5 8.5 7.5"/><path d="M23 10v9M18.5 14.5h9"/></svg></div><div class="friendSuggestionText"><div class="friendSuggestionTitle">New: Friend Suggestions!</div><div class="friendSuggestionSub">Find people you might know</div></div><div class="friendSuggestionArrow">›</div></div>
+<div id="chatList" class="chatList"></div>
+<button class="composeBtn" id="composeBtn">✎</button>
+</div>
+<div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find your friends on VibeSnap</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by name, email or phone" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can chat with</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Type a name, email or phone number to search.</p></div></div>
+<div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profileEmail" style="color:#777;margin-top:8px;"></p><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
+<div class="bottomNav">
+<button class="navBtn active" data-page="chat"><span><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5.5 4v-4.3A2.5 2.5 0 0 1 4 14.5z"/></svg></span>Chats</button>
+ <button class="navBtn" data-page="camera"><span><svg viewBox="0 0 24 24"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></span>Camera</button>
+ <button class="navBtn" data-page="friends"><span><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5A4.5 4.5 0 0 1 7 14h4a4.5 4.5 0 0 1 4.5 4.5V20M17 5.5a3 3 0 0 1 0 5.8M18 14.5a4 4 0 0 1 3.5 4V20"/></svg></span>Friends</button>
+ <button class="navBtn" data-page="profile"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span>Profile</button>
+ <button class="navBtn" id="searchNavBtn" data-page="search" aria-label="Search"><span><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></span>Search</button>
+</div>
+<div id="editFriendModal" class="editFriendModal hidden" role="dialog" aria-modal="true" aria-labelledby="editFriendTitle">
+<div class="editFriendCard">
+<button id="closeEditFriend" class="editFriendClose" type="button" aria-label="Close">×</button>
+<div class="editFriendIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></div>
+<h2 id="editFriendTitle">Edit a friend's name</h2>
+<p class="editFriendHint">Choose a friend and give them a nickname only you can see.</p>
+<form id="editFriendForm">
+<label for="editFriendSelect">Friend</label>
+<select id="editFriendSelect" required><option value="">Choose a friend</option></select>
+<label for="editFriendName">Name shown to you</label>
+<input id="editFriendName" type="text" maxlength="40" placeholder="Enter a nickname" required>
+<div class="editFriendActions"><button id="cancelEditFriend" type="button">Cancel</button><button id="saveEditFriend" type="submit">Save name</button></div>
+<div id="editFriendStatus" class="editFriendStatus" aria-live="polite"></div>
+</form>
+</div>
+</div>
+<div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
+<div id="conversationProfilePanel" class="conversationProfilePanel hidden"><div id="conversationProfileAvatar" class="rowAvatar">?</div><strong id="conversationProfileName">Friend</strong><p id="conversationProfileContact"></p><button id="closeConversationProfile" type="button">Close</button></div>
+<div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera" type="button" aria-label="Open camera to send a photo or video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
+</div><div id="recipientPickerModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="recipientPickerTitle"><div id="recipientPickerCard"><div class="recipientPickerHead"><div><h2 id="recipientPickerTitle">Send to friends</h2><p>Choose one or more friends for this snap.</p></div><button type="button" id="recipientPickerClose" class="recipientPickerClose" aria-label="Close">×</button></div><div id="recipientPickerList" class="recipientPickerList"></div><div class="recipientPickerFoot"><button type="button" id="recipientPickerCancel" class="recipientPickerCancel">Cancel</button><button type="button" id="recipientPickerSend" class="recipientPickerSend">Send to selected</button></div></div></div>
+<div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA8d0zK0s17K6Vybn8ULOIuTwHXnHjJJDk",
+  authDomain: "vibesnap-213d4.firebaseapp.com",
+  projectId: "vibesnap-213d4",
+  storageBucket: "vibesnap-213d4.firebasestorage.app",
+  messagingSenderId: "933479938239",
+  appId: "1:933479938239:web:d120d7ba99f5665987ae0a",
+  measurementId: "G-HP0QL3C8Y"
+};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
+let currentUser=null,selectedFriend=null,currentStream=null,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null;
+const $=id=>document.getElementById(id);
+const filterCSS={none:"none",vivid:"saturate(1.5) contrast(1.15)",warm:"sepia(.25) saturate(1.3)",cool:"saturate(.9) hue-rotate(15deg)",mono:"grayscale(1)",sepia:"sepia(.8)"};
+
+function showVibeNotice(message,type="success"){
+const notice=$("vibeNotice");if(!notice){console.warn(message);return;}
+notice.textContent=message;notice.className=type+" show";
+if(notice._hideTimer)clearTimeout(notice._hideTimer);
+notice._hideTimer=setTimeout(()=>{notice.classList.remove("show");},4200);
+}
+
+function readUsernamePassword(forSignup=false){
+const username=$("accountUsername").value.trim().toLowerCase();
+const password=$("accountPassword").value;
+if(!/^[a-z0-9_]{3,24}$/.test(username))return alert("Username must be 3–24 characters and use only letters, numbers, or underscores."),null;
+if(!password)return alert("Enter your password."),null;
+if(forSignup&&password.length<6)return alert("Choose a password with at least 6 characters."),null;
+// Firebase Email/Password is used behind the scenes; the interface only asks for username and password.
+return {username,password,email:username+"@users.vibesnap.invalid"};
+}
+$("emailLogin").onclick=async()=>{
+const credentials=readUsernamePassword(false);if(!credentials)return;
+try{await auth.signInWithEmailAndPassword(credentials.email,credentials.password)}
+catch(e){console.error("VibeSnap username login error:",e);alert(e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"||e.code==="auth/user-not-found"?"Username or password is incorrect.":e.message||"Could not log in.")}
+};
+let signupInProgress=false;
+$("emailSignup").onclick=async()=>{
+if(signupInProgress)return;
+const credentials=readUsernamePassword(true);if(!credentials)return;
+const signupButton=$("emailSignup");
+signupInProgress=true;
+signupButton.disabled=true;
+signupButton.setAttribute("aria-busy","true");
+const originalSignupLabel=signupButton.textContent;
+signupButton.textContent="Creating account…";
+try{
+const created=await auth.createUserWithEmailAndPassword(credentials.email,credentials.password);
+await created.user.updateProfile({displayName:credentials.username});
+await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+showVibeNotice("Account created successfully. You're now signed in to VibeSnap.","success");
+}catch(e){console.error("VibeSnap username signup error:",e);showVibeNotice(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must be enabled in Firebase Authentication.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile because of Firestore permissions. Check your Firebase Firestore rules.":e.message||"Could not create account.","error")}
+finally{
+signupInProgress=false;
+signupButton.disabled=false;
+signupButton.removeAttribute("aria-busy");
+signupButton.textContent=originalSignupLabel;
+}
+};
+const passwordInput=$("accountPassword"),passwordToggle=$("togglePassword");
+passwordToggle.addEventListener("click",()=>{const show=passwordInput.type==="password";passwordInput.type=show?"text":"password";passwordToggle.setAttribute("aria-label",show?"Hide password":"Show password");passwordToggle.setAttribute("title",show?"Hide password":"Show password");passwordToggle.setAttribute("aria-pressed",String(show));passwordToggle.innerHTML=show?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.1 3.8M6.2 6.2C3.5 8.1 2 12 2 12s3.5 7 10 7a10.7 10.7 0 0 0 4-.8"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';});
+$("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailLogin").click()});
+
+
+auth.onAuthStateChanged(async user=>{
+$("authLoading").classList.add("hidden");
+if(user){
+currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
+try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Firestore permissions, then refresh.","error");}
+await loadUsers();startFriendListeners();showPage("camera")
+}
+else{stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
+},error=>{
+console.error("VibeSnap auth state error:",error);
+$("authLoading").classList.add("hidden");
+$("app").classList.add("hidden");
+$("loginScreen").classList.remove("hidden");
+});
+
+async function createProfile(){
+const ref=db.collection("users").doc(currentUser.uid),snap=await ref.get();
+let profile={};
+if(!snap.exists){
+const inferredUsername=(currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"";
+profile={uid:currentUser.uid,username:inferredUsername,displayName:currentUser.displayName||inferredUsername||"VibeSnap User",email:"",phone:currentUser.phoneNumber||"",photoURL:currentUser.photoURL||"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+await ref.set(profile);
+currentUser.friendNicknames={};
+}else{
+profile=snap.data()||{};
+currentUser.friendNicknames=profile.friendNicknames||{};
+}
+// Username is the public identity; the synthetic Firebase login email is private.
+const publicName=profile.username||profile.displayName||currentUser.displayName||((currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"")||"VibeSnap User";
+currentUser.publicUsername=profile.username||publicName;
+currentUser.displayName=publicName;
+if(currentUser.displayName!==currentUser.authDisplayName){
+try{await currentUser.updateProfile({displayName:publicName});}catch(e){console.warn("Could not sync profile display name:",e);}
+}
+await ensureEncryptionKeys();
+$("profileName").textContent=publicName;
+$("profileEmail").textContent=currentUser.phoneNumber||"";
+$("profileAvatar").textContent=publicName.charAt(0).toUpperCase();
+}
+
+// Text-message end-to-end encryption (ECDH P-256 + HKDF + AES-GCM).
+// Private keys remain in this browser's local storage; they are not uploaded.
+let localEncryptionPrivateKey=null;
+const encoder=new TextEncoder(),decoder=new TextDecoder();
+function bytesToBase64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s)}
+function base64ToBytes(s){return Uint8Array.from(atob(s),ch=>ch.charCodeAt(0))}
+async function ensureEncryptionKeys(){
+if(!window.crypto||!crypto.subtle)throw new Error("Secure browser encryption is unavailable.");
+const keyName="vibesnap-e2ee-private-"+currentUser.uid;
+let privateJwk=null;
+try{privateJwk=JSON.parse(localStorage.getItem(keyName)||"null")}catch(_){}
+if(privateJwk){
+localEncryptionPrivateKey=await crypto.subtle.importKey("jwk",privateJwk,{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
+}else{
+const pair=await crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveBits"]);
+privateJwk=await crypto.subtle.exportKey("jwk",pair.privateKey);
+localStorage.setItem(keyName,JSON.stringify(privateJwk));
+localEncryptionPrivateKey=await crypto.subtle.importKey("jwk",privateJwk,{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
+}
+const publicJwk=await crypto.subtle.exportKey("jwk",await (async()=>{
+if(!privateJwk)throw new Error("Encryption key setup failed.");
+return await crypto.subtle.importKey("jwk",{kty:privateJwk.kty,crv:privateJwk.crv,x:privateJwk.x,y:privateJwk.y,ext:true,key_ops:[]},{name:"ECDH",namedCurve:"P-256"},true,[]);
+})());
+const profileRef=db.collection("users").doc(currentUser.uid),profileSnap=await profileRef.get();
+if(!profileSnap.exists)throw new Error("Your profile is not ready for encryption.");
+if(!profileSnap.data().encryptionPublicKey||JSON.stringify(profileSnap.data().encryptionPublicKey)!==JSON.stringify(publicJwk)){
+await profileRef.update({encryptionPublicKey:publicJwk});
+}
+}
+async function deriveChatEncryptionKey(otherPublicJwk,chatId){
+if(!localEncryptionPrivateKey)throw new Error("Your encryption key is not loaded. Sign out and sign in again.");
+if(!otherPublicJwk)throw new Error("This friend has not set up encrypted messaging yet. Ask them to sign in again.");
+const publicKey=await crypto.subtle.importKey("jwk",otherPublicJwk,{name:"ECDH",namedCurve:"P-256"},false,[]);
+const sharedBits=await crypto.subtle.deriveBits({name:"ECDH",public:publicKey},localEncryptionPrivateKey,256);
+const hkdfKey=await crypto.subtle.importKey("raw",sharedBits,"HKDF",false,["deriveKey"]);
+return crypto.subtle.deriveKey({name:"HKDF",hash:"SHA-256",salt:encoder.encode(chatId),info:encoder.encode("VibeSnap text E2EE v1")},hkdfKey,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function encryptChatText(plainText,friend,chatId){
+const key=await deriveChatEncryptionKey(friend.encryptionPublicKey,chatId),iv=crypto.getRandomValues(new Uint8Array(12));
+const ciphertext=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,encoder.encode(plainText));
+return {encryptedText:bytesToBase64(new Uint8Array(ciphertext)),iv:bytesToBase64(iv),cryptoVersion:1};
+}
+async function decryptChatText(message,chatId){
+if(message.cryptoVersion!==1||!message.encryptedText||!message.iv)return message.text||"[Older unencrypted message]";
+const otherUid=message.senderUid===currentUser.uid?message.receiverUid:message.senderUid;
+let other=otherUid===currentUser.uid?null:usersCache.find(u=>u.uid===otherUid);
+if(!other&&otherUid){const snap=await db.collection("users").doc(otherUid).get();if(snap.exists)other={uid:snap.id,...snap.data()};}
+if(!other||!other.encryptionPublicKey)throw new Error("The other participant's encryption key is unavailable.");
+const key=await deriveChatEncryptionKey(other.encryptionPublicKey,chatId);
+const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:base64ToBytes(message.iv)},key,base64ToBytes(message.encryptedText));
+return decoder.decode(plain);
+}
+
+function showPage(page){
+["cameraPage","friendsPage","chatPage","profilePage","searchPage"].forEach(id=>$(id).classList.add("hidden"));
+document.querySelectorAll(".navBtn").forEach(btn=>btn.classList.remove("active"));
+const map={camera:"cameraPage",friends:"friendsPage",chat:"chatPage",profile:"profilePage",search:"searchPage"};
+$(map[page]).classList.remove("hidden");
+document.querySelector('[data-page="'+page+'"]').classList.add("active");
+if(page==="camera")startCamera();else stopCamera();
+}
+document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
+function renderGlobalSearch(query="",target="search"){
+const panel=target==="directory",results=$(panel?"friendDirectoryResults":"globalSearchResults"),empty=$(panel?"friendDirectoryEmpty":"searchEmptyState"),label=panel?null:$("searchResultsLabel");if(!results||!empty)return;results.innerHTML="";const q=query.trim().toLowerCase();
+const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&[u.username,u.displayName,u.phone].some(v=>(v||"").toLowerCase().includes(q)));
+matches.forEach(user=>{
+const card=document.createElement("div");card.className="searchResultCard";
+const name=user.displayName||user.username||"VibeSnap User",meta=user.username?"@"+user.username:(user.email||"VibeSnap member");
+const state=getRelationshipState(user.uid);
+const buttonLabel=state==="friends"?"Message":state==="incoming"?"Accept request":state==="outgoing"?"Waiting for acceptance":"Add friend";
+card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(meta)+'</div></div><button type="button">'+buttonLabel+'</button>';
+card.querySelector("button").onclick=async()=>{
+const button=card.querySelector("button");
+const currentState=getRelationshipState(user.uid);
+if(currentState==="outgoing"){showVibeNotice("Your request is still waiting for acceptance.","info");return;}
+button.disabled=true;
+try{
+if(currentState==="friends"){
+  await openChat(user);
+}else if(currentState==="incoming"){
+  await acceptFriendRequest(user.uid);
+}else{
+  const result=await sendFriendRequest(user);
+  if(result&&result.status==="sent")showVibeNotice("Friend request sent. Waiting for "+(user.username||user.displayName||"this user")+" to accept.","success");
+  else if(result&&result.status==="pending")showVibeNotice("Your friend request is already pending.","info");
+  else if(result&&result.status==="accepted")showVibeNotice("Friend request accepted. You're now friends!","success");
+  else if(result&&result.status==="friends")showVibeNotice("You're already friends.","info");
+}
+}catch(e){
+console.error("Friend action failed",e);
+showVibeNotice("Could not update friend request: "+(e.message||e.code||"Check Firestore permissions."),"error");
+}finally{
+button.disabled=false;
+renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
+renderGlobalSearch($("friendDirectorySearchInput")?$("friendDirectorySearchInput").value:"","directory");
+}
+};
+results.appendChild(card);
+});
+if(panel){$("directoryUserCount").textContent=String(matches.length);empty.style.display=matches.length?"none":"block";empty.textContent=q?"No users match that search.":"No other users found yet.";}
+else{empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another username or name.":"Search usernames to find people and send friend requests.";if(label)label.textContent=q?"Search results":"People on VibeSnap";}
+}
+
+// Friend requests and accepted friendships are stored separately from public profiles.
+let incomingFriendRequests=[],outgoingFriendRequests=[],acceptedFriendships=[],friendRequestUnsubscribers=[];
+function getRelationshipState(uid){
+if(!currentUser||!uid||uid===currentUser.uid)return "none";
+if(acceptedFriendships.some(f=>f.status==="accepted"&&(f.members||[]).includes(currentUser.uid)&&(f.members||[]).includes(uid)))return "friends";
+if(incomingFriendRequests.some(r=>r.fromUid===uid&&r.toUid===currentUser.uid&&r.status==="pending"))return "incoming";
+if(outgoingFriendRequests.some(r=>r.fromUid===currentUser.uid&&r.toUid===uid&&r.status==="pending"))return "outgoing";
+return "none";
+}
+function stopFriendListeners(){friendRequestUnsubscribers.forEach(fn=>{try{fn()}catch(_){}});friendRequestUnsubscribers=[]}
+function startFriendListeners(){
+stopFriendListeners();if(!currentUser)return;
+const rerender=()=>{renderAcceptedFriendList();renderChatList();renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");renderGlobalSearch($("friendDirectorySearchInput")?$("friendDirectorySearchInput").value:"","directory");renderFriendRequests();renderNotifications();};
+friendRequestUnsubscribers.push(db.collection("friendRequests").where("toUid","==",currentUser.uid).onSnapshot(snap=>{incomingFriendRequests=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Incoming friend requests listener:",err)));
+friendRequestUnsubscribers.push(db.collection("friendRequests").where("fromUid","==",currentUser.uid).onSnapshot(snap=>{outgoingFriendRequests=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Outgoing friend requests listener:",err)));
+friendRequestUnsubscribers.push(db.collection("friendships").where("members","array-contains",currentUser.uid).onSnapshot(snap=>{acceptedFriendships=snap.docs.map(d=>({id:d.id,...d.data()}));rerender()},err=>console.error("Friendships listener:",err)));
+}
+async function sendFriendRequest(user){
+if(!currentUser||!user||!user.uid||user.uid===currentUser.uid)throw new Error("Choose another VibeSnap user.");
+const state=getRelationshipState(user.uid);
+if(state==="friends")return {status:"friends"};
+if(state==="incoming"){await acceptFriendRequest(user.uid);return {status:"accepted"};}
+if(state==="outgoing")return {status:"pending"};
+const requestId=currentUser.uid+"_"+user.uid;
+const requestRef=db.collection("friendRequests").doc(requestId);
+const friendshipId=[currentUser.uid,user.uid].sort().join("_");
+const friendshipRef=db.collection("friendships").doc(friendshipId);
+const [requestSnap,friendshipSnap]=await Promise.all([requestRef.get(),friendshipRef.get()]);
+if(friendshipSnap.exists&&friendshipSnap.data().status==="accepted")return {status:"friends"};
+if(requestSnap.exists&&requestSnap.data().status==="pending")return {status:"pending"};
+if(requestSnap.exists){
+  if(requestSnap.data().status==="declined")throw new Error("This request was declined before. Resending needs a Firestore rule that allows the sender to reopen a declined request.");
+  throw new Error("A previous request record already exists. Refresh and check its status.");
+}
+await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+return {status:"sent"};
+}
+async function acceptFriendRequest(uid){
+if(!currentUser||!uid||uid===currentUser.uid)throw new Error("This friend request is invalid.");
+const requestRef=db.collection("friendRequests").doc(uid+"_"+currentUser.uid);
+const requestSnap=await requestRef.get();
+if(!requestSnap.exists||requestSnap.data().status!=="pending"||requestSnap.data().fromUid!==uid||requestSnap.data().toUid!==currentUser.uid)throw new Error("This request is no longer pending. Refresh your friend requests.");
+const members=[currentUser.uid,uid].sort(),friendshipId=members.join("_");
+const batch=db.batch();
+batch.set(db.collection("friendships").doc(friendshipId),{members,status:"accepted",createdAt:firebase.firestore.FieldValue.serverTimestamp(),acceptedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+batch.update(requestRef,{status:"accepted",acceptedAt:firebase.firestore.FieldValue.serverTimestamp()});
+await batch.commit();
+showVibeNotice("Friend request accepted! You're now friends.","success");
+}
+async function declineFriendRequest(uid){
+const request=incomingFriendRequests.find(r=>r.fromUid===uid&&r.status==="pending");if(!request)return;
+await db.collection("friendRequests").doc(request.id).update({status:"declined",respondedAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
+function ensureFriendRequestSection(){
+const page=$("chatPage");if(!page)return;
+let section=$("friendRequestsSection");
+if(!section){
+section=document.createElement("section");section.id="friendRequestsSection";section.className="friendRequestsSection friendRequestsPopover hidden";
+section.innerHTML='<div class="friendRequestsPopoverTop"><div><div class="friendRequestsHeading">Find people <span id="directoryUserCount">0</span></div><div class="friendDirectorySubtitle">Search everyone on VibeSnap and manage requests here</div></div><button type="button" id="closeFriendRequests" aria-label="Close people panel">×</button></div><div class="friendDirectorySearch"><span>⌕</span><input id="friendDirectorySearchInput" type="search" placeholder="Search usernames and names" autocomplete="off"></div><div class="friendDirectorySectionLabel">People on VibeSnap</div><div id="friendDirectoryResults"></div><div id="friendDirectoryEmpty" class="friendRequestEmpty">Loading people…</div><div class="friendDirectoryRequestsHeading"><span>Friend requests</span><span id="friendRequestCount" class="friendDirectoryCount">0</span></div><div id="friendRequestsList"></div>';
+const header=page.querySelector(".topHeader");if(header)header.insertAdjacentElement("afterend",section);else page.prepend(section);
+const close=section.querySelector("#closeFriendRequests");if(close)close.onclick=()=>section.classList.add("hidden");
+}
+}
+function renderFriendRequests(){
+ensureFriendRequestSection();const list=$("friendRequestsList");if(!list)return;list.innerHTML="";
+const pending=incomingFriendRequests.filter(r=>r.status==="pending");
+$("friendRequestCount").textContent=String(pending.length);
+if(!pending.length){list.innerHTML='<div class="friendRequestEmpty">No pending requests. Search for people to add.</div>';return;}
+pending.forEach(request=>{
+const user=usersCache.find(u=>u.uid===request.fromUid);if(!user)return;
+const row=document.createElement("div");row.className="friendRequestCard";
+const info=document.createElement("div");info.className="friendRequestInfo";
+const name=document.createElement("strong");name.textContent=user.displayName||user.username||"VibeSnap user";
+const meta=document.createElement("small");meta.textContent=user.username?"@"+user.username:"Wants to connect with you";
+info.append(name,meta);
+const actions=document.createElement("div");actions.className="friendRequestActions";
+const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){console.error("Accept friend request failed:",e);showVibeNotice("Couldn't accept request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{accept.disabled=false}};
+const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid);showVibeNotice("Friend request declined.","success")}catch(e){console.error("Decline friend request failed:",e);showVibeNotice("Couldn't decline request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{decline.disabled=false}};
+actions.append(accept,decline);row.append(avatarNodeForFriend(user),info,actions);list.appendChild(row);
+});
+}
+function avatarNodeForFriend(user){const wrap=document.createElement("div");wrap.innerHTML=avatarHTML(user,"rowAvatar");return wrap.firstElementChild;}
+
+function filterPeople(query){const q=query.trim().toLowerCase();document.querySelectorAll(".chatRow").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none");document.querySelectorAll(".userCard").forEach(row=>row.style.display=(!q||row.textContent.toLowerCase().includes(q))?"":"none")}
+$("chatSearchInput").oninput=()=>filterPeople($("chatSearchInput").value);
+$("searchNavBtn").onclick=()=>{showPage("search");renderGlobalSearch("");$("globalSearchInput").focus()};$("globalSearchInput").oninput=()=>renderGlobalSearch($("globalSearchInput").value);
+$("chatSearch").onclick=()=>{showPage("chat");$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"})};
+$("searchQuick").onclick=()=>{showPage("search");renderGlobalSearch("");$("globalSearchInput").focus()};
+function toggleNotifications(){const panel=$("notificationPanel");panel.classList.toggle("hidden");if(!panel.classList.contains("hidden"))renderNotifications()}
+$("chatNotifications").onclick=toggleNotifications;$("notificationQuick").onclick=toggleNotifications;$("closeNotifications").onclick=()=>$("notificationPanel").classList.add("hidden");
+function renderNotifications(){const host=$("notificationItems");host.innerHTML="";const recent=usersCache.slice(0,8);if(!recent.length){host.innerHTML='<div class="notificationEmpty">No recent activity yet. Start a chat with a friend!</div>';return}recent.forEach(user=>{const item=document.createElement("div");item.className="notificationItem";const name=user.displayName||user.email||"VibeSnap friend";item.innerHTML='<div>'+avatarHTML(user,"rowAvatar")+'</div><div><b>'+escapeHTML(name)+'</b><small>Open conversation</small></div>';item.onclick=()=>{$("notificationPanel").classList.add("hidden");openChat(user)};host.appendChild(item)})}
+$("chatAddFriend").onclick=()=>{ensureFriendRequestSection();const panel=$("friendRequestsSection");if(panel)panel.classList.toggle("hidden");if(panel&&!panel.classList.contains("hidden")){renderGlobalSearch($("friendDirectorySearchInput").value||"","directory");renderFriendRequests();}};document.addEventListener("input",event=>{if(event.target&&event.target.id==="friendDirectorySearchInput")renderGlobalSearch(event.target.value,"directory");});
+document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
+function openEditFriendModal(friendUid=""){
+if(!currentUser)return;
+const select=$("editFriendSelect");select.innerHTML='<option value="">Choose a friend</option>';
+usersCache.forEach(friend=>{const option=document.createElement("option");option.value=friend.uid;option.textContent=(friend.displayName||friend.email||"VibeSnap friend")+(friend.email?" · "+friend.email:"");select.appendChild(option)});
+$("editFriendStatus").textContent="";
+$("editFriendName").value="";
+select.value=friendUid||"";
+const chosen=usersCache.find(u=>u.uid===select.value);
+if(chosen)$("editFriendName").value=(currentUser.friendNicknames||{})[chosen.uid]||chosen.displayName||chosen.email||"";
+$("editFriendModal").classList.remove("hidden");
+if(usersCache.length===0){$("editFriendStatus").textContent="No other users found yet. Ask your friend to sign in first."}
+}
+function selectedEditFriend(){return usersCache.find(u=>u.uid===$("editFriendSelect").value)}
+$("composeBtn").onclick=()=>openEditFriendModal();
+$("closeEditFriend").onclick=$("cancelEditFriend").onclick=()=>{$("editFriendModal").classList.add("hidden")};
+$("editFriendModal").addEventListener("click",e=>{if(e.target===$("editFriendModal"))$("editFriendModal").classList.add("hidden")});
+$("editFriendSelect").onchange=()=>{const friend=selectedEditFriend();$("editFriendName").value=friend?((currentUser.friendNicknames||{})[friend.uid]||friend.displayName||friend.email||""):"";$("editFriendStatus").textContent=""};
+$("editFriendForm").onsubmit=async e=>{
+e.preventDefault();
+const friend=selectedEditFriend(),clean=$("editFriendName").value.trim(),button=$("saveEditFriend");
+if(!friend){$("editFriendStatus").textContent="Choose a friend first.";return}
+if(!clean){$("editFriendStatus").textContent="Enter a name.";return}
+try{
+button.disabled=true;button.textContent="Saving…";
+const nicknames={...(currentUser.friendNicknames||{}),[friend.uid]:clean};
+await db.collection("users").doc(currentUser.uid).update({friendNicknames:nicknames});
+currentUser.friendNicknames=nicknames;
+renderChatList();$("usersList").innerHTML="";usersCache.forEach(addUserCard);
+renderGlobalSearch($("globalSearchInput").value||"");
+if(selectedFriend&&selectedFriend.uid===friend.uid){selectedFriend.displayName=clean;$("chatName").textContent=clean}
+$("editFriendStatus").style.color="#25845b";$("editFriendStatus").textContent="Name saved!";
+setTimeout(()=>{$("editFriendModal").classList.add("hidden");$("editFriendStatus").style.color=""},650);
+}catch(err){console.error(err);$("editFriendStatus").textContent="Couldn't save. Check your connection and Firestore permissions."}
+finally{button.disabled=false;button.textContent="Save name"}
+};
+$("chatProfileQuick").onclick=()=>showPage("profile");
+function toggleConversationProfile(){if(!selectedFriend)return;const panel=$("conversationProfilePanel");$("conversationProfileAvatar").innerHTML=avatarHTML(selectedFriend,"rowAvatar");$("conversationProfileName").textContent=selectedFriend.displayName||selectedFriend.email||"VibeSnap friend";$("conversationProfileContact").textContent=selectedFriend.email||selectedFriend.phone||"VibeSnap member";panel.classList.toggle("hidden")}
+$("chatAvatar").onclick=toggleConversationProfile;$("chatName").onclick=toggleConversationProfile;$("closeConversationProfile").onclick=()=>$("conversationProfilePanel").classList.add("hidden");
+document.addEventListener("click",e=>{const panel=$("notificationPanel");if(!panel.classList.contains("hidden")&&!panel.contains(e.target)&&!$("chatNotifications").contains(e.target)&&!$("notificationQuick").contains(e.target))panel.classList.add("hidden")});
+
+
+async function startCamera(){
+stopCamera();
+try{currentStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facingMode},audio:false});$("cameraVideo").srcObject=currentStream;applyFilter()}
+catch(e){console.error(e);alert("Camera permission is required for VibeSnap Camera.")}
+}
+function stopCamera(){if(currentStream){currentStream.getTracks().forEach(t=>t.stop());currentStream=null}if($("cameraVideo"))$("cameraVideo").srcObject=null}
+$("flipCamera").onclick=()=>{facingMode=facingMode==="user"?"environment":"user";startCamera()};
+function applyFilter(){$("cameraVideo").style.filter=filterCSS[currentFilter];$("cameraVideo").style.transform=facingMode==="user"&&mirrorSelfieOn?"scaleX(-1)":"none"}
+document.addEventListener("visibilitychange",()=>{if(document.hidden){stopCamera()}else if(currentUser&&!$("app").classList.contains("hidden")&&!$("cameraPage").classList.contains("hidden")){startCamera()}});
+window.addEventListener("pagehide",stopCamera);
+
+document.querySelectorAll(".lensItem").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".lensItem").forEach(b=>b.classList.remove("active"));btn.classList.add("active");currentFilter=btn.dataset.filter;applyFilter()});
+$("profileQuick").onclick=()=>showPage("profile");
+$("addFriendQuick").onclick=()=>showPage("friends");
+$("notificationQuick").onclick=()=>showPage("chat");
+$("searchQuick").onclick=()=>{showPage("chat");$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"})};
+$("flashQuick").onclick=async()=>{try{const track=currentStream&&currentStream.getVideoTracks()[0];if(!track||!track.getCapabilities||!track.getCapabilities().torch){alert("Flash is not supported by this camera. Try your phone's rear camera.");return}const on=!track.getSettings().torch;await track.applyConstraints({advanced:[{torch:on}]});$("flashQuick").classList.toggle("toolActive",on)}catch(e){alert("This device does not allow camera flash control in the browser.")}};
+let cameraSoundOn=true;
+$("soundQuick").onclick=()=>{cameraSoundOn=!cameraSoundOn;if(currentStream)currentStream.getAudioTracks().forEach(t=>t.enabled=cameraSoundOn);$("soundQuick").classList.toggle("toolActive",!cameraSoundOn);$("soundQuick").setAttribute("aria-pressed",String(!cameraSoundOn));$("soundQuick").lastChild.textContent=cameraSoundOn?"Sounds":"Muted"};
+
+let mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true;
+$("moreCameraTools").setAttribute("aria-expanded","false");
+$("moreCameraTools").onclick=()=>{const menu=$("cameraMoreMenu");menu.classList.toggle("hidden");$("moreCameraTools").setAttribute("aria-expanded",String(!menu.classList.contains("hidden")));};
+$("stampToggle").onclick=()=>{vibeSnapStampOn=!vibeSnapStampOn;$("stampState").textContent=vibeSnapStampOn?"On":"Off";$("stampToggle").setAttribute("aria-pressed",String(vibeSnapStampOn));};
+$("timerCycle").onclick=()=>{photoTimerSeconds=photoTimerSeconds===0?3:photoTimerSeconds===3?5:photoTimerSeconds===5?10:0;$("timerState").textContent=photoTimerSeconds?photoTimerSeconds+" sec":"Off";$("timerCycle").setAttribute("aria-label","Timer "+$("timerState").textContent);};
+$("showFilters").onclick=()=>{$("lensStrip").classList.toggle("hidden");$("showFilters").querySelector(".cameraMoreValue").textContent=$("lensStrip").classList.contains("hidden")?"Open ›":"Hide";};
+document.addEventListener("click",e=>{const menu=$("cameraMoreMenu");if(!menu.classList.contains("hidden")&&!menu.contains(e.target)&&!$("moreCameraTools").contains(e.target)){menu.classList.add("hidden");$("moreCameraTools").setAttribute("aria-expanded","false");}});
+
+let captureInProgress=false;
+$("captureBtn").onclick=async()=>{
+if(captureInProgress)return;
+captureInProgress=true;
+const captureButton=$("captureBtn"),label=document.querySelector(".cameraModeLabel");
+captureButton.disabled=true;
+try{
+if(!currentStream)await startCamera();
+if(!currentStream)return;
+const video=$("cameraVideo");
+if(photoTimerSeconds>0){
+const delay=photoTimerSeconds,overlay=$("photoCountdownOverlay"),number=$("photoCountdownNumber"),caption=$("photoCountdownCaption");
+$("cameraMoreMenu").classList.add("hidden");
+overlay.classList.remove("hidden");
+for(let remaining=delay;remaining>0;remaining--){
+number.textContent=String(remaining);caption.textContent="PHOTO IN";label.textContent="PHOTO IN "+remaining;
+await new Promise(resolve=>setTimeout(resolve,1000));
+if(!currentStream||$("cameraPage").classList.contains("hidden"))return;
+}
+number.textContent="✦";caption.textContent="SMILE!";label.textContent="SMILE!";
+await new Promise(resolve=>setTimeout(resolve,250));
+overlay.classList.add("hidden");
+}
+if(!video.videoWidth||!video.videoHeight){
+try{await video.play()}catch(e){}
+if(!video.videoWidth||!video.videoHeight){
+await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;video.removeEventListener("loadeddata",finish);resolve()};video.addEventListener("loadeddata",finish,{once:true});setTimeout(finish,2500)});
+}
+}
+if(!video.videoWidth||!video.videoHeight){alert("Camera is still starting. Please try again.");return}
+const canvas=document.createElement("canvas");canvas.width=video.videoWidth;canvas.height=video.videoHeight;const ctx=canvas.getContext("2d");ctx.filter=filterCSS[currentFilter];
+if(facingMode==="user"&&mirrorSelfieOn){ctx.save();ctx.translate(canvas.width,0);ctx.scale(-1,1);ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore()}else{ctx.drawImage(video,0,0,canvas.width,canvas.height)}
+if(vibeSnapStampOn){
+const stampText="VibeSnap ✦",fontSize=Math.max(14,Math.round(canvas.width*.022)),padX=fontSize*.75,padY=fontSize*.48;
+ctx.save();ctx.font="700 "+fontSize+"px Arial, sans-serif";ctx.textBaseline="middle";
+const textWidth=ctx.measureText(stampText).width,stampW=textWidth+padX*2,stampH=fontSize+padY*2,margin=Math.max(18,Math.round(canvas.width*.025)),x=canvas.width-margin-stampW,y=canvas.height-margin-stampH,radius=stampH/2;
+ctx.fillStyle="rgba(18,20,38,.72)";ctx.beginPath();ctx.moveTo(x+radius,y);ctx.arcTo(x+stampW,y,x+stampW,y+stampH,radius);ctx.arcTo(x+stampW,y+stampH,x,y+stampH,radius);ctx.arcTo(x,y+stampH,x,y,radius);ctx.arcTo(x,y,x+stampW,y,radius);ctx.closePath();ctx.fill();
+const grad=ctx.createLinearGradient(x,y,x+stampW,y+stampH);grad.addColorStop(0,"#8b6cff");grad.addColorStop(1,"#4f8cff");ctx.fillStyle=grad;ctx.beginPath();ctx.arc(x+padX+fontSize*.18,y+stampH/2,fontSize*.28,0,Math.PI*2);ctx.fill();
+ctx.fillStyle="#fff";ctx.fillText(stampText,x+padX+fontSize*.55,y+stampH/2);ctx.restore();
+}
+canvas.toBlob(blob=>{if(!blob){alert("Could not create photo preview. Please try again.");return}showMediaPreview(blob,"image")},"image/jpeg",.92);
+}finally{
+captureButton.disabled=false;
+captureInProgress=false;
+$("photoCountdownOverlay").classList.add("hidden");
+label.textContent="PHOTO";
+}
+};
+
+let videoCountdownInProgress=false,videoCountdownCancelled=false;
+$("videoModeBtn").onclick=()=>{if(mediaRecorder){stopRecording();return}if(videoCountdownInProgress){videoCountdownCancelled=true;$("photoCountdownOverlay").classList.add("hidden");$("videoModeBtn").classList.remove("recording");$("videoModeBtn").textContent="🎥";return}startRecording()};
+async function startRecording(){
+if(!currentStream)return alert("Camera is not ready.");
+if(typeof MediaRecorder==="undefined"||!HTMLCanvasElement.prototype.captureStream)return alert("Video recording is not supported on this browser.");
+videoCountdownInProgress=true;videoCountdownCancelled=false;
+const video=$("cameraVideo"),overlay=$("photoCountdownOverlay"),number=$("photoCountdownNumber"),caption=$("photoCountdownCaption"),label=document.querySelector(".cameraModeLabel");
+try{
+if(photoTimerSeconds>0){
+const delay=photoTimerSeconds;
+$("cameraMoreMenu").classList.add("hidden");overlay.classList.remove("hidden");$("videoModeBtn").classList.add("recording");$("videoModeBtn").textContent="✕";
+for(let remaining=delay;remaining>0;remaining--){
+number.textContent=String(remaining);caption.textContent="VIDEO STARTS IN";label.textContent="VIDEO IN "+remaining;
+await new Promise(resolve=>setTimeout(resolve,1000));
+if(videoCountdownCancelled||!currentStream||$("cameraPage").classList.contains("hidden"))return;
+}
+number.textContent="●";caption.textContent="RECORDING";label.textContent="RECORDING";
+await new Promise(resolve=>setTimeout(resolve,250));
+overlay.classList.add("hidden");
+}
+if(videoCountdownCancelled||!currentStream||$("cameraPage").classList.contains("hidden"))return;
+recordedChunks=[];
+const canvas=document.createElement("canvas");canvas.width=video.videoWidth||1280;canvas.height=video.videoHeight||720;const ctx=canvas.getContext("2d");
+const drawFrame=()=>{if(!mediaRecorder||mediaRecorder.state!=="recording")return;ctx.filter=filterCSS[currentFilter];if(facingMode==="user"&&mirrorSelfieOn){ctx.save();ctx.translate(canvas.width,0);ctx.scale(-1,1);ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore()}else ctx.drawImage(video,0,0,canvas.width,canvas.height);requestAnimationFrame(drawFrame)};
+const videoStream=canvas.captureStream(30);currentStream.getAudioTracks().forEach(t=>videoStream.addTrack(t));
+let options={};if(MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus"))options.mimeType="video/webm;codecs=vp9,opus";else if(MediaRecorder.isTypeSupported("video/webm"))options.mimeType="video/webm";
+mediaRecorder=new MediaRecorder(videoStream,options);
+mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data)};
+mediaRecorder.onstop=()=>{const recorder=mediaRecorder;const blob=new Blob(recordedChunks,{type:recorder.mimeType||"video/webm"});if(blob.size)showMediaPreview(blob,"video");else alert("No video was recorded. Please try again.");mediaRecorder=null;$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording");label.textContent="PHOTO";videoStream.getTracks().forEach(t=>t.stop())};
+mediaRecorder.start();$("videoModeBtn").textContent="⏹️";$("videoModeBtn").classList.add("recording");label.textContent="RECORDING";drawFrame();
+}catch(e){console.error(e);alert("Video recording is not supported on this browser.");$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording")}
+finally{videoCountdownInProgress=false;overlay.classList.add("hidden");if(!mediaRecorder){$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording");label.textContent="PHOTO"}}
+}
+function stopRecording(){if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop()}
+
+function showMediaPreview(blob,type){if(currentPreviewUrl)URL.revokeObjectURL(currentPreviewUrl);currentMediaBlob=blob;currentMediaType=type;currentPreviewUrl=URL.createObjectURL(blob);const photo=$("previewImage"),video=$("previewVideo");video.pause();video.removeAttribute("src");video.load();photo.removeAttribute("src");photo.classList.toggle("hidden",type!=="image");video.classList.toggle("hidden",type!=="video");if(type==="image")photo.src=currentPreviewUrl;else{video.src=currentPreviewUrl;video.load();video.play().catch(()=>{})}$("previewModal").classList.remove("hidden")}
+let currentPreviewUrl=null;
+function closeMediaPreview(){if(currentPreviewUrl){URL.revokeObjectURL(currentPreviewUrl);currentPreviewUrl=null}$("previewImage").removeAttribute("src");$("previewVideo").pause();$("previewVideo").removeAttribute("src");$("previewVideo").load();$("previewModal").classList.add("hidden");currentMediaBlob=null;currentMediaType=null}
+$("cancelPreviewBtn").onclick=()=>{closeMediaPreview();if(!currentStream&&!$("cameraPage").classList.contains("hidden"))startCamera()};
+$("retakeBtn").onclick=()=>{closeMediaPreview();if(!$("cameraPage").classList.contains("hidden"))startCamera()};
+function openRecipientPicker(){
+if(!currentMediaBlob)return;
+const list=$("recipientPickerList");list.innerHTML="";
+const friends=usersCache.filter(user=>user.uid!==currentUser.uid&&getRelationshipState(user.uid)==="friends");
+if(!friends.length){list.innerHTML='<div class="recipientPickerEmpty">No accepted friends yet. Add someone from Friends and wait for them to accept before sending media.</div>';}
+else friends.forEach(user=>{
+const label=document.createElement("label");label.className="recipientChoice";
+const check=document.createElement("input");check.type="checkbox";check.value=user.uid;check.name="mediaRecipient";
+const avatar=document.createElement("div");avatar.innerHTML=avatarHTML(user,"rowAvatar");
+const info=document.createElement("div");info.className="recipientChoiceInfo";
+const name=document.createElement("div");name.className="recipientChoiceName";name.textContent=(currentUser.friendNicknames||{})[user.uid]||user.displayName||"VibeSnap User";
+const meta=document.createElement("div");meta.className="recipientChoiceMeta";meta.textContent="VibeSnap friend";
+info.append(name,meta);label.append(avatar.firstElementChild||avatar,info,check);list.appendChild(label);
+});
+$("recipientPickerModal").classList.remove("hidden");
+}
+$("sendMediaBtn").onclick=openRecipientPicker;
+function closeRecipientPicker(){$("recipientPickerModal").classList.add("hidden")}
+$("recipientPickerClose").onclick=closeRecipientPicker;
+$("recipientPickerCancel").onclick=closeRecipientPicker;
+$("recipientPickerModal").addEventListener("click",e=>{if(e.target===$("recipientPickerModal"))closeRecipientPicker()});
+$("recipientPickerSend").onclick=async()=>{
+if(!currentMediaBlob)return;
+const ids=[...$("recipientPickerList").querySelectorAll('input[name="mediaRecipient"]:checked')].map(input=>input.value);
+if(!ids.length)return alert("Select at least one friend to send to.");
+const recipients=ids.map(uid=>usersCache.find(user=>user.uid===uid)).filter(Boolean);
+if(!recipients.length)return alert("No valid friends selected. Please try again.");
+const sendButton=$("recipientPickerSend");sendButton.disabled=true;sendButton.textContent="Sending…";
+let sent=0;const failures=[];
+try{
+for(const friend of recipients){
+try{
+const chatId=getChatId(currentUser.uid,friend.uid);await ensureChat(chatId,friend.uid);
+const mimeType=currentMediaBlob.type||(currentMediaType==="image"?"image/jpeg":"video/webm");
+const extension=mimeType.includes("mp4")?"mp4":mimeType.includes("quicktime")?"mov":mimeType.includes("webm")?"webm":currentMediaType==="image"?"jpg":"webm";
+const messageRef=db.collection("chats").doc(chatId).collection("messages").doc();
+const path=`chatMedia/${chatId}/${messageRef.id}.${extension}`;
+const uploadRef=storage.ref().child(path);
+await uploadRef.put(currentMediaBlob,{contentType:mimeType});
+const mediaUrl=await uploadRef.getDownloadURL();
+await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:currentMediaBlob.size||0,createdAt:firebase.firestore.FieldValue.serverTimestamp()});sent++;
+}catch(err){console.error("Could not send media to",friend.uid,err);const code=err.code?(" ["+err.code+"]"):"";failures.push((friend.displayName||"A friend")+": "+(err.message||"send failed")+code)}
+}
+if(sent>0){closeRecipientPicker();closeMediaPreview();if(failures.length)alert("Sent to "+sent+" friend(s). Some sends failed:\\n"+failures.join("\\n"));else alert("Media sent to "+sent+" friend(s)!")}
+else alert("Could not send media. "+failures.join("; "));
+}catch(e){console.error(e);alert("Could not send media: "+(e.message||"Unknown error"))}
+finally{sendButton.disabled=false;sendButton.textContent="Send to selected"}
+};
+
+$("galleryBtn").onclick=()=>$("galleryInput").click();
+$("galleryInput").onchange=e=>{const file=e.target.files[0];if(!file)return;const type=file.type.startsWith("video")?"video":"image";showMediaPreview(file,type);e.target.value="";};
+
+let usersCache=[];
+async function loadUsers(){
+if(window.vibeSnapUsersUnsubscribe)window.vibeSnapUsersUnsubscribe();
+window.vibeSnapUsersUnsubscribe=db.collection("users").onSnapshot(snapshot=>{
+usersCache=[];
+snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;usersCache.push({uid:doc.id,...doc.data()})});
+renderAcceptedFriendList();
+renderChatList();
+renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
+},err=>{console.error("VibeSnap users listener error:",err);alert("Could not load VibeSnap users: "+(err.code||"Firebase error")+". Check Firestore rules and connection.");})
+}
+function friendLabel(user){return (currentUser&&currentUser.friendNicknames&&currentUser.friendNicknames[user.uid])||user.displayName||user.email||"VibeSnap User"}
+function avatarHTML(user,cls="rowAvatar"){
+const name=user.displayName||user.email||"VibeSnap User";
+return user.photoURL?'<div class="'+cls+'"><img src="'+escapeHTML(user.photoURL)+'" alt=""></div>':'<div class="'+cls+'">'+escapeHTML(name.charAt(0).toUpperCase())+'</div>';
+}
+function renderAcceptedFriendList(){
+const list=$("usersList");if(!list)return;list.innerHTML="";
+const friends=usersCache.filter(user=>getRelationshipState(user.uid)==="friends");
+$("recipientSelect").innerHTML='<option value="">Select friend to send to</option>';
+friends.forEach(user=>{addUserCard(user);const option=document.createElement("option");option.value=user.uid;option.textContent=friendLabel(user);$("recipientSelect").appendChild(option)});
+if(!friends.length){const empty=document.createElement("div");empty.className="friendRequestEmpty";empty.textContent="Your accepted friends will appear here. Search for people and send a friend request to get started.";list.appendChild(empty)}
+}
+function addUserCard(user){
+const card=document.createElement("div");card.className="userCard";const name=friendLabel(user);
+card.innerHTML=avatarHTML(user,"avatar")+'<div class="userInfo"><div class="userName">'+escapeHTML(name)+'</div><div class="userEmail">'+escapeHTML(user.email||user.phone||"")+'</div></div><button class="chatOpenBtn">Chat</button>';
+card.querySelector(".chatOpenBtn").onclick=()=>openChat(user);$("usersList").appendChild(card);
+}
+function renderChatList(){
+const list=$("chatList");if(!list)return;list.innerHTML="";
+usersCache.filter(user=>getRelationshipState(user.uid)==="friends").forEach((user,i)=>{
+const row=document.createElement("div");row.className="chatRow";
+const name=friendLabel(user);
+const dot=i%3===0?"blueDot":i%3===1?"purpleDot":"blueDot";
+row.innerHTML=avatarHTML(user,"rowAvatar")+'<div class="chatRowBody"><div class="chatRowName">'+escapeHTML(name)+'</div><div class="chatRowMeta"><span class="'+dot+'"></span>Start a VibeSnap · tap to chat</div></div><button class="editFriendInline" type="button" aria-label="Edit nickname for '+escapeHTML(name)+'" title="Edit friend name"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button><button class="rowAction" type="button" aria-label="Open chat with '+escapeHTML(name)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.2A2.5 2.5 0 0 1 5 12.5z"/></svg></button>';
+row.querySelector('.editFriendInline').onclick=(e)=>{e.stopPropagation();openEditFriendModal(user.uid)};
+row.onclick=()=>openChat(user);list.appendChild(row);
+});
+}
+$("recipientSelect").onchange=async()=>{const uid=$("recipientSelect").value;selectedFriend=uid?usersCache.find(u=>u.uid===uid):null};
+
+function getChatId(uid1,uid2){return[uid1,uid2].sort().join("_")}
+async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+async function openChat(user){
+selectedFriend=user;$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");showPage("chat");$("chatConversation").classList.remove("hidden");
+const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.uid);loadMessages(chatId);
+}
+function loadMessages(chatId){
+if(currentChatUnsubscribe)currentChatUnsubscribe();
+currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt").onSnapshot(async snapshot=>{
+$("chatMessages").innerHTML="";
+for(const doc of snapshot.docs){const message=doc.data(),box=document.createElement("div");box.className="message "+(message.senderUid===currentUser.uid?"mine":"theirs");
+if(message.type==="image"&&message.mediaUrl){const media=document.createElement("img");media.src=message.mediaUrl;media.alt="Shared photo";media.loading="lazy";box.appendChild(media)}
+else if(message.type==="video"&&message.mediaUrl){const media=document.createElement("video");media.src=message.mediaUrl;media.controls=true;media.playsInline=true;media.preload="metadata";box.appendChild(media)}
+else {try{box.textContent=await decryptChatText(message,chatId)}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
+$("chatMessages").appendChild(box)}
+$("chatMessages").scrollTop=$("chatMessages").scrollHeight
+},err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Firestore rules and connection.</div>';})
+}
+$("sendMessage").onclick=sendTextMessage;
+$("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendTextMessage()});
+async function sendTextMessage(){
+const input=$("messageInput"),button=$("sendMessage"),text=input.value.trim();
+if(!text)return;
+if(!selectedFriend){alert("Open a friend's chat before sending a message.");return}
+if(selectedFriend.uid===currentUser.uid){alert("You cannot send a message to yourself.");return}
+try{
+button.disabled=true;
+const chatId=getChatId(currentUser.uid,selectedFriend.uid);
+await ensureChat(chatId,selectedFriend.uid);
+// Refresh the recipient profile before encrypting; the usersCache can be stale.
+const friendSnap=await db.collection("users").doc(selectedFriend.uid).get();
+if(!friendSnap.exists)throw new Error("This friend's VibeSnap profile could not be found.");
+const freshFriend={uid:friendSnap.id,...friendSnap.data()};
+selectedFriend={...selectedFriend,...freshFriend};
+usersCache=usersCache.map(u=>u.uid===freshFriend.uid?{...u,...freshFriend}:u);
+if(!freshFriend.encryptionPublicKey)throw new Error("This friend has not set up encrypted messaging yet. Their account must sign in to publish its encryption public key.");
+const encrypted=await encryptChatText(text,selectedFriend,chatId);
+await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+input.value="";input.focus()
+}
+catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Firebase permissions."))}
+finally{button.disabled=false}
+}
+$("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("chat")};
+$("conversationCamera").onclick=async()=>{if(!selectedFriend){alert("Open a conversation first.");return}$("recipientSelect").value=selectedFriend.uid;$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("camera");await startCamera()};
+$("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await auth.signOut()};
+function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+
+</script>
+</body>
+</html>
