@@ -565,6 +565,109 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 </style>
 
+
+<style id="vibesnap-android-mobile-fit">
+/* Mobile viewport and small-screen fit fixes; no app/auth logic changed. */
+@media (max-width: 699px) {
+  html, body { width:100%; min-width:0; }
+  #app {
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    max-width:100%;
+    margin:0;
+    border-radius:0;
+    overflow:hidden;
+  }
+  .page {
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    min-width:0;
+  }
+  #loginScreen {
+    width:100%;
+    min-height:100vh;
+    min-height:100dvh;
+    padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .loginBox {
+    width:100%;
+    min-width:0;
+    min-height:100vh;
+    min-height:100dvh;
+    padding-left:clamp(14px, 5vw, 24px);
+    padding-right:clamp(14px, 5vw, 24px);
+  }
+  .topHeader { min-width:0; gap:clamp(6px, 2vw, 12px); }
+  .brandHeader { min-width:0; }
+  .brandLogo { font-size:clamp(22px, 6.5vw, 30px); letter-spacing:-.8px; }
+  .headerActions { flex:none; gap:clamp(4px, 1.5vw, 8px); }
+  .headerIcon { width:clamp(36px, 11vw, 46px); height:clamp(36px, 11vw, 46px); flex:none; }
+  .topAvatar { width:clamp(36px, 11vw, 48px); height:clamp(36px, 11vw, 48px); flex:none; }
+  .chatRow { min-width:0; }
+  .chatRowBody, .userInfo, .recipientChoiceInfo { min-width:0; }
+  .rowAction { width:38px; height:38px; flex:none; }
+  .rowAvatar { width:clamp(42px, 13vw, 54px); height:clamp(42px, 13vw, 54px); }
+  .bottomNav {
+    width:100%;
+    max-width:100%;
+    height:calc(68px + env(safe-area-inset-bottom));
+    padding-bottom:env(safe-area-inset-bottom);
+    left:0;
+    right:0;
+    transform:none;
+  }
+  .navBtn { min-width:0; padding-left:2px; padding-right:2px; }
+  .navBtn span svg { width:23px; height:23px; }
+  .chatInput {
+    padding:10px 10px max(10px, env(safe-area-inset-bottom));
+    gap:8px;
+  }
+  .chatInput input { min-width:0; width:0; flex:1 1 auto; }
+  .chatInput button { width:46px; min-width:46px; min-height:46px; flex:none; }
+  .conversationHeader { min-width:0; flex:none; }
+  .conversationTitle { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #recipientPickerCard { width:min(100%, 460px); max-height:calc(100vh - 28px); max-height:calc(100dvh - 28px); }
+  #previewModal { padding-bottom:env(safe-area-inset-bottom); }
+  .previewButtons { padding:12px 12px max(12px, env(safe-area-inset-bottom)); }
+  .previewButtons button { min-width:0; }
+  .cameraTop { padding-top:max(14px, env(safe-area-inset-top)); gap:clamp(5px, 1.8vw, 12px); }
+  .cameraTop button, .cameraIconBtn { width:clamp(36px, 11vw, 46px); height:clamp(36px, 11vw, 46px); flex:none; }
+  .cameraTopActions { gap:clamp(4px, 1.5vw, 9px); }
+  .cameraControls { bottom:calc(48px + env(safe-area-inset-bottom)); gap:clamp(18px, 6vw, 30px); }
+  .lensStrip { bottom:calc(118px + env(safe-area-inset-bottom)); }
+  .cameraModeLabel { bottom:calc(10px + env(safe-area-inset-bottom)); }
+}
+@media (max-width:360px) {
+  .topHeader { padding-left:9px; padding-right:9px; }
+  .brandLogo { font-size:22px; letter-spacing:-1px; }
+  .brandSpark { font-size:17px; }
+  .headerActions { gap:3px; }
+  .headerIcon { width:34px; height:34px; }
+  .headerIcon svg { width:19px; height:19px; }
+  .topAvatar { width:34px; height:34px; }
+  .chatList { padding-left:2px; padding-right:2px; }
+  .chatRow { gap:7px; padding-left:7px; padding-right:7px; }
+  .chatRowName { font-size:14px; }
+  .chatRowMeta { font-size:11px; }
+  .rowAction { width:32px; height:32px; }
+  .rowAction svg { width:20px; height:20px; }
+  .cameraTop { padding-left:9px; padding-right:9px; }
+  .cameraTop button, .cameraIconBtn { width:33px; height:33px; }
+  .cameraTopActions { gap:3px; }
+  .cameraSidePanel { right:7px; }
+  .lensStrip { padding-left:10px; padding-right:10px; gap:7px; }
+}
+@supports not (height: 100dvh) {
+  @media (max-width:699px) {
+    #app, .page { height:100vh; }
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
