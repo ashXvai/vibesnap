@@ -666,6 +666,47 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
     #app, .page { height:100vh; }
   }
 }
+
+/* VibeSnap camera layout fix: hide filters until the web app is complete. */
+.lensStrip,
+#showFilters {
+  display: none !important;
+}
+.cameraControls {
+  bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+}
+.cameraModeLabel {
+  bottom: calc(6px + env(safe-area-inset-bottom)) !important;
+}
+@media (max-width: 699px) {
+  .cameraControls {
+    bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    gap: clamp(14px, 5vw, 26px);
+  }
+  .captureBtn {
+    width: 76px;
+    height: 76px;
+    flex: none;
+  }
+  .cameraSideBtn {
+    width: 46px;
+    height: 46px;
+    flex: none;
+  }
+}
+@media (max-height: 650px) {
+  .cameraControls {
+    bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+  }
+  .captureBtn {
+    width: 66px;
+    height: 66px;
+  }
+  .cameraSideBtn {
+    width: 42px;
+    height: 42px;
+  }
+}
 </style>
 
 </head>
