@@ -946,6 +946,60 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 </style>
 
+
+<style id="vibesnap-desktop-camera-final-override">
+@media (min-width:1024px) {
+  /* Override the earlier phone-only !important camera positioning on desktop. */
+  #app > #cameraPage {
+    position:relative !important;
+    width:calc(100% - 104px) !important;
+    height:100% !important;
+    margin-left:104px !important;
+    overflow:hidden !important;
+  }
+  #app > #cameraPage #cameraVideo {
+    position:absolute !important;
+    inset:auto !important;
+    left:50% !important;
+    top:calc(50% - 24px) !important;
+    right:auto !important;
+    bottom:auto !important;
+    width:min(420px, 38vw, 56vh) !important;
+    height:min(560px, 70vh) !important;
+    max-width:calc(100% - 260px) !important;
+    max-height:calc(100% - 150px) !important;
+    aspect-ratio:9 / 16 !important;
+    transform:translate(-50%,-50%) !important;
+    object-fit:cover !important;
+    border-radius:22px !important;
+  }
+  #app > #cameraPage .cameraControls {
+    position:absolute !important;
+    left:50% !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:22px !important;
+    width:max-content !important;
+    transform:translateX(-50%) !important;
+    display:flex !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:26px !important;
+    z-index:60 !important;
+  }
+  #app > #cameraPage .cameraSideBtn { width:54px !important;height:54px !important; }
+  #app > #cameraPage .captureBtn { width:78px !important;height:78px !important; }
+  #app > #cameraPage .lensStrip { display:none !important; }
+  #app > #cameraPage .cameraSidePanel {
+    right:28px !important;
+    left:auto !important;
+    top:50% !important;
+    transform:translateY(-50%) !important;
+  }
+  #app > #cameraPage .cameraTop { left:0 !important;right:0 !important; }
+}
+</style>
+
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
