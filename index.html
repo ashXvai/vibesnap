@@ -1000,6 +1000,149 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 </style>
 
+
+<style id="vibesnap-desktop-camera-polish">
+@media (min-width:1024px) {
+  #app > #cameraPage {
+    background:
+      radial-gradient(ellipse at 52% 45%, rgba(91,82,168,.22) 0%, rgba(34,32,63,.12) 34%, transparent 67%),
+      linear-gradient(135deg,#11111d 0%,#191827 52%,#11131f 100%) !important;
+  }
+  #app > #cameraPage:after {
+    content:"";
+    position:absolute;
+    inset:18px;
+    border:1px solid rgba(255,255,255,.055);
+    border-radius:20px;
+    pointer-events:none;
+    z-index:1;
+  }
+  #app > #cameraPage #cameraVideo {
+    position:absolute !important;
+    inset:auto !important;
+    left:50% !important;
+    top:calc(50% - 22px) !important;
+    right:auto !important;
+    bottom:auto !important;
+    height:min(64vh,620px) !important;
+    width:auto !important;
+    max-width:min(390px,calc(100% - 360px)) !important;
+    max-height:calc(100% - 164px) !important;
+    aspect-ratio:9 / 16 !important;
+    transform:translate(-50%,-50%) !important;
+    object-fit:cover !important;
+    border:1px solid rgba(255,255,255,.24) !important;
+    border-radius:26px !important;
+    background:#090a12 !important;
+    box-shadow:0 28px 80px rgba(0,0,0,.48),0 0 0 8px rgba(255,255,255,.035) !important;
+    z-index:2 !important;
+  }
+  #app > #cameraPage .cameraShade {
+    z-index:3 !important;
+    background:linear-gradient(180deg,rgba(5,6,14,.24),transparent 20%,transparent 72%,rgba(5,6,14,.36)) !important;
+    pointer-events:none !important;
+  }
+  #app > #cameraPage .cameraTop {
+    left:0 !important;right:0 !important;top:0 !important;
+    padding:24px 30px !important;
+    z-index:12 !important;
+  }
+  #app > #cameraPage .cameraAvatar,
+  #app > #cameraPage .cameraIconBtn {
+    border:1px solid rgba(255,255,255,.18) !important;
+    box-shadow:0 8px 24px rgba(0,0,0,.18) !important;
+    backdrop-filter:blur(14px) !important;
+  }
+  #app > #cameraPage .cameraSidePanel {
+    position:absolute !important;
+    top:50% !important;
+    right:34px !important;
+    left:auto !important;
+    transform:translateY(-50%) !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:18px !important;
+    z-index:14 !important;
+  }
+  #app > #cameraPage .cameraTool {
+    min-width:76px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    gap:8px !important;
+    color:#f7f6ff !important;
+    font-weight:700 !important;
+    text-shadow:0 2px 8px rgba(0,0,0,.6) !important;
+  }
+  #app > #cameraPage .cameraToolIcon {
+    width:54px !important;height:54px !important;
+    display:grid !important;place-items:center !important;
+    border:1px solid rgba(255,255,255,.18) !important;
+    border-radius:19px !important;
+    background:rgba(255,255,255,.09) !important;
+    box-shadow:0 10px 26px rgba(0,0,0,.2) !important;
+    backdrop-filter:blur(14px) !important;
+    transition:transform .18s ease,background .18s ease !important;
+  }
+  #app > #cameraPage .cameraTool:hover .cameraToolIcon {
+    transform:translateY(-2px) !important;
+    background:rgba(255,255,255,.16) !important;
+  }
+  #app > #cameraPage .cameraControls {
+    position:absolute !important;
+    left:50% !important;right:auto !important;
+    top:auto !important;bottom:26px !important;
+    width:max-content !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:30px !important;
+    transform:translateX(-50%) !important;
+    z-index:20 !important;
+    padding:10px 18px !important;
+    border:1px solid rgba(255,255,255,.12) !important;
+    border-radius:999px !important;
+    background:rgba(14,15,27,.46) !important;
+    box-shadow:0 12px 36px rgba(0,0,0,.22) !important;
+    backdrop-filter:blur(18px) !important;
+  }
+  #app > #cameraPage .cameraSideBtn {
+    width:54px !important;height:54px !important;
+    display:grid !important;place-items:center !important;
+    border:1px solid rgba(255,255,255,.28) !important;
+    background:rgba(255,255,255,.94) !important;
+    box-shadow:0 5px 18px rgba(0,0,0,.22) !important;
+    transition:transform .18s ease,box-shadow .18s ease !important;
+  }
+  #app > #cameraPage .cameraSideBtn:hover {
+    transform:translateY(-2px) !important;
+    box-shadow:0 9px 22px rgba(0,0,0,.3) !important;
+  }
+  #app > #cameraPage .captureBtn {
+    width:82px !important;height:82px !important;
+    border:5px solid #fff !important;
+    box-shadow:0 0 0 2px rgba(255,255,255,.62),0 10px 28px rgba(0,0,0,.34) !important;
+  }
+  #app > #cameraPage .cameraModeLabel {
+    display:block !important;
+    left:50% !important;right:auto !important;
+    bottom:122px !important;
+    transform:translateX(-50%) !important;
+    color:rgba(255,255,255,.78) !important;
+    letter-spacing:2px !important;
+    font-size:10px !important;
+    font-weight:800 !important;
+    z-index:18 !important;
+  }
+  #app > #cameraPage .lensStrip { display:none !important; }
+  #app > #cameraPage .cameraMoreMenu {
+    z-index:30 !important;
+    right:122px !important;
+    top:50% !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
