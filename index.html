@@ -995,19 +995,16 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <style id="vibesnap-desktop-camera-position-fix">
 @media (min-width:1024px) {
   #app #cameraPage video#cameraVideo {
-    position:fixed !important;
-    left:calc(50% + 140px) !important;
-    top:50% !important;
-    right:auto !important;
-    bottom:auto !important;
-    width:auto !important;
-    height:min(68vh,calc(100vh - 210px)) !important;
-    max-width:calc(100vw - 440px) !important;
-    max-height:68vh !important;
+    position:absolute !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100% !important;
+    max-width:none !important;
+    max-height:none !important;
     object-fit:contain !important;
-    translate:-50% -50% !important;
+    translate:none !important;
     margin:0 !important;
-    z-index:2 !important;
+    z-index:1 !important;
   }
 }
 </style>
@@ -1042,7 +1039,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 <style id="vibesnap-nav-layer-camera-fix">
 @media (min-width:1024px) {
-  #app .bottomNav { position:relative !important; z-index:120 !important; }
+  #app .bottomNav { position:absolute !important; z-index:120 !important; inset:0 auto 0 0 !important; }
   #app #chatConversation { z-index:80 !important; }
   #app .bottomNav .navBtn { position:relative !important; pointer-events:auto !important; }
 }
