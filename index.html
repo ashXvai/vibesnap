@@ -1029,6 +1029,48 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   #app .bottomNav .navBtn { position:relative !important; pointer-events:auto !important; }
 }
 </style>
+
+<style id="vibesnap-camera-stage-centering">
+@media (min-width:1024px) {
+  #app > #cameraPage {
+    position:absolute !important;
+    inset:0 !important;
+    overflow:hidden !important;
+  }
+  #app > #cameraPage #cameraVideo {
+    position:absolute !important;
+    left:50% !important;
+    top:50% !important;
+    right:auto !important;
+    bottom:auto !important;
+    inset:auto !important;
+    width:min(68%,820px) !important;
+    height:min(68vh,680px) !important;
+    max-width:calc(100% - 190px) !important;
+    max-height:calc(100% - 170px) !important;
+    min-width:320px !important;
+    min-height:240px !important;
+    object-fit:contain !important;
+    transform:translate(-50%,-50%) !important;
+    translate:none !important;
+    margin:0 !important;
+    display:block !important;
+    z-index:2 !important;
+  }
+  #app > #cameraPage .cameraShade { z-index:3 !important; pointer-events:none !important; }
+  #app > #cameraPage .cameraTop { z-index:12 !important; }
+  #app > #cameraPage .cameraSidePanel { z-index:14 !important; }
+  #app > #cameraPage .cameraControls { z-index:15 !important; }
+}
+@media (min-width:1024px) and (max-height:720px) {
+  #app > #cameraPage #cameraVideo {
+    width:min(64%,760px) !important;
+    height:calc(100% - 190px) !important;
+    min-height:200px !important;
+    max-height:calc(100% - 150px) !important;
+  }
+}
+</style>
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
