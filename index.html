@@ -1154,7 +1154,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
-let currentUser=null,selectedFriend=null,currentStream=null,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null;
+let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null;
 const $=id=>document.getElementById(id);
 document.addEventListener("click",function(event){
 const startButton=event.target.closest("#cameraStartButton");
@@ -1519,7 +1519,6 @@ function clearCameraStatus(){
 const inlineMessage=$("cameraStartMessage");
 if(inlineMessage)inlineMessage.textContent="";
 }
-let cameraRequestToken=0;
 async function startCamera(){
 stopCamera();
 const token=++cameraRequestToken;
