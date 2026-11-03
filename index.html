@@ -1011,6 +1011,24 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   }
 }
 </style>
+
+<style id="vibesnap-video-recording-polish">
+#cameraPage .cameraControls { gap:clamp(20px,3vw,34px) !important; padding:13px 20px !important; border:1px solid rgba(205,190,255,.18) !important; border-radius:999px !important; background:linear-gradient(145deg,rgba(30,25,45,.88),rgba(14,13,25,.88)) !important; box-shadow:0 16px 46px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.07) !important; backdrop-filter:blur(18px) saturate(1.25) !important; }
+#cameraPage .cameraSideBtn { display:grid !important; place-items:center !important; color:#27213b !important; background:linear-gradient(145deg,#fff,#eeeaff) !important; border:1px solid rgba(137,87,255,.16) !important; box-shadow:0 5px 16px rgba(0,0,0,.16),inset 0 1px rgba(255,255,255,.9) !important; transition:transform .18s ease,box-shadow .18s ease !important; }
+#cameraPage .cameraSideBtn:hover { transform:translateY(-3px) scale(1.04) !important; box-shadow:0 9px 22px rgba(137,87,255,.22) !important; }
+#cameraPage .cameraSideBtn svg { width:25px !important; height:25px !important; fill:none !important; stroke:currentColor !important; stroke-width:2 !important; stroke-linecap:round !important; stroke-linejoin:round !important; }
+#cameraPage .captureBtn { position:relative !important; background:linear-gradient(145deg,#fff,#f0edff) !important; border:5px solid rgba(255,255,255,.98) !important; box-shadow:0 0 0 2px rgba(137,87,255,.95),0 8px 26px rgba(137,87,255,.24),inset 0 0 0 1px rgba(45,35,70,.12) !important; transition:transform .18s ease !important; }
+#cameraPage .captureBtn:after { content:""; position:absolute; inset:8px; border:1px solid rgba(95,76,140,.16); border-radius:50%; }
+#cameraPage .captureBtn:hover { transform:scale(1.045) !important; }
+#cameraPage #videoModeBtn { width:58px !important; height:58px !important; border-radius:50% !important; position:relative !important; }
+#cameraPage #videoModeBtn.is-recording { color:#fff !important; background:linear-gradient(145deg,#ff5275,#e51f50) !important; border:1px solid rgba(255,255,255,.45) !important; box-shadow:0 0 0 5px rgba(255,49,88,.15),0 0 28px rgba(255,49,88,.45) !important; animation:vsRecordPulse 1.45s ease-in-out infinite !important; }
+#cameraPage #videoModeBtn.is-recording svg { width:25px !important; height:25px !important; fill:currentColor !important; stroke:none !important; }
+#cameraPage #videoModeBtn.recording:after { content:"REC"; position:absolute; top:-10px; right:-9px; padding:3px 6px; border-radius:7px; color:#fff; background:#e51f50; border:1px solid rgba(255,255,255,.65); font:900 9px/1 Arial,sans-serif; letter-spacing:.08em; box-shadow:0 3px 10px rgba(0,0,0,.25); }
+#cameraPage .cameraModeLabel { padding:7px 13px !important; width:max-content !important; left:50% !important; right:auto !important; transform:translateX(-50%) !important; border:1px solid rgba(255,255,255,.15) !important; border-radius:999px !important; background:rgba(22,18,34,.72) !important; backdrop-filter:blur(12px) !important; letter-spacing:.13em !important; }
+#cameraPage:has(#videoModeBtn.is-recording) .cameraModeLabel { color:#ff6b89 !important; border-color:rgba(255,82,117,.42) !important; }
+@keyframes vsRecordPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.07); } }
+@media (prefers-reduced-motion:reduce) { #cameraPage #videoModeBtn.is-recording { animation:none !important; } }
+</style>
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
@@ -1526,8 +1544,18 @@ label.textContent="PHOTO";
 }
 };
 
+function setVideoButtonState(recording){
+const button=$("videoModeBtn");
+button.classList.toggle("recording",recording);
+button.classList.toggle("is-recording",recording);
+button.setAttribute("aria-label",recording?"Stop video recording":"Start video recording");
+button.title=recording?"Stop recording":"Record video";
+button.innerHTML=recording
+?'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg>'
+:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg>';
+}
 let videoCountdownInProgress=false,videoCountdownCancelled=false;
-$("videoModeBtn").onclick=()=>{if(mediaRecorder){stopRecording();return}if(videoCountdownInProgress){videoCountdownCancelled=true;$("photoCountdownOverlay").classList.add("hidden");$("videoModeBtn").classList.remove("recording");$("videoModeBtn").textContent="🎥";return}startRecording()};
+$("videoModeBtn").onclick=()=>{if(mediaRecorder){stopRecording();return}if(videoCountdownInProgress){videoCountdownCancelled=true;$("photoCountdownOverlay").classList.add("hidden");setVideoButtonState(false);return}startRecording()};
 async function startRecording(){
 if(!currentStream)return alert("Camera is not ready.");
 if(typeof MediaRecorder==="undefined"||!HTMLCanvasElement.prototype.captureStream)return alert("Video recording is not supported on this browser.");
@@ -1536,7 +1564,7 @@ const video=$("cameraVideo"),overlay=$("photoCountdownOverlay"),number=$("photoC
 try{
 if(photoTimerSeconds>0){
 const delay=photoTimerSeconds;
-$("cameraMoreMenu").classList.add("hidden");overlay.classList.remove("hidden");$("videoModeBtn").classList.add("recording");$("videoModeBtn").textContent="✕";
+$("cameraMoreMenu").classList.add("hidden");overlay.classList.remove("hidden");setVideoButtonState(true);
 for(let remaining=delay;remaining>0;remaining--){
 number.textContent=String(remaining);caption.textContent="VIDEO STARTS IN";label.textContent="VIDEO IN "+remaining;
 await new Promise(resolve=>setTimeout(resolve,1000));
@@ -1554,10 +1582,10 @@ const videoStream=canvas.captureStream(30);currentStream.getAudioTracks().forEac
 let options={};if(MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus"))options.mimeType="video/webm;codecs=vp9,opus";else if(MediaRecorder.isTypeSupported("video/webm"))options.mimeType="video/webm";
 mediaRecorder=new MediaRecorder(videoStream,options);
 mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data)};
-mediaRecorder.onstop=()=>{const recorder=mediaRecorder;const blob=new Blob(recordedChunks,{type:recorder.mimeType||"video/webm"});if(blob.size)showMediaPreview(blob,"video");else alert("No video was recorded. Please try again.");mediaRecorder=null;$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording");label.textContent="PHOTO";videoStream.getTracks().forEach(t=>t.stop())};
-mediaRecorder.start();$("videoModeBtn").textContent="⏹️";$("videoModeBtn").classList.add("recording");label.textContent="RECORDING";drawFrame();
-}catch(e){console.error(e);alert("Video recording is not supported on this browser.");$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording")}
-finally{videoCountdownInProgress=false;overlay.classList.add("hidden");if(!mediaRecorder){$("videoModeBtn").textContent="🎥";$("videoModeBtn").classList.remove("recording");label.textContent="PHOTO"}}
+mediaRecorder.onstop=()=>{const recorder=mediaRecorder;const blob=new Blob(recordedChunks,{type:recorder.mimeType||"video/webm"});if(blob.size)showMediaPreview(blob,"video");else alert("No video was recorded. Please try again.");mediaRecorder=null;setVideoButtonState(false);label.textContent="PHOTO";videoStream.getTracks().forEach(t=>t.stop())};
+mediaRecorder.start();setVideoButtonState(true);label.textContent="RECORDING";drawFrame();
+}catch(e){console.error(e);alert("Video recording is not supported on this browser.");setVideoButtonState(false)}
+finally{videoCountdownInProgress=false;overlay.classList.add("hidden");if(!mediaRecorder){setVideoButtonState(false);label.textContent="PHOTO"}}
 }
 function stopRecording(){if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop()}
 
