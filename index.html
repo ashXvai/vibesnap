@@ -929,6 +929,26 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   #app > #cameraPage .cameraControls { bottom:15px !important; }
   #app > #cameraPage .cameraModeLabel { bottom:105px !important; }
 }
+
+@media (min-width:1024px) {
+  #app > #searchPage { padding:0 48px 42px !important; overflow:auto !important; background:#111019 !important; }
+  #app .searchPageHeader { margin:0 -48px 30px !important; padding:42px 54px 34px !important; background:linear-gradient(110deg,#211936 0%,#171b2d 100%) !important; border-bottom:1px solid rgba(190,174,255,.14) !important; }
+  #app .searchPageTitle { color:#fff !important; font-size:38px !important; letter-spacing:-1.2px; }
+  #app .searchPageSubtitle { color:#aaa4c1 !important; font-size:15px !important; margin-top:8px; }
+  #app .searchPageBox { box-sizing:border-box; display:flex; align-items:center; gap:14px; width:min(100%,920px) !important; height:64px !important; margin:0 0 28px !important; padding:0 22px !important; border-radius:17px !important; background:#201c2d !important; border:1px solid rgba(190,174,255,.18) !important; box-shadow:0 10px 30px rgba(0,0,0,.16) !important; }
+  #app .searchPageBox:focus-within { border-color:rgba(137,87,255,.75) !important; box-shadow:0 0 0 3px rgba(137,87,255,.12),0 10px 30px rgba(0,0,0,.16) !important; }
+  #app .searchPageBox input,#app .searchPageBox input:focus { width:100% !important; height:100% !important; padding:0 !important; border:0 !important; outline:0 !important; box-shadow:none !important; background:transparent !important; color:#f5f2ff !important; font-size:16px !important; }
+  #app .searchPageBox input::placeholder { color:#918aa8 !important; }
+  #app .searchSectionLabel { padding:0 2px 14px !important; margin:0 !important; color:#c9c1dd !important; font-size:12px !important; letter-spacing:1.1px !important; }
+  #app #globalSearchResults { width:min(100%,1040px); padding:0 !important; display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px !important; }
+  #app .searchResultCard { min-width:0; display:flex; align-items:center; gap:14px; min-height:86px; padding:15px !important; border:1px solid rgba(190,174,255,.14) !important; border-radius:17px !important; background:#211d30 !important; box-shadow:0 8px 24px rgba(0,0,0,.15) !important; }
+  #app .searchResultCard .avatar { width:54px !important; height:54px !important; flex:0 0 54px !important; border-radius:16px !important; }
+  #app .searchResultName { color:#f5f2ff !important; font-size:15px !important; font-weight:800 !important; }
+  #app .searchResultMeta { color:#aaa2bf !important; font-size:12px !important; }
+  #app .searchResultCard button { flex:none; min-width:104px; padding:11px 15px !important; border-radius:12px !important; background:linear-gradient(120deg,#8957ff,#438cff) !important; color:#fff !important; }
+  #app .searchEmptyState { width:min(100%,920px); box-sizing:border-box; margin-top:8px; border:1px dashed rgba(190,174,255,.2); border-radius:18px; color:#aaa2bf !important; background:rgba(33,29,48,.55); }
+  #app .searchEmptyState b { color:#f5f2ff !important; }
+}
 </style>
 
 </head>
@@ -972,12 +992,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <div id="chatList" class="chatList"></div>
 <button class="composeBtn" id="composeBtn">✎</button>
 </div>
-<div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find your friends on VibeSnap</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by name, email or phone" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can chat with</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Type a name, email or phone number to search.</p></div></div>
+<div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find people by username</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by username" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can add</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Search for someone by their VibeSnap username.</p></div></div>
 <div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profileEmail" style="color:#777;margin-top:8px;"></p><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
 <div class="bottomNav">
 <button class="navBtn active" data-page="chat"><span><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5.5 4v-4.3A2.5 2.5 0 0 1 4 14.5z"/></svg></span>Chats</button>
  <button class="navBtn" data-page="camera"><span><svg viewBox="0 0 24 24"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></span>Camera</button>
- <button class="navBtn" data-page="friends"><span><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5A4.5 4.5 0 0 1 7 14h4a4.5 4.5 0 0 1 4.5 4.5V20M17 5.5a3 3 0 0 1 0 5.8M18 14.5a4 4 0 0 1 3.5 4V20"/></svg></span>Friends</button>
+
  <button class="navBtn" data-page="profile"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span>Profile</button>
  <button class="navBtn" id="searchNavBtn" data-page="search" aria-label="Search"><span><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></span>Search</button>
 </div>
@@ -1171,10 +1191,10 @@ if(page==="camera")startCamera();else stopCamera();
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
 function renderGlobalSearch(query="",target="search"){
 const panel=target==="directory",results=$(panel?"friendDirectoryResults":"globalSearchResults"),empty=$(panel?"friendDirectoryEmpty":"searchEmptyState"),label=panel?null:$("searchResultsLabel");if(!results||!empty)return;results.innerHTML="";const q=query.trim().toLowerCase();
-const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&[u.username,u.displayName,u.phone].some(v=>(v||"").toLowerCase().includes(q)));
+const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&getRelationshipState(u.uid)!=="friends"&&!!(u.username||"").trim()&&(u.username||"").toLowerCase().includes(q));
 matches.forEach(user=>{
 const card=document.createElement("div");card.className="searchResultCard";
-const name=user.displayName||user.username||"VibeSnap User",meta=user.username?"@"+user.username:(user.email||"VibeSnap member");
+const name=user.username||"VibeSnap User",meta="@"+user.username;
 const state=getRelationshipState(user.uid);
 const buttonLabel=state==="friends"?"Message":state==="incoming"?"Accept request":state==="outgoing"?"Waiting for acceptance":"Add friend";
 card.innerHTML=avatarHTML(user,"avatar")+'<div class="searchResultInfo"><div class="searchResultName">'+escapeHTML(name)+'</div><div class="searchResultMeta">'+escapeHTML(meta)+'</div></div><button type="button">'+buttonLabel+'</button>';
@@ -1207,7 +1227,7 @@ renderGlobalSearch($("friendDirectorySearchInput")?$("friendDirectorySearchInput
 results.appendChild(card);
 });
 if(panel){$("directoryUserCount").textContent=String(matches.length);empty.style.display=matches.length?"none":"block";empty.textContent=q?"No users match that search.":"No other users found yet.";}
-else{empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another username or name.":"Search usernames to find people and send friend requests.";if(label)label.textContent=q?"Search results":"People on VibeSnap";}
+else{empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another username.":"Search usernames to find people who are not your friends yet.";if(label)label.textContent=q?"Search results":"People on VibeSnap";}
 }
 
 // Friend requests and accepted friendships are stored separately from public profiles.
