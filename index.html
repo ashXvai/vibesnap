@@ -1784,6 +1784,54 @@ $("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){current
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 
 </script>
+
+<style id="vibesnap-desktop-camera-final-layout">
+@media (min-width:1024px) {
+  #app > #cameraPage {
+    position:relative !important;
+    width:calc(100% - var(--vs-side, 272px)) !important;
+    height:100% !important;
+    margin:0 0 0 var(--vs-side, 272px) !important;
+    overflow:hidden !important;
+    background:radial-gradient(ellipse at 52% 42%,rgba(91,75,158,.22),transparent 48%),linear-gradient(135deg,#111019,#171426 55%,#101521) !important;
+  }
+  #app > #cameraPage video#cameraVideo {
+    position:absolute !important;
+    inset:auto !important;
+    left:calc(50% - 48px) !important;
+    top:50% !important;
+    right:auto !important;
+    bottom:auto !important;
+    width:min(68%,820px) !important;
+    height:min(68vh,650px) !important;
+    min-width:360px !important;
+    min-height:260px !important;
+    max-width:calc(100% - 190px) !important;
+    max-height:calc(100% - 170px) !important;
+    object-fit:contain !important;
+    transform:translate(-50%,-50%) !important;
+    translate:none !important;
+    margin:0 !important;
+    display:block !important;
+    border-radius:20px !important;
+    border:1px solid rgba(255,255,255,.14) !important;
+    background:#08080e !important;
+    box-shadow:0 24px 70px rgba(0,0,0,.38) !important;
+    z-index:2 !important;
+  }
+  #app > #cameraPage .cameraShade { z-index:3 !important; pointer-events:none !important; }
+  #app > #cameraPage .cameraTop { z-index:12 !important; }
+  #app > #cameraPage .cameraSidePanel { z-index:14 !important; }
+  #app > #cameraPage .cameraControls { z-index:20 !important; }
+}
+@media (min-width:1024px) and (max-height:720px) {
+  #app > #cameraPage video#cameraVideo {
+    height:calc(100% - 190px) !important;
+    max-height:calc(100% - 150px) !important;
+    min-height:220px !important;
+  }
+}
+</style>
 </body>
 <!-- VibeSnap Pages publish refresh: polished main build -->
 </html>
