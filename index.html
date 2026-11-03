@@ -1040,6 +1040,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   #app #chatConversation { position:absolute !important; z-index:80 !important; }
 }
 </style>
+<style id="vibesnap-nav-layer-camera-fix">
+@media (min-width:1024px) {
+  #app .bottomNav { position:relative !important; z-index:120 !important; }
+  #app #chatConversation { z-index:80 !important; }
+  #app .bottomNav .navBtn { position:relative !important; pointer-events:auto !important; }
+}
+</style>
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
