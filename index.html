@@ -1506,12 +1506,18 @@ let cameraRequestToken=0;
 async function startCamera(){
 stopCamera();
 const requestToken=++cameraRequestToken;
-if(!currentUser||$("app").classList.contains("hidden")||$("cameraPage").classList.contains("hidden")||document.hidden)return;
+showCameraStatus("Starting camera…");
+if(!currentUser){
+showCameraStatus("Your account session is not ready yet. Please wait a moment, then open Camera again.");
+return;
+}
+if($("app").classList.contains("hidden")||$("cameraPage").classList.contains("hidden")){
+showCameraStatus("Open the Camera tab to start your camera.");
+return;
+}
 const video=$("cameraVideo");
-clearCameraStatus();
 if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-showCameraStatus("Camera access is unavailable in this browser context. Open VibeSnap using its HTTPS website address and allow camera access.");
-showVibeNotice("Camera access is unavailable. Use the HTTPS website and allow camera access.","error");
+showCameraStatus("This browser cannot access the camera here. Open VibeSnap from its HTTPS website address.");
 return;
 }
 let stream=null;
@@ -1519,36 +1525,39 @@ try{
 try{
 stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facingMode}},audio:false});
 }catch(firstError){
-if(requestToken!==cameraRequestToken) return;
-console.warn("Preferred camera mode unavailable; trying the default camera:",firstError);
+if(requestToken!==cameraRequestToken)return;
+console.warn("Preferred camera mode unavailable; trying default camera:",firstError);
 stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
 }
-if(requestToken!==cameraRequestToken||!currentUser||$("app").classList.contains("hidden")||$("cameraPage").classList.contains("hidden")||document.hidden){
+if(requestToken!==cameraRequestToken){
 stream.getTracks().forEach(track=>track.stop());
 return;
 }
+if(!$("app")||$("app").classList.contains("hidden")||$("cameraPage").classList.contains("hidden")){
+stream.getTracks().forEach(track=>track.stop());
+showCameraStatus("Camera was closed before it finished starting. Open Camera again to retry.");
+return;
+}
 currentStream=stream;
-video.muted=true;
-video.autoplay=true;
-video.playsInline=true;
-video.srcObject=stream;
+video.muted=true;video.autoplay=true;video.playsInline=true;video.srcObject=stream;
 await video.play();
+const track=stream.getVideoTracks()[0];
+if(!track||track.readyState!=="live")throw new Error("The camera stream did not become live.");
 applyFilter();
 clearCameraStatus();
-const track=stream.getVideoTracks()[0];
-if(!track||track.readyState!=="live")throw new Error("The camera stream did not start. Check whether another app is using the camera.");
 }catch(e){
 if(stream&&stream!==currentStream)stream.getTracks().forEach(track=>track.stop());
-if(requestToken===cameraRequestToken&&!$("cameraPage").classList.contains("hidden")){
+if(requestToken===cameraRequestToken){
 console.error("VibeSnap camera start error:",e);
-let message="Camera could not start. Allow camera access in your browser settings and close other apps using the camera.";
+let message="Camera could not start. Check browser camera permission and close other apps using the camera.";
 if(e&&e.name==="NotAllowedError")message="Camera permission is blocked. In Chrome, click the site icon beside the address, set Camera to Allow, then reload VibeSnap.";
 else if(e&&e.name==="NotFoundError")message="No camera was found on this device.";
 else if(e&&e.name==="NotReadableError")message="The camera is busy or unavailable. Close other apps using it, then try again.";
 else if(e&&e.name==="OverconstrainedError")message="That camera mode is unavailable. Try switching the camera.";
 else if(e&&e.name==="SecurityError")message="Camera access is blocked. Open VibeSnap using its HTTPS website address.";
+else if(e&&e.name==="AbortError")message="The camera start was interrupted. Please open Camera again.";
+else if(e&&e.message)message="Camera error: "+e.message;
 showCameraStatus(message);
-showVibeNotice(message,"error");
 }
 }
 }
