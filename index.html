@@ -992,6 +992,25 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 </style>
 
+<style id="vibesnap-desktop-camera-position-fix">
+@media (min-width:1024px) {
+  #app #cameraPage video#cameraVideo {
+    position:fixed !important;
+    left:calc(50% + 140px) !important;
+    top:50% !important;
+    right:auto !important;
+    bottom:auto !important;
+    width:auto !important;
+    height:min(68vh,calc(100vh - 210px)) !important;
+    max-width:calc(100vw - 440px) !important;
+    max-height:68vh !important;
+    object-fit:contain !important;
+    translate:-50% -50% !important;
+    margin:0 !important;
+    z-index:2 !important;
+  }
+}
+</style>
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
