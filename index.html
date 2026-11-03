@@ -890,9 +890,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   }
   #app > #cameraPage:after { content:""; position:absolute; inset:20px; border:1px solid rgba(190,174,255,.09); border-radius:20px; pointer-events:none; z-index:1; }
   #app > #cameraPage #cameraVideo {
-    position:absolute !important; inset:82px 132px 138px 38px !important; width:calc(100% - 170px) !important;
-    height:calc(100% - 220px) !important; max-width:none !important; max-height:none !important;
-    aspect-ratio:auto !important; transform:none !important; object-fit:contain !important;
+    position:absolute !important; left:calc(50% - 58px) !important; top:50% !important;
+    right:auto !important; bottom:auto !important; inset:auto !important;
+    width:auto !important; height:min(calc(100% - 220px),72vh) !important;
+    max-width:calc(100% - 190px) !important; max-height:none !important;
+    aspect-ratio:auto !important; object-fit:contain !important;
+    translate:-50% -50%; transform-origin:center center !important;
     border-radius:20px !important; border:1px solid rgba(255,255,255,.14) !important;
     background:#08080e !important; box-shadow:0 24px 70px rgba(0,0,0,.38) !important; z-index:2 !important;
   }
@@ -983,6 +986,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   #app #chatConversation .chatInput { flex:0 0 auto; padding:16px 28px !important; }
 }
 
+
+@media (min-width:1024px) and (max-height:720px) {
+  #app > #cameraPage #cameraVideo { height:calc(100% - 190px) !important; max-width:calc(100% - 180px) !important; }
+}
 </style>
 
 </head>
