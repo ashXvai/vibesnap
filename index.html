@@ -1877,5 +1877,21 @@ function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g
 }
 </style>
 </body>
+
+<style id="vibesnap-interaction-layer-recovery">
+/* Keep decorative camera layers from intercepting taps; restore a clear interactive stack. */
+#app > #cameraPage video#cameraVideo,
+#app > #cameraPage .cameraShade,
+#app > #cameraPage:after { pointer-events:none !important; }
+#app > #cameraPage .cameraTop,
+#app > #cameraPage .cameraSidePanel,
+#app > #cameraPage .cameraControls { pointer-events:auto !important; }
+#app > #cameraPage .cameraTop { z-index:130 !important; }
+#app > #cameraPage .cameraSidePanel { z-index:130 !important; }
+#app > #cameraPage .cameraControls { z-index:130 !important; }
+#app > #cameraPage button { pointer-events:auto !important; touch-action:manipulation; }
+#app .bottomNav { z-index:200 !important; pointer-events:auto !important; }
+#app .bottomNav .navBtn { z-index:201 !important; pointer-events:auto !important; touch-action:manipulation; }
+</style>
 <!-- VibeSnap Pages publish refresh: polished main build -->
 </html>
