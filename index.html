@@ -1154,7 +1154,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
-let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null;
+let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null,mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true;
 const $=id=>document.getElementById(id);
 const filterCSS={none:"none",vivid:"saturate(1.5) contrast(1.15)",warm:"sepia(.25) saturate(1.3)",cool:"saturate(.9) hue-rotate(15deg)",mono:"grayscale(1)",sepia:"sepia(.8)"};
 
@@ -1569,7 +1569,7 @@ $("flashQuick").onclick=async()=>{try{const track=currentStream&&currentStream.g
 let cameraSoundOn=true;
 $("soundQuick").onclick=()=>{cameraSoundOn=!cameraSoundOn;if(currentStream)currentStream.getAudioTracks().forEach(t=>t.enabled=cameraSoundOn);$("soundQuick").classList.toggle("toolActive",!cameraSoundOn);$("soundQuick").setAttribute("aria-pressed",String(!cameraSoundOn));$("soundQuick").lastChild.textContent=cameraSoundOn?"Sounds":"Muted"};
 
-let mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true;
+
 $("moreCameraTools").setAttribute("aria-expanded","false");
 $("moreCameraTools").onclick=()=>{const menu=$("cameraMoreMenu");menu.classList.toggle("hidden");$("moreCameraTools").setAttribute("aria-expanded",String(!menu.classList.contains("hidden")));};
 $("stampToggle").onclick=()=>{vibeSnapStampOn=!vibeSnapStampOn;$("stampState").textContent=vibeSnapStampOn?"On":"Off";$("stampToggle").setAttribute("aria-pressed",String(vibeSnapStampOn));};
