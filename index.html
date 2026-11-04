@@ -1578,6 +1578,16 @@ $("showFilters").onclick=()=>{$("lensStrip").classList.toggle("hidden");$("showF
 document.addEventListener("click",e=>{const menu=$("cameraMoreMenu");if(!menu.classList.contains("hidden")&&!menu.contains(e.target)&&!$("moreCameraTools").contains(e.target)){menu.classList.add("hidden");$("moreCameraTools").setAttribute("aria-expanded","false");}});
 
 let captureInProgress=false;
+// Fallback for mobile/desktop layers that visually overlap the shutter: forward a real pointer release inside its visible bounds.
+document.addEventListener("pointerup",event=>{
+const button=$("captureBtn");
+if(!button||button.disabled||event.target===button||button.contains(event.target))return;
+const rect=button.getBoundingClientRect();
+if(event.clientX>=rect.left&&event.clientX<=rect.right&&event.clientY>=rect.top&&event.clientY<=rect.bottom){
+event.preventDefault();
+button.click();
+}
+},true);
 $("captureBtn").onclick=async()=>{
 if(captureInProgress)return;
 captureInProgress=true;
