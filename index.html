@@ -1303,7 +1303,15 @@ currentUser.displayName=publicName;
 if(currentUser.displayName!==currentUser.authDisplayName){
 try{await currentUser.updateProfile({displayName:publicName});}catch(e){console.warn("Could not sync profile display name:",e);}
 }
-await ensureEncryptionKeys();
+try{await ensureEncryptionKeys();}
+catch(e){
+const reason=e.message||"Encryption setup is unavailable.";
+if(reason.includes("saved encryption key is missing")||reason.includes("does not match your VibeSnap account key")){
+localEncryptionPrivateKey=null;
+console.warn("VibeSnap encryption is unavailable in this browser; existing account keys were left unchanged.",e);
+showVibeNotice("You are signed in, but encrypted messaging is paused on this browser. Use the original browser profile to access your saved key. Your account and other features remain available.","error");
+}else{throw e;}
+}
 $("profileName").textContent=publicName;
 $("profilePresence").textContent="Online";
 $("profileAvatar").textContent=publicName.charAt(0).toUpperCase();
