@@ -1316,25 +1316,25 @@ function base64ToBytes(s){return Uint8Array.from(atob(s),ch=>ch.charCodeAt(0))}
 async function ensureEncryptionKeys(){
 if(!window.crypto||!crypto.subtle)throw new Error("Secure browser encryption is unavailable.");
 const keyName="vibesnap-e2ee-private-"+currentUser.uid;
+const profileRef=db.collection("users").doc(currentUser.uid),profileSnap=await profileRef.get();
+if(!profileSnap.exists)throw new Error("Your profile is not ready for encryption.");
+const savedPublicKey=profileSnap.data().encryptionPublicKey||null;
 let privateJwk=null;
 try{privateJwk=JSON.parse(localStorage.getItem(keyName)||"null")}catch(_){}
-if(privateJwk){
-localEncryptionPrivateKey=await crypto.subtle.importKey("jwk",privateJwk,{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
-}else{
+if(!privateJwk&&savedPublicKey){
+throw new Error("Your saved encryption key is missing from this browser. For your message security, VibeSnap did not create a replacement key. Sign in using the original browser profile where you first used VibeSnap; creating a new key could make older messages unreadable.");
+}
+if(!privateJwk){
 const pair=await crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveBits"]);
 privateJwk=await crypto.subtle.exportKey("jwk",pair.privateKey);
 localStorage.setItem(keyName,JSON.stringify(privateJwk));
+}
 localEncryptionPrivateKey=await crypto.subtle.importKey("jwk",privateJwk,{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
+const publicJwk=await crypto.subtle.exportKey("jwk",await crypto.subtle.importKey("jwk",{kty:privateJwk.kty,crv:privateJwk.crv,x:privateJwk.x,y:privateJwk.y,ext:true,key_ops:[]},{name:"ECDH",namedCurve:"P-256"},true,[]));
+if(savedPublicKey&&JSON.stringify(savedPublicKey)!==JSON.stringify(publicJwk)){
+throw new Error("This browser's saved encryption key does not match your VibeSnap account key. VibeSnap kept the account key unchanged to protect older messages. Please use the original browser profile.");
 }
-const publicJwk=await crypto.subtle.exportKey("jwk",await (async()=>{
-if(!privateJwk)throw new Error("Encryption key setup failed.");
-return await crypto.subtle.importKey("jwk",{kty:privateJwk.kty,crv:privateJwk.crv,x:privateJwk.x,y:privateJwk.y,ext:true,key_ops:[]},{name:"ECDH",namedCurve:"P-256"},true,[]);
-})());
-const profileRef=db.collection("users").doc(currentUser.uid),profileSnap=await profileRef.get();
-if(!profileSnap.exists)throw new Error("Your profile is not ready for encryption.");
-if(!profileSnap.data().encryptionPublicKey||JSON.stringify(profileSnap.data().encryptionPublicKey)!==JSON.stringify(publicJwk)){
-await profileRef.update({encryptionPublicKey:publicJwk});
-}
+if(!savedPublicKey)await profileRef.update({encryptionPublicKey:publicJwk});
 }
 async function deriveChatEncryptionKey(otherPublicJwk,chatId){
 if(!localEncryptionPrivateKey)throw new Error("Your encryption key is not loaded. Sign out and sign in again.");
