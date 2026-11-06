@@ -957,15 +957,17 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 #chatConversation { box-sizing:border-box; min-width:0; min-height:0; overflow:hidden; }
 #chatConversation .conversationHeader, #chatConversation .chatInput { flex:0 0 auto; min-width:0; }
 #chatConversation .chatMessages {
-  box-sizing:border-box; flex:1 1 auto; min-width:0; min-height:0;
-  width:100%; max-width:100%; overflow-x:hidden; overflow-y:auto;
-  overscroll-behavior:contain; overflow-wrap:anywhere;
+  box-sizing:border-box; display:flex; flex-direction:column; align-items:stretch;
+  flex:1 1 auto; min-width:0; min-height:0; width:100%; max-width:100%;
+  overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; overflow-wrap:anywhere;
 }
 #chatConversation .message {
-  box-sizing:border-box; width:fit-content; min-width:0;
-  max-width:min(78%,760px); white-space:pre-wrap;
+  box-sizing:border-box; display:block; align-self:flex-start; margin-left:0; margin-right:0;
+  width:fit-content; min-width:0; max-width:min(78%,760px); white-space:pre-wrap;
   overflow-wrap:anywhere; word-break:break-word;
 }
+#chatConversation .message.mine { align-self:flex-end; margin-left:0; margin-right:0; }
+#chatConversation .message.theirs { align-self:flex-start; margin-left:0; margin-right:0; }
 #chatConversation .message img, #chatConversation .message video {
   display:block; box-sizing:border-box; max-width:100%; width:auto;
   height:auto; max-height:52vh; object-fit:contain;
@@ -1331,7 +1333,7 @@ localStorage.setItem(keyName,JSON.stringify(privateJwk));
 }
 localEncryptionPrivateKey=await crypto.subtle.importKey("jwk",privateJwk,{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
 const publicJwk=await crypto.subtle.exportKey("jwk",await crypto.subtle.importKey("jwk",{kty:privateJwk.kty,crv:privateJwk.crv,x:privateJwk.x,y:privateJwk.y,ext:true,key_ops:[]},{name:"ECDH",namedCurve:"P-256"},true,[]));
-if(savedPublicKey&&JSON.stringify(savedPublicKey)!==JSON.stringify(publicJwk)){
+if(savedPublicKey&&(savedPublicKey.kty!==publicJwk.kty||savedPublicKey.crv!==publicJwk.crv||savedPublicKey.x!==publicJwk.x||savedPublicKey.y!==publicJwk.y)){
 throw new Error("This browser's saved encryption key does not match your VibeSnap account key. VibeSnap kept the account key unchanged to protect older messages. Please use the original browser profile.");
 }
 if(!savedPublicKey)await profileRef.update({encryptionPublicKey:publicJwk});
