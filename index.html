@@ -1173,7 +1173,7 @@ function formatLastSeen(user){
 const last=timestampMillis(user&&user.lastActiveAt);
 if(!last)return "Last seen unavailable";
 const elapsed=Math.max(0,Date.now()-last);
-if(elapsed<ONLINE_WINDOW_MS)return "Online";
+if(user.isOnline!==false&&elapsed<ONLINE_WINDOW_MS)return "Online";
 const minutes=Math.floor(elapsed/60000);
 if(minutes<1)return "Just now";
 if(minutes<60)return minutes+" min ago";
@@ -1182,13 +1182,17 @@ if(hours<24)return hours+" hour"+(hours===1?"":"s")+(remainingMinutes?" "+remain
 const days=Math.floor(hours/24),remainingHours=hours%24;
 return days+" day"+(days===1?"":"s")+(remainingHours?" "+remainingHours+" hour"+(remainingHours===1?"":"s"):"")+" ago";
 }
-async function writeLastActive(){
+async function writeLastActive(isOnline=true){
 if(!currentUser||presenceWriteInFlight)return;
+const uid=currentUser.uid;
 presenceWriteInFlight=true;
 try{
-await db.collection("users").doc(currentUser.uid).update({lastActiveAt:firebase.firestore.FieldValue.serverTimestamp()});
+await db.collection("users").doc(uid).update({lastActiveAt:firebase.firestore.FieldValue.serverTimestamp(),isOnline});
+if(currentUser&&currentUser.uid===uid){
 currentUser.lastActiveAt=firebase.firestore.Timestamp.now();
-const ownStatus=$("profilePresence");if(ownStatus)ownStatus.textContent="Online";
+currentUser.isOnline=isOnline;
+const ownStatus=$("profilePresence");if(ownStatus)ownStatus.textContent=isOnline?"Online":"Offline";
+}
 }catch(error){console.warn("VibeSnap presence update failed:",error);}
 finally{presenceWriteInFlight=false}
 }
@@ -1200,7 +1204,7 @@ presenceInterval=setInterval(()=>{if(document.visibilityState==="visible")writeL
 }
 function stopPresence(){
 if(presenceInterval){clearInterval(presenceInterval);presenceInterval=null}
-if(currentUser)writeLastActive();
+if(currentUser)writeLastActive(false);
 }
 function refreshPresenceLabels(){
 document.querySelectorAll("[data-last-seen-uid]").forEach(node=>{
@@ -1210,8 +1214,8 @@ if(user)node.textContent=formatLastSeen(user);
 const ownStatus=$("profilePresence");
 if(ownStatus&&currentUser)ownStatus.textContent="Online";
 }
-document.addEventListener("visibilitychange",()=>writeLastActive());
-window.addEventListener("beforeunload",()=>{if(currentUser)writeLastActive()});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")writeLastActive(true)});
+window.addEventListener("beforeunload",()=>{if(currentUser)writeLastActive(false)});
 const filterCSS={none:"none",vivid:"saturate(1.5) contrast(1.15)",warm:"sepia(.25) saturate(1.3)",cool:"saturate(.9) hue-rotate(15deg)",mono:"grayscale(1)",sepia:"sepia(.8)"};
 
 function showVibeNotice(message,type="success"){
