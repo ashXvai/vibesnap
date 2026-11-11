@@ -6,10 +6,7 @@
 <title>VibeSnap</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 56 18v28L32 60 8 46V18Z' fill='%23a78bfa'/%3E%3Cpath d='m19 20 13 25 13-25' fill='none' stroke='%23171522' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
-<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-storage-compat.js"></script>
+
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
@@ -410,7 +407,7 @@ button:active{transform:scale(.97)}
 
 
 <style id="vibesnap-polished-preview">
-/* VibeSnap polished preview — visual-only overrides; app logic and Firebase config remain unchanged. */
+/* VibeSnap polished preview — visual-only overrides. */
 :root{
   --primary:#7054f5;
   --primary2:#4f8df8;
@@ -1155,18 +1152,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera" type="button" aria-label="Open camera to send a photo or video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
 </div><div id="recipientPickerModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="recipientPickerTitle"><div id="recipientPickerCard"><div class="recipientPickerHead"><div><h2 id="recipientPickerTitle">Send to friends</h2><p>Choose one or more friends for this snap.</p></div><button type="button" id="recipientPickerClose" class="recipientPickerClose" aria-label="Close">×</button></div><div id="recipientPickerList" class="recipientPickerList"></div><div class="recipientPickerFoot"><button type="button" id="recipientPickerCancel" class="recipientPickerCancel">Cancel</button><button type="button" id="recipientPickerSend" class="recipientPickerSend">Send to selected</button></div></div></div>
 <div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyA8d0zK0s17K6Vybn8ULOIuTwHXnHjJJDk",
-  authDomain: "vibesnap-213d4.firebaseapp.com",
-  projectId: "vibesnap-213d4",
-  storageBucket: "vibesnap-213d4.firebasestorage.app",
-  messagingSenderId: "933479938239",
-  appId: "1:933479938239:web:d120d7ba99f5665987ae0a",
-  measurementId: "G-HP0QL3C8Y"
-};
-firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
+<script type="module">
+import { auth, db, storage } from "./supabase-compat.js";
+// Supabase is the active backend; no legacy backend SDK or project configuration is loaded.
+// Supabase-backed compatibility objects are imported above.
 let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null,mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true,usersCache=[];
 const $=id=>document.getElementById(id);
 let presenceInterval=null,presenceWriteInFlight=false;
@@ -1195,9 +1184,9 @@ if(!currentUser||presenceWriteInFlight)return;
 const uid=currentUser.uid;
 presenceWriteInFlight=true;
 try{
-await db.collection("users").doc(uid).update({lastActiveAt:firebase.firestore.FieldValue.serverTimestamp(),isOnline});
+await db.collection("users").doc(uid).update({lastActiveAt:new Date().toISOString(),isOnline});
 if(currentUser&&currentUser.uid===uid){
-currentUser.lastActiveAt=firebase.firestore.Timestamp.now();
+currentUser.lastActiveAt=new Date();
 currentUser.isOnline=isOnline;
 const ownStatus=$("profilePresence");if(ownStatus)ownStatus.textContent=isOnline?"Online":"Offline";
 }
@@ -1236,10 +1225,10 @@ notice._hideTimer=setTimeout(()=>{notice.classList.remove("show");},4200);
 function readUsernamePassword(forSignup=false){
 const username=$("accountUsername").value.trim().toLowerCase();
 const password=$("accountPassword").value;
-if(!/^[a-z0-9_]{3,24}$/.test(username))return alert("Username must be 3–24 characters and use only letters, numbers, or underscores."),null;
+if(!/^[a-z0-9_]{3,20}$/.test(username))return alert("Username must be 3–20 characters and use only letters, numbers, or underscores."),null;
 if(!password)return alert("Enter your password."),null;
 if(forSignup&&password.length<6)return alert("Choose a password with at least 6 characters."),null;
-// Firebase Email/Password is used behind the scenes; the interface only asks for username and password.
+// Supabase Auth uses an internal username-based login; users only enter username and password.
 return {username,password,email:username+"@users.vibesnap.invalid"};
 }
 $("emailLogin").onclick=async()=>{
@@ -1260,9 +1249,9 @@ signupButton.textContent="Creating account…";
 try{
 const created=await auth.createUserWithEmailAndPassword(credentials.email,credentials.password);
 await created.user.updateProfile({displayName:credentials.username});
-await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:new Date().toISOString()},{merge:true});
 showVibeNotice("Account created successfully. You're now signed in to VibeSnap.","success");
-}catch(e){console.error("VibeSnap username signup error:",e);showVibeNotice(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must be enabled in Firebase Authentication.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile because of Firestore permissions. Check your Firebase Firestore rules.":e.message||"Could not create account.","error")}
+}catch(e){console.error("VibeSnap username signup error:",e);showVibeNotice(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Username/password sign-in must be enabled in Supabase Auth.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile. Check your Supabase permissions and connection.":e.message||"Could not create account.","error")}
 finally{
 signupInProgress=false;
 signupButton.disabled=false;
@@ -1279,7 +1268,7 @@ auth.onAuthStateChanged(async user=>{
 $("authLoading").classList.add("hidden");
 if(user){
 currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
-try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Firestore permissions, then refresh.","error");}
+try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Supabase permissions, then refresh.","error");}
 startPresence();await loadUsers();startFriendListeners();showPage("camera")
 }
 else{stopPresence();stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
@@ -1295,14 +1284,14 @@ const ref=db.collection("users").doc(currentUser.uid),snap=await ref.get();
 let profile={};
 if(!snap.exists){
 const inferredUsername=(currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"";
-profile={uid:currentUser.uid,username:inferredUsername,displayName:currentUser.displayName||inferredUsername||"VibeSnap User",email:"",phone:currentUser.phoneNumber||"",photoURL:currentUser.photoURL||"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+profile={uid:currentUser.uid,username:inferredUsername,displayName:currentUser.displayName||inferredUsername||"VibeSnap User",email:"",phone:currentUser.phoneNumber||"",photoURL:currentUser.photoURL||"",friendNicknames:{},createdAt:new Date().toISOString()};
 await ref.set(profile);
 currentUser.friendNicknames={};
 }else{
 profile=snap.data()||{};
 currentUser.friendNicknames=profile.friendNicknames||{};
 }
-// Username is the public identity; the synthetic Firebase login email is private.
+// Username is the public identity; the internal Supabase login email is never shown.
 const publicName=profile.username||profile.displayName||currentUser.displayName||((currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"")||"VibeSnap User";
 currentUser.publicUsername=profile.username||publicName;
 currentUser.displayName=publicName;
@@ -1419,7 +1408,7 @@ if(currentState==="friends"){
 }
 }catch(e){
 console.error("Friend action failed",e);
-showVibeNotice("Could not update friend request: "+(e.message||e.code||"Check Firestore permissions."),"error");
+showVibeNotice("Could not update friend request: "+(e.message||e.code||"Check Supabase permissions."),"error");
 }finally{
 button.disabled=false;
 renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
@@ -1463,10 +1452,10 @@ const [requestSnap,friendshipSnap]=await Promise.all([requestRef.get(),friendshi
 if(friendshipSnap.exists&&friendshipSnap.data().status==="accepted")return {status:"friends"};
 if(requestSnap.exists&&requestSnap.data().status==="pending")return {status:"pending"};
 if(requestSnap.exists){
-  if(requestSnap.data().status==="declined")throw new Error("This request was declined before. Resending needs a Firestore rule that allows the sender to reopen a declined request.");
+  if(requestSnap.data().status==="declined")throw new Error("This request was declined before. Resending is closed. A new request can be sent after the previous request is cleared.");
   throw new Error("A previous request record already exists. Refresh and check its status.");
 }
-await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:new Date().toISOString()});
 return {status:"sent"};
 }
 async function acceptFriendRequest(uid){
@@ -1476,21 +1465,21 @@ const requestSnap=await requestRef.get();
 if(!requestSnap.exists||requestSnap.data().status!=="pending"||requestSnap.data().fromUid!==uid||requestSnap.data().toUid!==currentUser.uid)throw new Error("This request is no longer pending. Refresh your friend requests.");
 const members=[currentUser.uid,uid].sort(),friendshipId=members.join("_");
 const batch=db.batch();
-batch.set(db.collection("friendships").doc(friendshipId),{members,status:"accepted",createdAt:firebase.firestore.FieldValue.serverTimestamp(),acceptedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-batch.update(requestRef,{status:"accepted",acceptedAt:firebase.firestore.FieldValue.serverTimestamp()});
+batch.set(db.collection("friendships").doc(friendshipId),{members,status:"accepted",createdAt:new Date().toISOString(),acceptedAt:new Date().toISOString()},{merge:true});
+batch.update(requestRef,{status:"accepted",acceptedAt:new Date().toISOString()});
 await batch.commit();
 showVibeNotice("Friend request accepted! You're now friends.","success");
 }
 async function declineFriendRequest(uid){
 const request=incomingFriendRequests.find(r=>r.fromUid===uid&&r.status==="pending");if(!request)return;
-await db.collection("friendRequests").doc(request.id).update({status:"declined",respondedAt:firebase.firestore.FieldValue.serverTimestamp()});
+await db.collection("friendRequests").doc(request.id).update({status:"declined",respondedAt:new Date().toISOString()});
 }
 function ensureFriendRequestSection(){
 const page=$("chatPage");if(!page)return;
 let section=$("friendRequestsSection");
 if(!section){
 section=document.createElement("section");section.id="friendRequestsSection";section.className="friendRequestsSection friendRequestsPopover hidden";
-section.innerHTML='<div class="friendRequestsPopoverTop"><div><div class="friendRequestsHeading">Find people <span id="directoryUserCount">0</span></div><div class="friendDirectorySubtitle">Search everyone on VibeSnap and manage requests here</div></div><button type="button" id="closeFriendRequests" aria-label="Close people panel">×</button></div><div class="friendDirectorySearch"><span>⌕</span><input id="friendDirectorySearchInput" type="search" placeholder="Search usernames and names" autocomplete="off"></div><div class="friendDirectorySectionLabel">People on VibeSnap</div><div id="friendDirectoryResults"></div><div id="friendDirectoryEmpty" class="friendRequestEmpty">Loading people…</div><div class="friendDirectoryRequestsHeading"><span>Friend requests</span><span id="friendRequestCount" class="friendDirectoryCount">0</span></div><div id="friendRequestsList"></div>';
+section.innerHTML='<div class="friendRequestsPopoverTop"><div><div class="friendRequestsHeading">Find people <span id="directoryUserCount">0</span></div><div class="friendDirectorySubtitle">Search everyone on VibeSnap and manage requests here</div></div><button type="button" id="closeFriendRequests" aria-label="Close people panel">×</button></div><div class="friendDirectorySearch"><span>⌕</span><input id="friendDirectorySearchInput" type="search" placeholder="Search by username" autocomplete="off"></div><div class="friendDirectorySectionLabel">People on VibeSnap</div><div id="friendDirectoryResults"></div><div id="friendDirectoryEmpty" class="friendRequestEmpty">Loading people…</div><div class="friendDirectoryRequestsHeading"><span>Friend requests</span><span id="friendRequestCount" class="friendDirectoryCount">0</span></div><div id="friendRequestsList"></div>';
 const header=page.querySelector(".topHeader");if(header)header.insertAdjacentElement("afterend",section);else page.prepend(section);
 const close=section.querySelector("#closeFriendRequests");if(close)close.onclick=()=>section.classList.add("hidden");
 }
@@ -1508,8 +1497,8 @@ const name=document.createElement("strong");name.textContent=user.displayName||u
 const meta=document.createElement("small");meta.textContent=user.username?"@"+user.username:"Wants to connect with you";
 info.append(name,meta);
 const actions=document.createElement("div");actions.className="friendRequestActions";
-const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){console.error("Accept friend request failed:",e);showVibeNotice("Couldn't accept request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{accept.disabled=false}};
-const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid);showVibeNotice("Friend request declined.","success")}catch(e){console.error("Decline friend request failed:",e);showVibeNotice("Couldn't decline request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{decline.disabled=false}};
+const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){console.error("Accept friend request failed:",e);showVibeNotice("Couldn't accept request: "+(e.message||e.code||"Check Supabase permissions."),"error")}finally{accept.disabled=false}};
+const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid);showVibeNotice("Friend request declined.","success")}catch(e){console.error("Decline friend request failed:",e);showVibeNotice("Couldn't decline request: "+(e.message||e.code||"Check Supabase permissions."),"error")}finally{decline.disabled=false}};
 actions.append(accept,decline);row.append(avatarNodeForFriend(user),info,actions);list.appendChild(row);
 });
 }
@@ -1557,7 +1546,7 @@ renderGlobalSearch($("globalSearchInput").value||"");
 if(selectedFriend&&selectedFriend.uid===friend.uid){selectedFriend.displayName=clean;$("chatName").textContent=clean}
 $("editFriendStatus").style.color="#25845b";$("editFriendStatus").textContent="Name saved!";
 setTimeout(()=>{$("editFriendModal").classList.add("hidden");$("editFriendStatus").style.color=""},650);
-}catch(err){console.error(err);$("editFriendStatus").textContent="Couldn't save. Check your connection and Firestore permissions."}
+}catch(err){console.error(err);$("editFriendStatus").textContent="Couldn't save. Check your connection and Supabase permissions."}
 finally{button.disabled=false;button.textContent="Save name"}
 };
 $("chatProfileQuick").onclick=()=>showPage("profile");
@@ -1802,7 +1791,7 @@ const path=`chatMedia/${chatId}/${messageRef.id}.${extension}`;
 const uploadRef=storage.ref().child(path);
 await uploadRef.put(currentMediaBlob,{contentType:mimeType});
 const mediaUrl=await uploadRef.getDownloadURL();
-await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:currentMediaBlob.size||0,createdAt:firebase.firestore.FieldValue.serverTimestamp()});sent++;
+await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:currentMediaBlob.size||0,createdAt:new Date().toISOString()});sent++;
 }catch(err){console.error("Could not send media to",friend.uid,err);const code=err.code?(" ["+err.code+"]"):"";failures.push((friend.displayName||"A friend")+": "+(err.message||"send failed")+code)}
 }
 if(sent>0){closeRecipientPicker();closeMediaPreview();if(failures.length)alert("Sent to "+sent+" friend(s). Some sends failed:\\n"+failures.join("\\n"));else alert("Media sent to "+sent+" friend(s)!")}
@@ -1822,7 +1811,7 @@ snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;usersCache.push({uid:d
 renderAcceptedFriendList();
 renderChatList();
 renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
-},err=>{console.error("VibeSnap users listener error:",err);alert("Could not load VibeSnap users: "+(err.code||"Firebase error")+". Check Firestore rules and connection.");})
+},err=>{console.error("VibeSnap users listener error:",err);showVibeNotice("Could not load VibeSnap users: "+(err.message||"Check your connection and Supabase permissions."),"error");})
 }
 function friendLabel(user){return (currentUser&&currentUser.friendNicknames&&currentUser.friendNicknames[user.uid])||user.displayName||user.email||"VibeSnap User"}
 function avatarHTML(user,cls="rowAvatar"){
@@ -1855,7 +1844,7 @@ row.onclick=()=>openChat(user);list.appendChild(row);
 $("recipientSelect").onchange=async()=>{const uid=$("recipientSelect").value;selectedFriend=uid?usersCache.find(u=>u.uid===uid):null};
 
 function getChatId(uid1,uid2){return[uid1,uid2].sort().join("_")}
-async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:new Date().toISOString()},{merge:true})}
 async function openChat(user){
 selectedFriend=user;$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");showPage("chat");$("chatConversation").classList.remove("hidden");
 const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.uid);loadMessages(chatId);
@@ -1870,7 +1859,7 @@ else if(message.type==="video"&&message.mediaUrl){const media=document.createEle
 else {try{box.textContent=await decryptChatText(message,chatId)}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
 $("chatMessages").appendChild(box)}
 $("chatMessages").scrollTop=$("chatMessages").scrollHeight
-},err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Firestore rules and connection.</div>';})
+},err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Supabase permissions and connection.</div>';})
 }
 $("sendMessage").onclick=sendTextMessage;
 $("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendTextMessage()});
@@ -1891,15 +1880,15 @@ selectedFriend={...selectedFriend,...freshFriend};
 usersCache=usersCache.map(u=>u.uid===freshFriend.uid?{...u,...freshFriend}:u);
 if(!freshFriend.encryptionPublicKey)throw new Error("This friend has not set up encrypted messaging yet. Their account must sign in to publish its encryption public key.");
 const encrypted=await encryptChatText(text,selectedFriend,chatId);
-await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:new Date().toISOString()});
 input.value="";input.focus()
 }
-catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Firebase permissions."))}
+catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Supabase permissions."))}
 finally{button.disabled=false}
 }
 $("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("chat")};
 $("conversationCamera").onclick=async()=>{if(!selectedFriend){alert("Open a conversation first.");return}$("recipientSelect").value=selectedFriend.uid;$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("camera");await startCamera()};
-$("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await auth.signOut()};
+$("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await writeLastActive(false);await auth.signOut()};
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 
 </script>
