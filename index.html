@@ -407,7 +407,7 @@ button:active{transform:scale(.97)}
 
 
 <style id="vibesnap-polished-preview">
-/* VibeSnap polished preview — visual-only overrides; app logic and Firebase config remain unchanged. */
+/* VibeSnap polished preview — visual-only overrides. */
 :root{
   --primary:#7054f5;
   --primary2:#4f8df8;
@@ -1228,7 +1228,7 @@ const password=$("accountPassword").value;
 if(!/^[a-z0-9_]{3,20}$/.test(username))return alert("Username must be 3–20 characters and use only letters, numbers, or underscores."),null;
 if(!password)return alert("Enter your password."),null;
 if(forSignup&&password.length<6)return alert("Choose a password with at least 6 characters."),null;
-// Firebase Email/Password is used behind the scenes; the interface only asks for username and password.
+// Supabase Auth uses an internal username-based login; users only enter username and password.
 return {username,password,email:username+"@users.vibesnap.invalid"};
 }
 $("emailLogin").onclick=async()=>{
@@ -1811,7 +1811,7 @@ snapshot.forEach(doc=>{if(doc.id===currentUser.uid)return;usersCache.push({uid:d
 renderAcceptedFriendList();
 renderChatList();
 renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
-},err=>{console.error("VibeSnap users listener error:",err);alert("Could not load VibeSnap users: "+(err.code||"Firebase error")+". Check Firestore rules and connection.");})
+},err=>{console.error("VibeSnap users listener error:",err);showVibeNotice("Could not load VibeSnap users: "+(err.message||"Check your connection and Supabase permissions."),"error");})
 }
 function friendLabel(user){return (currentUser&&currentUser.friendNicknames&&currentUser.friendNicknames[user.uid])||user.displayName||user.email||"VibeSnap User"}
 function avatarHTML(user,cls="rowAvatar"){
@@ -1883,12 +1883,12 @@ const encrypted=await encryptChatText(text,selectedFriend,chatId);
 await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
 input.value="";input.focus()
 }
-catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Firebase permissions."))}
+catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Supabase permissions."))}
 finally{button.disabled=false}
 }
 $("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("chat")};
 $("conversationCamera").onclick=async()=>{if(!selectedFriend){alert("Open a conversation first.");return}$("recipientSelect").value=selectedFriend.uid;$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("camera");await startCamera()};
-$("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await auth.signOut()};
+$("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await writeLastActive(false);await auth.signOut()};
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 
 </script>
