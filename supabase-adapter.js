@@ -3,7 +3,7 @@
  * Browser-safe publishable key only. Never put a service_role/secret key here.
  * The active VibeSnap website uses this Supabase client through supabase-compat.js.
  */
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.119.0";
 
 const SUPABASE_URL = "https://uhrzntqoqofneiomzwga.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tjjAhM1pEKf7HoVIrNW1Dw_DEHURqYi";
