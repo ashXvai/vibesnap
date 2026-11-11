@@ -1,8 +1,7 @@
 /*
  * VibeSnap Supabase adapter
  * Browser-safe publishable key only. Never put a service_role/secret key here.
- * This adapter is intentionally staged alongside Firebase until all app features
- * have been migrated and tested; do not switch the live auth listener yet.
+ * The active VibeSnap website uses this Supabase client through supabase-compat.js.
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
