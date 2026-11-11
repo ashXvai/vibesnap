@@ -1155,16 +1155,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <script type="module">
 import { firebase, auth, db, storage } from "./firebase-compat.js";
 // Supabase is now the active backend; Firebase SDK/config are no longer loaded.
-const firebaseConfig = {
-  apiKey: "AIzaSyA8d0zK0s17K6Vybn8ULOIuTwHXnHjJJDk",
-  authDomain: "vibesnap-213d4.firebaseapp.com",
-  projectId: "vibesnap-213d4",
-  storageBucket: "vibesnap-213d4.firebasestorage.app",
-  messagingSenderId: "933479938239",
-  appId: "1:933479938239:web:d120d7ba99f5665987ae0a",
-  measurementId: "G-HP0QL3C8Y"
-};
-// Compatibility objects above route the existing app data calls to Supabase.
+// Supabase-backed compatibility objects are imported above.
 let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null,mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true,usersCache=[];
 const $=id=>document.getElementById(id);
 let presenceInterval=null,presenceWriteInFlight=false;
@@ -1234,7 +1225,7 @@ notice._hideTimer=setTimeout(()=>{notice.classList.remove("show");},4200);
 function readUsernamePassword(forSignup=false){
 const username=$("accountUsername").value.trim().toLowerCase();
 const password=$("accountPassword").value;
-if(!/^[a-z0-9_]{3,24}$/.test(username))return alert("Username must be 3–24 characters and use only letters, numbers, or underscores."),null;
+if(!/^[a-z0-9_]{3,20}$/.test(username))return alert("Username must be 3–20 characters and use only letters, numbers, or underscores."),null;
 if(!password)return alert("Enter your password."),null;
 if(forSignup&&password.length<6)return alert("Choose a password with at least 6 characters."),null;
 // Firebase Email/Password is used behind the scenes; the interface only asks for username and password.
