@@ -1149,14 +1149,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </div>
 <div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
 <div id="conversationProfilePanel" class="conversationProfilePanel hidden"><div id="conversationProfileAvatar" class="rowAvatar">?</div><strong id="conversationProfileName">Friend</strong><p id="conversationProfileContact"></p><button id="closeConversationProfile" type="button">Close</button></div>
-<div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera" type="button" aria-label="Open camera to send a photo or video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
+<div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera" type="button" aria-label="Open camera to send a photo or video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" name="vibesnap-chat-message" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
 </div><div id="recipientPickerModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="recipientPickerTitle"><div id="recipientPickerCard"><div class="recipientPickerHead"><div><h2 id="recipientPickerTitle">Send to friends</h2><p>Choose one or more friends for this snap.</p></div><button type="button" id="recipientPickerClose" class="recipientPickerClose" aria-label="Close">×</button></div><div id="recipientPickerList" class="recipientPickerList"></div><div class="recipientPickerFoot"><button type="button" id="recipientPickerCancel" class="recipientPickerCancel">Cancel</button><button type="button" id="recipientPickerSend" class="recipientPickerSend">Send to selected</button></div></div></div>
 <div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
 <script type="module">
 import { auth, db, storage } from "./supabase-compat.js";
 // Supabase is the active backend; no legacy backend SDK or project configuration is loaded.
 // Supabase-backed compatibility objects are imported above.
-let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null,mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true,usersCache=[];
+let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null,mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true,usersCache=[],currentPage="camera",hasInitializedAppSession=false;
 const $=id=>document.getElementById(id);
 let presenceInterval=null,presenceWriteInFlight=false;
 const ONLINE_WINDOW_MS=120000;
@@ -1269,7 +1269,11 @@ $("authLoading").classList.add("hidden");
 if(user){
 currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
 try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Supabase permissions, then refresh.","error");}
-startPresence();await loadUsers();startFriendListeners();showPage("camera")
+startPresence();await loadUsers();startFriendListeners();
+let savedPage="camera",savedConversation="";try{savedPage=sessionStorage.getItem("vibesnap-last-page")||"camera";savedConversation=sessionStorage.getItem("vibesnap-last-conversation")||"";}catch(_){ }
+if(!["camera","friends","chat","profile","search"].includes(savedPage))savedPage="camera";
+if(savedPage==="chat"&&savedConversation){const friend=usersCache.find(u=>u.uid===savedConversation);if(friend)await openChat(friend);else showPage("chat");}else showPage(savedPage);
+hasInitializedAppSession=true;
 }
 else{stopPresence();stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
 },error=>{
@@ -1374,6 +1378,8 @@ if(profilePanel)profilePanel.classList.add("hidden");
 document.querySelectorAll(".navBtn").forEach(btn=>btn.classList.remove("active"));
 const map={camera:"cameraPage",friends:"friendsPage",chat:"chatPage",profile:"profilePage",search:"searchPage"};
 if(!map[page])return;
+currentPage=page;
+try{sessionStorage.setItem("vibesnap-last-page",page);if(page!=="chat")sessionStorage.removeItem("vibesnap-last-conversation");}catch(_){ }
 $(map[page]).classList.remove("hidden");
 const activeButton=document.querySelector('.navBtn[data-page="'+page+'"]');
 if(activeButton)activeButton.classList.add("active");
@@ -1382,7 +1388,7 @@ if(page==="camera")startCamera();else stopCamera();
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
 function renderGlobalSearch(query="",target="search"){
 const panel=target==="directory",results=$(panel?"friendDirectoryResults":"globalSearchResults"),empty=$(panel?"friendDirectoryEmpty":"searchEmptyState"),label=panel?null:$("searchResultsLabel");if(!results||!empty)return;results.innerHTML="";const q=query.trim().toLowerCase();
-const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&getRelationshipState(u.uid)!=="friends"&&!!(u.username||"").trim()&&(u.username||"").toLowerCase().includes(q));
+const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&getRelationshipState(u.uid)!=="friends"&&(!panel||getRelationshipState(u.uid)!=="incoming")&&!!(u.username||"").trim()&&(u.username||"").toLowerCase().includes(q));
 matches.forEach(user=>{
 const card=document.createElement("div");card.className="searchResultCard";
 const name=user.username||"VibeSnap User",meta="@"+user.username;
@@ -1753,6 +1759,7 @@ $("cancelPreviewBtn").onclick=()=>{closeMediaPreview();if(!currentStream&&!$("ca
 $("retakeBtn").onclick=()=>{closeMediaPreview();if(!$("cameraPage").classList.contains("hidden"))startCamera()};
 function openRecipientPicker(){
 if(!currentMediaBlob)return;
+$("recipientPickerModal").classList.remove("hidden");
 const list=$("recipientPickerList");list.innerHTML="";
 const friends=usersCache.filter(user=>user.uid!==currentUser.uid&&getRelationshipState(user.uid)==="friends");
 if(!friends.length){list.innerHTML='<div class="recipientPickerEmpty">No accepted friends yet. Add someone from Friends and wait for them to accept before sending media.</div>';}
@@ -1846,7 +1853,8 @@ $("recipientSelect").onchange=async()=>{const uid=$("recipientSelect").value;sel
 function getChatId(uid1,uid2){return[uid1,uid2].sort().join("_")}
 async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:new Date().toISOString()},{merge:true})}
 async function openChat(user){
-selectedFriend=user;$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");showPage("chat");$("chatConversation").classList.remove("hidden");
+selectedFriend=user;try{sessionStorage.setItem("vibesnap-last-page","chat");sessionStorage.setItem("vibesnap-last-conversation",user.uid);}catch(_){ }
+$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");showPage("chat");$("chatConversation").classList.remove("hidden");
 const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.uid);loadMessages(chatId);
 }
 function loadMessages(chatId){
@@ -1886,7 +1894,7 @@ input.value="";input.focus()
 catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Supabase permissions."))}
 finally{button.disabled=false}
 }
-$("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("chat")};
+$("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");try{sessionStorage.removeItem("vibesnap-last-conversation");}catch(_){ }showPage("chat")};
 $("conversationCamera").onclick=async()=>{if(!selectedFriend){alert("Open a conversation first.");return}$("recipientSelect").value=selectedFriend.uid;$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("camera");await startCamera()};
 $("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await writeLastActive(false);await auth.signOut()};
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
@@ -1958,6 +1966,44 @@ function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g
 #app .bottomNav .navBtn { z-index:201 !important; pointer-events:auto !important; touch-action:manipulation; }
 </style>
 <!-- VibeSnap Pages publish refresh: polished main build -->
+
+<style id="vibesnap-six-issue-fixes">
+/* 1. Long outgoing-request status must wrap inside its result card. */
+#app .searchResultCard{min-width:0;max-width:100%}
+#app .searchResultInfo{flex:1 1 120px;min-width:0;overflow-wrap:anywhere}
+#app .searchResultCard button{
+  box-sizing:border-box!important;flex:0 1 auto!important;min-width:0!important;
+  max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;
+  text-align:center!important;line-height:1.25!important;padding:10px 12px!important
+}
+/* 3. Friends page uses the same dark violet/blue neon palette as the app shell. */
+#app #friendsPage{background:radial-gradient(ellipse at 85% 0%,rgba(91,75,158,.18),transparent 42%),linear-gradient(145deg,#111019,#171426 58%,#101521)!important;color:#f5f2ff!important}
+#app #friendsPage .friendsHeader{
+  margin:18px 18px 14px!important;padding:25px 24px!important;border:1px solid rgba(190,174,255,.16)!important;
+  border-radius:22px!important;color:#fff!important;
+  background:linear-gradient(110deg,rgba(137,87,255,.18),rgba(67,140,255,.12)),#1c1928!important;
+  box-shadow:0 14px 36px rgba(0,0,0,.2)!important
+}
+#app #friendsPage .userCard{
+  margin:10px 18px!important;border:1px solid rgba(190,174,255,.14)!important;border-radius:17px!important;
+  background:#211d30!important;color:#f5f2ff!important
+}
+#app #friendsPage .userName{color:#fff!important}
+#app #friendsPage .userEmail{color:#aaa2bf!important}
+#app #friendsPage .avatar{background:linear-gradient(135deg,#8957ff,#438cff)!important;color:#fff!important;border:0!important}
+#app #friendsPage .friendRequestEmpty{margin:8px 18px!important;padding:20px!important;border:1px dashed rgba(190,174,255,.2)!important;border-radius:16px!important;background:rgba(33,29,48,.55)!important;color:#aaa2bf!important}
+/* 4. Keep browser credential autofill out of the ordinary chat composer. */
+#app #messageInput{-webkit-text-security:none!important}
+#app #messageInput:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px #292438 inset!important;-webkit-text-fill-color:#fff!important}
+/* 6. Recipient picker must sit above the media preview so Send opens it visibly. */
+#recipientPickerModal{z-index:420!important}
+#recipientPickerModal.hidden{display:none!important}
+#recipientPickerCard{position:relative;z-index:421}
+@media(max-width:699px){
+  #app #friendsPage .friendsHeader{margin:14px 12px!important;padding:22px 18px!important}
+  #app #friendsPage .userCard{margin:9px 12px!important}
+}
+</style>
 </html>
 
 
