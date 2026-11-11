@@ -1498,7 +1498,7 @@ const meta=document.createElement("small");meta.textContent=user.username?"@"+us
 info.append(name,meta);
 const actions=document.createElement("div");actions.className="friendRequestActions";
 const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){console.error("Accept friend request failed:",e);showVibeNotice("Couldn't accept request: "+(e.message||e.code||"Check Supabase permissions."),"error")}finally{accept.disabled=false}};
-const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid);showVibeNotice("Friend request declined.","success")}catch(e){console.error("Decline friend request failed:",e);showVibeNotice("Couldn't decline request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{decline.disabled=false}};
+const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid);showVibeNotice("Friend request declined.","success")}catch(e){console.error("Decline friend request failed:",e);showVibeNotice("Couldn't decline request: "+(e.message||e.code||"Check Supabase permissions."),"error")}finally{decline.disabled=false}};
 actions.append(accept,decline);row.append(avatarNodeForFriend(user),info,actions);list.appendChild(row);
 });
 }
