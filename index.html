@@ -1154,7 +1154,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
 <script type="module">
 import { auth, db, storage } from "./supabase-compat.js";
-// Supabase is the active backend; no Firebase SDK or project configuration is loaded.
+// Supabase is the active backend; no legacy backend SDK or project configuration is loaded.
 // Supabase-backed compatibility objects are imported above.
 let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null,mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true,usersCache=[];
 const $=id=>document.getElementById(id);
@@ -1291,7 +1291,7 @@ currentUser.friendNicknames={};
 profile=snap.data()||{};
 currentUser.friendNicknames=profile.friendNicknames||{};
 }
-// Username is the public identity; the synthetic Firebase login email is private.
+// Username is the public identity; the internal Supabase login email is never shown.
 const publicName=profile.username||profile.displayName||currentUser.displayName||((currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"")||"VibeSnap User";
 currentUser.publicUsername=profile.username||publicName;
 currentUser.displayName=publicName;
@@ -1497,7 +1497,7 @@ const name=document.createElement("strong");name.textContent=user.displayName||u
 const meta=document.createElement("small");meta.textContent=user.username?"@"+user.username:"Wants to connect with you";
 info.append(name,meta);
 const actions=document.createElement("div");actions.className="friendRequestActions";
-const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){console.error("Accept friend request failed:",e);showVibeNotice("Couldn't accept request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{accept.disabled=false}};
+const accept=document.createElement("button");accept.textContent="Accept";accept.onclick=async()=>{accept.disabled=true;try{await acceptFriendRequest(user.uid)}catch(e){console.error("Accept friend request failed:",e);showVibeNotice("Couldn't accept request: "+(e.message||e.code||"Check Supabase permissions."),"error")}finally{accept.disabled=false}};
 const decline=document.createElement("button");decline.textContent="Decline";decline.className="declineRequest";decline.onclick=async()=>{decline.disabled=true;try{await declineFriendRequest(user.uid);showVibeNotice("Friend request declined.","success")}catch(e){console.error("Decline friend request failed:",e);showVibeNotice("Couldn't decline request: "+(e.message||e.code||"Check Firestore rules."),"error")}finally{decline.disabled=false}};
 actions.append(accept,decline);row.append(avatarNodeForFriend(user),info,actions);list.appendChild(row);
 });
