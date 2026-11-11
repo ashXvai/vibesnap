@@ -72,7 +72,7 @@ export async function getMyProfile() {
   const { data: { user } } = unwrap(await supabase.auth.getUser());
   if (!user) return null;
   const result = await supabase.from("profiles")
-    .select("user_id,username,display_name,avatar_url,last_seen_at,created_at")
+    .select("user_id,username,display_name,avatar_url,last_seen_at,is_online,friend_nicknames,encryption_public_key,created_at")
     .eq("user_id", user.id)
     .maybeSingle();
   return unwrap(result);
@@ -85,7 +85,7 @@ export async function searchProfiles(usernameQuery, limit = 25) {
   const { data: { user } } = unwrap(await supabase.auth.getUser());
   if (!user) throw new Error("Sign in to find people.");
   const result = await supabase.from("profiles")
-    .select("user_id,username,display_name,avatar_url,last_seen_at")
+    .select("user_id,username,display_name,avatar_url,last_seen_at,is_online")
     .ilike("username", query.replace(/[\\%_]/g, "\\$&") + "%")
     .neq("user_id", user.id)
     .order("username", { ascending: true })
@@ -97,7 +97,7 @@ export async function updateMyPresence(isOnline = true) {
   const { data: { user } } = unwrap(await supabase.auth.getUser());
   if (!user) return;
   const result = await supabase.from("profiles")
-    .update({ last_seen_at: new Date().toISOString() })
+    .update({ last_seen_at: new Date().toISOString(), is_online: !!isOnline })
     .eq("user_id", user.id);
   unwrap(result);
   return { isOnline, last_seen_at: new Date().toISOString() };
