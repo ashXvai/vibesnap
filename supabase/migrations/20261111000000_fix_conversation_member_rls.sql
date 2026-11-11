@@ -17,6 +17,7 @@ as $$
   );
 $$;
 
+revoke all on function private.is_conversation_creator(text) from public, anon;
 grant usage on schema private to authenticated;
 grant execute on function private.is_conversation_creator(text) to authenticated;
 
