@@ -1153,8 +1153,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </div><div id="recipientPickerModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="recipientPickerTitle"><div id="recipientPickerCard"><div class="recipientPickerHead"><div><h2 id="recipientPickerTitle">Send to friends</h2><p>Choose one or more friends for this snap.</p></div><button type="button" id="recipientPickerClose" class="recipientPickerClose" aria-label="Close">×</button></div><div id="recipientPickerList" class="recipientPickerList"></div><div class="recipientPickerFoot"><button type="button" id="recipientPickerCancel" class="recipientPickerCancel">Cancel</button><button type="button" id="recipientPickerSend" class="recipientPickerSend">Send to selected</button></div></div></div>
 <div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
 <script type="module">
-import { firebase, auth, db, storage } from "./firebase-compat.js";
-// Supabase is now the active backend; Firebase SDK/config are no longer loaded.
+import { auth, db, storage } from "./supabase-compat.js";
+// Supabase is the active backend; no Firebase SDK or project configuration is loaded.
 // Supabase-backed compatibility objects are imported above.
 let currentUser=null,selectedFriend=null,currentStream=null,cameraRequestToken=0,facingMode="user",currentFilter="none",mediaRecorder=null,recordedChunks=[],currentMediaBlob=null,currentMediaType=null,currentChatUnsubscribe=null,mirrorSelfieOn=true,photoTimerSeconds=0,vibeSnapStampOn=true,usersCache=[];
 const $=id=>document.getElementById(id);
@@ -1184,9 +1184,9 @@ if(!currentUser||presenceWriteInFlight)return;
 const uid=currentUser.uid;
 presenceWriteInFlight=true;
 try{
-await db.collection("users").doc(uid).update({lastActiveAt:firebase.firestore.FieldValue.serverTimestamp(),isOnline});
+await db.collection("users").doc(uid).update({lastActiveAt:new Date().toISOString()(),isOnline});
 if(currentUser&&currentUser.uid===uid){
-currentUser.lastActiveAt=firebase.firestore.Timestamp.now();
+currentUser.lastActiveAt=new Date();
 currentUser.isOnline=isOnline;
 const ownStatus=$("profilePresence");if(ownStatus)ownStatus.textContent=isOnline?"Online":"Offline";
 }
@@ -1249,7 +1249,7 @@ signupButton.textContent="Creating account…";
 try{
 const created=await auth.createUserWithEmailAndPassword(credentials.email,credentials.password);
 await created.user.updateProfile({displayName:credentials.username});
-await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:new Date().toISOString()()},{merge:true});
 showVibeNotice("Account created successfully. You're now signed in to VibeSnap.","success");
 }catch(e){console.error("VibeSnap username signup error:",e);showVibeNotice(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Username/password sign-in must be enabled in Supabase Auth.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile. Check your Supabase permissions and connection.":e.message||"Could not create account.","error")}
 finally{
@@ -1284,7 +1284,7 @@ const ref=db.collection("users").doc(currentUser.uid),snap=await ref.get();
 let profile={};
 if(!snap.exists){
 const inferredUsername=(currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"";
-profile={uid:currentUser.uid,username:inferredUsername,displayName:currentUser.displayName||inferredUsername||"VibeSnap User",email:"",phone:currentUser.phoneNumber||"",photoURL:currentUser.photoURL||"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+profile={uid:currentUser.uid,username:inferredUsername,displayName:currentUser.displayName||inferredUsername||"VibeSnap User",email:"",phone:currentUser.phoneNumber||"",photoURL:currentUser.photoURL||"",friendNicknames:{},createdAt:new Date().toISOString()()};
 await ref.set(profile);
 currentUser.friendNicknames={};
 }else{
@@ -1455,7 +1455,7 @@ if(requestSnap.exists){
   if(requestSnap.data().status==="declined")throw new Error("This request was declined before. Resending is closed. A new request can be sent after the previous request is cleared.");
   throw new Error("A previous request record already exists. Refresh and check its status.");
 }
-await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:new Date().toISOString()()});
 return {status:"sent"};
 }
 async function acceptFriendRequest(uid){
@@ -1465,14 +1465,14 @@ const requestSnap=await requestRef.get();
 if(!requestSnap.exists||requestSnap.data().status!=="pending"||requestSnap.data().fromUid!==uid||requestSnap.data().toUid!==currentUser.uid)throw new Error("This request is no longer pending. Refresh your friend requests.");
 const members=[currentUser.uid,uid].sort(),friendshipId=members.join("_");
 const batch=db.batch();
-batch.set(db.collection("friendships").doc(friendshipId),{members,status:"accepted",createdAt:firebase.firestore.FieldValue.serverTimestamp(),acceptedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-batch.update(requestRef,{status:"accepted",acceptedAt:firebase.firestore.FieldValue.serverTimestamp()});
+batch.set(db.collection("friendships").doc(friendshipId),{members,status:"accepted",createdAt:new Date().toISOString()(),acceptedAt:new Date().toISOString()()},{merge:true});
+batch.update(requestRef,{status:"accepted",acceptedAt:new Date().toISOString()()});
 await batch.commit();
 showVibeNotice("Friend request accepted! You're now friends.","success");
 }
 async function declineFriendRequest(uid){
 const request=incomingFriendRequests.find(r=>r.fromUid===uid&&r.status==="pending");if(!request)return;
-await db.collection("friendRequests").doc(request.id).update({status:"declined",respondedAt:firebase.firestore.FieldValue.serverTimestamp()});
+await db.collection("friendRequests").doc(request.id).update({status:"declined",respondedAt:new Date().toISOString()()});
 }
 function ensureFriendRequestSection(){
 const page=$("chatPage");if(!page)return;
@@ -1791,7 +1791,7 @@ const path=`chatMedia/${chatId}/${messageRef.id}.${extension}`;
 const uploadRef=storage.ref().child(path);
 await uploadRef.put(currentMediaBlob,{contentType:mimeType});
 const mediaUrl=await uploadRef.getDownloadURL();
-await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:currentMediaBlob.size||0,createdAt:firebase.firestore.FieldValue.serverTimestamp()});sent++;
+await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:currentMediaBlob.size||0,createdAt:new Date().toISOString()()});sent++;
 }catch(err){console.error("Could not send media to",friend.uid,err);const code=err.code?(" ["+err.code+"]"):"";failures.push((friend.displayName||"A friend")+": "+(err.message||"send failed")+code)}
 }
 if(sent>0){closeRecipientPicker();closeMediaPreview();if(failures.length)alert("Sent to "+sent+" friend(s). Some sends failed:\\n"+failures.join("\\n"));else alert("Media sent to "+sent+" friend(s)!")}
@@ -1844,7 +1844,7 @@ row.onclick=()=>openChat(user);list.appendChild(row);
 $("recipientSelect").onchange=async()=>{const uid=$("recipientSelect").value;selectedFriend=uid?usersCache.find(u=>u.uid===uid):null};
 
 function getChatId(uid1,uid2){return[uid1,uid2].sort().join("_")}
-async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:new Date().toISOString()()},{merge:true})}
 async function openChat(user){
 selectedFriend=user;$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");showPage("chat");$("chatConversation").classList.remove("hidden");
 const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.uid);loadMessages(chatId);
@@ -1880,7 +1880,7 @@ selectedFriend={...selectedFriend,...freshFriend};
 usersCache=usersCache.map(u=>u.uid===freshFriend.uid?{...u,...freshFriend}:u);
 if(!freshFriend.encryptionPublicKey)throw new Error("This friend has not set up encrypted messaging yet. Their account must sign in to publish its encryption public key.");
 const encrypted=await encryptChatText(text,selectedFriend,chatId);
-await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:new Date().toISOString()()});
 input.value="";input.focus()
 }
 catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Supabase permissions."))}
