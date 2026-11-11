@@ -1251,7 +1251,7 @@ const created=await auth.createUserWithEmailAndPassword(credentials.email,creden
 await created.user.updateProfile({displayName:credentials.username});
 await db.collection("users").doc(created.user.uid).set({uid:created.user.uid,username:credentials.username,displayName:credentials.username,email:"",phone:"",photoURL:"",friendNicknames:{},createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
 showVibeNotice("Account created successfully. You're now signed in to VibeSnap.","success");
-}catch(e){console.error("VibeSnap username signup error:",e);showVibeNotice(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Email/Password sign-in must be enabled in Firebase Authentication.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile because of Firestore permissions. Check your Firebase Firestore rules.":e.message||"Could not create account.","error")}
+}catch(e){console.error("VibeSnap username signup error:",e);showVibeNotice(e.code==="auth/email-already-in-use"?"That username is already in use. Choose another username.":e.code==="auth/operation-not-allowed"?"Username/password sign-in must be enabled in Supabase Auth.":e.code==="auth/permission-denied"?"VibeSnap could not save your profile. Check your Supabase permissions and connection.":e.message||"Could not create account.","error")}
 finally{
 signupInProgress=false;
 signupButton.disabled=false;
@@ -1268,7 +1268,7 @@ auth.onAuthStateChanged(async user=>{
 $("authLoading").classList.add("hidden");
 if(user){
 currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
-try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Firestore permissions, then refresh.","error");}
+try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Supabase permissions, then refresh.","error");}
 startPresence();await loadUsers();startFriendListeners();showPage("camera")
 }
 else{stopPresence();stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
@@ -1408,7 +1408,7 @@ if(currentState==="friends"){
 }
 }catch(e){
 console.error("Friend action failed",e);
-showVibeNotice("Could not update friend request: "+(e.message||e.code||"Check Firestore permissions."),"error");
+showVibeNotice("Could not update friend request: "+(e.message||e.code||"Check Supabase permissions."),"error");
 }finally{
 button.disabled=false;
 renderGlobalSearch($("globalSearchInput")?$("globalSearchInput").value:"");
@@ -1452,7 +1452,7 @@ const [requestSnap,friendshipSnap]=await Promise.all([requestRef.get(),friendshi
 if(friendshipSnap.exists&&friendshipSnap.data().status==="accepted")return {status:"friends"};
 if(requestSnap.exists&&requestSnap.data().status==="pending")return {status:"pending"};
 if(requestSnap.exists){
-  if(requestSnap.data().status==="declined")throw new Error("This request was declined before. Resending needs a Firestore rule that allows the sender to reopen a declined request.");
+  if(requestSnap.data().status==="declined")throw new Error("This request was declined before. Resending is closed. A new request can be sent after the previous request is cleared.");
   throw new Error("A previous request record already exists. Refresh and check its status.");
 }
 await requestRef.set({fromUid:currentUser.uid,toUid:user.uid,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
@@ -1546,7 +1546,7 @@ renderGlobalSearch($("globalSearchInput").value||"");
 if(selectedFriend&&selectedFriend.uid===friend.uid){selectedFriend.displayName=clean;$("chatName").textContent=clean}
 $("editFriendStatus").style.color="#25845b";$("editFriendStatus").textContent="Name saved!";
 setTimeout(()=>{$("editFriendModal").classList.add("hidden");$("editFriendStatus").style.color=""},650);
-}catch(err){console.error(err);$("editFriendStatus").textContent="Couldn't save. Check your connection and Firestore permissions."}
+}catch(err){console.error(err);$("editFriendStatus").textContent="Couldn't save. Check your connection and Supabase permissions."}
 finally{button.disabled=false;button.textContent="Save name"}
 };
 $("chatProfileQuick").onclick=()=>showPage("profile");
@@ -1859,7 +1859,7 @@ else if(message.type==="video"&&message.mediaUrl){const media=document.createEle
 else {try{box.textContent=await decryptChatText(message,chatId)}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
 $("chatMessages").appendChild(box)}
 $("chatMessages").scrollTop=$("chatMessages").scrollHeight
-},err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Firestore rules and connection.</div>';})
+},err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Supabase permissions and connection.</div>';})
 }
 $("sendMessage").onclick=sendTextMessage;
 $("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendTextMessage()});
