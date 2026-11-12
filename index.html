@@ -2333,9 +2333,11 @@ function vsOpenPhotoEditor(){
  const panel=document.createElement("div");panel.className="vsPhotoEditorPanel";
  const heading=document.createElement("h3");heading.textContent="Edit your photo";
  const canvas=document.createElement("canvas");canvas.className="vsPhotoEditorCanvas";
- const controls=document.createElement("div");controls.className="vsPhotoEditorControls";let drawing=false,strokes=[];\n const rotate=document.createElement("button");rotate.textContent="↻ Rotate";rotate.onclick=()=>{vsPhotoRotation=(vsPhotoRotation+90)%360;draw()};
+ const controls=document.createElement("div");controls.className="vsPhotoEditorControls";let drawing=false,strokes=[];
+ const rotate=document.createElement("button");rotate.textContent="↻ Rotate";rotate.onclick=()=>{vsPhotoRotation=(vsPhotoRotation+90)%360;draw()};
  const crop=document.createElement("button");crop.textContent="□ Square crop";crop.onclick=()=>{vsPhotoCrop=!vsPhotoCrop;crop.classList.toggle("active",vsPhotoCrop);draw()};
- const drawBtn=document.createElement("button");drawBtn.textContent="✎ Draw";drawBtn.onclick=()=>{drawing=!drawing;drawBtn.classList.toggle("active",drawing);canvas.style.cursor=drawing?"crosshair":"default"};\n const textBtn=document.createElement("button");textBtn.textContent="T Add text";textBtn.onclick=()=>{const value=prompt("Text to add to the photo",vsPhotoText);if(value!==null){vsPhotoText=value.slice(0,100);draw()}};
+ const drawBtn=document.createElement("button");drawBtn.textContent="✎ Draw";drawBtn.onclick=()=>{drawing=!drawing;drawBtn.classList.toggle("active",drawing);canvas.style.cursor=drawing?"crosshair":"default"};
+ const textBtn=document.createElement("button");textBtn.textContent="T Add text";textBtn.onclick=()=>{const value=prompt("Text to add to the photo",vsPhotoText);if(value!==null){vsPhotoText=value.slice(0,100);draw()}};
  const qualityLabel=document.createElement("label");qualityLabel.textContent="Photo quality";
  const quality=document.createElement("input");quality.type="range";quality.min=".55";quality.max="1";quality.step=".05";quality.value=".92";qualityLabel.appendChild(quality);
  const actions=document.createElement("div");actions.className="vsPhotoEditorActions";
