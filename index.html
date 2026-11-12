@@ -1786,7 +1786,7 @@ await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done
 }
 }
 if(!video.videoWidth||!video.videoHeight){showVibeNotice("Camera is still starting. Please try again.");return}
-const canvas=document.createElement("canvas");canvas.width=video.videoWidth;canvas.height=video.videoHeight;const ctx=canvas.getContext("2d");ctx.filter=filterCSS[currentFilter];
+const canvas=document.createElement("canvas");const scale=Math.min(1,1920/Math.max(video.videoWidth,video.videoHeight));canvas.width=Math.max(1,Math.round(video.videoWidth*scale));canvas.height=Math.max(1,Math.round(video.videoHeight*scale));const ctx=canvas.getContext("2d");ctx.filter=filterCSS[currentFilter];
 if(facingMode==="user"&&mirrorSelfieOn){ctx.save();ctx.translate(canvas.width,0);ctx.scale(-1,1);ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore()}else{ctx.drawImage(video,0,0,canvas.width,canvas.height)}
 canvas.toBlob(blob=>{if(!blob){showVibeNotice("Could not create photo preview. Please try again.");return}playCaptureSound();showMediaPreview(blob,"image")},"image/jpeg",.92);
 }finally{
@@ -2097,9 +2097,9 @@ function openChatMediaGallery(){
 $("chatMediaGallery")?.addEventListener("click",openChatMediaGallery);
 $("chatPinToggle")?.addEventListener("click",()=>{if(!selectedFriend||!currentUser)return;const prefs=getVibeSocialPrefs(),pins=Array.isArray(prefs.pinned)?prefs.pinned:[],index=pins.indexOf(selectedFriend.uid);if(index>=0)pins.splice(index,1);else pins.push(selectedFriend.uid);prefs.pinned=pins;saveVibeSocialPrefs(prefs);$("chatPinToggle").textContent=index>=0?"☆":"★";$("chatPinToggle").setAttribute("aria-label",index>=0?"Pin conversation":"Unpin conversation");renderChatList();showVibeNotice(index>=0?"Conversation unpinned.":"Conversation pinned.","success")});
 
-let vibeTypingWriteAt=0;
+let vibeTypingWriteAt=0,vibeTypingClearTimer=null;
 function stopVibeTypingListener(){const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;if(client&&currentTypingChannel){client.removeChannel(currentTypingChannel);currentTypingChannel=null}const indicator=document.getElementById("vsTypingIndicator");if(indicator)indicator.textContent="";}
-function startVibeTypingListener(chatId){stopVibeTypingListener();const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;if(!client)return;currentTypingChannel=client.channel("vs-typing-"+chatId).on("postgres_changes",{event:"UPDATE",schema:"public",table:"conversation_members",filter:"conversation_id=eq."+chatId},payload=>{const row=payload.new;if(!selectedFriend||row.user_id!==selectedFriend.uid)return;const indicator=document.getElementById("vsTypingIndicator");if(indicator)indicator.textContent=row.typing_until&&Date.parse(row.typing_until)>Date.now()?"Typing…":""}).subscribe();}
+function startVibeTypingListener(chatId){stopVibeTypingListener();const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;if(!client)return;currentTypingChannel=client.channel("vs-typing-"+chatId).on("postgres_changes",{event:"UPDATE",schema:"public",table:"conversation_members",filter:"conversation_id=eq."+chatId},payload=>{const row=payload.new;if(!selectedFriend||row.user_id!==selectedFriend.uid)return;const indicator=document.getElementById("vsTypingIndicator");if(indicator){clearTimeout(vibeTypingClearTimer);const until=row.typing_until?Date.parse(row.typing_until):0;if(until>Date.now()){indicator.textContent="Typing…";vibeTypingClearTimer=setTimeout(()=>{if(indicator)indicator.textContent=""},Math.max(0,until-Date.now())+200)}else indicator.textContent=""}}).subscribe();}
 async function setVibeTyping(isTyping){const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;if(!client||!currentUser||!selectedFriend)return;const now=Date.now();if(isTyping&&now-vibeTypingWriteAt<1400)return;vibeTypingWriteAt=now;try{await client.from("conversation_members").update({typing_until:isTyping?new Date(now+3500).toISOString():null}).eq("conversation_id",getChatId(currentUser.uid,selectedFriend.uid)).eq("user_id",currentUser.uid)}catch(error){console.debug("Typing status unavailable",error)}}
 $("messageInput").addEventListener("input",()=>setVibeTyping(!!$("messageInput").value.trim()));
 $("messageInput").addEventListener("blur",()=>setVibeTyping(false));
@@ -2529,4 +2529,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 #app .vsChangeAvatar{margin:0 auto 8px;padding:10px 16px;border-radius:18px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-size:12px;font-weight:800}
 #app .vsAvatarStatus{min-height:16px;margin:0 0 8px;color:#b8a6df;font-size:12px}
 #app .cameraAvatar img,#app #chatProfileQuick img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+</style><style id="vibesnap-user-camera-preferences">
+/* Filters are intentionally postponed; the user asked to keep the camera surface clean. */
+#app #lensStrip,#app #showFilters{display:none!important}
 </style>
