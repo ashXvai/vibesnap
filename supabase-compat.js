@@ -9,7 +9,7 @@ const message=async r=>{
   const {data,error}=await supabase.storage.from("vibesnap-media").createSignedUrl(r.storage_path,3600);
   if(!error&&data?.signedUrl)mediaUrl=data.signedUrl;
  }
- return {id:r.id,senderUid:r.sender_uid,receiverUid:r.receiver_uid,type:r.message_type,text:"",encryptedText:r.encrypted_text,iv:r.iv,cryptoVersion:r.crypto_version,mediaUrl,storagePath:r.storage_path,mediaContentType:r.media_content_type,mediaSize:r.media_size,createdAt:r.created_at};
+ return {id:r.id,senderUid:r.sender_uid,receiverUid:r.receiver_uid,type:r.message_type,text:"",encryptedText:r.encrypted_text,iv:r.iv,cryptoVersion:r.crypto_version,mediaUrl,storagePath:r.storage_path,mediaContentType:r.media_content_type,mediaSize:r.media_size,createdAt:r.created_at,editedAt:r.edited_at||null,replyToId:r.reply_to_id||null};
 };
 const mapped=async(n,rows)=>n==="messages"?Promise.all(rows.map(message)):rows.map(n==="users"?profile:n==="friendRequests"?request:n==="friendships"?friendship:x=>x);
 const toProfile=v=>{const x={};if("username"in v)x.username=v.username;if("displayName"in v)x.display_name=v.displayName;if("photoURL"in v)x.avatar_url=v.photoURL||null;if("lastActiveAt"in v)x.last_seen_at=v.lastActiveAt;if("isOnline"in v)x.is_online=!!v.isOnline;if("encryptionPublicKey"in v)x.encryption_public_key=v.encryptionPublicKey;return x};
@@ -60,7 +60,8 @@ class Ref{
   const x=toProfile(v);
   if(Object.keys(x).length)({error:e}=await supabase.from("profiles").update(x).eq("user_id",this.docId));
   if(!e&&"friendNicknames"in v)({error:e}=await supabase.from("profile_private").upsert({user_id:this.docId,friend_nicknames:v.friendNicknames||{},updated_at:stamp()},{onConflict:"user_id"}));
- }else if(this.name==="friendRequests"){let[a,b]=this.docId.split("_");({error:e}=await supabase.from("friend_requests").update({status:v.status,updated_at:stamp()}).eq("sender_id",a).eq("receiver_id",b))}else throw Error("Unsupported update");if(e)throw e}
+ }else if(this.name==="friendRequests"){let[a,b]=this.docId.split("_");({error:e}=await supabase.from("friend_requests").update({status:v.status,updated_at:stamp()}).eq("sender_id",a).eq("receiver_id",b))}else if(this.name==="messages"){const x={};if("encryptedText"in v)x.encrypted_text=v.encryptedText;if("iv"in v)x.iv=v.iv;if("cryptoVersion"in v)x.crypto_version=v.cryptoVersion;if("editedAt"in v)x.edited_at=v.editedAt;if("replyToId"in v)x.reply_to_id=v.replyToId;({error:e}=await supabase.from("messages").update(x).eq("id",this.docId).eq("conversation_id",this.chat))}else throw Error("Unsupported update");if(e)throw e}
+ async delete(){if(this.name!=="messages")throw Error("Unsupported delete");const{error}=await supabase.from("messages").delete().eq("id",this.docId).eq("conversation_id",this.chat);if(error)throw error}
  async add(v){let d=this.doc(id());await d.set(v);return d}
 }
 const db={collection:n=>new Ref(n),batch(){let sets=[],updates=[];return{set:(r,v)=>sets.push(()=>r.set(v)),update:(r,v)=>updates.push(()=>r.update(v)),async commit(){for(const j of updates)await j();for(const j of sets)await j()}}}};
