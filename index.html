@@ -1962,6 +1962,8 @@ card.querySelector(".chatOpenBtn").onclick=()=>openChat(user);$("usersList").app
 }
 let vibeUnreadRefreshAt=0,vibeUnreadRefreshBusy=false;
 let vibeUnreadChannel=null;
+window.addEventListener("offline",()=>showVibeNotice("You are offline. VibeSnap will reconnect when your connection returns.","error"));
+window.addEventListener("online",()=>{const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;try{client?.realtime?.connect()}catch(_){}showVibeNotice("Connection restored. Reconnecting to live chats…","info");vibeUnreadRefreshAt=0;refreshVibeUnreadCounts()});
 function startVibeUnreadListener(){const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;if(!client)return;if(vibeUnreadChannel)client.removeChannel(vibeUnreadChannel);vibeUnreadChannel=client.channel("vs-unread-"+currentUser.uid).on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},()=>{vibeUnreadRefreshAt=0;refreshVibeUnreadCounts()}).subscribe()}
 async function refreshVibeUnreadCounts(friendsArg){
  if(!currentUser||vibeUnreadRefreshBusy||Date.now()-vibeUnreadRefreshAt<2500)return;
@@ -2045,7 +2047,7 @@ try{
   });
  }
 }catch(reactionError){console.warn("Could not load message reactions",reactionError)}
-$("chatMessages").scrollTop=$("chatMessages").scrollHeight;refreshVibeUnreadCounts()
+$("chatMessages").scrollTop=$("chatMessages").scrollHeight;vibeUnreadRefreshAt=0;refreshVibeUnreadCounts()
 },err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Supabase permissions and connection.</div>';})
 }
 $("sendMessage").onclick=sendTextMessage;
@@ -2604,4 +2606,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 #app .vsCustomWallpaper label{display:block;margin-bottom:8px;font-size:13px;font-weight:800}
 #app .vsCustomWallpaper input{display:block;width:100%;font-size:12px;color:#b8aecb}
 #app .vsCustomWallpaper button{margin-top:10px;padding:8px 12px;border-radius:10px;background:#302a40;color:#eee;font-size:12px;font-weight:800}
+</style><style id="vibesnap-profile-glow">
+#app .profileAvatar{box-shadow:0 0 0 4px rgba(145,105,255,.12),0 0 26px rgba(145,105,255,.2);animation:vsAvatarGlow 3.6s ease-in-out infinite}
+@keyframes vsAvatarGlow{0%,100%{box-shadow:0 0 0 4px rgba(145,105,255,.10),0 0 18px rgba(145,105,255,.16)}50%{box-shadow:0 0 0 6px rgba(145,105,255,.18),0 0 30px rgba(145,105,255,.28)}}
+@media(prefers-reduced-motion:reduce){#app .profileAvatar{animation:none}}
 </style>
