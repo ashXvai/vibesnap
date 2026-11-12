@@ -1169,7 +1169,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <button class="composeBtn" id="composeBtn">✎</button>
 </div>
 <div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find people by username</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by username" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can add</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Search for someone by their VibeSnap username.</p></div></div>
-<div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profilePresence" class="profilePresence">Online</p><div class="vsProfileEditor"><label for="vsDisplayNameInput">Display name</label><input id="vsDisplayNameInput" maxlength="32" autocomplete="nickname" placeholder="Your display name"><button type="button" id="vsSaveDisplayName">Save display name</button><div id="vsProfileStatus" role="status" aria-live="polite"></div></div><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
+<div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar" role="button" tabindex="0" aria-label="Change profile picture">?</div><input id="vsAvatarFile" type="file" accept="image/*" class="hidden"><button type="button" id="vsChangeAvatar" class="vsChangeAvatar">Change profile picture</button><div id="vsAvatarStatus" class="vsAvatarStatus" role="status" aria-live="polite"></div><h2 id="profileName">User</h2><p id="profilePresence" class="profilePresence">Online</p><div class="vsProfileEditor"><label for="vsDisplayNameInput">Display name</label><input id="vsDisplayNameInput" maxlength="32" autocomplete="nickname" placeholder="Your display name"><button type="button" id="vsSaveDisplayName">Save display name</button><div id="vsProfileStatus" role="status" aria-live="polite"></div></div><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
 <div id="settingsPage" class="page hidden"><div class="settingsPageHead"><div class="pageTitle">Settings</div><p>Make VibeSnap feel like yours.</p></div><div class="settingsPanel"><div class="settingsPanelIcon">⚙</div><h2>Appearance &amp; camera</h2><p>These preferences are saved in this browser.</p><label class="vsSettingRow"><span><b>Accent colour</b><small>Choose the app highlight colour</small></span><select id="vsAccentChoice"><option value="violet">Violet</option><option value="blue">Electric blue</option><option value="pink">Neon pink</option><option value="teal">Teal</option></select></label><label class="vsSettingRow"><span><b>Chat background</b><small>Change the conversation backdrop</small></span><select id="vsChatWallpaper"><option value="default">Midnight</option><option value="aurora">Aurora</option><option value="plain">Plain</option></select></label><label class="vsSettingToggle"><span><b>Mirror selfies</b><small>Flip the front-camera preview and capture</small></span><input type="checkbox" id="vsMirrorToggle"></label><label class="vsSettingToggle"><span><b>Capture sound</b><small>Play a soft shutter sound when taking a photo</small></span><input type="checkbox" id="vsCameraSoundToggle"></label><div class="vsSettingsDivider"></div><h2>Account security</h2><p>Change your password while signed in.</p><label class="vsPasswordLabel" for="vsNewPassword">New password</label><input id="vsNewPassword" class="vsPasswordInput" type="password" minlength="6" autocomplete="new-password" placeholder="At least 6 characters"><button type="button" id="vsChangePassword" class="settingsAction">Update password <span>›</span></button><div id="vsSettingsStatus" class="settingsNote" role="status" aria-live="polite"></div><div class="vsSettingsDivider"></div><button type="button" id="settingsProfileBtn" class="settingsAction">View my profile <span>›</span></button><div class="settingsNote">Account deletion and recovery require a secure server-side setup and are not exposed as unsafe browser-only actions.</div></div></div>
 <div class="bottomNav">
 <button class="navBtn active" data-page="chat"><span><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5.5 4v-4.3A2.5 2.5 0 0 1 4 14.5z"/></svg></span>Chats</button>
@@ -1360,7 +1360,7 @@ showVibeNotice("You are signed in, but encrypted messaging is paused on this bro
 }
 $("profileName").textContent=publicName;if($("vsDisplayNameInput"))$("vsDisplayNameInput").value=publicName;
 $("profilePresence").textContent="Online";
-$("profileAvatar").textContent=publicName.charAt(0).toUpperCase();
+$("profileAvatar").textContent=publicName.charAt(0).toUpperCase();if(currentUser.photoURL){const avatarImage=document.createElement("img");avatarImage.src=currentUser.photoURL;avatarImage.alt="Your profile picture";$("profileAvatar").replaceChildren(avatarImage)}
 }
 
 // Text-message end-to-end encryption (ECDH P-256 + HKDF + AES-GCM).
@@ -1626,6 +1626,31 @@ setTimeout(()=>{$("editFriendModal").classList.add("hidden");$("editFriendStatus
 finally{button.disabled=false;button.textContent="Save name"}
 };
 $("chatProfileQuick").onclick=()=>showPage("profile");
+$("vsChangeAvatar")?.addEventListener("click",()=>$("vsAvatarFile").click());
+$("profileAvatar")?.addEventListener("click",()=>$("vsAvatarFile").click());
+$("profileAvatar")?.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();$("vsAvatarFile").click()}});
+$("vsAvatarFile")?.addEventListener("change",async event=>{
+ const file=event.target.files&&event.target.files[0];if(!file)return;
+ const status=$("vsAvatarStatus"),button=$("vsChangeAvatar"),client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;
+ if(!currentUser||!client){status.textContent="Sign in again before changing your picture.";return}
+ if(!file.type.startsWith("image/")){status.textContent="Choose an image file.";event.target.value="";return}
+ if(file.size>8*1024*1024){status.textContent="Choose an image smaller than 8 MB.";event.target.value="";return}
+ button.disabled=true;button.textContent="Uploading…";status.textContent="";
+ let blob=file,contentType=file.type||"image/jpeg",path="";
+ try{
+  try{const bitmap=await createImageBitmap(file),scale=Math.min(1,512/Math.max(bitmap.width,bitmap.height)),canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);const compressed=await new Promise(resolve=>canvas.toBlob(resolve,"image/webp",.86));if(compressed){blob=compressed;contentType="image/webp"}bitmap.close?.()}catch(_){}
+  path="avatars/"+currentUser.uid+"/"+crypto.randomUUID()+(contentType==="image/webp"?".webp":".jpg");
+  const upload=await client.storage.from("vibesnap-media").upload(path,blob,{contentType,cacheControl:"3600"});if(upload.error)throw upload.error;
+  const update=await client.from("profiles").update({avatar_url:path}).eq("user_id",currentUser.uid);if(update.error)throw update.error;
+  const signed=await client.storage.from("vibesnap-media").createSignedUrl(path,3600);if(signed.error)throw signed.error;
+  currentUser.photoURL=signed.data.signedUrl;
+  const image=document.createElement("img");image.src=currentUser.photoURL;image.alt="Your profile picture";$("profileAvatar").replaceChildren(image);
+  ["profileQuick","chatProfileQuick"].forEach(id=>{const host=$(id);if(host){const img=document.createElement("img");img.src=currentUser.photoURL;img.alt="Profile";host.replaceChildren(img)}});
+  usersCache=usersCache.map(user=>user.uid===currentUser.uid?{...user,photoURL:currentUser.photoURL}:user);
+  status.textContent="Profile picture updated.";
+ }catch(error){status.textContent="Could not update profile picture: "+(error.message||"Try again.");if(path)await client.storage.from("vibesnap-media").remove([path]).catch(()=>{})}
+ finally{button.disabled=false;button.textContent="Change profile picture";event.target.value=""}
+});
 function toggleConversationProfile(){if(!selectedFriend)return;const panel=$("conversationProfilePanel");$("conversationProfileAvatar").innerHTML=avatarHTML(selectedFriend,"rowAvatar");$("conversationProfileName").textContent=selectedFriend.displayName||selectedFriend.email||"VibeSnap friend";$("conversationProfileContact").textContent=selectedFriend.email||selectedFriend.phone||"VibeSnap member";panel.classList.toggle("hidden")}
 $("chatAvatar").onclick=toggleConversationProfile;$("chatName").onclick=toggleConversationProfile;$("closeConversationProfile").onclick=()=>$("conversationProfilePanel").classList.add("hidden");
 document.addEventListener("click",e=>{const panel=$("notificationPanel");if(!panel.classList.contains("hidden")&&!panel.contains(e.target)&&!$("chatNotifications").contains(e.target)&&!$("notificationQuick").contains(e.target))panel.classList.add("hidden")});
@@ -2498,4 +2523,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 #chatConversation .vsMessageSearchBar{display:flex;gap:8px;padding:9px 12px;background:#191526;border-bottom:1px solid var(--vs-line)}
 #chatConversation .vsMessageSearchBar input{flex:1;min-width:0;height:38px;padding:0 12px;border:1px solid var(--vs-line);border-radius:11px;background:#11101a;color:#fff}
 #chatConversation .vsMessageSearchBar button{width:38px;border-radius:10px;background:#302a40;color:#fff;font-size:22px}
+</style><style id="vibesnap-avatar-upload">
+#app .profileAvatar{overflow:hidden;cursor:pointer}
+#app .profileAvatar img{width:100%;height:100%;object-fit:cover}
+#app .vsChangeAvatar{margin:0 auto 8px;padding:10px 16px;border-radius:18px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-size:12px;font-weight:800}
+#app .vsAvatarStatus{min-height:16px;margin:0 0 8px;color:#b8a6df;font-size:12px}
+#app .cameraAvatar img,#app #chatProfileQuick img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
 </style>
