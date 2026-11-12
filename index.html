@@ -1905,7 +1905,7 @@ function toggleNotifications(){const panel=$("notificationPanel");panel.classLis
 $("chatNotifications").onclick=toggleNotifications;$("notificationQuick").onclick=toggleNotifications;$("closeNotifications").onclick=()=>$("notificationPanel").classList.add("hidden");
 function renderNotifications(){const host=$("notificationItems");host.innerHTML="";const recent=usersCache.slice(0,8);if(!recent.length){host.innerHTML='<div class="notificationEmpty">No recent activity yet. Start a chat with a friend!</div>';return}recent.forEach(user=>{const item=document.createElement("div");item.className="notificationItem";const name=user.displayName||user.email||"VibeSnap friend";item.innerHTML='<div>'+avatarHTML(user,"rowAvatar")+'</div><div><b>'+escapeHTML(name)+'</b><small>Open conversation</small></div>';item.onclick=()=>{$("notificationPanel").classList.add("hidden");openChat(user)};host.appendChild(item)})}
 $("chatAddFriend").onclick=()=>{ensureFriendRequestSection();const panel=$("friendRequestsSection");if(panel)panel.classList.toggle("hidden");if(panel&&!panel.classList.contains("hidden")){renderGlobalSearch($("friendDirectorySearchInput").value||"","directory");renderFriendRequests();}};document.addEventListener("input",event=>{if(event.target&&event.target.id==="friendDirectorySearchInput")renderGlobalSearch(event.target.value,"directory");});
-document.querySelector(".friendSuggestion").onclick=()=>showPage("friends");
+const friendSuggestionButton=document.querySelector(".friendSuggestion");if(friendSuggestionButton)friendSuggestionButton.onclick=()=>showPage("friends");
 function openEditFriendModal(friendUid=""){
 if(!currentUser)return;
 const select=$("editFriendSelect");select.innerHTML='<option value="">Choose a friend</option>';
