@@ -1873,7 +1873,7 @@ mediaRecorder.start();vsVideoStarted=Date.now();vsVideoPausedTotal=0;vsVideoPaus
 }catch(e){console.error(e);showVibeNotice("Video recording is not supported on this browser.");setVideoButtonState(false)}
 finally{videoCountdownInProgress=false;overlay.classList.add("hidden");if(!mediaRecorder){setVideoButtonState(false);label.textContent="PHOTO"}}
 }
-function stopRecording(){if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop()}
+function stopRecording(){if(mediaRecorder&&mediaRecorder.state!=="inactive")mediaRecorder.stop()}
 
 function showMediaPreview(blob,type){if(currentPreviewUrl)URL.revokeObjectURL(currentPreviewUrl);currentMediaBlob=blob;currentMediaType=type;currentPreviewUrl=URL.createObjectURL(blob);const photo=$("previewImage"),video=$("previewVideo");video.pause();video.removeAttribute("src");video.load();photo.removeAttribute("src");photo.classList.toggle("hidden",type!=="image");video.classList.toggle("hidden",type!=="video");if(type==="image")photo.src=currentPreviewUrl;else{video.src=currentPreviewUrl;video.load();video.play().catch(()=>{})}$("previewModal").classList.remove("hidden")}
 let currentPreviewUrl=null;
