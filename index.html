@@ -1272,16 +1272,16 @@ notice._hideTimer=setTimeout(()=>{notice.classList.remove("show");},4200);
 function readUsernamePassword(forSignup=false){
 const username=$("accountUsername").value.trim().toLowerCase();
 const password=$("accountPassword").value;
-if(!/^[a-z0-9_]{3,20}$/.test(username))return alert("Username must be 3–20 characters and use only letters, numbers, or underscores."),null;
-if(!password)return alert("Enter your password."),null;
-if(forSignup&&password.length<6)return alert("Choose a password with at least 6 characters."),null;
+if(!/^[a-z0-9_]{3,20}$/.test(username))return showVibeNotice("Username must be 3–20 characters and use only letters, numbers, or underscores."),null;
+if(!password)return showVibeNotice("Enter your password."),null;
+if(forSignup&&password.length<6)return showVibeNotice("Choose a password with at least 6 characters."),null;
 // Supabase Auth uses an internal username-based login; users only enter username and password.
 return {username,password,email:username+"@users.vibesnap.invalid"};
 }
 $("emailLogin").onclick=async()=>{
 const credentials=readUsernamePassword(false);if(!credentials)return;
 try{await auth.signInWithEmailAndPassword(credentials.email,credentials.password)}
-catch(e){console.error("VibeSnap username login error:",e);alert(e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"||e.code==="auth/user-not-found"?"Username or password is incorrect.":e.message||"Could not log in.")}
+catch(e){console.error("VibeSnap username login error:",e);showVibeNotice(e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"||e.code==="auth/user-not-found"?"Username or password is incorrect.":e.message||"Could not log in.")}
 };
 let signupInProgress=false;
 $("emailSignup").onclick=async()=>{
@@ -1706,7 +1706,7 @@ $("profileQuick").onclick=()=>showPage("profile");
 $("addFriendQuick").onclick=()=>showPage("friends");
 $("notificationQuick").onclick=()=>showPage("chat");
 $("searchQuick").onclick=()=>{showPage("chat");$("chatSearchInput").focus();$("chatSearchInput").scrollIntoView({behavior:"smooth",block:"nearest"})};
-$("flashQuick").onclick=async()=>{try{const track=currentStream&&currentStream.getVideoTracks()[0];if(!track||!track.getCapabilities||!track.getCapabilities().torch){alert("Flash is not supported by this camera. Try your phone's rear camera.");return}const on=!track.getSettings().torch;await track.applyConstraints({advanced:[{torch:on}]});$("flashQuick").classList.toggle("toolActive",on)}catch(e){alert("This device does not allow camera flash control in the browser.")}};
+$("flashQuick").onclick=async()=>{try{const track=currentStream&&currentStream.getVideoTracks()[0];if(!track||!track.getCapabilities||!track.getCapabilities().torch){showVibeNotice("Flash is not supported by this camera. Try your phone's rear camera.");return}const on=!track.getSettings().torch;await track.applyConstraints({advanced:[{torch:on}]});$("flashQuick").classList.toggle("toolActive",on)}catch(e){showVibeNotice("This device does not allow camera flash control in the browser.")}};
 let cameraSoundOn=true;
 $("soundQuick").onclick=()=>{cameraSoundOn=!cameraSoundOn;if(currentStream)currentStream.getAudioTracks().forEach(t=>t.enabled=cameraSoundOn);$("soundQuick").classList.toggle("toolActive",!cameraSoundOn);$("soundQuick").setAttribute("aria-pressed",String(!cameraSoundOn));$("soundQuick").lastChild.textContent=cameraSoundOn?"Sounds":"Muted"};
 
@@ -1757,10 +1757,10 @@ if(!video.videoWidth||!video.videoHeight){
 await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;video.removeEventListener("loadeddata",finish);resolve()};video.addEventListener("loadeddata",finish,{once:true});setTimeout(finish,2500)});
 }
 }
-if(!video.videoWidth||!video.videoHeight){alert("Camera is still starting. Please try again.");return}
+if(!video.videoWidth||!video.videoHeight){showVibeNotice("Camera is still starting. Please try again.");return}
 const canvas=document.createElement("canvas");canvas.width=video.videoWidth;canvas.height=video.videoHeight;const ctx=canvas.getContext("2d");ctx.filter=filterCSS[currentFilter];
 if(facingMode==="user"&&mirrorSelfieOn){ctx.save();ctx.translate(canvas.width,0);ctx.scale(-1,1);ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore()}else{ctx.drawImage(video,0,0,canvas.width,canvas.height)}
-canvas.toBlob(blob=>{if(!blob){alert("Could not create photo preview. Please try again.");return}showMediaPreview(blob,"image")},"image/jpeg",.92);
+canvas.toBlob(blob=>{if(!blob){showVibeNotice("Could not create photo preview. Please try again.");return}showMediaPreview(blob,"image")},"image/jpeg",.92);
 }finally{
 captureButton.disabled=false;
 captureInProgress=false;
@@ -1782,8 +1782,8 @@ button.innerHTML=recording
 let videoCountdownInProgress=false,videoCountdownCancelled=false;
 $("videoModeBtn").onclick=()=>{if(mediaRecorder){stopRecording();return}if(videoCountdownInProgress){videoCountdownCancelled=true;$("photoCountdownOverlay").classList.add("hidden");setVideoButtonState(false);return}startRecording()};
 async function startRecording(){
-if(!currentStream)return alert("Camera is not ready.");
-if(typeof MediaRecorder==="undefined"||!HTMLCanvasElement.prototype.captureStream)return alert("Video recording is not supported on this browser.");
+if(!currentStream)return showVibeNotice("Camera is not ready.");
+if(typeof MediaRecorder==="undefined"||!HTMLCanvasElement.prototype.captureStream)return showVibeNotice("Video recording is not supported on this browser.");
 videoCountdownInProgress=true;videoCountdownCancelled=false;
 const video=$("cameraVideo"),overlay=$("photoCountdownOverlay"),number=$("photoCountdownNumber"),caption=$("photoCountdownCaption"),label=document.querySelector(".cameraModeLabel");
 try{
@@ -1807,9 +1807,9 @@ const videoStream=canvas.captureStream(30);currentStream.getAudioTracks().forEac
 let options={};if(MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus"))options.mimeType="video/webm;codecs=vp9,opus";else if(MediaRecorder.isTypeSupported("video/webm"))options.mimeType="video/webm";
 mediaRecorder=new MediaRecorder(videoStream,options);
 mediaRecorder.ondataavailable=e=>{if(e.data.size>0)recordedChunks.push(e.data)};
-mediaRecorder.onstop=()=>{const recorder=mediaRecorder;const blob=new Blob(recordedChunks,{type:recorder.mimeType||"video/webm"});if(blob.size)showMediaPreview(blob,"video");else alert("No video was recorded. Please try again.");mediaRecorder=null;setVideoButtonState(false);label.textContent="PHOTO";videoStream.getTracks().forEach(t=>t.stop())};
+mediaRecorder.onstop=()=>{const recorder=mediaRecorder;const blob=new Blob(recordedChunks,{type:recorder.mimeType||"video/webm"});if(blob.size)showMediaPreview(blob,"video");else showVibeNotice("No video was recorded. Please try again.");mediaRecorder=null;setVideoButtonState(false);label.textContent="PHOTO";videoStream.getTracks().forEach(t=>t.stop())};
 mediaRecorder.start();setVideoButtonState(true);label.textContent="RECORDING";drawFrame();
-}catch(e){console.error(e);alert("Video recording is not supported on this browser.");setVideoButtonState(false)}
+}catch(e){console.error(e);showVibeNotice("Video recording is not supported on this browser.");setVideoButtonState(false)}
 finally{videoCountdownInProgress=false;overlay.classList.add("hidden");if(!mediaRecorder){setVideoButtonState(false);label.textContent="PHOTO"}}
 }
 function stopRecording(){if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop()}
@@ -1844,9 +1844,9 @@ $("recipientPickerModal").addEventListener("click",e=>{if(e.target===$("recipien
 $("recipientPickerSend").onclick=async()=>{
 if(!currentMediaBlob)return;
 const ids=[...$("recipientPickerList").querySelectorAll('input[name="mediaRecipient"]:checked')].map(input=>input.value);
-if(!ids.length)return alert("Select at least one friend to send to.");
+if(!ids.length)return showVibeNotice("Select at least one friend to send to.");
 const recipients=ids.map(uid=>usersCache.find(user=>user.uid===uid)).filter(Boolean);
-if(!recipients.length)return alert("No valid friends selected. Please try again.");
+if(!recipients.length)return showVibeNotice("No valid friends selected. Please try again.");
 const sendButton=$("recipientPickerSend");sendButton.disabled=true;sendButton.textContent="Sending…";
 let sent=0;const failures=[];
 try{
@@ -1863,9 +1863,9 @@ const mediaUrl=await uploadRef.getDownloadURL();
 await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:currentMediaBlob.size||0,createdAt:new Date().toISOString()});sent++;
 }catch(err){console.error("Could not send media to",friend.uid,err);const code=err.code?(" ["+err.code+"]"):"";failures.push((friend.displayName||"A friend")+": "+(err.message||"send failed")+code)}
 }
-if(sent>0){closeRecipientPicker();closeMediaPreview();if(failures.length)alert("Sent to "+sent+" friend(s). Some sends failed:\\n"+failures.join("\\n"));else alert("Media sent to "+sent+" friend(s)!")}
-else alert("Could not send media. "+failures.join("; "));
-}catch(e){console.error(e);alert("Could not send media: "+(e.message||"Unknown error"))}
+if(sent>0){closeRecipientPicker();closeMediaPreview();if(failures.length)showVibeNotice("Sent to "+sent+" friend(s). Some sends failed:\\n"+failures.join("\\n"));else showVibeNotice("Media sent to "+sent+" friend(s)!")}
+else showVibeNotice("Could not send media. "+failures.join("; "));
+}catch(e){console.error(e);showVibeNotice("Could not send media: "+(e.message||"Unknown error"))}
 finally{sendButton.disabled=false;sendButton.textContent="Send to selected"}
 };
 
@@ -1943,8 +1943,8 @@ $("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendTextMess
 async function sendTextMessage(){
 const input=$("messageInput"),button=$("sendMessage"),text=input.value.trim();
 if(!text)return;
-if(!selectedFriend){alert("Open a friend's chat before sending a message.");return}
-if(selectedFriend.uid===currentUser.uid){alert("You cannot send a message to yourself.");return}
+if(!selectedFriend){showVibeNotice("Open a friend's chat before sending a message.");return}
+if(selectedFriend.uid===currentUser.uid){showVibeNotice("You cannot send a message to yourself.");return}
 try{
 button.disabled=true;
 const chatId=getChatId(currentUser.uid,selectedFriend.uid);
@@ -1960,11 +1960,11 @@ const encrypted=await encryptChatText(text,selectedFriend,chatId);
 await db.collection("chats").doc(chatId).collection("messages").add({senderUid:currentUser.uid,receiverUid:selectedFriend.uid,type:"text",...encrypted,createdAt:new Date().toISOString()});
 input.value="";input.focus()
 }
-catch(e){console.error("VibeSnap send message error:",e);alert("Message could not be sent: "+(e.message||e.code||"Check your connection and Supabase permissions."))}
+catch(e){console.error("VibeSnap send message error:",e);showVibeNotice("Message could not be sent: "+(e.message||e.code||"Check your connection and Supabase permissions."))}
 finally{button.disabled=false}
 }
 $("backFromChat").onclick=()=>{$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");try{sessionStorage.removeItem("vibesnap-last-conversation");}catch(_){ }showPage("chat")};
-$("conversationCamera").onclick=async()=>{if(!selectedFriend){alert("Open a conversation first.");return}$("recipientSelect").value=selectedFriend.uid;$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("camera");await startCamera()};
+$("conversationCamera").onclick=async()=>{if(!selectedFriend){showVibeNotice("Open a conversation first.");return}$("recipientSelect").value=selectedFriend.uid;$("chatConversation").classList.add("hidden");$("conversationProfilePanel").classList.add("hidden");showPage("camera");await startCamera()};
 $("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await writeLastActive(false);await auth.signOut()};
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 
