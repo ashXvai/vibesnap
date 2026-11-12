@@ -1316,7 +1316,7 @@ $("authLoading").classList.add("hidden");
 if(user){
 currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
 try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Supabase permissions, then refresh.","error");}
-startPresence();await loadUsers();startFriendListeners();loadVibeBlockedUsers();
+startPresence();await loadUsers();startFriendListeners();loadVibeBlockedUsers();startVibeUnreadListener();
 let savedPage="camera",savedConversation="";try{savedPage=sessionStorage.getItem("vibesnap-last-page")||"camera";savedConversation=sessionStorage.getItem("vibesnap-last-conversation")||"";}catch(_){ }
 if(!["camera","friends","chat","profile","search","settings"].includes(savedPage))savedPage="camera";
 if(savedPage==="chat"&&savedConversation){const friend=usersCache.find(u=>u.uid===savedConversation);if(friend)await openChat(friend);else showPage("chat");}else showPage(savedPage);
@@ -1961,6 +1961,8 @@ card.innerHTML=avatarHTML(user,"avatar")+'<div class="userInfo"><div class="user
 card.querySelector(".chatOpenBtn").onclick=()=>openChat(user);$("usersList").appendChild(card);
 }
 let vibeUnreadRefreshAt=0,vibeUnreadRefreshBusy=false;
+let vibeUnreadChannel=null;
+function startVibeUnreadListener(){const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;if(!client)return;if(vibeUnreadChannel)client.removeChannel(vibeUnreadChannel);vibeUnreadChannel=client.channel("vs-unread-"+currentUser.uid).on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},()=>{vibeUnreadRefreshAt=0;refreshVibeUnreadCounts()}).subscribe()}
 async function refreshVibeUnreadCounts(friendsArg){
  if(!currentUser||vibeUnreadRefreshBusy||Date.now()-vibeUnreadRefreshAt<2500)return;
  const friends=friendsArg||usersCache.filter(user=>getRelationshipState(user.uid)==="friends");if(!friends.length){$("unreadCount").textContent="0";return}
@@ -2043,7 +2045,7 @@ try{
   });
  }
 }catch(reactionError){console.warn("Could not load message reactions",reactionError)}
-$("chatMessages").scrollTop=$("chatMessages").scrollHeight
+$("chatMessages").scrollTop=$("chatMessages").scrollHeight;refreshVibeUnreadCounts()
 },err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Supabase permissions and connection.</div>';})
 }
 $("sendMessage").onclick=sendTextMessage;
@@ -2174,7 +2176,7 @@ function showVibeMessageMenu(event,message,chatId,box,mine){
  const add=(label,action)=>{const button=document.createElement("button");button.type="button";button.textContent=label;button.onclick=()=>{menu.remove();action()};menu.appendChild(button)};
  if(box.dataset.copyText)add("Copy message",async()=>{try{await navigator.clipboard.writeText(box.dataset.copyText);showVibeNotice("Message copied.","success")}catch(_){showVibeNotice("Clipboard access is unavailable.","error")}});
  add("Reply",()=>{replyingToMessage={id:message.id||box.dataset.messageId};$("vsReplyText").textContent="Replying to "+(mine?"your message":"their message")+": "+(box.dataset.copyText||"Shared media").slice(0,80);$("vsReplyPreview").classList.remove("hidden");$("messageInput").focus()});
- add("React",async()=>{const choices=["❤️","😂","😮","😢","🔥","👍","👎","🎉"];const emoji=await vibeAskText("React to message","Enter one emoji reaction. Examples: "+choices.join(" "),"❤️");const clean=(emoji||"").trim();if(!clean||clean.length>16||!/\\p{Extended_Pictographic}/u.test(clean)){showVibeNotice("Enter a single emoji reaction.","info");return}try{const result=await window.VibeSnapSupabase.client.from("message_reactions").insert({message_id:message.id||box.dataset.messageId,user_id:currentUser.uid,reaction:emoji});if(result.error&&result.error.code!=="23505")throw result.error;showVibeNotice("Reaction added.","success");loadMessages(chatId)}catch(error){showVibeNotice("Could not add reaction: "+(error.message||"Try again."),"error")}});
+ add("React",async()=>{const choices=["❤️","😂","😮","😢","🔥","👍","👎","🎉"];const emoji=await vibeAskText("React to message","Enter one emoji reaction. Examples: "+choices.join(" "),"❤️");const clean=(emoji||"").trim();if(!clean||clean.length>16||!/\p{Extended_Pictographic}/u.test(clean)){showVibeNotice("Enter a single emoji reaction.","info");return}try{const result=await window.VibeSnapSupabase.client.from("message_reactions").insert({message_id:message.id||box.dataset.messageId,user_id:currentUser.uid,reaction:emoji});if(result.error&&result.error.code!=="23505")throw result.error;showVibeNotice("Reaction added.","success");loadMessages(chatId)}catch(error){showVibeNotice("Could not add reaction: "+(error.message||"Try again."),"error")}});
  if(mine&&message.type==="text")add("Edit message",async()=>{const next=await vibeAskText("Edit message","Update the text of your message.",box.dataset.copyText||"");if(next===null||!next.trim()||next===box.dataset.copyText)return;try{const encrypted=await encryptChatText(next.trim(),selectedFriend,chatId);await db.collection("chats").doc(chatId).collection("messages").doc(message.id||box.dataset.messageId).update({...encrypted,editedAt:new Date().toISOString()});showVibeNotice("Message updated.","success")}catch(error){showVibeNotice("Could not edit message: "+(error.message||"Try again."),"error")}});
  if(mine)add("Delete message",async()=>{if(!await vibeAskConfirm("Delete message","This will remove your message from this conversation. Continue?"))return;try{await db.collection("chats").doc(chatId).collection("messages").doc(message.id||box.dataset.messageId).delete();showVibeNotice("Message deleted.","success")}catch(error){showVibeNotice("Could not delete message: "+(error.message||"Try again."),"error")}});
  document.body.appendChild(menu);menu.style.left=Math.max(8,Math.min(event.clientX,window.innerWidth-190))+"px";menu.style.top=Math.max(8,Math.min(event.clientY,window.innerHeight-240))+"px";
