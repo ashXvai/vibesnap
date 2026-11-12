@@ -1146,7 +1146,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <div class="cameraTop"><button class="cameraAvatar" id="profileQuick">V</button><button class="cameraIconBtn" id="searchQuick" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button><div class="cameraTopSpacer"></div><div class="cameraTopActions"><button class="cameraIconBtn topBadge" id="notificationQuick" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button><button class="cameraIconBtn topBadge" id="addFriendQuick" aria-label="Add friend"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1.5A4.5 4.5 0 0 1 7 14h4a4.5 4.5 0 0 1 4.5 4.5V20M19 7v7M15.5 10.5h7"/></svg></button><button class="cameraIconBtn" id="flipCamera" aria-label="Flip camera"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7 7 0 0 1 18 6l2 2M4 16l2 2a7 7 0 0 0 12.5-3"/></svg></button></div></div>
 <div class="recipientBox"><select id="recipientSelect"><option value="">Choose a friend for sending</option></select></div>
 <div class="cameraSidePanel"><button class="cameraTool" id="flashQuick"><span class="cameraToolIcon"><svg viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-13h-7z"/></svg></span>Flash</button><button class="cameraTool" id="soundQuick"><span class="cameraToolIcon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>Sounds</button><button class="cameraTool" id="moreCameraTools"><span class="cameraToolIcon"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></span>More</button></div>
-<div id="cameraMoreMenu" class="cameraMoreMenu hidden" role="dialog" aria-label="More camera settings"><div class="cameraMoreTitle">Camera tools</div><button class="cameraMoreOption" id="timerCycle"><span>Timer</span><span class="cameraMoreValue" id="timerState">Off</span></button><div class="cameraMoreDivider"></div><button class="cameraMoreOption" id="showFilters"><span>Filters and lenses</span><span class="cameraMoreValue">Open ›</span></button></div>
+<div id="cameraMoreMenu" class="cameraMoreMenu hidden" role="dialog" aria-label="More camera settings"><div class="cameraMoreTitle">Camera tools</div><button class="cameraMoreOption" id="timerCycle"><span>Timer</span><span class="cameraMoreValue" id="timerState">Off</span></button><div class="cameraMoreDivider"></div><label class="vsCameraSetting"><span>Zoom</span><input id="vsCameraZoom" type="range" min="1" max="1" step="0.1" value="1" disabled></label><label class="vsCameraSetting"><span>Mirror selfie</span><input id="vsCameraMirror" type="checkbox" checked></label><div class="cameraMoreDivider"></div><button class="cameraMoreOption" id="showFilters"><span>Filters and lenses</span><span class="cameraMoreValue">Open ›</span></button></div>
 <div class="lensStrip" id="lensStrip"><button class="lensItem active" data-filter="none"><span class="lensCircle">◉</span>Normal</button><button class="lensItem" data-filter="vivid"><span class="lensCircle">✦</span>Vivid</button><button class="lensItem" data-filter="warm"><span class="lensCircle">☀</span>Warm</button><button class="lensItem" data-filter="cool"><span class="lensCircle">❄</span>Cool</button><button class="lensItem" data-filter="mono"><span class="lensCircle">◐</span>Mono</button><button class="lensItem" data-filter="sepia"><span class="lensCircle">◒</span>Sepia</button></div>
 <div class="cameraControls"><button class="cameraSideBtn" id="galleryBtn" aria-label="Open gallery"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></button><button class="captureBtn" id="captureBtn" aria-label="Take photo"></button><button class="cameraSideBtn" id="videoModeBtn" aria-label="Switch to video"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg></button></div><div class="cameraModeLabel">PHOTO</div><input type="file" id="galleryInput" accept="image/*,video/*" class="hidden">
 </div>
@@ -1170,7 +1170,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </div>
 <div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find people by username</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by username" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can add</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Search for someone by their VibeSnap username.</p></div></div>
 <div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profilePresence" class="profilePresence">Online</p><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
-<div id="settingsPage" class="page hidden"><div class="pageTitle">Settings</div><div class="settingsPanel"><div class="settingsPanelIcon">⚙</div><h2>VibeSnap Settings</h2><p>Manage your account and profile preferences.</p><button type="button" id="settingsProfileBtn" class="settingsAction">Account &amp; Profile <span>›</span></button><div class="settingsNote">Your account and sign-in details are managed securely by VibeSnap.</div></div></div>
+<div id="settingsPage" class="page hidden"><div class="settingsPageHead"><div class="pageTitle">Settings</div><p>Make VibeSnap feel like yours.</p></div><div class="settingsPanel"><div class="settingsPanelIcon">⚙</div><h2>Appearance &amp; camera</h2><p>These preferences are saved in this browser.</p><label class="vsSettingRow"><span><b>Accent colour</b><small>Choose the app highlight colour</small></span><select id="vsAccentChoice"><option value="violet">Violet</option><option value="blue">Electric blue</option><option value="pink">Neon pink</option><option value="teal">Teal</option></select></label><label class="vsSettingRow"><span><b>Chat background</b><small>Change the conversation backdrop</small></span><select id="vsChatWallpaper"><option value="default">Midnight</option><option value="aurora">Aurora</option><option value="plain">Plain</option></select></label><label class="vsSettingToggle"><span><b>Mirror selfies</b><small>Flip the front-camera preview and capture</small></span><input type="checkbox" id="vsMirrorToggle"></label><label class="vsSettingToggle"><span><b>Camera audio</b><small>Allow audio when recording videos</small></span><input type="checkbox" id="vsCameraSoundToggle"></label><div class="vsSettingsDivider"></div><h2>Account security</h2><p>Change your password while signed in.</p><label class="vsPasswordLabel" for="vsNewPassword">New password</label><input id="vsNewPassword" class="vsPasswordInput" type="password" minlength="6" autocomplete="new-password" placeholder="At least 6 characters"><button type="button" id="vsChangePassword" class="settingsAction">Update password <span>›</span></button><div id="vsSettingsStatus" class="settingsNote" role="status" aria-live="polite"></div><div class="vsSettingsDivider"></div><button type="button" id="settingsProfileBtn" class="settingsAction">View my profile <span>›</span></button><div class="settingsNote">Account deletion and recovery require a secure server-side setup and are not exposed as unsafe browser-only actions.</div></div></div>
 <div class="bottomNav">
 <button class="navBtn active" data-page="chat"><span><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5.5 4v-4.3A2.5 2.5 0 0 1 4 14.5z"/></svg></span>Chats</button>
  <button class="navBtn" data-page="camera"><span><svg viewBox="0 0 24 24"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></span>Camera</button>
@@ -1665,6 +1665,7 @@ await video.play();
 const videoTrack=stream.getVideoTracks()[0];
 if(!videoTrack||videoTrack.readyState!=="live")throw new Error("The browser did not start a live camera stream.");
 currentStream=stream;
+refreshCameraZoomControl();
 videoTrack.addEventListener("ended",()=>{if(currentStream===stream){currentStream=null;showCameraStatus("The camera stopped. Reopen the Camera tab to try again.");}});
 applyFilter();
 
@@ -1734,6 +1735,8 @@ if(captureInProgress)return;
 captureInProgress=true;
 const captureButton=$("captureBtn"),label=document.querySelector(".cameraModeLabel");
 captureButton.disabled=true;
+captureButton.classList.add("vs-capturing");
+setTimeout(()=>captureButton.classList.remove("vs-capturing"),460);
 try{
 if(!currentStream)await startCamera();
 if(!currentStream)return;
@@ -1968,6 +1971,48 @@ $("conversationCamera").onclick=async()=>{if(!selectedFriend){showVibeNotice("Op
 $("logoutBtn").onclick=async()=>{stopCamera();if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}await writeLastActive(false);await auth.signOut()};
 function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 
+
+/* VibeSnap preferences and progressive camera controls */
+const VS_PREF_KEY="vibesnap-ui-preferences-v1";
+function readVibePreferences(){try{return JSON.parse(localStorage.getItem(VS_PREF_KEY)||"{}")}catch(_){return {}}}
+function saveVibePreferences(patch){const next={...readVibePreferences(),...patch};try{localStorage.setItem(VS_PREF_KEY,JSON.stringify(next))}catch(_){}return next}
+function applyVibePreferences(){
+ const p=readVibePreferences(),accents={violet:["#9a72ff","#4d9dff"],blue:["#398bff","#36c8ff"],pink:["#f05aaf","#8b70ff"],teal:["#19c7b4","#4d8dff"]};
+ const pair=accents[p.accent]||accents.violet;
+ document.documentElement.style.setProperty("--vs-accent",pair[0]);document.documentElement.style.setProperty("--vs-accent2",pair[1]);
+ const wallpapers={default:"radial-gradient(ellipse at 15% 0%,rgba(133,91,255,.13),transparent 38%),linear-gradient(145deg,#12101b,#191526 62%,#101827)",aurora:"radial-gradient(ellipse at 15% 0%,rgba(35,210,185,.18),transparent 38%),radial-gradient(ellipse at 90% 100%,rgba(116,91,255,.22),transparent 45%),#111522",plain:"#15131d"};
+ document.documentElement.style.setProperty("--vs-chat-wallpaper",wallpapers[p.wallpaper]||wallpapers.default);
+ mirrorSelfieOn=p.mirror!==false;
+ if(typeof cameraSoundOn!=="undefined")cameraSoundOn=p.cameraSound!==false;
+ const accent=$("vsAccentChoice"),wall=$("vsChatWallpaper"),mirror=$("vsMirrorToggle"),sound=$("vsCameraSoundToggle"),camMirror=$("vsCameraMirror");
+ if(accent)accent.value=p.accent||"violet";if(wall)wall.value=p.wallpaper||"default";if(mirror)mirror.checked=mirrorSelfieOn;if(sound)sound.checked=cameraSoundOn;if(camMirror)camMirror.checked=mirrorSelfieOn;
+ if($("cameraVideo"))applyFilter();
+}
+$("vsAccentChoice")?.addEventListener("change",e=>{saveVibePreferences({accent:e.target.value});applyVibePreferences()});
+$("vsChatWallpaper")?.addEventListener("change",e=>{saveVibePreferences({wallpaper:e.target.value});applyVibePreferences()});
+$("vsMirrorToggle")?.addEventListener("change",e=>{mirrorSelfieOn=e.target.checked;saveVibePreferences({mirror:mirrorSelfieOn});if($("vsCameraMirror"))$("vsCameraMirror").checked=mirrorSelfieOn;applyFilter()});
+$("vsCameraMirror")?.addEventListener("change",e=>{mirrorSelfieOn=e.target.checked;saveVibePreferences({mirror:mirrorSelfieOn});if($("vsMirrorToggle"))$("vsMirrorToggle").checked=mirrorSelfieOn;applyFilter()});
+$("vsCameraSoundToggle")?.addEventListener("change",e=>{cameraSoundOn=e.target.checked;saveVibePreferences({cameraSound:cameraSoundOn});if(currentStream)currentStream.getAudioTracks().forEach(t=>t.enabled=cameraSoundOn);$("soundQuick")?.classList.toggle("toolActive",!cameraSoundOn)});
+$("vsChangePassword")?.addEventListener("click",async()=>{
+ const field=$("vsNewPassword"),status=$("vsSettingsStatus"),button=$("vsChangePassword"),password=field.value;
+ if(password.length<6){status.textContent="Use at least 6 characters for your new password.";return}
+ const client=window.VibeSnapSupabase?.client;
+ if(!client){status.textContent="Account security service is unavailable. Please try again later.";return}
+ button.disabled=true;button.textContent="Updating…";status.textContent="";
+ try{const {error}=await client.auth.updateUser({password});if(error)throw error;field.value="";status.textContent="Password updated successfully."}
+ catch(error){status.textContent="Password update failed: "+(error.message||"Please try again.")}
+ finally{button.disabled=false;button.textContent="Update password"}
+});
+function refreshCameraZoomControl(){
+ const input=$("vsCameraZoom"),track=currentStream?.getVideoTracks?.()[0];
+ if(!input)return;
+ try{const cap=track?.getCapabilities?.(),settings=track?.getSettings?.();if(!cap||!Number.isFinite(cap.zoom?.max)||cap.zoom.max<=1){input.disabled=true;input.min="1";input.max="1";input.value="1";input.title="Zoom is not supported by this camera";return}
+ input.disabled=false;input.min=String(cap.zoom.min||1);input.max=String(cap.zoom.max);input.step=String(cap.zoom.step||0.1);input.value=String(settings?.zoom||cap.zoom.min||1);input.title="Adjust camera zoom";
+ }catch(_){input.disabled=true}
+}
+$("vsCameraZoom")?.addEventListener("input",async e=>{const track=currentStream?.getVideoTracks?.()[0];if(!track)return;try{await track.applyConstraints({advanced:[{zoom:Number(e.target.value)}]})}catch(_){showVibeNotice("This camera does not support the selected zoom level.","info")}});
+applyVibePreferences();
+
 </script>
 
 <style id="vibesnap-desktop-camera-final-layout">
@@ -2194,4 +2239,114 @@ function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g
   #app #friendRequestsList .friendRequestInfo small{color:#aaa1c4!important}
   #app #friendRequestsList .friendRequestActions .declineRequest{background:#302a40!important;color:#d8d0ec!important}
 }
+</style>
+
+<style id="vibesnap-feature-polish-stage1">
+:root{--vs-accent:#9a72ff;--vs-accent2:#4d9dff;--vs-panel:rgba(29,25,43,.82);--vs-line:rgba(194,176,255,.16);--vs-chat-wallpaper:radial-gradient(ellipse at 15% 0%,rgba(133,91,255,.13),transparent 38%),linear-gradient(145deg,#12101b,#191526 62%,#101827)}
+html{scroll-behavior:smooth}
+body{background:#0e0c15;color:#f7f4ff}
+button,input,select{font:inherit}
+button{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease}
+button:hover{filter:brightness(1.08)}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--vs-accent);outline-offset:3px}
+*{scrollbar-width:thin;scrollbar-color:#5a477d transparent}
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-thumb{background:linear-gradient(var(--vs-accent),var(--vs-accent2));border-radius:20px}
+*::-webkit-scrollbar-track{background:transparent}
+#app{background:#100e18;color:#f7f4ff}
+.page{background:transparent;color:inherit;animation:vsPageIn .28s ease both}
+@keyframes vsPageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+#app .topHeader,#app .bottomNav{background:rgba(20,17,30,.92)!important;border-color:var(--vs-line)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+#app .topHeader{box-shadow:0 8px 30px rgba(0,0,0,.16)}
+#app .brandLogo{background:linear-gradient(90deg,#fff,var(--vs-accent),var(--vs-accent2));-webkit-background-clip:text;background-clip:text}
+#app .headerIcon,#app .topAvatar{background:rgba(255,255,255,.08)!important;color:#f5f0ff!important;border:1px solid var(--vs-line)}
+#app .headerActions .headerIcon:nth-child(2),#app .composeBtn,#app .chatInput button,#app .sendBtn,#app .chatOpenBtn{background:linear-gradient(130deg,var(--vs-accent),var(--vs-accent2))!important;color:#fff!important}
+#app .chatRow,#app .userCard{background:rgba(29,25,43,.76)!important;border-color:var(--vs-line)!important;color:#f7f4ff!important;backdrop-filter:blur(12px)}
+#app .chatRow:hover,#app .userCard:hover{background:rgba(49,40,69,.86)!important}
+#app .chatRowName,#app .userName{color:#fff!important}
+#app .chatRowMeta,#app .userEmail{color:#aaa2bf!important}
+#app .rowAvatar,#app .avatar,#app .profileAvatar{border:2px solid rgba(180,151,255,.55)!important;box-shadow:0 0 0 4px rgba(145,105,255,.10),0 8px 24px rgba(0,0,0,.2)}
+#app .navBtn{color:#aaa4bd!important}
+#app .navBtn.active{color:var(--vs-accent)!important}
+#app .navBtn.active:after{background:linear-gradient(90deg,var(--vs-accent),var(--vs-accent2))!important;box-shadow:0 0 14px color-mix(in srgb,var(--vs-accent) 55%,transparent)}
+#app #chatConversation{background:#100e18!important;color:#f8f5ff!important}
+#app .conversationHeader,#app .chatInput{background:rgba(23,20,34,.96)!important;border-color:var(--vs-line)!important;color:#fff}
+#app .conversationHeader .conversationTitle{color:#fff}
+#app .chatMessages{background:var(--vs-chat-wallpaper)!important}
+#app .chatInput input{background:rgba(255,255,255,.08)!important;border:1px solid var(--vs-line)!important;color:#fff!important}
+#app .chatInput input::placeholder{color:#aaa2bf}
+#app .message.theirs{background:rgba(255,255,255,.10)!important;color:#f7f4ff!important;border:1px solid var(--vs-line)}
+#app .message.mine{background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2))!important;color:#fff!important}
+#app #profilePage{background:radial-gradient(ellipse at 50% 0%,rgba(135,91,255,.2),transparent 45%),#100e18!important}
+#app .profileBox{background:rgba(32,27,47,.86)!important;border:1px solid var(--vs-line)!important;color:#fff!important;box-shadow:0 22px 60px rgba(0,0,0,.25);backdrop-filter:blur(16px)}
+#app .profileBox h2{color:#fff}
+#app .profilePresence{color:#b9acd8!important}
+#app .logoutBtn{background:linear-gradient(135deg,#49345f,#282238)!important;border:1px solid var(--vs-line)}
+#app #settingsPage{overflow:auto;padding:28px 18px 110px;background:radial-gradient(ellipse at 85% 0%,rgba(79,140,255,.14),transparent 42%),#100e18!important}
+#app .settingsPageHead{max-width:760px;margin:0 auto 16px}
+#app .settingsPageHead .pageTitle{color:#fff;margin-bottom:5px}
+#app .settingsPageHead p{color:#a9a1bd}
+#app .settingsPanel{max-width:760px!important;margin:0 auto!important;padding:28px!important;background:rgba(31,27,45,.88)!important;border:1px solid var(--vs-line)!important;border-radius:24px!important;box-shadow:0 24px 65px rgba(0,0,0,.25)!important;color:#fff!important;text-align:left!important;backdrop-filter:blur(18px)}
+#app .settingsPanel h2{color:#fff!important;margin-top:4px}
+#app .settingsPanel>p{color:#aaa2bf!important;margin:7px 0 17px!important}
+#app .settingsPanelIcon{margin:0 0 16px!important;background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2))!important}
+#app .vsSettingRow,#app .vsSettingToggle{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 0;border-bottom:1px solid var(--vs-line);color:#fff}
+#app .vsSettingRow span,#app .vsSettingToggle span{display:flex;flex-direction:column;gap:4px}
+#app .vsSettingRow small,#app .vsSettingToggle small{font-size:12px;color:#a9a1bd;font-weight:500}
+#app .vsSettingRow select{min-width:135px;padding:10px 12px;border-radius:12px;border:1px solid var(--vs-line);background:#211c30;color:#fff}
+#app .vsSettingToggle input{width:20px;height:20px;accent-color:var(--vs-accent)}
+#app .vsSettingsDivider{height:1px;background:var(--vs-line);margin:24px 0}
+#app .vsPasswordLabel{display:block;margin:12px 0 7px;color:#c7bddc;font-size:13px;font-weight:700}
+#app .vsPasswordInput{width:100%;height:48px;padding:0 14px;border-radius:13px;border:1px solid var(--vs-line);background:#171421;color:#fff;margin-bottom:12px}
+#app .settingsAction{background:linear-gradient(120deg,rgba(154,114,255,.2),rgba(77,157,255,.14))!important;border:1px solid var(--vs-line)!important;color:#e9e1ff!important}
+#app .settingsNote{color:#aaa2bf!important;text-align:left!important;line-height:1.55}
+#app .settingsNote:empty{display:none}
+#app #friendsPage{background:radial-gradient(ellipse at 80% 0%,rgba(135,91,255,.15),transparent 45%),#100e18!important}
+#app #chatPage{background:#100e18!important}
+#app .searchBar,#app .searchPageBox{background:rgba(255,255,255,.07)!important;border:1px solid var(--vs-line)!important;color:#fff}
+#app .searchBar input,#app .searchPageBox input{color:#fff!important}
+#app .searchBar input::placeholder,#app .searchPageBox input::placeholder{color:#a9a1bd}
+#app .cameraTop button,#app .cameraSideBtn{backdrop-filter:blur(14px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#app .captureBtn{transition:transform .18s ease,box-shadow .18s ease}
+#app .captureBtn.vs-capturing{animation:vsCapture .42s ease}
+@keyframes vsCapture{0%{transform:scale(1)}35%{transform:scale(.88);box-shadow:0 0 0 12px rgba(255,255,255,.24),0 0 34px var(--vs-accent)}100%{transform:scale(1)}}
+#app .cameraMoreMenu{border-color:var(--vs-line);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+#app .vsCameraSetting{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;font-size:13px;padding:9px 6px}
+#app .vsCameraSetting input[type=range]{width:112px;accent-color:var(--vs-accent)}
+#app .vsCameraSetting input[type=checkbox]{accent-color:var(--vs-accent)}
+#app .message img,#app .message video{cursor:zoom-in}
+#vibeNotice{backdrop-filter:blur(18px);border-color:var(--vs-line)}
+#recipientPickerCard{background:#1d192b!important;color:#fff!important;border:1px solid var(--vs-line)}
+#recipientPickerCard h2,#recipientPickerCard .recipientChoiceName{color:#fff!important}
+#recipientPickerCard p,#recipientPickerCard .recipientChoiceMeta{color:#aaa2bf!important}
+#recipientPickerCard .recipientChoice{border-color:var(--vs-line)}
+#recipientPickerCard .recipientPickerCancel{background:#302a40;color:#eee}
+#recipientPickerCard .recipientPickerSend{background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2))}
+#notificationQuick,#chatNotifications,#notificationPanel{display:none!important}
+@media(min-width:1024px){
+ #app{max-width:1440px!important;margin:0 auto!important;box-shadow:0 0 80px rgba(0,0,0,.42)!important}
+ #app .bottomNav{max-width:272px!important;left:0!important;right:auto!important;width:272px!important;height:100%!important;top:0!important;bottom:0!important;transform:none!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:12px!important;padding:28px 16px!important;border-top:0!important;border-right:1px solid var(--vs-line)!important;box-shadow:12px 0 40px rgba(0,0,0,.18)!important}
+ #app .bottomNav .navBtn{min-height:58px!important;flex-direction:row!important;justify-content:flex-start!important;gap:15px!important;padding:0 18px!important;border-radius:16px!important;font-size:14px!important}
+ #app .bottomNav .navBtn.active{background:linear-gradient(100deg,rgba(154,114,255,.2),rgba(77,157,255,.12))!important}
+ #app .bottomNav .navBtn.active:after{display:none!important}
+ #app #chatPage,#app #friendsPage,#app #profilePage,#app #searchPage,#app #settingsPage{margin-left:272px!important;width:calc(100% - 272px)!important}
+ #app #chatPage{padding-bottom:0!important}
+ #app #friendsPage{padding-bottom:20px!important}
+ #app #profilePage{padding-top:60px!important}
+ #app #settingsPage{padding-top:48px!important}
+ #app #chatConversation{left:272px!important}
+ #app #chatPage .topHeader{padding-left:34px!important;padding-right:34px!important}
+ #app #chatPage .chatList{padding:0 18px 30px!important}
+ #app .composeBtn{right:34px!important;bottom:34px!important}
+ #app #cameraPage{--vs-side:272px}
+ #app #chatConversation .chatMessages{padding:28px clamp(24px,5vw,80px)!important}
+}
+@media(max-width:699px){
+ #app .settingsPanel{padding:22px 17px!important}
+ #app .vsSettingRow,#app .vsSettingToggle{align-items:flex-start}
+ #app .vsSettingRow select{min-width:118px}
+ #app #settingsPage{padding:22px 12px 100px!important}
+}
+@media(prefers-reduced-motion:reduce){.page,button,#app .captureBtn{animation:none!important;transition:none!important}}
 </style>
