@@ -1618,9 +1618,10 @@ if(user){
 vsPrivacyReady=false;vsShowOnlineStatus=true;currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
 try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Supabase permissions, then refresh.","error");}
 startPresence();await loadUsers();startFriendListeners();loadVibeBlockedUsers();startVibeUnreadListener();
-let savedPage="camera",savedConversation="";try{savedPage=sessionStorage.getItem("vibesnap-last-page")||"camera";savedConversation=sessionStorage.getItem("vibesnap-last-conversation")||"";}catch(_){ }
-if(!["camera","friends","chat","profile","search","settings"].includes(savedPage))savedPage="camera";
-if(savedPage==="chat"&&savedConversation){const friend=usersCache.find(u=>u.uid===savedConversation);if(friend)await openChat(friend);else showPage("chat");}else showPage(savedPage);
+// Always land on Camera after authentication. Do not restore a stale tab selection
+// from an earlier session, which could leave the camera visible with Chats highlighted.
+try{sessionStorage.removeItem("vibesnap-last-conversation");}catch(_){}
+showPage("camera");
 hasInitializedAppSession=true;
 }
 else{stopPresence();stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];vsPrivacyReady=false;vsShowOnlineStatus=true;currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
