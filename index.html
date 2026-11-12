@@ -1640,7 +1640,7 @@ $("vsAvatarFile")?.addEventListener("change",async event=>{
  button.disabled=true;button.textContent="Uploading…";status.textContent="";
  let blob=file,contentType=file.type||"image/jpeg",path="";
  try{
-  try{const bitmap=await createImageBitmap(file),scale=Math.min(1,512/Math.max(bitmap.width,bitmap.height)),canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);const compressed=await new Promise(resolve=>canvas.toBlob(resolve,"image/webp",.86));if(compressed){blob=compressed;contentType="image/webp"}bitmap.close?.()}catch(_){}
+  try{const bitmap=await createImageBitmap(file),side=Math.min(bitmap.width,bitmap.height),sx=(bitmap.width-side)/2,sy=(bitmap.height-side)/2,canvas=document.createElement("canvas");canvas.width=512;canvas.height=512;canvas.getContext("2d").drawImage(bitmap,sx,sy,side,side,0,0,512,512);const compressed=await new Promise(resolve=>canvas.toBlob(resolve,"image/webp",.86));if(compressed){blob=compressed;contentType="image/webp"}bitmap.close?.()}catch(_){}
   path="avatars/"+currentUser.uid+"/"+crypto.randomUUID()+(contentType==="image/webp"?".webp":".jpg");
   const upload=await client.storage.from("vibesnap-media").upload(path,blob,{contentType,cacheControl:"3600"});if(upload.error)throw upload.error;
   const update=await client.from("profiles").update({avatar_url:path}).eq("user_id",currentUser.uid);if(update.error)throw update.error;
