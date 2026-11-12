@@ -71,10 +71,17 @@ export async function getMyProfile() {
   const { data: { user } } = unwrap(await supabase.auth.getUser());
   if (!user) return null;
   const result = await supabase.from("profiles")
-    .select("user_id,username,display_name,avatar_url,last_seen_at,is_online,friend_nicknames,encryption_public_key,created_at")
+    .select("user_id,username,display_name,avatar_url,last_seen_at,is_online,encryption_public_key,created_at")
     .eq("user_id", user.id)
     .maybeSingle();
-  return unwrap(result);
+  const profile = unwrap(result);
+  if (!profile) return null;
+  const privateResult = await supabase.from("profile_private")
+    .select("friend_nicknames")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  profile.friend_nicknames = unwrap(privateResult)?.friend_nicknames || {};
+  return profile;
 }
 
 export async function searchProfiles(usernameQuery, limit = 25) {
