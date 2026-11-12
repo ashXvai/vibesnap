@@ -2535,6 +2535,9 @@ function vsRenderPinnedBanner(chatId){
 const VS_PROFILE_THEMES={violet:{accent:"#9675ff",glow:"rgba(150,117,255,.22)"},ocean:{accent:"#32b9ed",glow:"rgba(50,185,237,.22)"},rose:{accent:"#ed6aa6",glow:"rgba(237,106,166,.22)"},aurora:{accent:"#3ac8a7",glow:"rgba(58,200,167,.22)"}};
 function vsApplyProfileTheme(){if(!currentUser)return;let choice="violet";try{choice=localStorage.getItem("vibesnap-profile-theme-"+currentUser.uid)||"violet"}catch(_){}const theme=VS_PROFILE_THEMES[choice]||VS_PROFILE_THEMES.violet,box=document.querySelector("#profilePage .profileBox");if(box){box.style.setProperty("--vs-profile-accent",theme.accent);box.style.setProperty("--vs-profile-glow",theme.glow)}if($("vsProfileThemeChoice"))$("vsProfileThemeChoice").value=choice}
 $("vsProfileThemeChoice")?.addEventListener("change",event=>{if(!currentUser)return;localStorage.setItem("vibesnap-profile-theme-"+currentUser.uid,event.target.value);vsApplyProfileTheme()});
+
+// Narrow read-only bridge for separately loaded feature modules.
+window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get selectedFriend(){return selectedFriend},get acceptedFriendships(){return acceptedFriendships},notify:showVibeNotice});
 </script>
 
 <style id="vibesnap-desktop-camera-final-layout">
@@ -2610,7 +2613,7 @@ $("vsProfileThemeChoice")?.addEventListener("change",event=>{if(!currentUser)ret
 #app button:focus-visible,#app input:focus-visible,#app select:focus-visible,#app textarea:focus-visible{outline:3px solid #b7a1ff!important;outline-offset:3px!important}
 @media(min-width:700px) and (max-width:1023px){#app{max-width:100%!important;width:100%!important;margin:0 auto!important}#app #chatPage,#app #friendsPage,#app #profilePage,#app #searchPage,#app #settingsPage{max-width:100%!important}#app .bottomNav{max-width:100%!important;width:100%!important}#app .chatMessages{padding-left:clamp(22px,5vw,72px)!important;padding-right:clamp(22px,5vw,72px)!important}#app .profileBox{max-width:620px!important;margin:20px auto!important}}
 @media(prefers-reduced-motion:reduce){#chatMessages{animation:none!important}}
-</style><style id="vs-edit-chat-nickname-style">#conversationProfilePanel .vsEditChatNickname{display:block;width:100%;margin:10px 0;padding:11px 14px;border:1px solid var(--vs-line);border-radius:12px;background:rgba(125,98,255,.14);color:#d6c9ff;font-weight:800}</style><script src="./vibesnap-extras.js"></script>
+</style><style id="vs-edit-chat-nickname-style">#conversationProfilePanel .vsEditChatNickname{display:block;width:100%;margin:10px 0;padding:11px 14px;border:1px solid var(--vs-line);border-radius:12px;background:rgba(125,98,255,.14);color:#d6c9ff;font-weight:800}</style><script type="module" src="./vibesnap-extras.js"></script>
 </body>
 
 <style id="vibesnap-interaction-layer-recovery">
