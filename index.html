@@ -1979,7 +1979,7 @@ async function refreshVibeUnreadCounts(friendsArg){
   if(membersResult.error)throw membersResult.error;if(messagesResult.error)throw messagesResult.error;
   const lastRead=new Map((membersResult.data||[]).map(row=>[row.conversation_id,row.last_read_at?Date.parse(row.last_read_at):0]));
   const counts={};(messagesResult.data||[]).forEach(message=>{if(Date.parse(message.created_at)>(lastRead.get(message.conversation_id)||0))counts[message.conversation_id]=(counts[message.conversation_id]||0)+1});
-  let total=0;friends.forEach(friend=>{const count=counts[getChatId(currentUser.uid,friend.uid)]||0;total+=count;const badge=document.querySelector('[data-unread-for="'+friend.uid+'"]');if(badge){badge.textContent=count>99?"99+":String(count);badge.classList.toggle("hidden",!count)}});
+  let total=0;friends.forEach(friend=>{const isMuted=vsMutedChats().includes(friend.uid);const count=isMuted?0:(counts[getChatId(currentUser.uid,friend.uid)]||0);total+=count;const badge=document.querySelector('[data-unread-for="'+friend.uid+'"]');if(badge){badge.textContent=count>99?"99+":String(count);badge.classList.toggle("hidden",!count)}});
   $("unreadCount").textContent=total>99?"99+":String(total);
  }catch(error){console.warn("Unread counts unavailable:",error)}
  finally{vibeUnreadRefreshBusy=false}
@@ -2279,12 +2279,12 @@ loadMessages=function(chatId){
  currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt").onSnapshot(async snapshot=>{
   $("chatMessages").innerHTML="";
   let priorDay="",unreadDividerAdded=false;const vsMessageText=new Map();
-  let recipientReadAt=0;
-  try{const client=window.VibeSnapSupabase?.client;if(client&&currentUser){await client.from("conversation_members").update({last_read_at:new Date().toISOString()}).eq("conversation_id",chatId).eq("user_id",currentUser.uid);const {data:members}=await client.from("conversation_members").select("user_id,last_read_at").eq("conversation_id",chatId);const peer=members?.find(member=>member.user_id===selectedFriend?.uid);recipientReadAt=peer?.last_read_at?Date.parse(peer.last_read_at):0;}}catch(readError){console.warn("VibeSnap read receipt update skipped:",readError)}
+  let recipientReadAt=0,ownLastReadAt=0;
+  try{const client=window.VibeSnapSupabase?.client;if(client&&currentUser){const {data:members}=await client.from("conversation_members").select("user_id,last_read_at").eq("conversation_id",chatId);const mine=members?.find(member=>member.user_id===currentUser.uid),peer=members?.find(member=>member.user_id===selectedFriend?.uid);ownLastReadAt=mine?.last_read_at?Date.parse(mine.last_read_at):0;recipientReadAt=peer?.last_read_at?Date.parse(peer.last_read_at):0;const {error}=await client.from("conversation_members").update({last_read_at:new Date().toISOString()}).eq("conversation_id",chatId).eq("user_id",currentUser.uid);if(error)throw error;}}catch(readError){console.warn("VibeSnap read receipt update skipped:",readError)}
   for(const doc of snapshot.docs){
    const message=doc.data(),mine=message.senderUid===currentUser.uid,sentAt=timestampMillis(message.createdAt),dayKey=sentAt?new Date(sentAt).toDateString():"";
    if(dayKey&&dayKey!==priorDay){const divider=document.createElement("div");divider.className="vsDateSeparator";divider.textContent=vsDateLabel(new Date(sentAt));$("chatMessages").appendChild(divider);priorDay=dayKey}
-   if(!mine&&!unreadDividerAdded&&recipientReadAt>0&&sentAt>recipientReadAt){const unread=document.createElement("div");unread.className="vsUnreadDivider";unread.textContent="Unread messages";$("chatMessages").appendChild(unread);unreadDividerAdded=true}
+   if(!mine&&!unreadDividerAdded&&sentAt>ownLastReadAt){const unread=document.createElement("div");unread.className="vsUnreadDivider";unread.textContent="Unread messages";$("chatMessages").appendChild(unread);unreadDividerAdded=true}
    const row=document.createElement("div");row.className="messageRow "+(mine?"mine":"theirs");row.dataset.messageId=doc.id;
    const box=document.createElement("div");box.className="message "+(mine?"mine":"theirs");box.dataset.messageId=doc.id;
    if((message.type==="image"||message.type==="video")&&message.mediaUrl){const media=document.createElement(message.type==="video"?"video":"img");media.src=message.mediaUrl;media.alt=message.type==="video"?"Shared video":"Shared photo";if(message.type==="video"){media.controls=true;media.playsInline=true;media.preload="metadata";media.addEventListener("dblclick",()=>openVibeMediaViewer(message.mediaUrl,"video"))}else{media.loading="lazy";media.addEventListener("click",()=>openVibeMediaViewer(message.mediaUrl,"image"))}box.appendChild(media)}
