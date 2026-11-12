@@ -1165,7 +1165,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </div>
 <div class="searchBar"><span class="searchBarIcon">⌕</span><input id="chatSearchInput" type="search" placeholder="Search chats, friends..."></div>
 <div class="categoryRow"><span>Unread <b id="unreadCount">0</b></span></div>
-<div id="chatList" class="chatList"></div>
+<div id="favoriteFriendsSection" class="favoriteFriendsSection hidden"><div class="favoriteFriendsHeading">Favourites</div><div id="favoriteFriendsList"></div></div><div id="chatList" class="chatList"></div>
 <button class="composeBtn" id="composeBtn">✎</button>
 </div>
 <div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find people by username</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by username" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can add</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Search for someone by their VibeSnap username.</p></div></div>
@@ -1902,14 +1902,21 @@ const card=document.createElement("div");card.className="userCard";const name=fr
 card.innerHTML=avatarHTML(user,"avatar")+'<div class="userInfo"><div class="userName">'+escapeHTML(name)+'</div><div class="userEmail lastSeenLabel" data-last-seen-uid="'+escapeHTML(user.uid)+'">'+escapeHTML(formatLastSeen(user))+'</div></div><button class="chatOpenBtn">Chat</button>';
 card.querySelector(".chatOpenBtn").onclick=()=>openChat(user);$("usersList").appendChild(card);
 }
+function getVibeSocialPrefs(){try{return JSON.parse(localStorage.getItem("vibesnap-social-"+currentUser.uid)||"{}")}catch(_){return {}}}
+function saveVibeSocialPrefs(prefs){try{localStorage.setItem("vibesnap-social-"+currentUser.uid,JSON.stringify(prefs))}catch(_){}}
+function toggleVibeSocialList(kind,uid){const prefs=getVibeSocialPrefs(),items=Array.isArray(prefs[kind])?prefs[kind]:[],index=items.indexOf(uid);if(index>=0)items.splice(index,1);else items.push(uid);prefs[kind]=items;saveVibeSocialPrefs(prefs);renderChatList();return index<0}
 function renderChatList(){
 const list=$("chatList");if(!list)return;list.innerHTML="";
-usersCache.filter(user=>getRelationshipState(user.uid)==="friends").forEach((user,i)=>{
+const prefs=getVibeSocialPrefs(),pinned=prefs.pinned||[],favorites=prefs.favorites||[];
+const friends=usersCache.filter(user=>getRelationshipState(user.uid)==="friends").sort((a,b)=>(pinned.includes(b.uid)?1:0)-(pinned.includes(a.uid)?1:0)||(favorites.includes(b.uid)?1:0)-(favorites.includes(a.uid)?1:0));
+const favHost=$("favoriteFriendsList"),favSection=$("favoriteFriendsSection");if(favHost&&favSection){favHost.innerHTML="";const favUsers=friends.filter(user=>favorites.includes(user.uid));favSection.classList.toggle("hidden",!favUsers.length);favUsers.forEach(user=>{const chip=document.createElement("button");chip.type="button";chip.className="favoriteFriendChip";chip.innerHTML=avatarHTML(user,"favoriteFriendAvatar") + '<span>'+escapeHTML(friendLabel(user))+'</span>';chip.onclick=()=>openChat(user);favHost.appendChild(chip)})}
+friends.forEach((user,i)=>{
 const row=document.createElement("div");row.className="chatRow";
 const name=friendLabel(user);
 const dot=i%3===0?"blueDot":i%3===1?"purpleDot":"blueDot";
-row.innerHTML=avatarHTML(user,"rowAvatar")+'<div class="chatRowBody"><div class="chatRowName">'+escapeHTML(name)+'</div><div class="chatRowMeta lastSeenLabel" data-last-seen-uid="'+escapeHTML(user.uid)+'">'+escapeHTML(formatLastSeen(user))+'</div></div><button class="editFriendInline" type="button" aria-label="Edit nickname for '+escapeHTML(name)+'" title="Edit friend name"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button><button class="rowAction" type="button" aria-label="Open chat with '+escapeHTML(name)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.2A2.5 2.5 0 0 1 5 12.5z"/></svg></button>';
+row.innerHTML=avatarHTML(user,"rowAvatar")+'<div class="chatRowBody"><div class="chatRowName">'+escapeHTML(name)+'</div><div class="chatRowMeta lastSeenLabel" data-last-seen-uid="'+escapeHTML(user.uid)+'">'+escapeHTML(formatLastSeen(user))+'</div></div><button class="editFriendInline" type="button" aria-label="Edit nickname for '+escapeHTML(name)+'" title="Edit friend name"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button><button class="favoriteFriendInline" type="button" aria-label="Toggle favourite for '+escapeHTML(name)+'" title="Toggle favourite">'+(favorites.includes(user.uid)?"★":"☆")+'</button><button class="rowAction" type="button" aria-label="Open chat with '+escapeHTML(name)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.2A2.5 2.5 0 0 1 5 12.5z"/></svg></button>';
 row.querySelector('.editFriendInline').onclick=(e)=>{e.stopPropagation();openEditFriendModal(user.uid)};
+row.querySelector('.favoriteFriendInline').onclick=(e)=>{e.stopPropagation();toggleVibeSocialList("favorites",user.uid)};
 row.onclick=()=>openChat(user);list.appendChild(row);
 });
 }
@@ -1919,7 +1926,7 @@ function getChatId(uid1,uid2){return[uid1,uid2].sort().join("_")}
 async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:new Date().toISOString()},{merge:true})}
 async function openChat(user){
 selectedFriend=user;try{sessionStorage.setItem("vibesnap-last-page","chat");sessionStorage.setItem("vibesnap-last-conversation",user.uid);}catch(_){ }
-$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");showPage("chat");$("chatConversation").classList.remove("hidden");
+$("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");const pins=getVibeSocialPrefs().pinned||[];$("chatPinToggle").textContent=pins.includes(user.uid)?"★":"☆";showPage("chat");$("chatConversation").classList.remove("hidden");
 const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.uid);loadMessages(chatId);startVibeTypingListener(chatId);
 }
 function loadMessages(chatId){
@@ -2464,4 +2471,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .vsActionDialogActions button{padding:10px 16px;border-radius:12px;background:#383047;color:#fff;font-weight:800}
 .vsActionDialogActions button:last-child{background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2))}
 .vsActionDialogActions button.danger{background:#a83254}
+</style><style id="vibesnap-favourites-pins">
+#app .favoriteFriendsSection{padding:12px 18px 8px;border-bottom:1px solid var(--vs-line)}
+#app .favoriteFriendsHeading{margin:0 0 10px;color:#bca9ed;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+#app #favoriteFriendsList{display:flex;gap:10px;overflow-x:auto;padding:2px 0 8px}
+#app .favoriteFriendChip{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:66px;background:transparent;color:#e8e1f5;font-size:11px}
+#app .favoriteFriendAvatar{width:48px;height:48px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2));border:2px solid rgba(210,190,255,.65);display:flex;align-items:center;justify-content:center}
+#app .favoriteFriendAvatar img{width:100%;height:100%;object-fit:cover}
+#app .favoriteFriendInline{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.07);color:#f5d77c;font-size:19px;flex:none}
+#app .chatRow .rowAction{width:38px;height:38px}
+@media(min-width:1024px){#app .favoriteFriendsSection{padding:14px 34px}#app #favoriteFriendsList{gap:16px}}
 </style>
