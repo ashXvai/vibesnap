@@ -1128,7 +1128,307 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 </style>
 
-<style id="vs-account-delete-style">#vsDeleteAccount.vsDangerAction{border:1px solid rgba(255,100,120,.35);background:rgba(150,35,65,.16);color:#ff9eae}#vsDeleteAccount:disabled{opacity:.6;cursor:wait}</style><style id="vs-chat-history-pagination">#vsLoadOlderMessages{display:block;margin:10px auto 6px;padding:9px 14px;border:1px solid var(--vs-line);border-radius:18px;background:rgba(255,255,255,.06);color:#d7c9f6;font-size:12px;font-weight:800}#vsLoadOlderMessages.hidden{display:none!important}#vsLoadOlderMessages:disabled{opacity:.55;cursor:wait}@media(max-width:699px){#vsLoadOlderMessages{margin-top:7px}}</style><style id="vs-chat-skeleton-and-empty">.vsChatSkeleton{display:flex;flex-direction:column;gap:12px;padding:16px}.vsChatSkeleton i{display:block;height:38px;width:58%;border-radius:16px;background:linear-gradient(90deg,rgba(160,145,190,.12),rgba(190,175,225,.25),rgba(160,145,190,.12));background-size:220% 100%;animation:vsSkeletonPulse 1.2s ease-in-out infinite}.vsChatSkeleton i:nth-child(2){width:74%;margin-left:auto}.vsChatSkeleton i:nth-child(3){width:45%}@keyframes vsSkeletonPulse{to{background-position:-220% 0}}.vsChatEmpty{max-width:290px;margin:auto;padding:18px 22px;border:1px solid var(--vs-line);border-radius:18px;background:rgba(255,255,255,.04);color:#a99cbd;text-align:center;font-size:13px;line-height:1.5}@media(prefers-reduced-motion:reduce){.vsChatSkeleton i{animation:none}}</style></head>
+<style id="vs-account-delete-style">#vsDeleteAccount.vsDangerAction{border:1px solid rgba(255,100,120,.35);background:rgba(150,35,65,.16);color:#ff9eae}#vsDeleteAccount:disabled{opacity:.6;cursor:wait}</style><style id="vs-chat-history-pagination">#vsLoadOlderMessages{display:block;margin:10px auto 6px;padding:9px 14px;border:1px solid var(--vs-line);border-radius:18px;background:rgba(255,255,255,.06);color:#d7c9f6;font-size:12px;font-weight:800}#vsLoadOlderMessages.hidden{display:none!important}#vsLoadOlderMessages:disabled{opacity:.55;cursor:wait}@media(max-width:699px){#vsLoadOlderMessages{margin-top:7px}}</style><style id="vs-chat-skeleton-and-empty">.vsChatSkeleton{display:flex;flex-direction:column;gap:12px;padding:16px}.vsChatSkeleton i{display:block;height:38px;width:58%;border-radius:16px;background:linear-gradient(90deg,rgba(160,145,190,.12),rgba(190,175,225,.25),rgba(160,145,190,.12));background-size:220% 100%;animation:vsSkeletonPulse 1.2s ease-in-out infinite}.vsChatSkeleton i:nth-child(2){width:74%;margin-left:auto}.vsChatSkeleton i:nth-child(3){width:45%}@keyframes vsSkeletonPulse{to{background-position:-220% 0}}.vsChatEmpty{max-width:290px;margin:auto;padding:18px 22px;border:1px solid var(--vs-line);border-radius:18px;background:rgba(255,255,255,.04);color:#a99cbd;text-align:center;font-size:13px;line-height:1.5}@media(prefers-reduced-motion:reduce){.vsChatSkeleton i{animation:none}}</style><style id="vibesnap-find-people-neon">
+/* Find People panel: cohesive desktop neon styling; interaction and data logic unchanged. */
+#directoryUserCount,#friendRequestCount,.friendDirectoryCount{display:none!important}
+@media (min-width:1024px){
+  #app > #chatPage{position:relative!important;overflow:hidden!important}
+  #app #friendRequestsSection{
+    position:absolute!important;z-index:35!important;
+    top:112px!important;left:18px!important;right:18px!important;bottom:18px!important;
+    width:auto!important;max-width:none!important;height:auto!important;overflow:auto!important;
+    margin:0!important;padding:26px!important;border-radius:22px!important;
+    color:#f5f2ff!important;
+    background:
+      radial-gradient(ellipse at 92% 100%,rgba(67,140,255,.10),transparent 38%),
+      radial-gradient(ellipse at 5% 0%,rgba(137,87,255,.12),transparent 36%),
+      linear-gradient(145deg,#191625,#15121f 72%,#17172a)!important;
+    border:1px solid rgba(181,158,255,.18)!important;
+    box-shadow:0 20px 55px rgba(0,0,0,.30),inset 0 1px rgba(255,255,255,.035)!important;
+    scrollbar-color:#554078 transparent;
+  }
+  #app .friendRequestsPopoverTop{padding:0 0 18px!important;gap:18px!important;border-bottom:1px solid rgba(190,174,255,.14)!important}
+  #app .friendRequestsPopover .friendRequestsHeading{margin:0!important;color:#fff!important;font-size:25px!important;font-weight:850!important;letter-spacing:-.6px!important}
+  #app .friendDirectorySubtitle{margin-top:7px!important;color:#a9a2bd!important;font-size:13px!important}
+  #app .friendRequestsPopoverTop #closeFriendRequests{
+    width:38px!important;height:38px!important;flex:none!important;border-radius:12px!important;
+    color:#d8d0ec!important;background:#292438!important;border:1px solid rgba(190,174,255,.13)!important
+  }
+  #app .friendDirectorySearch{
+    height:54px!important;margin:20px 0 18px!important;padding:0 17px!important;gap:12px!important;
+    border-radius:16px!important;color:#b69aff!important;
+    background:linear-gradient(110deg,rgba(137,87,255,.13),rgba(67,140,255,.09)),#201b2d!important;
+    border:1px solid rgba(157,126,255,.28)!important;
+    box-shadow:0 0 0 1px rgba(137,87,255,.04),0 8px 24px rgba(0,0,0,.12)!important
+  }
+  #app .friendDirectorySearch:focus-within{border-color:#946cff!important;box-shadow:0 0 0 3px rgba(137,87,255,.13),0 8px 24px rgba(0,0,0,.16)!important}
+  #app .friendDirectorySearch input{color:#fff!important;font-size:15px!important}
+  #app .friendDirectorySearch input::placeholder{color:#9389ae!important}
+  #app .friendDirectorySectionLabel{margin:4px 2px 10px!important;color:#aaa1c4!important;font-size:11px!important;letter-spacing:1.1px!important}
+  #app #friendDirectoryResults{display:flex!important;flex-direction:column!important;gap:9px!important}
+  #app #friendDirectoryResults .searchResultCard{
+    min-height:88px!important;margin:0!important;padding:13px 15px!important;gap:14px!important;
+    border:1px solid rgba(190,174,255,.13)!important;border-radius:18px!important;
+    background:linear-gradient(110deg,rgba(137,87,255,.075),rgba(67,140,255,.045)),#201b2c!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.16)!important;transition:border-color .18s,transform .18s,background .18s!important
+  }
+  #app #friendDirectoryResults .searchResultCard:hover{border-color:rgba(155,119,255,.42)!important;transform:translateY(-1px)!important;background:linear-gradient(110deg,rgba(137,87,255,.13),rgba(67,140,255,.08)),#211c30!important}
+  #app #friendDirectoryResults .searchResultCard .avatar{
+    width:58px!important;height:58px!important;min-width:58px!important;flex:0 0 58px!important;
+    border-radius:17px!important;background:linear-gradient(135deg,#8957ff,#438cff)!important;
+    box-shadow:0 7px 20px rgba(112,82,255,.25)!important
+  }
+  #app #friendDirectoryResults .searchResultName{color:#fff!important;font-size:16px!important}
+  #app #friendDirectoryResults .searchResultMeta{color:#a9a2bd!important;font-size:12px!important}
+  #app #friendDirectoryResults .lastSeenLabel{color:#c2b9d6!important;font-size:13px!important}
+  #app #friendDirectoryResults .searchResultCard button{
+    min-width:116px!important;padding:12px 16px!important;border-radius:13px!important;
+    color:#fff!important;background:linear-gradient(110deg,#8957ff,#438cff)!important;
+    box-shadow:0 7px 18px rgba(105,78,255,.24)!important;font-size:13px!important
+  }
+  #app .friendRequestEmpty{padding:18px 4px 20px!important;color:#a9a2bd!important;font-size:13px!important}
+  #app .friendDirectoryRequestsHeading{
+    margin:20px 0 8px!important;padding-top:17px!important;
+    border-top:1px solid rgba(190,174,255,.14)!important;color:#f0ebfa!important;font-size:16px!important
+  }
+  #app #friendRequestsList{padding:0 2px!important}
+  #app #friendRequestsList .friendRequestCard{
+    background:#211c30!important;border:1px solid rgba(190,174,255,.14)!important;
+    border-radius:15px!important;box-shadow:none!important
+  }
+  #app #friendRequestsList .friendRequestInfo strong{color:#fff!important}
+  #app #friendRequestsList .friendRequestInfo small{color:#aaa1c4!important}
+  #app #friendRequestsList .friendRequestActions .declineRequest{background:#302a40!important;color:#d8d0ec!important}
+}
+</style>
+
+<style id="vibesnap-feature-polish-stage1">
+:root{--vs-accent:#9a72ff;--vs-accent2:#4d9dff;--vs-panel:rgba(29,25,43,.82);--vs-line:rgba(194,176,255,.16);--vs-chat-wallpaper:radial-gradient(ellipse at 15% 0%,rgba(133,91,255,.13),transparent 38%),linear-gradient(145deg,#12101b,#191526 62%,#101827)}
+html{scroll-behavior:smooth}
+body{background:#0e0c15;color:#f7f4ff}
+button,input,select{font:inherit}
+button{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease}
+button:hover{filter:brightness(1.08)}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--vs-accent);outline-offset:3px}
+*{scrollbar-width:thin;scrollbar-color:#5a477d transparent}
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-thumb{background:linear-gradient(var(--vs-accent),var(--vs-accent2));border-radius:20px}
+*::-webkit-scrollbar-track{background:transparent}
+#app{background:#100e18;color:#f7f4ff}
+.page{background:transparent;color:inherit;animation:vsPageIn .28s ease both}
+@keyframes vsPageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+#app .topHeader,#app .bottomNav{background:rgba(20,17,30,.92)!important;border-color:var(--vs-line)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+#app .topHeader{box-shadow:0 8px 30px rgba(0,0,0,.16)}
+#app .brandLogo{background:linear-gradient(90deg,#fff,var(--vs-accent),var(--vs-accent2));-webkit-background-clip:text;background-clip:text}
+#app .headerIcon,#app .topAvatar{background:rgba(255,255,255,.08)!important;color:#f5f0ff!important;border:1px solid var(--vs-line)}
+#app .headerActions .headerIcon:nth-child(2),#app .composeBtn,#app .chatInput button,#app .sendBtn,#app .chatOpenBtn{background:linear-gradient(130deg,var(--vs-accent),var(--vs-accent2))!important;color:#fff!important}
+#app .chatRow,#app .userCard{background:rgba(29,25,43,.76)!important;border-color:var(--vs-line)!important;color:#f7f4ff!important;backdrop-filter:blur(12px)}
+#app .chatRow:hover,#app .userCard:hover{background:rgba(49,40,69,.86)!important}
+#app .chatRowName,#app .userName{color:#fff!important}
+#app .chatRowMeta,#app .userEmail{color:#aaa2bf!important}
+#app .rowAvatar,#app .avatar,#app .profileAvatar{border:2px solid rgba(180,151,255,.55)!important;box-shadow:0 0 0 4px rgba(145,105,255,.10),0 8px 24px rgba(0,0,0,.2)}
+#app .navBtn{color:#aaa4bd!important}
+#app .navBtn.active{color:var(--vs-accent)!important}
+#app .navBtn.active:after{background:linear-gradient(90deg,var(--vs-accent),var(--vs-accent2))!important;box-shadow:0 0 14px color-mix(in srgb,var(--vs-accent) 55%,transparent)}
+#app #chatConversation{background:#100e18!important;color:#f8f5ff!important}
+#app .conversationHeader,#app .chatInput{background:rgba(23,20,34,.96)!important;border-color:var(--vs-line)!important;color:#fff}
+#app .conversationHeader .conversationTitle{color:#fff}
+#app .chatMessages{background:var(--vs-chat-wallpaper)!important}
+#app .chatInput input{background:rgba(255,255,255,.08)!important;border:1px solid var(--vs-line)!important;color:#fff!important}
+#app .chatInput input::placeholder{color:#aaa2bf}
+#app .message.theirs{background:rgba(255,255,255,.10)!important;color:#f7f4ff!important;border:1px solid var(--vs-line)}
+#app .message.mine{background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2))!important;color:#fff!important}
+#app #profilePage{background:radial-gradient(ellipse at 50% 0%,rgba(135,91,255,.2),transparent 45%),#100e18!important}
+#app .profileBox{background:rgba(32,27,47,.86)!important;border:1px solid var(--vs-line)!important;color:#fff!important;box-shadow:0 22px 60px rgba(0,0,0,.25);backdrop-filter:blur(16px)}
+#app .profileBox h2{color:#fff}
+#app .profilePresence{color:#b9acd8!important}
+#app .logoutBtn{background:linear-gradient(135deg,#49345f,#282238)!important;border:1px solid var(--vs-line)}
+#app #settingsPage{overflow:auto;padding:28px 18px 110px;background:radial-gradient(ellipse at 85% 0%,rgba(79,140,255,.14),transparent 42%),#100e18!important}
+#app .settingsPageHead{max-width:760px;margin:0 auto 16px}
+#app .settingsPageHead .pageTitle{color:#fff;margin-bottom:5px}
+#app .settingsPageHead p{color:#a9a1bd}
+#app .settingsPanel{max-width:760px!important;margin:0 auto!important;padding:28px!important;background:rgba(31,27,45,.88)!important;border:1px solid var(--vs-line)!important;border-radius:24px!important;box-shadow:0 24px 65px rgba(0,0,0,.25)!important;color:#fff!important;text-align:left!important;backdrop-filter:blur(18px)}
+#app .settingsPanel h2{color:#fff!important;margin-top:4px}
+#app .settingsPanel>p{color:#aaa2bf!important;margin:7px 0 17px!important}
+#app .settingsPanelIcon{margin:0 0 16px!important;background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2))!important}
+#app .vsSettingRow,#app .vsSettingToggle{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 0;border-bottom:1px solid var(--vs-line);color:#fff}
+#app .vsSettingRow span,#app .vsSettingToggle span{display:flex;flex-direction:column;gap:4px}
+#app .vsSettingRow small,#app .vsSettingToggle small{font-size:12px;color:#a9a1bd;font-weight:500}
+#app .vsSettingRow select{min-width:135px;padding:10px 12px;border-radius:12px;border:1px solid var(--vs-line);background:#211c30;color:#fff}
+#app .vsSettingToggle input{width:20px;height:20px;accent-color:var(--vs-accent)}
+#app .vsSettingsDivider{height:1px;background:var(--vs-line);margin:24px 0}
+#app .vsPasswordLabel{display:block;margin:12px 0 7px;color:#c7bddc;font-size:13px;font-weight:700}
+#app .vsPasswordInput{width:100%;height:48px;padding:0 14px;border-radius:13px;border:1px solid var(--vs-line);background:#171421;color:#fff;margin-bottom:12px}
+#app .settingsAction{background:linear-gradient(120deg,rgba(154,114,255,.2),rgba(77,157,255,.14))!important;border:1px solid var(--vs-line)!important;color:#e9e1ff!important}
+#app .settingsNote{color:#aaa2bf!important;text-align:left!important;line-height:1.55}
+#app .settingsNote:empty{display:none}
+#app #friendsPage{background:radial-gradient(ellipse at 80% 0%,rgba(135,91,255,.15),transparent 45%),#100e18!important}
+#app #chatPage{background:#100e18!important}
+#app .searchBar,#app .searchPageBox{background:rgba(255,255,255,.07)!important;border:1px solid var(--vs-line)!important;color:#fff}
+#app .searchBar input,#app .searchPageBox input{color:#fff!important}
+#app .searchBar input::placeholder,#app .searchPageBox input::placeholder{color:#a9a1bd}
+#app .cameraTop button,#app .cameraSideBtn{backdrop-filter:blur(14px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#app .captureBtn{transition:transform .18s ease,box-shadow .18s ease}
+#app .captureBtn.vs-capturing{animation:vsCapture .42s ease}
+@keyframes vsCapture{0%{transform:scale(1)}35%{transform:scale(.88);box-shadow:0 0 0 12px rgba(255,255,255,.24),0 0 34px var(--vs-accent)}100%{transform:scale(1)}}
+#app .cameraMoreMenu{border-color:var(--vs-line);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+#app .vsCameraSetting{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;font-size:13px;padding:9px 6px}
+#app .vsCameraSetting input[type=range]{width:112px;accent-color:var(--vs-accent)}
+#app .vsCameraSetting input[type=checkbox]{accent-color:var(--vs-accent)}
+#app .message img,#app .message video{cursor:zoom-in}
+#vibeNotice{backdrop-filter:blur(18px);border-color:var(--vs-line)}
+#recipientPickerCard{background:#1d192b!important;color:#fff!important;border:1px solid var(--vs-line)}
+#recipientPickerCard h2,#recipientPickerCard .recipientChoiceName{color:#fff!important}
+#recipientPickerCard p,#recipientPickerCard .recipientChoiceMeta{color:#aaa2bf!important}
+#recipientPickerCard .recipientChoice{border-color:var(--vs-line)}
+#recipientPickerCard .recipientPickerCancel{background:#302a40;color:#eee}
+#recipientPickerCard .recipientPickerSend{background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2))}
+#notificationQuick,#chatNotifications,#notificationPanel{display:none!important}
+@media(min-width:1024px){
+ #app{max-width:1440px!important;margin:0 auto!important;box-shadow:0 0 80px rgba(0,0,0,.42)!important}
+ #app .bottomNav{max-width:272px!important;left:0!important;right:auto!important;width:272px!important;height:100%!important;top:0!important;bottom:0!important;transform:none!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:12px!important;padding:28px 16px!important;border-top:0!important;border-right:1px solid var(--vs-line)!important;box-shadow:12px 0 40px rgba(0,0,0,.18)!important}
+ #app .bottomNav .navBtn{min-height:58px!important;flex-direction:row!important;justify-content:flex-start!important;gap:15px!important;padding:0 18px!important;border-radius:16px!important;font-size:14px!important}
+ #app .bottomNav .navBtn.active{background:linear-gradient(100deg,rgba(154,114,255,.2),rgba(77,157,255,.12))!important}
+ #app .bottomNav .navBtn.active:after{display:none!important}
+ #app #chatPage,#app #friendsPage,#app #profilePage,#app #searchPage,#app #settingsPage{margin-left:272px!important;width:calc(100% - 272px)!important}
+ #app #chatPage{padding-bottom:0!important}
+ #app #friendsPage{padding-bottom:20px!important}
+ #app #profilePage{padding-top:60px!important}
+ #app #settingsPage{padding-top:48px!important}
+ #app #chatConversation{left:272px!important}
+ #app #chatPage .topHeader{padding-left:34px!important;padding-right:34px!important}
+ #app #chatPage .chatList{padding:0 18px 30px!important}
+ #app .composeBtn{right:34px!important;bottom:34px!important}
+ #app #cameraPage{--vs-side:272px}
+ #app #chatConversation .chatMessages{padding:28px clamp(24px,5vw,80px)!important}
+}
+@media(max-width:699px){
+ #app .settingsPanel{padding:22px 17px!important}
+ #app .vsSettingRow,#app .vsSettingToggle{align-items:flex-start}
+ #app .vsSettingRow select{min-width:118px}
+ #app #settingsPage{padding:22px 12px 100px!important}
+}
+@media(prefers-reduced-motion:reduce){.page,button,#app .captureBtn{animation:none!important;transition:none!important}}
+</style>
+<style id="vibesnap-read-receipts">
+#chatConversation .messageReceipt{display:inline-block;align-self:flex-end;padding:0 0 3px;font-size:10px;line-height:1.2;white-space:nowrap;color:#9d8ac8}
+#chatConversation .messageRow.mine .messageReceipt{color:#bca9ed}
+#chatConversation .messageRow.mine .messageReceipt::before{content:"✓ ";font-weight:900}
+</style>
+<style id="vibesnap-media-gallery-layer">
+#chatConversation #chatMediaGallery{width:40px;height:40px;flex:none;border-radius:13px;background:rgba(255,255,255,.09);border:1px solid var(--vs-line);color:#fff;font-size:21px}
+#chatConversation .message[title*="copy"]{cursor:context-menu}
+#chatConversation .message img,#chatConversation .message video{cursor:zoom-in}
+.vsMediaViewer,.vsGalleryOverlay{position:fixed;inset:0;z-index:99990;background:rgba(5,4,10,.96);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(18px)}
+.vsMediaStage{max-width:min(94vw,1200px);max-height:84vh;object-fit:contain;border-radius:14px}
+.vsMediaClose{position:absolute;top:18px;right:18px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.13);color:#fff;font-size:30px;z-index:2}
+.vsMediaActions{position:absolute;bottom:18px;display:flex;justify-content:center}
+.vsMediaActions button{padding:12px 24px;border-radius:22px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-weight:800}
+.vsGalleryOverlay{padding:18px}
+.vsGalleryPanel{width:min(860px,100%);max-height:86vh;overflow:auto;border:1px solid var(--vs-line);border-radius:22px;background:#1d192b;padding:18px;color:#fff}
+.vsGalleryHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:19px}
+.vsGalleryHead button{width:38px;height:38px;border-radius:12px;background:#302a40;color:#fff;font-size:25px}
+.vsGalleryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.vsGalleryTile{height:140px;overflow:hidden;border-radius:14px;background:#111;border:1px solid var(--vs-line)}
+.vsGalleryTile img,.vsGalleryTile video{width:100%;height:100%;object-fit:cover}
+.vsGalleryEmpty{grid-column:1/-1;padding:30px;text-align:center;color:#aaa2bf}
+</style><style id="vibesnap-typing-indicator">#chatConversation .vsTypingIndicator{min-height:0;padding:0 18px;background:#151220;color:#bda7ff;font-size:12px;font-weight:700}</style><style id="vibesnap-message-actions">
+#chatConversation .vsReplyPreview{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 14px;background:#241d35;border-top:1px solid var(--vs-line);color:#e6dcff;font-size:12px}
+#chatConversation .vsReplyPreview button{width:30px;height:30px;border-radius:10px;background:#3a304e;color:#fff;font-size:21px}
+#chatConversation .vsReplyQuote{padding:6px 9px;margin:-2px 0 7px;border-left:3px solid var(--vs-accent);border-radius:5px;background:rgba(255,255,255,.07);color:#c7b6ef;font-size:11px}
+#chatConversation .vsEditedLabel{display:block;margin-top:5px;color:#c1b3df;font-size:10px}
+#chatConversation .vsReactionStrip{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+#chatConversation .vsReactionChip{display:inline-flex;padding:3px 7px;border:1px solid var(--vs-line);border-radius:12px;background:#2b2440;color:#fff;font-size:11px}
+.vsMessageMenu{position:fixed;z-index:99980;min-width:170px;padding:6px;border:1px solid var(--vs-line);border-radius:14px;background:#211b30;box-shadow:0 16px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:3px}
+.vsMessageMenu button{padding:10px 12px;border-radius:9px;background:transparent;color:#fff;text-align:left;font-size:13px}
+.vsMessageMenu button:hover{background:rgba(255,255,255,.1)}
+</style><style id="vibesnap-message-action-dialog">
+.vsActionDialogOverlay{position:fixed;inset:0;z-index:99985;display:grid;place-items:center;padding:18px;background:rgba(5,4,10,.76);backdrop-filter:blur(12px)}
+.vsActionDialog{width:min(420px,100%);padding:22px;border:1px solid var(--vs-line);border-radius:20px;background:#211b30;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.vsActionDialog h3{font-size:19px;margin:0 0 7px}.vsActionDialog p{color:#b8aecb;font-size:13px;line-height:1.5;margin:0 0 14px}
+.vsActionDialog input{width:100%;height:46px;padding:0 13px;border:1px solid var(--vs-line);border-radius:12px;background:#151220;color:#fff}
+.vsActionDialogActions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+.vsActionDialogActions button{padding:10px 16px;border-radius:12px;background:#383047;color:#fff;font-weight:800}
+.vsActionDialogActions button:last-child{background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2))}
+.vsActionDialogActions button.danger{background:#a83254}
+</style><style id="vibesnap-favourites-pins">
+#app .favoriteFriendsSection{padding:12px 18px 8px;border-bottom:1px solid var(--vs-line)}
+#app .favoriteFriendsHeading{margin:0 0 10px;color:#bca9ed;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+#app #favoriteFriendsList{display:flex;gap:10px;overflow-x:auto;padding:2px 0 8px}
+#app .favoriteFriendChip{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:66px;background:transparent;color:#e8e1f5;font-size:11px}
+#app .favoriteFriendAvatar{width:48px;height:48px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2));border:2px solid rgba(210,190,255,.65);display:flex;align-items:center;justify-content:center}
+#app .favoriteFriendAvatar img{width:100%;height:100%;object-fit:cover}
+#app .favoriteFriendInline{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.07);color:#f5d77c;font-size:19px;flex:none}
+#app .chatRow .rowAction{width:38px;height:38px}
+@media(min-width:1024px){#app .favoriteFriendsSection{padding:14px 34px}#app #favoriteFriendsList{gap:16px}}
+</style><style id="vibesnap-pin-button-style">#chatConversation #chatPinToggle{width:38px;height:38px;flex:none;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--vs-line);color:#f5d77c;font-size:23px}</style><style id="vibesnap-profile-editor">
+#app .vsProfileEditor{margin:18px 0 4px;padding:16px;border:1px solid var(--vs-line);border-radius:16px;background:rgba(255,255,255,.045);text-align:left}
+#app .vsProfileEditor label{display:block;margin-bottom:7px;color:#c9bce2;font-size:12px;font-weight:800}
+#app .vsProfileEditor input{width:100%;height:44px;padding:0 12px;border:1px solid var(--vs-line);border-radius:11px;background:#151220;color:#fff}
+#app .vsProfileEditor button{width:100%;margin-top:9px;padding:12px;border-radius:12px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-weight:800}
+#app .vsProfileEditor button:disabled{opacity:.6}
+#app #vsProfileStatus{min-height:16px;margin-top:8px;color:#b8a6df;font-size:12px}
+</style><style id="vibesnap-message-search">
+#chatConversation #vsMessageSearchToggle{width:38px;height:38px;flex:none;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--vs-line);color:#fff;font-size:22px}
+#chatConversation .vsMessageSearchBar{display:flex;gap:8px;padding:9px 12px;background:#191526;border-bottom:1px solid var(--vs-line)}
+#chatConversation .vsMessageSearchBar input{flex:1;min-width:0;height:38px;padding:0 12px;border:1px solid var(--vs-line);border-radius:11px;background:#11101a;color:#fff}
+#chatConversation .vsMessageSearchBar button{width:38px;border-radius:10px;background:#302a40;color:#fff;font-size:22px}
+</style><style id="vibesnap-avatar-upload">
+#app .profileAvatar{overflow:hidden;cursor:pointer}
+#app .profileAvatar img{width:100%;height:100%;object-fit:cover}
+#app .vsChangeAvatar{margin:0 auto 8px;padding:10px 16px;border-radius:18px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-size:12px;font-weight:800}
+#app .vsAvatarStatus{min-height:16px;margin:0 0 8px;color:#b8a6df;font-size:12px}
+#app .cameraAvatar img,#app #chatProfileQuick img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+</style><style id="vibesnap-user-camera-preferences">
+/* Filters are intentionally postponed; the user asked to keep the camera surface clean. */
+#app #lensStrip,#app #showFilters{display:none!important}
+</style><style id="vibesnap-remove-friend-style">#conversationProfilePanel .vsRemoveFriendBtn{display:block;width:100%;margin:12px 0;padding:11px 14px;border:1px solid rgba(255,105,130,.28);border-radius:12px;background:rgba(173,47,78,.16);color:#ff9caf;font-weight:800}#conversationProfilePanel .vsRemoveFriendBtn:disabled{opacity:.6}</style><style id="vibesnap-blocked-users">
+#app .vsBlockedUsersList{display:flex;flex-direction:column;gap:8px}
+#app .vsBlockedUserRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--vs-line);border-radius:12px;color:#fff}
+#app .vsBlockedUserRow button{padding:8px 12px;border-radius:10px;background:#3b304d;color:#fff;font-weight:800}
+#conversationProfilePanel .vsBlockUserBtn{display:block;width:100%;margin:10px 0;padding:11px 14px;border:1px solid rgba(245,173,91,.25);border-radius:12px;background:rgba(185,120,38,.15);color:#f5c58d;font-weight:800}
+</style><style id="vibesnap-unread-badges">
+#app .chatRowName{display:flex;align-items:center;gap:8px}
+#app .vsUnreadBadge{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 6px;border-radius:10px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-size:10px;font-weight:900}
+</style><style id="vibesnap-custom-wallpaper">
+#app .vsCustomWallpaper{padding:13px 0;border-bottom:1px solid var(--vs-line);color:#fff}
+#app .vsCustomWallpaper label{display:block;margin-bottom:8px;font-size:13px;font-weight:800}
+#app .vsCustomWallpaper input{display:block;width:100%;font-size:12px;color:#b8aecb}
+#app .vsCustomWallpaper button{margin-top:10px;padding:8px 12px;border-radius:10px;background:#302a40;color:#eee;font-size:12px;font-weight:800}
+</style><style id="vibesnap-profile-glow">
+#app .profileAvatar{box-shadow:0 0 0 4px rgba(145,105,255,.12),0 0 26px rgba(145,105,255,.2);animation:vsAvatarGlow 3.6s ease-in-out infinite}
+@keyframes vsAvatarGlow{0%,100%{box-shadow:0 0 0 4px rgba(145,105,255,.10),0 0 18px rgba(145,105,255,.16)}50%{box-shadow:0 0 0 6px rgba(145,105,255,.18),0 0 30px rgba(145,105,255,.28)}}
+@media(prefers-reduced-motion:reduce){#app .profileAvatar{animation:none}}
+</style>
+
+<style id="vibesnap-responsive-shell-fix">
+/* Enhancement styles are kept inside the document head so browsers apply them. */
+@media (min-width:700px) and (max-width:1023px){
+  #app{width:100%;max-width:920px!important;margin:0 auto!important;box-shadow:0 0 42px rgba(0,0,0,.24)!important}
+  #app .bottomNav{left:0!important;right:0!important;width:100%!important;max-width:none!important;transform:none!important}
+  #app #chatPage,#app #friendsPage,#app #profilePage,#app #searchPage,#app #settingsPage{width:100%!important;margin-left:0!important}
+  #app #chatConversation{left:0!important}
+  #app #profilePage{padding-left:clamp(20px,5vw,56px)!important;padding-right:clamp(20px,5vw,56px)!important}
+  #app .settingsPanel{width:min(100%,760px)!important}
+}
+@media (min-width:1024px){
+  #app #cameraPage{margin-left:272px!important;width:calc(100% - 272px)!important}
+  #app #cameraPage .cameraTop{padding-left:clamp(20px,3vw,48px);padding-right:clamp(20px,3vw,48px)}
+  #app #cameraPage .cameraQuickActions{left:clamp(20px,3vw,48px)}
+  #app #cameraPage .cameraSidePanel{right:clamp(20px,3vw,48px)}
+  #app #cameraPage .cameraMoreMenu{right:clamp(20px,3vw,48px)}
+}
+@media(max-width:699px){
+  #app .bottomNav{height:calc(72px + env(safe-area-inset-bottom))!important;padding-bottom:env(safe-area-inset-bottom)!important}
+  #app #chatPage,#app #friendsPage{padding-bottom:calc(82px + env(safe-area-inset-bottom))!important}
+  #app .composeBtn{bottom:calc(88px + env(safe-area-inset-bottom))!important}
+  #app #cameraPage .cameraControls{bottom:calc(58px + env(safe-area-inset-bottom))!important}
+}
+#app button:focus-visible,#app input:focus-visible,#app select:focus-visible{outline:2px solid var(--vs-accent2)!important;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){#app *,#app *::before,#app *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
 <div id="loginScreen" class="hidden"><div class="loginBox">
@@ -2713,278 +3013,3 @@ $("vsProfileThemeChoice")?.addEventListener("change",event=>{if(!currentUser)ret
 </style>
 
 </html>
-
-
-<style id="vibesnap-find-people-neon">
-/* Find People panel: cohesive desktop neon styling; interaction and data logic unchanged. */
-#directoryUserCount,#friendRequestCount,.friendDirectoryCount{display:none!important}
-@media (min-width:1024px){
-  #app > #chatPage{position:relative!important;overflow:hidden!important}
-  #app #friendRequestsSection{
-    position:absolute!important;z-index:35!important;
-    top:112px!important;left:18px!important;right:18px!important;bottom:18px!important;
-    width:auto!important;max-width:none!important;height:auto!important;overflow:auto!important;
-    margin:0!important;padding:26px!important;border-radius:22px!important;
-    color:#f5f2ff!important;
-    background:
-      radial-gradient(ellipse at 92% 100%,rgba(67,140,255,.10),transparent 38%),
-      radial-gradient(ellipse at 5% 0%,rgba(137,87,255,.12),transparent 36%),
-      linear-gradient(145deg,#191625,#15121f 72%,#17172a)!important;
-    border:1px solid rgba(181,158,255,.18)!important;
-    box-shadow:0 20px 55px rgba(0,0,0,.30),inset 0 1px rgba(255,255,255,.035)!important;
-    scrollbar-color:#554078 transparent;
-  }
-  #app .friendRequestsPopoverTop{padding:0 0 18px!important;gap:18px!important;border-bottom:1px solid rgba(190,174,255,.14)!important}
-  #app .friendRequestsPopover .friendRequestsHeading{margin:0!important;color:#fff!important;font-size:25px!important;font-weight:850!important;letter-spacing:-.6px!important}
-  #app .friendDirectorySubtitle{margin-top:7px!important;color:#a9a2bd!important;font-size:13px!important}
-  #app .friendRequestsPopoverTop #closeFriendRequests{
-    width:38px!important;height:38px!important;flex:none!important;border-radius:12px!important;
-    color:#d8d0ec!important;background:#292438!important;border:1px solid rgba(190,174,255,.13)!important
-  }
-  #app .friendDirectorySearch{
-    height:54px!important;margin:20px 0 18px!important;padding:0 17px!important;gap:12px!important;
-    border-radius:16px!important;color:#b69aff!important;
-    background:linear-gradient(110deg,rgba(137,87,255,.13),rgba(67,140,255,.09)),#201b2d!important;
-    border:1px solid rgba(157,126,255,.28)!important;
-    box-shadow:0 0 0 1px rgba(137,87,255,.04),0 8px 24px rgba(0,0,0,.12)!important
-  }
-  #app .friendDirectorySearch:focus-within{border-color:#946cff!important;box-shadow:0 0 0 3px rgba(137,87,255,.13),0 8px 24px rgba(0,0,0,.16)!important}
-  #app .friendDirectorySearch input{color:#fff!important;font-size:15px!important}
-  #app .friendDirectorySearch input::placeholder{color:#9389ae!important}
-  #app .friendDirectorySectionLabel{margin:4px 2px 10px!important;color:#aaa1c4!important;font-size:11px!important;letter-spacing:1.1px!important}
-  #app #friendDirectoryResults{display:flex!important;flex-direction:column!important;gap:9px!important}
-  #app #friendDirectoryResults .searchResultCard{
-    min-height:88px!important;margin:0!important;padding:13px 15px!important;gap:14px!important;
-    border:1px solid rgba(190,174,255,.13)!important;border-radius:18px!important;
-    background:linear-gradient(110deg,rgba(137,87,255,.075),rgba(67,140,255,.045)),#201b2c!important;
-    box-shadow:0 8px 22px rgba(0,0,0,.16)!important;transition:border-color .18s,transform .18s,background .18s!important
-  }
-  #app #friendDirectoryResults .searchResultCard:hover{border-color:rgba(155,119,255,.42)!important;transform:translateY(-1px)!important;background:linear-gradient(110deg,rgba(137,87,255,.13),rgba(67,140,255,.08)),#211c30!important}
-  #app #friendDirectoryResults .searchResultCard .avatar{
-    width:58px!important;height:58px!important;min-width:58px!important;flex:0 0 58px!important;
-    border-radius:17px!important;background:linear-gradient(135deg,#8957ff,#438cff)!important;
-    box-shadow:0 7px 20px rgba(112,82,255,.25)!important
-  }
-  #app #friendDirectoryResults .searchResultName{color:#fff!important;font-size:16px!important}
-  #app #friendDirectoryResults .searchResultMeta{color:#a9a2bd!important;font-size:12px!important}
-  #app #friendDirectoryResults .lastSeenLabel{color:#c2b9d6!important;font-size:13px!important}
-  #app #friendDirectoryResults .searchResultCard button{
-    min-width:116px!important;padding:12px 16px!important;border-radius:13px!important;
-    color:#fff!important;background:linear-gradient(110deg,#8957ff,#438cff)!important;
-    box-shadow:0 7px 18px rgba(105,78,255,.24)!important;font-size:13px!important
-  }
-  #app .friendRequestEmpty{padding:18px 4px 20px!important;color:#a9a2bd!important;font-size:13px!important}
-  #app .friendDirectoryRequestsHeading{
-    margin:20px 0 8px!important;padding-top:17px!important;
-    border-top:1px solid rgba(190,174,255,.14)!important;color:#f0ebfa!important;font-size:16px!important
-  }
-  #app #friendRequestsList{padding:0 2px!important}
-  #app #friendRequestsList .friendRequestCard{
-    background:#211c30!important;border:1px solid rgba(190,174,255,.14)!important;
-    border-radius:15px!important;box-shadow:none!important
-  }
-  #app #friendRequestsList .friendRequestInfo strong{color:#fff!important}
-  #app #friendRequestsList .friendRequestInfo small{color:#aaa1c4!important}
-  #app #friendRequestsList .friendRequestActions .declineRequest{background:#302a40!important;color:#d8d0ec!important}
-}
-</style>
-
-<style id="vibesnap-feature-polish-stage1">
-:root{--vs-accent:#9a72ff;--vs-accent2:#4d9dff;--vs-panel:rgba(29,25,43,.82);--vs-line:rgba(194,176,255,.16);--vs-chat-wallpaper:radial-gradient(ellipse at 15% 0%,rgba(133,91,255,.13),transparent 38%),linear-gradient(145deg,#12101b,#191526 62%,#101827)}
-html{scroll-behavior:smooth}
-body{background:#0e0c15;color:#f7f4ff}
-button,input,select{font:inherit}
-button{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease}
-button:hover{filter:brightness(1.08)}
-button:active{transform:scale(.97)}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--vs-accent);outline-offset:3px}
-*{scrollbar-width:thin;scrollbar-color:#5a477d transparent}
-*::-webkit-scrollbar{width:8px;height:8px}
-*::-webkit-scrollbar-thumb{background:linear-gradient(var(--vs-accent),var(--vs-accent2));border-radius:20px}
-*::-webkit-scrollbar-track{background:transparent}
-#app{background:#100e18;color:#f7f4ff}
-.page{background:transparent;color:inherit;animation:vsPageIn .28s ease both}
-@keyframes vsPageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-#app .topHeader,#app .bottomNav{background:rgba(20,17,30,.92)!important;border-color:var(--vs-line)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-#app .topHeader{box-shadow:0 8px 30px rgba(0,0,0,.16)}
-#app .brandLogo{background:linear-gradient(90deg,#fff,var(--vs-accent),var(--vs-accent2));-webkit-background-clip:text;background-clip:text}
-#app .headerIcon,#app .topAvatar{background:rgba(255,255,255,.08)!important;color:#f5f0ff!important;border:1px solid var(--vs-line)}
-#app .headerActions .headerIcon:nth-child(2),#app .composeBtn,#app .chatInput button,#app .sendBtn,#app .chatOpenBtn{background:linear-gradient(130deg,var(--vs-accent),var(--vs-accent2))!important;color:#fff!important}
-#app .chatRow,#app .userCard{background:rgba(29,25,43,.76)!important;border-color:var(--vs-line)!important;color:#f7f4ff!important;backdrop-filter:blur(12px)}
-#app .chatRow:hover,#app .userCard:hover{background:rgba(49,40,69,.86)!important}
-#app .chatRowName,#app .userName{color:#fff!important}
-#app .chatRowMeta,#app .userEmail{color:#aaa2bf!important}
-#app .rowAvatar,#app .avatar,#app .profileAvatar{border:2px solid rgba(180,151,255,.55)!important;box-shadow:0 0 0 4px rgba(145,105,255,.10),0 8px 24px rgba(0,0,0,.2)}
-#app .navBtn{color:#aaa4bd!important}
-#app .navBtn.active{color:var(--vs-accent)!important}
-#app .navBtn.active:after{background:linear-gradient(90deg,var(--vs-accent),var(--vs-accent2))!important;box-shadow:0 0 14px color-mix(in srgb,var(--vs-accent) 55%,transparent)}
-#app #chatConversation{background:#100e18!important;color:#f8f5ff!important}
-#app .conversationHeader,#app .chatInput{background:rgba(23,20,34,.96)!important;border-color:var(--vs-line)!important;color:#fff}
-#app .conversationHeader .conversationTitle{color:#fff}
-#app .chatMessages{background:var(--vs-chat-wallpaper)!important}
-#app .chatInput input{background:rgba(255,255,255,.08)!important;border:1px solid var(--vs-line)!important;color:#fff!important}
-#app .chatInput input::placeholder{color:#aaa2bf}
-#app .message.theirs{background:rgba(255,255,255,.10)!important;color:#f7f4ff!important;border:1px solid var(--vs-line)}
-#app .message.mine{background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2))!important;color:#fff!important}
-#app #profilePage{background:radial-gradient(ellipse at 50% 0%,rgba(135,91,255,.2),transparent 45%),#100e18!important}
-#app .profileBox{background:rgba(32,27,47,.86)!important;border:1px solid var(--vs-line)!important;color:#fff!important;box-shadow:0 22px 60px rgba(0,0,0,.25);backdrop-filter:blur(16px)}
-#app .profileBox h2{color:#fff}
-#app .profilePresence{color:#b9acd8!important}
-#app .logoutBtn{background:linear-gradient(135deg,#49345f,#282238)!important;border:1px solid var(--vs-line)}
-#app #settingsPage{overflow:auto;padding:28px 18px 110px;background:radial-gradient(ellipse at 85% 0%,rgba(79,140,255,.14),transparent 42%),#100e18!important}
-#app .settingsPageHead{max-width:760px;margin:0 auto 16px}
-#app .settingsPageHead .pageTitle{color:#fff;margin-bottom:5px}
-#app .settingsPageHead p{color:#a9a1bd}
-#app .settingsPanel{max-width:760px!important;margin:0 auto!important;padding:28px!important;background:rgba(31,27,45,.88)!important;border:1px solid var(--vs-line)!important;border-radius:24px!important;box-shadow:0 24px 65px rgba(0,0,0,.25)!important;color:#fff!important;text-align:left!important;backdrop-filter:blur(18px)}
-#app .settingsPanel h2{color:#fff!important;margin-top:4px}
-#app .settingsPanel>p{color:#aaa2bf!important;margin:7px 0 17px!important}
-#app .settingsPanelIcon{margin:0 0 16px!important;background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2))!important}
-#app .vsSettingRow,#app .vsSettingToggle{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 0;border-bottom:1px solid var(--vs-line);color:#fff}
-#app .vsSettingRow span,#app .vsSettingToggle span{display:flex;flex-direction:column;gap:4px}
-#app .vsSettingRow small,#app .vsSettingToggle small{font-size:12px;color:#a9a1bd;font-weight:500}
-#app .vsSettingRow select{min-width:135px;padding:10px 12px;border-radius:12px;border:1px solid var(--vs-line);background:#211c30;color:#fff}
-#app .vsSettingToggle input{width:20px;height:20px;accent-color:var(--vs-accent)}
-#app .vsSettingsDivider{height:1px;background:var(--vs-line);margin:24px 0}
-#app .vsPasswordLabel{display:block;margin:12px 0 7px;color:#c7bddc;font-size:13px;font-weight:700}
-#app .vsPasswordInput{width:100%;height:48px;padding:0 14px;border-radius:13px;border:1px solid var(--vs-line);background:#171421;color:#fff;margin-bottom:12px}
-#app .settingsAction{background:linear-gradient(120deg,rgba(154,114,255,.2),rgba(77,157,255,.14))!important;border:1px solid var(--vs-line)!important;color:#e9e1ff!important}
-#app .settingsNote{color:#aaa2bf!important;text-align:left!important;line-height:1.55}
-#app .settingsNote:empty{display:none}
-#app #friendsPage{background:radial-gradient(ellipse at 80% 0%,rgba(135,91,255,.15),transparent 45%),#100e18!important}
-#app #chatPage{background:#100e18!important}
-#app .searchBar,#app .searchPageBox{background:rgba(255,255,255,.07)!important;border:1px solid var(--vs-line)!important;color:#fff}
-#app .searchBar input,#app .searchPageBox input{color:#fff!important}
-#app .searchBar input::placeholder,#app .searchPageBox input::placeholder{color:#a9a1bd}
-#app .cameraTop button,#app .cameraSideBtn{backdrop-filter:blur(14px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
-#app .captureBtn{transition:transform .18s ease,box-shadow .18s ease}
-#app .captureBtn.vs-capturing{animation:vsCapture .42s ease}
-@keyframes vsCapture{0%{transform:scale(1)}35%{transform:scale(.88);box-shadow:0 0 0 12px rgba(255,255,255,.24),0 0 34px var(--vs-accent)}100%{transform:scale(1)}}
-#app .cameraMoreMenu{border-color:var(--vs-line);box-shadow:0 18px 50px rgba(0,0,0,.5)}
-#app .vsCameraSetting{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;font-size:13px;padding:9px 6px}
-#app .vsCameraSetting input[type=range]{width:112px;accent-color:var(--vs-accent)}
-#app .vsCameraSetting input[type=checkbox]{accent-color:var(--vs-accent)}
-#app .message img,#app .message video{cursor:zoom-in}
-#vibeNotice{backdrop-filter:blur(18px);border-color:var(--vs-line)}
-#recipientPickerCard{background:#1d192b!important;color:#fff!important;border:1px solid var(--vs-line)}
-#recipientPickerCard h2,#recipientPickerCard .recipientChoiceName{color:#fff!important}
-#recipientPickerCard p,#recipientPickerCard .recipientChoiceMeta{color:#aaa2bf!important}
-#recipientPickerCard .recipientChoice{border-color:var(--vs-line)}
-#recipientPickerCard .recipientPickerCancel{background:#302a40;color:#eee}
-#recipientPickerCard .recipientPickerSend{background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2))}
-#notificationQuick,#chatNotifications,#notificationPanel{display:none!important}
-@media(min-width:1024px){
- #app{max-width:1440px!important;margin:0 auto!important;box-shadow:0 0 80px rgba(0,0,0,.42)!important}
- #app .bottomNav{max-width:272px!important;left:0!important;right:auto!important;width:272px!important;height:100%!important;top:0!important;bottom:0!important;transform:none!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:12px!important;padding:28px 16px!important;border-top:0!important;border-right:1px solid var(--vs-line)!important;box-shadow:12px 0 40px rgba(0,0,0,.18)!important}
- #app .bottomNav .navBtn{min-height:58px!important;flex-direction:row!important;justify-content:flex-start!important;gap:15px!important;padding:0 18px!important;border-radius:16px!important;font-size:14px!important}
- #app .bottomNav .navBtn.active{background:linear-gradient(100deg,rgba(154,114,255,.2),rgba(77,157,255,.12))!important}
- #app .bottomNav .navBtn.active:after{display:none!important}
- #app #chatPage,#app #friendsPage,#app #profilePage,#app #searchPage,#app #settingsPage{margin-left:272px!important;width:calc(100% - 272px)!important}
- #app #chatPage{padding-bottom:0!important}
- #app #friendsPage{padding-bottom:20px!important}
- #app #profilePage{padding-top:60px!important}
- #app #settingsPage{padding-top:48px!important}
- #app #chatConversation{left:272px!important}
- #app #chatPage .topHeader{padding-left:34px!important;padding-right:34px!important}
- #app #chatPage .chatList{padding:0 18px 30px!important}
- #app .composeBtn{right:34px!important;bottom:34px!important}
- #app #cameraPage{--vs-side:272px}
- #app #chatConversation .chatMessages{padding:28px clamp(24px,5vw,80px)!important}
-}
-@media(max-width:699px){
- #app .settingsPanel{padding:22px 17px!important}
- #app .vsSettingRow,#app .vsSettingToggle{align-items:flex-start}
- #app .vsSettingRow select{min-width:118px}
- #app #settingsPage{padding:22px 12px 100px!important}
-}
-@media(prefers-reduced-motion:reduce){.page,button,#app .captureBtn{animation:none!important;transition:none!important}}
-</style>
-<style id="vibesnap-read-receipts">
-#chatConversation .messageReceipt{display:inline-block;align-self:flex-end;padding:0 0 3px;font-size:10px;line-height:1.2;white-space:nowrap;color:#9d8ac8}
-#chatConversation .messageRow.mine .messageReceipt{color:#bca9ed}
-#chatConversation .messageRow.mine .messageReceipt::before{content:"✓ ";font-weight:900}
-</style>
-<style id="vibesnap-media-gallery-layer">
-#chatConversation #chatMediaGallery{width:40px;height:40px;flex:none;border-radius:13px;background:rgba(255,255,255,.09);border:1px solid var(--vs-line);color:#fff;font-size:21px}
-#chatConversation .message[title*="copy"]{cursor:context-menu}
-#chatConversation .message img,#chatConversation .message video{cursor:zoom-in}
-.vsMediaViewer,.vsGalleryOverlay{position:fixed;inset:0;z-index:99990;background:rgba(5,4,10,.96);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(18px)}
-.vsMediaStage{max-width:min(94vw,1200px);max-height:84vh;object-fit:contain;border-radius:14px}
-.vsMediaClose{position:absolute;top:18px;right:18px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.13);color:#fff;font-size:30px;z-index:2}
-.vsMediaActions{position:absolute;bottom:18px;display:flex;justify-content:center}
-.vsMediaActions button{padding:12px 24px;border-radius:22px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-weight:800}
-.vsGalleryOverlay{padding:18px}
-.vsGalleryPanel{width:min(860px,100%);max-height:86vh;overflow:auto;border:1px solid var(--vs-line);border-radius:22px;background:#1d192b;padding:18px;color:#fff}
-.vsGalleryHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:19px}
-.vsGalleryHead button{width:38px;height:38px;border-radius:12px;background:#302a40;color:#fff;font-size:25px}
-.vsGalleryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
-.vsGalleryTile{height:140px;overflow:hidden;border-radius:14px;background:#111;border:1px solid var(--vs-line)}
-.vsGalleryTile img,.vsGalleryTile video{width:100%;height:100%;object-fit:cover}
-.vsGalleryEmpty{grid-column:1/-1;padding:30px;text-align:center;color:#aaa2bf}
-</style><style id="vibesnap-typing-indicator">#chatConversation .vsTypingIndicator{min-height:0;padding:0 18px;background:#151220;color:#bda7ff;font-size:12px;font-weight:700}</style><style id="vibesnap-message-actions">
-#chatConversation .vsReplyPreview{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 14px;background:#241d35;border-top:1px solid var(--vs-line);color:#e6dcff;font-size:12px}
-#chatConversation .vsReplyPreview button{width:30px;height:30px;border-radius:10px;background:#3a304e;color:#fff;font-size:21px}
-#chatConversation .vsReplyQuote{padding:6px 9px;margin:-2px 0 7px;border-left:3px solid var(--vs-accent);border-radius:5px;background:rgba(255,255,255,.07);color:#c7b6ef;font-size:11px}
-#chatConversation .vsEditedLabel{display:block;margin-top:5px;color:#c1b3df;font-size:10px}
-#chatConversation .vsReactionStrip{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
-#chatConversation .vsReactionChip{display:inline-flex;padding:3px 7px;border:1px solid var(--vs-line);border-radius:12px;background:#2b2440;color:#fff;font-size:11px}
-.vsMessageMenu{position:fixed;z-index:99980;min-width:170px;padding:6px;border:1px solid var(--vs-line);border-radius:14px;background:#211b30;box-shadow:0 16px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:3px}
-.vsMessageMenu button{padding:10px 12px;border-radius:9px;background:transparent;color:#fff;text-align:left;font-size:13px}
-.vsMessageMenu button:hover{background:rgba(255,255,255,.1)}
-</style><style id="vibesnap-message-action-dialog">
-.vsActionDialogOverlay{position:fixed;inset:0;z-index:99985;display:grid;place-items:center;padding:18px;background:rgba(5,4,10,.76);backdrop-filter:blur(12px)}
-.vsActionDialog{width:min(420px,100%);padding:22px;border:1px solid var(--vs-line);border-radius:20px;background:#211b30;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,.5)}
-.vsActionDialog h3{font-size:19px;margin:0 0 7px}.vsActionDialog p{color:#b8aecb;font-size:13px;line-height:1.5;margin:0 0 14px}
-.vsActionDialog input{width:100%;height:46px;padding:0 13px;border:1px solid var(--vs-line);border-radius:12px;background:#151220;color:#fff}
-.vsActionDialogActions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
-.vsActionDialogActions button{padding:10px 16px;border-radius:12px;background:#383047;color:#fff;font-weight:800}
-.vsActionDialogActions button:last-child{background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2))}
-.vsActionDialogActions button.danger{background:#a83254}
-</style><style id="vibesnap-favourites-pins">
-#app .favoriteFriendsSection{padding:12px 18px 8px;border-bottom:1px solid var(--vs-line)}
-#app .favoriteFriendsHeading{margin:0 0 10px;color:#bca9ed;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
-#app #favoriteFriendsList{display:flex;gap:10px;overflow-x:auto;padding:2px 0 8px}
-#app .favoriteFriendChip{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:66px;background:transparent;color:#e8e1f5;font-size:11px}
-#app .favoriteFriendAvatar{width:48px;height:48px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,var(--vs-accent),var(--vs-accent2));border:2px solid rgba(210,190,255,.65);display:flex;align-items:center;justify-content:center}
-#app .favoriteFriendAvatar img{width:100%;height:100%;object-fit:cover}
-#app .favoriteFriendInline{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.07);color:#f5d77c;font-size:19px;flex:none}
-#app .chatRow .rowAction{width:38px;height:38px}
-@media(min-width:1024px){#app .favoriteFriendsSection{padding:14px 34px}#app #favoriteFriendsList{gap:16px}}
-</style><style id="vibesnap-pin-button-style">#chatConversation #chatPinToggle{width:38px;height:38px;flex:none;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--vs-line);color:#f5d77c;font-size:23px}</style><style id="vibesnap-profile-editor">
-#app .vsProfileEditor{margin:18px 0 4px;padding:16px;border:1px solid var(--vs-line);border-radius:16px;background:rgba(255,255,255,.045);text-align:left}
-#app .vsProfileEditor label{display:block;margin-bottom:7px;color:#c9bce2;font-size:12px;font-weight:800}
-#app .vsProfileEditor input{width:100%;height:44px;padding:0 12px;border:1px solid var(--vs-line);border-radius:11px;background:#151220;color:#fff}
-#app .vsProfileEditor button{width:100%;margin-top:9px;padding:12px;border-radius:12px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-weight:800}
-#app .vsProfileEditor button:disabled{opacity:.6}
-#app #vsProfileStatus{min-height:16px;margin-top:8px;color:#b8a6df;font-size:12px}
-</style><style id="vibesnap-message-search">
-#chatConversation #vsMessageSearchToggle{width:38px;height:38px;flex:none;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--vs-line);color:#fff;font-size:22px}
-#chatConversation .vsMessageSearchBar{display:flex;gap:8px;padding:9px 12px;background:#191526;border-bottom:1px solid var(--vs-line)}
-#chatConversation .vsMessageSearchBar input{flex:1;min-width:0;height:38px;padding:0 12px;border:1px solid var(--vs-line);border-radius:11px;background:#11101a;color:#fff}
-#chatConversation .vsMessageSearchBar button{width:38px;border-radius:10px;background:#302a40;color:#fff;font-size:22px}
-</style><style id="vibesnap-avatar-upload">
-#app .profileAvatar{overflow:hidden;cursor:pointer}
-#app .profileAvatar img{width:100%;height:100%;object-fit:cover}
-#app .vsChangeAvatar{margin:0 auto 8px;padding:10px 16px;border-radius:18px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-size:12px;font-weight:800}
-#app .vsAvatarStatus{min-height:16px;margin:0 0 8px;color:#b8a6df;font-size:12px}
-#app .cameraAvatar img,#app #chatProfileQuick img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
-</style><style id="vibesnap-user-camera-preferences">
-/* Filters are intentionally postponed; the user asked to keep the camera surface clean. */
-#app #lensStrip,#app #showFilters{display:none!important}
-</style><style id="vibesnap-remove-friend-style">#conversationProfilePanel .vsRemoveFriendBtn{display:block;width:100%;margin:12px 0;padding:11px 14px;border:1px solid rgba(255,105,130,.28);border-radius:12px;background:rgba(173,47,78,.16);color:#ff9caf;font-weight:800}#conversationProfilePanel .vsRemoveFriendBtn:disabled{opacity:.6}</style><style id="vibesnap-blocked-users">
-#app .vsBlockedUsersList{display:flex;flex-direction:column;gap:8px}
-#app .vsBlockedUserRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--vs-line);border-radius:12px;color:#fff}
-#app .vsBlockedUserRow button{padding:8px 12px;border-radius:10px;background:#3b304d;color:#fff;font-weight:800}
-#conversationProfilePanel .vsBlockUserBtn{display:block;width:100%;margin:10px 0;padding:11px 14px;border:1px solid rgba(245,173,91,.25);border-radius:12px;background:rgba(185,120,38,.15);color:#f5c58d;font-weight:800}
-</style><style id="vibesnap-unread-badges">
-#app .chatRowName{display:flex;align-items:center;gap:8px}
-#app .vsUnreadBadge{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 6px;border-radius:10px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-size:10px;font-weight:900}
-</style><style id="vibesnap-custom-wallpaper">
-#app .vsCustomWallpaper{padding:13px 0;border-bottom:1px solid var(--vs-line);color:#fff}
-#app .vsCustomWallpaper label{display:block;margin-bottom:8px;font-size:13px;font-weight:800}
-#app .vsCustomWallpaper input{display:block;width:100%;font-size:12px;color:#b8aecb}
-#app .vsCustomWallpaper button{margin-top:10px;padding:8px 12px;border-radius:10px;background:#302a40;color:#eee;font-size:12px;font-weight:800}
-</style><style id="vibesnap-profile-glow">
-#app .profileAvatar{box-shadow:0 0 0 4px rgba(145,105,255,.12),0 0 26px rgba(145,105,255,.2);animation:vsAvatarGlow 3.6s ease-in-out infinite}
-@keyframes vsAvatarGlow{0%,100%{box-shadow:0 0 0 4px rgba(145,105,255,.10),0 0 18px rgba(145,105,255,.16)}50%{box-shadow:0 0 0 6px rgba(145,105,255,.18),0 0 30px rgba(145,105,255,.28)}}
-@media(prefers-reduced-motion:reduce){#app .profileAvatar{animation:none}}
-</style>
