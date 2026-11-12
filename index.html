@@ -1407,12 +1407,33 @@ return {encryptedText:bytesToBase64(new Uint8Array(ciphertext)),iv:bytesToBase64
 }
 async function decryptChatText(message,chatId){
 if(message.cryptoVersion!==1||!message.encryptedText||!message.iv)return message.text||"[Older unencrypted message]";
-const otherUid=message.senderUid===currentUser.uid?message.receiverUid:message.senderUid;
-let other=otherUid===currentUser.uid?null:usersCache.find(u=>u.uid===otherUid);
-if(!other&&otherUid){const snap=await db.collection("users").doc(otherUid).get();if(snap.exists)other={uid:snap.id,...snap.data()};}
+const otherUid=message.senderUid===currentUser.uid?(message.receiverUid||(selectedFriend&&selectedFriend.uid)):message.senderUid;
+if(!otherUid||otherUid===currentUser.uid)throw new Error("The other participant could not be identified for this message.");
+let other=usersCache.find(u=>u.uid===otherUid)||null;
+const refreshOtherProfile=async()=>{
+const snap=await db.collection("users").doc(otherUid).get();
+if(!snap.exists)return null;
+const fresh={uid:snap.id,...snap.data()};
+usersCache=usersCache.map(u=>u.uid===otherUid?{...u,...fresh}:u);
+return fresh;
+};
+if(!other||!other.encryptionPublicKey)other=await refreshOtherProfile();
 if(!other||!other.encryptionPublicKey)throw new Error("The other participant's encryption key is unavailable.");
-const key=await deriveChatEncryptionKey(other.encryptionPublicKey,chatId);
-const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:base64ToBytes(message.iv)},key,base64ToBytes(message.encryptedText));
+const decryptWithPublicKey=async publicJwk=>{
+const key=await deriveChatEncryptionKey(publicJwk,chatId);
+return crypto.subtle.decrypt({name:"AES-GCM",iv:base64ToBytes(message.iv)},key,base64ToBytes(message.encryptedText));
+};
+let plain;
+try{
+plain=await decryptWithPublicKey(other.encryptionPublicKey);
+}catch(firstError){
+const latest=await refreshOtherProfile();
+const oldKey=JSON.stringify(other.encryptionPublicKey);
+const latestKey=latest&&JSON.stringify(latest.encryptionPublicKey);
+if(!latest||!latest.encryptionPublicKey||latestKey===oldKey)throw firstError;
+other=latest;
+plain=await decryptWithPublicKey(latest.encryptionPublicKey);
+}
 return decoder.decode(plain);
 }
 
