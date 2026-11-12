@@ -6,7 +6,7 @@ const friendship=r=>r&&({id:[r.user_one,r.user_two].sort().join("_"),members:[r.
 const message=async r=>{
  let mediaUrl=r.media_url||"";
  if(r.storage_path){
-  const {data,error}=await supabase.storage.from("vibesnap-media").createSignedUrl(r.storage_path,604800);
+  const {data,error}=await supabase.storage.from("vibesnap-media").createSignedUrl(r.storage_path,3600);
   if(!error&&data?.signedUrl)mediaUrl=data.signedUrl;
  }
  return {id:r.id,senderUid:r.sender_uid,receiverUid:r.receiver_uid,type:r.message_type,text:"",encryptedText:r.encrypted_text,iv:r.iv,cryptoVersion:r.crypto_version,mediaUrl,storagePath:r.storage_path,mediaContentType:r.media_content_type,mediaSize:r.media_size,createdAt:r.created_at};
@@ -29,9 +29,9 @@ class Ref{
  if(this.sort)q=q.order(this.sort[0]==="createdAt"?"created_at":this.sort[0],{ascending:this.sort[1]!=="desc"});
  const {data,error}=await q;if(error)throw error;
  let rows=data||[];
- if(this.name==="users"){
+ if(this.name==="users"&&rows.length){
   const {data:{user}}=await supabase.auth.getUser();
-  if(user){
+  if(user&&(this.docId===user.id||rows.some(row=>row.user_id===user.id))){
    const privateResult=await supabase.from("profile_private").select("friend_nicknames").eq("user_id",user.id).maybeSingle();
    if(privateResult.error)throw privateResult.error;
    if(privateResult.data){
@@ -53,7 +53,7 @@ class Ref{
  else if(this.name==="friendRequests"){let [a,b]=this.docId.split("_");({error:e}=await supabase.from("friend_requests").insert({sender_id:v.fromUid||a,receiver_id:v.toUid||b,status:v.status||"pending"}))}
  else if(this.name==="friendships"){let [a,b]=(v.members||this.docId.split("_")).sort();({error:e}=await supabase.from("friendships").insert({user_one:a,user_two:b}))}
  else if(this.name==="chats"){let m=v.members||[];let{data:existing,error:readError}=await supabase.from("conversations").select("id").eq("id",this.docId).maybeSingle();if(readError)e=readError;else if(!existing)({error:e}=await supabase.from("conversations").insert({id:this.docId,created_by:m[0],updated_at:stamp()}));if(!e)for(const u of m){const{data:member,error:memberError}=await supabase.from("conversation_members").select("user_id").eq("conversation_id",this.docId).eq("user_id",u).maybeSingle();if(memberError){e=memberError;break}if(!member){({error:e}=await supabase.from("conversation_members").insert({conversation_id:this.docId,user_id:u}));if(e)break}}}
- else if(this.name==="messages"){({error:e}=await supabase.from("messages").insert({id:this.docId,conversation_id:this.chat,sender_uid:v.senderUid,receiver_uid:v.receiverUid||null,message_type:v.type||"text",encrypted_text:v.encryptedText||null,iv:v.iv||null,crypto_version:v.cryptoVersion||null,media_url:v.mediaUrl||null,storage_path:v.storagePath||null,media_content_type:v.mediaContentType||null,media_size:v.mediaSize||null}))}
+ else if(this.name==="messages"){({error:e}=await supabase.from("messages").insert({id:this.docId,conversation_id:this.chat,sender_uid:v.senderUid,receiver_uid:v.receiverUid||null,message_type:v.type||"text",encrypted_text:v.encryptedText||null,iv:v.iv||null,crypto_version:v.cryptoVersion||null,media_url:v.storagePath?null:(v.mediaUrl||null),storage_path:v.storagePath||null,media_content_type:v.mediaContentType||null,media_size:v.mediaSize||null}))}
  if(e)throw e}
  async update(v){let q,e;if(this.name==="users"){
   const x=toProfile(v);
