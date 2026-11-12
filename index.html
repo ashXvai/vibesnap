@@ -2176,6 +2176,9 @@ function showVibeMessageMenu(event,message,chatId,box,mine){
  event.preventDefault();document.querySelector(".vsMessageMenu")?.remove();
  const menu=document.createElement("div");menu.className="vsMessageMenu";
  const add=(label,action)=>{const button=document.createElement("button");button.type="button";button.textContent=label;button.onclick=()=>{menu.remove();action()};menu.appendChild(button)};
+ add("Forward",()=>vsForwardMessage(message,chatId));
+ add("Select multiple",()=>vsSetSelectionMode(true));
+ if(selectedFriend){const muted=vsMutedChats().includes(selectedFriend.uid);add(muted?"Unmute conversation":"Mute conversation",()=>{vsSetMuted(selectedFriend.uid,!muted);showVibeNotice(muted?"Conversation unmuted.":"Conversation muted.","success")})}
  if(box.dataset.copyText)add("Copy message",async()=>{try{await navigator.clipboard.writeText(box.dataset.copyText);showVibeNotice("Message copied.","success")}catch(_){showVibeNotice("Clipboard access is unavailable.","error")}});
  add("Reply",()=>{replyingToMessage={id:message.id||box.dataset.messageId};$("vsReplyText").textContent="Replying to "+(mine?"your message":"their message")+": "+(box.dataset.copyText||"Shared media").slice(0,80);$("vsReplyPreview").classList.remove("hidden");$("messageInput").focus()});
  add("React",async()=>{const choices=["❤️","😂","😮","😢","🔥","👍","👎","🎉"];const emoji=await vibeAskText("React to message","Enter one emoji reaction. Examples: "+choices.join(" "),"❤️");const clean=(emoji||"").trim();if(!clean||clean.length>16||!/\p{Extended_Pictographic}/u.test(clean)){showVibeNotice("Enter a single emoji reaction.","info");return}try{const result=await window.VibeSnapSupabase.client.from("message_reactions").insert({message_id:message.id||box.dataset.messageId,user_id:currentUser.uid,reaction:emoji});if(result.error&&result.error.code!=="23505")throw result.error;showVibeNotice("Reaction added.","success");loadMessages(chatId)}catch(error){showVibeNotice("Could not add reaction: "+(error.message||"Try again."),"error")}});
@@ -2184,6 +2187,54 @@ function showVibeMessageMenu(event,message,chatId,box,mine){
  document.body.appendChild(menu);menu.style.left=Math.max(8,Math.min(event.clientX,window.innerWidth-190))+"px";menu.style.top=Math.max(8,Math.min(event.clientY,window.innerHeight-240))+"px";
  const close=e=>{if(!menu.contains(e.target)){menu.remove();document.removeEventListener("pointerdown",close,true)}};setTimeout(()=>document.addEventListener("pointerdown",close,true),0);
 }
+
+
+/* Forward messages, multi-select deletion and per-chat mute controls */
+const VS_MUTED_KEY="vibesnap-muted-conversations-v1";
+function vsMutedChats(){try{return JSON.parse(localStorage.getItem(VS_MUTED_KEY)||"[]")}catch(_){return []}}
+function vsSetMuted(uid,muted){const list=new Set(vsMutedChats());muted?list.add(uid):list.delete(uid);localStorage.setItem(VS_MUTED_KEY,JSON.stringify([...list]));}
+async function vsForwardMessage(message,sourceChatId){
+ const friends=usersCache.filter(u=>u.uid!==currentUser.uid&&getRelationshipState(u.uid)==="friends");
+ if(!friends.length){showVibeNotice("Add a friend before forwarding.");return}
+ const overlay=document.createElement("div");overlay.className="vsForwardOverlay";
+ const card=document.createElement("div");card.className="vsForwardCard";
+ const title=document.createElement("h3");title.textContent="Forward message";
+ const hint=document.createElement("p");hint.textContent="Choose a friend to forward this message to.";
+ const list=document.createElement("div");list.className="vsForwardList";
+ const close=()=>overlay.remove();
+ friends.forEach(friend=>{const btn=document.createElement("button");btn.type="button";btn.textContent=(currentUser.friendNicknames||{})[friend.uid]||friend.displayName||friend.username||"VibeSnap friend";btn.onclick=async()=>{btn.disabled=true;try{
+  const chatId=getChatId(currentUser.uid,friend.uid);await ensureChat(chatId,friend.uid);
+  let payload={senderUid:currentUser.uid,receiverUid:friend.uid,type:message.type||"text",createdAt:new Date().toISOString()};
+  if(message.type==="text"){
+   const plain=await decryptChatText(message,sourceChatId);
+   const fresh=await db.collection("users").doc(friend.uid).get();if(!fresh.exists)throw new Error("Friend profile unavailable.");
+   const target={uid:fresh.id,...fresh.data()};if(!target.encryptionPublicKey)throw new Error("Friend encryption key is unavailable.");
+   payload={...payload,...await encryptChatText(plain,target,chatId)};
+   await db.collection("chats").doc(chatId).collection("messages").add(payload);
+  }else if(message.storagePath&&message.mediaUrl){
+   const response=await fetch(message.mediaUrl);if(!response.ok)throw new Error("Could not retrieve the original media.");
+   const blob=await response.blob();const ext=(message.storagePath.split(".").pop()||"webm").replace(/[^a-z0-9]/gi,"");
+   const ref=db.collection("chats").doc(chatId).collection("messages").doc(),path="chatMedia/"+chatId+"/"+ref.id+"."+ext;
+   await storage.ref().child(path).put(blob,{contentType:message.mediaContentType||blob.type||"application/octet-stream"});
+   payload={...payload,storagePath:path,mediaContentType:message.mediaContentType||blob.type,mediaSize:blob.size};
+   await ref.set(payload);
+  }else throw new Error("This message type cannot be forwarded.");
+  showVibeNotice("Message forwarded.","success");close();
+ }catch(error){btn.disabled=false;showVibeNotice("Could not forward: "+(error.message||"Try again."),"error")}};list.appendChild(btn)});
+ const cancel=document.createElement("button");cancel.type="button";cancel.textContent="Cancel";cancel.onclick=close;card.append(title,hint,list,cancel);overlay.appendChild(card);overlay.addEventListener("click",e=>{if(e.target===overlay)close()});document.body.appendChild(overlay);
+}
+function vsSelectionToolbar(){
+ let toolbar=$("vsMessageSelectionToolbar");if(toolbar)return toolbar;
+ toolbar=document.createElement("div");toolbar.id="vsMessageSelectionToolbar";toolbar.className="vsMessageSelectionToolbar hidden";
+ const label=document.createElement("span");label.id="vsSelectedMessageCount";label.textContent="0 selected";
+ const del=document.createElement("button");del.type="button";del.textContent="Delete selected";del.onclick=async()=>{const rows=[...document.querySelectorAll("#chatMessages .messageRow.vsSelected")];const ids=rows.filter(row=>row.classList.contains("mine")).map(row=>row.dataset.messageId);if(!ids.length){showVibeNotice("Select messages you sent to delete them.");return}if(!await vibeAskConfirm("Delete selected messages","Delete "+ids.length+" of your messages?"))return;try{for(const id of ids)await db.collection("chats").doc(getChatId(currentUser.uid,selectedFriend.uid)).collection("messages").doc(id).delete();showVibeNotice("Selected messages deleted.","success");vsSetSelectionMode(false)}catch(error){showVibeNotice("Some messages could not be deleted: "+(error.message||"Try again."),"error")}};
+ const done=document.createElement("button");done.type="button";done.textContent="Done";done.onclick=()=>vsSetSelectionMode(false);
+ toolbar.append(label,del,done);const messages=$("chatMessages");messages.parentNode.insertBefore(toolbar,messages);return toolbar;
+}
+let vsMultiSelectOn=false;
+function vsSetSelectionMode(on){vsMultiSelectOn=on;const toolbar=vsSelectionToolbar();toolbar.classList.toggle("hidden",!on);document.querySelectorAll("#chatMessages .messageRow").forEach(row=>{row.classList.toggle("vsSelectable",on);if(!on)row.classList.remove("vsSelected")});vsUpdateSelectionCount()}
+function vsUpdateSelectionCount(){const count=document.querySelectorAll("#chatMessages .messageRow.vsSelected").length;const label=$("vsSelectedMessageCount");if(label)label.textContent=count+" selected"}
+document.addEventListener("click",e=>{const row=e.target.closest("#chatMessages .messageRow.vsSelectable");if(!row||e.target.closest("audio,video,img,button"))return;row.classList.toggle("vsSelected");vsUpdateSelectionCount()});
 
 /* VibeSnap batch: voice notes, date grouping, camera grid and tap focus */
 let vsVoiceRecorder=null,vsVoiceChunks=[],vsVoiceStream=null,vsVoiceStartedAt=0,vsVoiceTimer=null;
@@ -2330,7 +2381,10 @@ $("vsVideoStop")?.addEventListener("click",stopRecording);
 @keyframes vsFocus{0%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.92)}}
 @media(prefers-reduced-motion:reduce){.vsFocusRing{animation:none;opacity:0}}
 </style>
-<style id="vibesnap-recording-controls">.vsVideoRecordingTools{position:absolute;left:50%;bottom:156px;transform:translateX(-50%);z-index:150;display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:24px;background:rgba(15,14,25,.82);color:#fff;font-size:13px;font-weight:800;backdrop-filter:blur(12px)}.vsVideoRecordingTools.hidden{display:none!important}.vsVideoRecordingTools button{padding:7px 10px;border-radius:16px;background:#fff;color:#171522;font-weight:800}@media(min-width:1024px){.vsVideoRecordingTools{bottom:120px}}</style></body>
+<style id="vibesnap-recording-controls">.vsVideoRecordingTools{position:absolute;left:50%;bottom:156px;transform:translateX(-50%);z-index:150;display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:24px;background:rgba(15,14,25,.82);color:#fff;font-size:13px;font-weight:800;backdrop-filter:blur(12px)}.vsVideoRecordingTools.hidden{display:none!important}.vsVideoRecordingTools button{padding:7px 10px;border-radius:16px;background:#fff;color:#171522;font-weight:800}@media(min-width:1024px){.vsVideoRecordingTools{bottom:120px}}</style>
+<style id="vs-forward-select-style">
+.vsForwardOverlay{position:fixed;inset:0;z-index:10020;background:rgba(5,7,18,.72);display:grid;place-items:center;padding:18px}.vsForwardCard{width:min(100%,380px);max-height:80vh;overflow:auto;background:#171827;color:#fff;border:1px solid #34364d;border-radius:20px;padding:20px;box-shadow:0 20px 70px #0008}.vsForwardCard h3{margin:0 0 7px}.vsForwardCard p{color:#aab0c5;font-size:13px}.vsForwardList{display:grid;gap:7px;margin:14px 0}.vsForwardList button,.vsForwardCard>button{padding:12px;border-radius:12px;background:#292c43;color:#fff;text-align:left}.vsForwardCard>button{width:100%;text-align:center;background:#5545c9}.vsMessageSelectionToolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#171827;color:#fff;border-radius:12px;margin:6px 10px}.vsMessageSelectionToolbar.hidden{display:none}.vsMessageSelectionToolbar span{flex:1;font-size:13px}.vsMessageSelectionToolbar button{padding:8px 10px;border-radius:10px;background:#373b55;color:#fff}.vsMessageSelectionToolbar button:first-of-type{background:#b82d56}.messageRow.vsSelectable{cursor:pointer;outline:1px dashed #8b82ff;outline-offset:3px}.messageRow.vsSelected .message{box-shadow:0 0 0 3px #8b82ff}
+</style></body>
 
 <style id="vibesnap-interaction-layer-recovery">
 /* Keep decorative camera layers from intercepting taps; restore a clear interactive stack. */
