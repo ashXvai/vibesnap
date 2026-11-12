@@ -1128,7 +1128,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 }
 </style>
 
-<style id="vs-account-delete-style">#vsDeleteAccount.vsDangerAction{border:1px solid rgba(255,100,120,.35);background:rgba(150,35,65,.16);color:#ff9eae}#vsDeleteAccount:disabled{opacity:.6;cursor:wait}</style><style id="vs-chat-history-pagination">#vsLoadOlderMessages{display:block;margin:10px auto 6px;padding:9px 14px;border:1px solid var(--vs-line);border-radius:18px;background:rgba(255,255,255,.06);color:#d7c9f6;font-size:12px;font-weight:800}#vsLoadOlderMessages.hidden{display:none!important}#vsLoadOlderMessages:disabled{opacity:.55;cursor:wait}@media(max-width:699px){#vsLoadOlderMessages{margin-top:7px}}</style></head>
+<style id="vs-account-delete-style">#vsDeleteAccount.vsDangerAction{border:1px solid rgba(255,100,120,.35);background:rgba(150,35,65,.16);color:#ff9eae}#vsDeleteAccount:disabled{opacity:.6;cursor:wait}</style><style id="vs-chat-history-pagination">#vsLoadOlderMessages{display:block;margin:10px auto 6px;padding:9px 14px;border:1px solid var(--vs-line);border-radius:18px;background:rgba(255,255,255,.06);color:#d7c9f6;font-size:12px;font-weight:800}#vsLoadOlderMessages.hidden{display:none!important}#vsLoadOlderMessages:disabled{opacity:.55;cursor:wait}@media(max-width:699px){#vsLoadOlderMessages{margin-top:7px}}</style><style id="vs-chat-skeleton-and-empty">.vsChatSkeleton{display:flex;flex-direction:column;gap:12px;padding:16px}.vsChatSkeleton i{display:block;height:38px;width:58%;border-radius:16px;background:linear-gradient(90deg,rgba(160,145,190,.12),rgba(190,175,225,.25),rgba(160,145,190,.12));background-size:220% 100%;animation:vsSkeletonPulse 1.2s ease-in-out infinite}.vsChatSkeleton i:nth-child(2){width:74%;margin-left:auto}.vsChatSkeleton i:nth-child(3){width:45%}@keyframes vsSkeletonPulse{to{background-position:-220% 0}}.vsChatEmpty{max-width:290px;margin:auto;padding:18px 22px;border:1px solid var(--vs-line);border-radius:18px;background:rgba(255,255,255,.04);color:#a99cbd;text-align:center;font-size:13px;line-height:1.5}@media(prefers-reduced-motion:reduce){.vsChatSkeleton i{animation:none}}</style></head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingMark">V</div><div>Loading VibeSnap…</div><div class="authLoadingSpinner" aria-hidden="true"></div></div>
 <div id="loginScreen" class="hidden"><div class="loginBox">
@@ -1462,7 +1462,7 @@ function renderGlobalSearch(query="",target="search"){
 const panel=target==="directory",results=$(panel?"friendDirectoryResults":"globalSearchResults"),empty=$(panel?"friendDirectoryEmpty":"searchEmptyState"),label=panel?null:$("searchResultsLabel");if(!results||!empty)return;results.innerHTML="";const q=query.trim().toLowerCase();
 const matches=usersCache.filter(u=>u.uid!==currentUser?.uid&&getRelationshipState(u.uid)!=="friends"&&getRelationshipState(u.uid)!=="blocked"&&(!panel||getRelationshipState(u.uid)!=="incoming")&&!!(u.username||"").trim()&&(u.username||"").toLowerCase().includes(q));
 matches.forEach(user=>{
-const card=document.createElement("div");card.className="searchResultCard";
+const card=document.createElement("div");card.className="searchResultCard";card.dataset.userId=user.uid;
 const name=user.username||"VibeSnap User",meta="@"+user.username;
 const state=getRelationshipState(user.uid);
 const buttonLabel=state==="friends"?"Message":state==="incoming"?"Accept request":state==="outgoing"?"Waiting for acceptance":"Add friend";
@@ -1495,6 +1495,19 @@ renderGlobalSearch($("friendDirectorySearchInput")?$("friendDirectorySearchInput
 };
 results.appendChild(card);
 });
+const mutualClient=window.VibeSnapSupabase?.client;
+if(mutualClient&&currentUser&&matches.length){
+ const ids=matches.slice(0,50).map(user=>user.uid);
+ mutualClient.rpc("get_mutual_friend_counts",{target_user_ids:ids}).then(({data,error})=>{
+  if(error){console.warn("Mutual friend counts unavailable:",error);return}
+  const counts=new Map((data||[]).map(row=>[row.target_user_id,Number(row.mutual_count)||0]));
+  matches.slice(0,50).forEach(user=>{
+   const card=[...results.children].find(node=>node.dataset.userId===user.uid);
+   const meta=card?.querySelector(".searchResultMeta");
+   if(meta)meta.textContent="@"+user.username+" · "+(counts.get(user.uid)||0)+" mutual "+((counts.get(user.uid)||0)===1?"friend":"friends");
+  });
+ }).catch(error=>console.warn("Mutual friend counts failed:",error));
+}
 if(panel){$("directoryUserCount").textContent=String(matches.length);empty.style.display=matches.length?"none":"block";empty.textContent=q?"No users match that search.":"No other users found yet.";}
 else{empty.style.display=matches.length?"none":"flex";empty.querySelector("b").textContent=q?"No people found":"Find your people";empty.querySelector("p").textContent=q?"Try another username.":"Search usernames to find people who are not your friends yet.";if(label)label.textContent=q?"Search results":"People on VibeSnap";}
 }
@@ -2282,6 +2295,7 @@ $("vsVoiceRecord")?.addEventListener("click",()=>{if(vsVoiceRecorder&&vsVoiceRec
 const vsOriginalLoadMessages=loadMessages;
 loadMessages=function(chatId){
  if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}
+ if(!$("chatMessages").children.length){$("chatMessages").innerHTML='<div class="vsChatSkeleton" aria-hidden="true"><i></i><i></i><i></i></div>'}
  currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt","desc").limit(50).onSnapshot(async snapshot=>{
   const chatHost=$("chatMessages"),preserveScroll=window.__vsPreserveChatScroll||null;window.__vsPreserveChatScroll=null;
   if(window.__vsOlderChatId!==chatId){window.__vsOlderChatId=chatId;window.__vsOlderLoadedDocs=[];window.__vsNoMoreOlder=false}
@@ -2310,6 +2324,7 @@ loadMessages=function(chatId){
    if(mine){const receipt=document.createElement("span");receipt.className="messageReceipt";receipt.textContent=recipientReadAt>=sentAt&&sentAt>0?"Read":"Sent";receipt.setAttribute("aria-label","Message "+receipt.textContent.toLowerCase());row.appendChild(receipt)}
    $("chatMessages").appendChild(row);
   }
+  if(!allDocs.length){const empty=document.createElement("div");empty.className="vsChatEmpty";empty.textContent="No messages yet. Say hello to start the conversation.";chatHost.appendChild(empty)}
   try{const client=window.VibeSnapSupabase?.client,ids=allDocs.map(doc=>doc.id);if(client&&ids.length){const result=await client.from("message_reactions").select("message_id,user_id,reaction").in("message_id",ids);if(!result.error)(result.data||[]).forEach(reaction=>{const row=$("chatMessages").querySelector('[data-message-id="'+reaction.message_id+'"]');if(!row)return;let strip=row.querySelector(".vsReactionStrip");if(!strip){strip=document.createElement("div");strip.className="vsReactionStrip";row.appendChild(strip)}let chip=strip.querySelector('[data-reaction="'+reaction.reaction+'"]');if(!chip){chip=document.createElement("span");chip.className="vsReactionChip";chip.dataset.reaction=reaction.reaction;chip.textContent=reaction.reaction+" 0";strip.appendChild(chip)}const count=Number((chip.textContent.match(/\d+/)||["0"])[0])+1;chip.textContent=reaction.reaction+" "+count})}}catch(error){console.warn("Reaction load skipped",error)}
   if(preserveScroll){chatHost.scrollTop=preserveScroll.top+(chatHost.scrollHeight-preserveScroll.height)}else{chatHost.scrollTop=chatHost.scrollHeight}vibeUnreadRefreshAt=0;refreshVibeUnreadCounts();
  },err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Supabase permissions and connection.</div>'});
