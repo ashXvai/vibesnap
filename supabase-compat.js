@@ -1,6 +1,6 @@
 import { supabase } from "./supabase-adapter.js";
 const stamp=()=>new Date().toISOString(), id=()=>crypto.randomUUID();
-const profile=r=>r&&({id:r.user_id,uid:r.user_id,username:r.username,displayName:r.display_name||r.username,email:"",phone:"",photoURL:r.avatar_url||"",lastActiveAt:r.last_seen_at,isOnline:r.is_online===true&&!!r.last_seen_at&&Date.now()-Date.parse(r.last_seen_at)<120000,friendNicknames:r.friend_nicknames||{},encryptionPublicKey:r.encryption_public_key||null,createdAt:r.created_at});
+const profile=async r=>{if(!r)return r;let photoURL=r.avatar_url||"";if(photoURL.startsWith("avatars/")){const{data,error}=await supabase.storage.from("vibesnap-media").createSignedUrl(photoURL,3600);if(!error&&data?.signedUrl)photoURL=data.signedUrl}return{id:r.user_id,uid:r.user_id,username:r.username,displayName:r.display_name||r.username,email:"",phone:"",photoURL,lastActiveAt:r.last_seen_at,isOnline:r.is_online===true&&!!r.last_seen_at&&Date.now()-Date.parse(r.last_seen_at)<120000,friendNicknames:r.friend_nicknames||{},encryptionPublicKey:r.encryption_public_key||null,createdAt:r.created_at}};
 const request=r=>r&&({id:r.sender_id+"_"+r.receiver_id,fromUid:r.sender_id,toUid:r.receiver_id,status:r.status,createdAt:r.created_at,acceptedAt:r.updated_at,respondedAt:r.updated_at});
 const friendship=r=>r&&({id:[r.user_one,r.user_two].sort().join("_"),members:[r.user_one,r.user_two],status:"accepted",createdAt:r.created_at});
 const message=async r=>{
@@ -11,7 +11,7 @@ const message=async r=>{
  }
  return {id:r.id,senderUid:r.sender_uid,receiverUid:r.receiver_uid,type:r.message_type,text:"",encryptedText:r.encrypted_text,iv:r.iv,cryptoVersion:r.crypto_version,mediaUrl,storagePath:r.storage_path,mediaContentType:r.media_content_type,mediaSize:r.media_size,createdAt:r.created_at,editedAt:r.edited_at||null,replyToId:r.reply_to_id||null};
 };
-const mapped=async(n,rows)=>n==="messages"?Promise.all(rows.map(message)):rows.map(n==="users"?profile:n==="friendRequests"?request:n==="friendships"?friendship:x=>x);
+const mapped=async(n,rows)=>n==="messages"?Promise.all(rows.map(message)):n==="users"?Promise.all(rows.map(profile)):rows.map(n==="friendRequests"?request:n==="friendships"?friendship:x=>x);
 const toProfile=v=>{const x={};if("username"in v)x.username=v.username;if("displayName"in v)x.display_name=v.displayName;if("photoURL"in v)x.avatar_url=v.photoURL||null;if("lastActiveAt"in v)x.last_seen_at=v.lastActiveAt;if("isOnline"in v)x.is_online=!!v.isOnline;if("encryptionPublicKey"in v)x.encryption_public_key=v.encryptionPublicKey;return x};
 class Snap{constructor(rows){this.docs=rows.map(x=>({id:x.id,exists:true,data:()=>x}));this.empty=!rows.length;this.size=rows.length}forEach(f){this.docs.forEach(f)}}
 class Ref{
