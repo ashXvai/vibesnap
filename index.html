@@ -1618,9 +1618,9 @@ if(user){
 vsPrivacyReady=false;vsShowOnlineStatus=true;currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
 try{await createProfile()}catch(e){console.error("VibeSnap profile/encryption setup error:",e);showVibeNotice("Your account signed in, but profile setup could not finish: "+(e.message||e.code||"Unknown error")+". Check your connection and Supabase permissions, then refresh.","error");}
 startPresence();await loadUsers();startFriendListeners();loadVibeBlockedUsers();startVibeUnreadListener();
-let savedPage="camera",savedConversation="";try{savedPage=sessionStorage.getItem("vibesnap-last-page")||"camera";savedConversation=sessionStorage.getItem("vibesnap-last-conversation")||"";}catch(_){ }
-if(!["camera","friends","chat","profile","search","settings"].includes(savedPage))savedPage="camera";
-if(savedPage==="chat"&&savedConversation){const friend=usersCache.find(u=>u.uid===savedConversation);if(friend)await openChat(friend);else showPage("chat");}else showPage(savedPage);
+// A fresh authenticated session always starts on Camera, never a stale Chats route.
+try{sessionStorage.removeItem("vibesnap-last-conversation");}catch(_){ }
+showPage("camera");
 hasInitializedAppSession=true;
 }
 else{stopPresence();stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];vsPrivacyReady=false;vsShowOnlineStatus=true;currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
@@ -1752,8 +1752,7 @@ if(!map[page])return;
 currentPage=page;
 try{sessionStorage.setItem("vibesnap-last-page",page);if(page!=="chat")sessionStorage.removeItem("vibesnap-last-conversation");}catch(_){ }
 $(map[page]).classList.remove("hidden");
-const activeButton=document.querySelector('.navBtn[data-page="'+page+'"]');
-if(activeButton)activeButton.classList.add("active");
+document.querySelectorAll('.navBtn[data-page="'+page+'"]').forEach(button=>button.classList.add("active"));
 if(page==="camera")startCamera();else stopCamera();
 }
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
