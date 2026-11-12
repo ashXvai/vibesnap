@@ -2407,7 +2407,7 @@ $("vsDeleteAccount")?.addEventListener("click",async()=>{
   if(error)throw error;if(!data?.success)throw new Error(data?.error||"The server did not confirm deletion.");
   if(status)status.textContent="Account deleted.";
   showVibeNotice("Your VibeSnap account and associated data have been deleted.","success");
-  await client.auth.signOut({scope:"global"});
+  await client.auth.signOut({scope:"local"});
  }catch(error){
   console.error("VibeSnap account deletion failed:",error);
   const message=error?.context?.error||error.message||"Please try again later.";
