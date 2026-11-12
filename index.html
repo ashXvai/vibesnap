@@ -1124,7 +1124,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find people by username</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by username" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can add</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Search for someone by their VibeSnap username.</p></div></div>
 <div id="profilePage" class="page hidden"><div class="pageTitle">Profile</div><div class="profileBox"><div id="profileAvatar" class="profileAvatar">?</div><h2 id="profileName">User</h2><p id="profilePresence" class="profilePresence">Online</p><button id="logoutBtn" class="logoutBtn">Log Out</button></div></div>
 <div id="settingsPage" class="page hidden"><div class="pageTitle">Settings</div><div class="settingsPanel"><div class="settingsPanelIcon">⚙</div><h2>VibeSnap Settings</h2><p>Manage your account and profile preferences.</p><button type="button" id="settingsProfileBtn" class="settingsAction">Account &amp; Profile <span>›</span></button><div class="settingsNote">Your account and sign-in details are managed securely by VibeSnap.</div></div></div>
-<div class="bottomNav>
+<div class="bottomNav">
 <button class="navBtn active" data-page="chat"><span><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5H10l-5.5 4v-4.3A2.5 2.5 0 0 1 4 14.5z"/></svg></span>Chats</button>
  <button class="navBtn" data-page="camera"><span><svg viewBox="0 0 24 24"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></span>Camera</button>
 
@@ -1855,12 +1855,18 @@ function loadMessages(chatId){
 if(currentChatUnsubscribe)currentChatUnsubscribe();
 currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt").onSnapshot(async snapshot=>{
 $("chatMessages").innerHTML="";
-for(const doc of snapshot.docs){const message=doc.data(),box=document.createElement("div");box.className="message "+(message.senderUid===currentUser.uid?"mine":"theirs");
+for(const doc of snapshot.docs){
+const message=doc.data(),mine=message.senderUid===currentUser.uid;
+const row=document.createElement("div");row.className="messageRow "+(mine?"mine":"theirs");
+const box=document.createElement("div");box.className="message "+(mine?"mine":"theirs");
 if(message.type==="image"&&message.mediaUrl){const media=document.createElement("img");media.src=message.mediaUrl;media.alt="Shared photo";media.loading="lazy";box.appendChild(media)}
 else if(message.type==="video"&&message.mediaUrl){const media=document.createElement("video");media.src=message.mediaUrl;media.controls=true;media.playsInline=true;media.preload="metadata";box.appendChild(media)}
 else {try{box.textContent=await decryptChatText(message,chatId)}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
-const sentAt=timestampMillis(message.createdAt);if(sentAt){const time=document.createElement("span");time.className="messageTime";time.textContent=new Date(sentAt).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true});box.appendChild(time)}
-$("chatMessages").appendChild(box)}
+row.appendChild(box);
+const sentAt=timestampMillis(message.createdAt);
+if(sentAt){const time=document.createElement("span");time.className="messageTime";time.textContent=new Date(sentAt).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true});row.appendChild(time)}
+$("chatMessages").appendChild(row);
+}
 $("chatMessages").scrollTop=$("chatMessages").scrollHeight
 },err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Supabase permissions and connection.</div>';})
 }
@@ -2019,6 +2025,33 @@ function escapeHTML(text){return String(text).replace(/&/g,"&amp;").replace(/</g
 #app .bottomNav{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media(max-width:480px){#app .settingsPanel{margin:16px 14px;padding:23px 17px}}
 </style>
+
+<style id="vibesnap-navigation-and-message-time-fix">
+/* Restore the desktop/mobile navigation container; the opening class quote was missing. */
+#app > .bottomNav { display:flex; }
+/* Keep timestamps outside message bubbles and aligned beside the sender's bubble. */
+#chatConversation .chatMessages .messageRow {
+  display:flex; align-items:flex-end; gap:8px; width:100%; min-width:0;
+  margin:0 0 12px; align-self:stretch;
+}
+#chatConversation .chatMessages .messageRow.mine { justify-content:flex-end; }
+#chatConversation .chatMessages .messageRow.theirs { justify-content:flex-start; }
+#chatConversation .chatMessages .messageRow .message {
+  position:relative; flex:0 1 auto; margin:0; padding:12px 16px !important;
+  max-width:min(72%,720px); min-width:0;
+}
+#chatConversation .chatMessages .messageRow .messageTime {
+  position:static; flex:0 0 auto; display:inline-block; padding:0 0 3px;
+  font-size:11px; line-height:1.2; white-space:nowrap; color:#aaa2bd;
+}
+#chatConversation .chatMessages .messageRow.mine .messageTime { color:#b9b0d2; }
+@media(max-width:520px) {
+  #chatConversation .chatMessages .messageRow { gap:6px; }
+  #chatConversation .chatMessages .messageRow .message { max-width:76%; }
+  #chatConversation .chatMessages .messageRow .messageTime { font-size:10px; }
+}
+</style>
+
 </html>
 
 
