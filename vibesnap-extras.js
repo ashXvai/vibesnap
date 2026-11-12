@@ -1,57 +1,90 @@
 (()=>{"use strict";
 const $=id=>document.getElementById(id);
-const css=[
-"#app .vsExtraButton{padding:8px 11px;border:1px solid var(--vs-line,#51466a);border-radius:11px;background:#302a40;color:#f4efff;font-size:12px;font-weight:800}",
-"#app .vsFriendWallpaperButton{width:34px;height:34px;flex:none;border-radius:10px;background:#302a40;color:#fff;font-size:17px}",
-"#app .vsFriendSince{display:block;color:#b8a6df;font-size:10px;font-weight:700;white-space:nowrap}",
-"#app .vsFrameChoice,#app .vsDynamicChoice{width:100%;height:40px;margin:6px 0 12px;padding:0 10px;border:1px solid var(--vs-line);border-radius:10px;background:#151220;color:#fff}",
-"#app .profileAvatar.vsFrame-violet{outline:4px solid #9675ff;outline-offset:3px}","#app .profileAvatar.vsFrame-ocean{outline:4px solid #32b9ed;outline-offset:3px}","#app .profileAvatar.vsFrame-rose{outline:4px solid #ed6aa6;outline-offset:3px}","#app .profileAvatar.vsFrame-gold{outline:4px solid #f5ca68;outline-offset:3px}",
-"#app .vsMemoriesPanel{margin:14px 0;padding:14px;border:1px solid var(--vs-line);border-radius:15px;background:#171322;text-align:left}","#app .vsMemoryItem{display:flex;gap:9px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--vs-line);color:#eee}","#app .vsMemoryItem img,#app .vsMemoryItem video{width:76px;height:76px;object-fit:cover;border-radius:10px}","#app .vsMemoryItem p{flex:1;min-width:0;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}","#app .vsMemoryItem button{padding:6px 8px;border-radius:8px;background:#392d4c;color:#fff;font-size:11px}","#app .vsSaveMemory{display:block;margin:7px 0 0 auto;padding:5px 9px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(15,12,25,.68);color:#e6dcff;font-size:10px;font-weight:800}",
-"#app .vsVoiceSpeed{margin:6px 0 0;padding:5px 8px;border:1px solid var(--vs-line);border-radius:8px;background:#211b30;color:#fff;font-size:11px}",
-"#app.vsDynamicBackdrop{background-size:300% 300%!important;animation:vsDynamicFlow 18s ease infinite}@keyframes vsDynamicFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}",
-"#app #chatMessages.vsFriendWall-violet{background:radial-gradient(ellipse at 10% 0%,rgba(145,100,255,.23),transparent 48%),#151220!important}","#app #chatMessages.vsFriendWall-ocean{background:radial-gradient(ellipse at 10% 0%,rgba(30,190,230,.22),transparent 48%),#101923!important}","#app #chatMessages.vsFriendWall-rose{background:radial-gradient(ellipse at 10% 0%,rgba(240,85,160,.2),transparent 48%),#1d1420!important}","#app #chatMessages.vsFriendWall-aurora{background:linear-gradient(135deg,#102a2b,#24153e,#10233b)!important}","#app #chatMessages.vsFriendWall-midnight{background:linear-gradient(145deg,#12101b,#191526 62%,#101827)!important}",
-"#app .vsQrOverlay{position:fixed;inset:0;z-index:100100;display:grid;place-items:center;padding:18px;background:rgba(4,3,10,.78);backdrop-filter:blur(10px)}","#app .vsQrCard{width:min(340px,100%);padding:22px;border:1px solid var(--vs-line);border-radius:20px;background:#211b30;color:#fff;text-align:center}","#app .vsQrCard img{display:block;width:220px;height:220px;margin:15px auto;border-radius:12px;background:#fff}","#app .vsQrCard p{color:#c5bad8;font-size:12px;overflow-wrap:anywhere}","#app .vsQrCard button{margin:10px 4px 0;padding:10px 14px;border-radius:10px;background:#403451;color:#fff;font-weight:800}","@media(prefers-reduced-motion:reduce){#app.vsDynamicBackdrop{animation:none}}"
-].join("\n");
-const style=document.createElement("style");style.id="vibesnap-personalization-pack";style.textContent=css;document.head.appendChild(style);
-const prefKey=()=>"vibesnap-extras-"+(typeof currentUser!=="undefined"&&currentUser?currentUser.uid:"guest");
+const bridge=()=>window.VibeSnapBridge||{};
+const user=()=>bridge().currentUser||null;
+const friend=()=>bridge().selectedFriend||null;
+const notify=(...args)=>{const fn=bridge().notify;if(typeof fn==="function")return fn(...args);console.warn(...args)};
+const prefKey=()=> "vibesnap-extras-"+(user()?.uid||"guest");
 const read=()=>{try{return JSON.parse(localStorage.getItem(prefKey())||"{}")}catch(_){return{}}};
-const write=p=>{const n={...read(),...p};try{localStorage.setItem(prefKey(),JSON.stringify(n))}catch(_){}return n};
-const memoriesKey=()=>"vibesnap-private-memories-"+(typeof currentUser!=="undefined"&&currentUser?currentUser.uid:"guest");
-const getMemories=()=>{try{return JSON.parse(localStorage.getItem(memoriesKey())||"[]")}catch(_){return[]}};
-const setMemories=a=>{try{localStorage.setItem(memoriesKey(),JSON.stringify(a))}catch(_){if(typeof showVibeNotice==="function")showVibeNotice("Memory storage is full. Remove some saved items.","error")}};
+const write=patch=>{const next={...read(),...patch};try{localStorage.setItem(prefKey(),JSON.stringify(next))}catch(_){notify("Could not save this preference in this browser.","error")}return next};
+const css=[
+"#app .vsExtraButton{padding:9px 12px;border:1px solid rgba(190,174,255,.2);border-radius:11px;background:#282238;color:#f4efff;font-size:12px;font-weight:800}",
+"#app .vsFriendWallpaperButton{width:38px;height:38px;flex:none;border:1px solid rgba(190,174,255,.2);border-radius:12px;background:#282238;color:#fff;font-size:18px}",
+"#app .vsFriendSince{display:block;color:#b8a6df;font-size:10px;font-weight:700;white-space:nowrap}",
+"#app .vsFrameChoice,#app .vsDynamicChoice{width:100%;min-height:42px;margin:7px 0 12px;padding:0 11px;border:1px solid rgba(190,174,255,.2);border-radius:11px;background:#171421;color:#fff}",
+"#app .profileAvatar.vsFrame-violet{outline:4px solid #9675ff;outline-offset:3px}",
+"#app .profileAvatar.vsFrame-ocean{outline:4px solid #32b9ed;outline-offset:3px}",
+"#app .profileAvatar.vsFrame-rose{outline:4px solid #ed6aa6;outline-offset:3px}",
+"#app .profileAvatar.vsFrame-gold{outline:4px solid #f5ca68;outline-offset:3px}",
+"#app .vsVoiceSpeed{margin:6px 0 0;padding:6px 8px;border:1px solid rgba(190,174,255,.2);border-radius:8px;background:#211b30;color:#fff;font-size:11px}",
+"#app.vsDynamicBackdrop{background-size:300% 300%!important;animation:vsDynamicFlow 18s ease infinite}",
+"@keyframes vsDynamicFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}",
+"#app #chatMessages.vsFriendWall-violet{background:radial-gradient(ellipse at 10% 0%,rgba(145,100,255,.23),transparent 48%),#151220!important}",
+"#app #chatMessages.vsFriendWall-ocean{background:radial-gradient(ellipse at 10% 0%,rgba(30,190,230,.22),transparent 48%),#101923!important}",
+"#app #chatMessages.vsFriendWall-rose{background:radial-gradient(ellipse at 10% 0%,rgba(240,85,160,.2),transparent 48%),#1d1420!important}",
+"#app #chatMessages.vsFriendWall-aurora{background:linear-gradient(135deg,#102a2b,#24153e,#10233b)!important}",
+"#app #chatMessages.vsFriendWall-midnight{background:linear-gradient(145deg,#12101b,#191526 62%,#101827)!important}",
+"@media(prefers-reduced-motion:reduce){#app.vsDynamicBackdrop{animation:none}}"
+].join("\n");
+if(!$("vibesnap-personalization-pack")){const style=document.createElement("style");style.id="vibesnap-personalization-pack";style.textContent=css;document.head.appendChild(style)}
 function insertProfileTools(){
  const editor=document.querySelector("#profilePage .vsProfileEditor");if(!editor||$("vsFrameChoice"))return;
  const label=document.createElement("label");label.textContent="Profile frame";label.htmlFor="vsFrameChoice";editor.appendChild(label);
- const select=document.createElement("select");select.id="vsFrameChoice";select.className="vsFrameChoice";select.innerHTML='<option value="violet">Violet frame</option><option value="ocean">Ocean frame</option><option value="rose">Rose frame</option><option value="gold">Golden frame</option><option value="none">No frame</option>';editor.appendChild(select);
- select.value=read().frame||"violet";select.addEventListener("change",()=>{write({frame:select.value});applyFrame()});
- const share=document.createElement("button");share.type="button";share.className="vsExtraButton";share.textContent="▦ Share profile QR";share.style.width="100%";share.style.marginTop="8px";share.onclick=showProfileQr;editor.appendChild(share);
- const memories=document.createElement("div");memories.className="vsMemoriesPanel";memories.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b>Private Memory Collection</b><button type="button" class="vsExtraButton" id="vsRefreshMemories">Refresh</button></div><p style="font-size:11px;color:#b8aecb;margin:5px 0 8px">Saved only in this browser on this device.</p><div id="vsMemoriesList"></div>';editor.appendChild(memories);
- $("vsRefreshMemories").onclick=renderMemories;renderMemories();
+ const select=document.createElement("select");select.id="vsFrameChoice";select.className="vsFrameChoice";
+ select.innerHTML='<option value="violet">Violet frame</option><option value="ocean">Ocean frame</option><option value="rose">Rose frame</option><option value="gold">Golden frame</option><option value="none">No frame</option>';
+ editor.appendChild(select);select.value=read().frame||"violet";
+ select.addEventListener("change",()=>{write({frame:select.value});applyFrame()});
 }
-function applyFrame(){const a=$("profileAvatar");if(!a)return;["violet","ocean","rose","gold","none"].forEach(x=>a.classList.remove("vsFrame-"+x));const v=read().frame||"violet";if(v!=="none")a.classList.add("vsFrame-"+v);if($("vsFrameChoice"))$("vsFrameChoice").value=v}
-function renderMemories(){const host=$("vsMemoriesList");if(!host)return;host.innerHTML="";const items=getMemories();if(!items.length){host.textContent="No saved memories yet. Save a message or photo from a chat.";return}items.slice().reverse().forEach(item=>{const row=document.createElement("div");row.className="vsMemoryItem";if(item.dataUrl){const media=item.kind==="video"?document.createElement("video"):document.createElement("img");media.src=item.dataUrl;if(item.kind==="video")media.controls=true;row.appendChild(media)}const p=document.createElement("p");p.textContent=(item.friend||"Friend")+" · "+new Date(item.savedAt).toLocaleDateString()+"\n"+(item.text||"Saved "+(item.kind||"message"));row.appendChild(p);const del=document.createElement("button");del.textContent="Remove";del.onclick=()=>{setMemories(getMemories().filter(x=>x.id!==item.id));renderMemories()};row.appendChild(del);host.appendChild(row)})}
-async function saveMessageMemory(box){
- const id=box.dataset.messageId;if(!id)return;const items=getMemories();if(items.some(x=>x.id===id)){if(typeof showVibeNotice==="function")showVibeNotice("Already saved in your memories.");return}
- const media=box.querySelector("img,video");let dataUrl="",kind="text";
- try{if(media){kind=media.tagName.toLowerCase();const response=await fetch(media.currentSrc||media.src);if(!response.ok)throw Error("Media unavailable");const blob=await response.blob();if(blob.size>3*1024*1024)throw Error("Media is larger than the 3 MB local save limit.");dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)})}}catch(e){if(typeof showVibeNotice==="function")showVibeNotice("Could not save media locally: "+e.message,"error");return}
- const clone=box.cloneNode(true);clone.querySelectorAll("button").forEach(b=>b.remove());const textValue=(clone.innerText||"").trim().slice(0,3000);
- items.push({id,kind,dataUrl,text:textValue,friend:typeof selectedFriend!=="undefined"&&selectedFriend?(selectedFriend.displayName||selectedFriend.username):"Friend",savedAt:new Date().toISOString()});
- setMemories(items);if(typeof showVibeNotice==="function")showVibeNotice("Saved to your private Memory Collection.","success");renderMemories();
+function applyFrame(){const avatar=$("profileAvatar");if(!avatar)return;["violet","ocean","rose","gold"].forEach(x=>avatar.classList.remove("vsFrame-"+x));const v=read().frame||"violet";if(v!=="none")avatar.classList.add("vsFrame-"+v);if($("vsFrameChoice"))$("vsFrameChoice").value=v}
+function insertSettingsTools(){
+ const panel=document.querySelector("#settingsPage .settingsPanel");if(!panel||$("vsDynamicChoice"))return;
+ const label=document.createElement("label");label.className="vsSettingRow";
+ label.innerHTML='<span><b>Dynamic backgrounds</b><small>Animated colour movement across VibeSnap</small></span>';
+ const select=document.createElement("select");select.id="vsDynamicChoice";select.className="vsDynamicChoice";
+ select.innerHTML='<option value="off">Off</option><option value="violet">Violet flow</option><option value="ocean">Ocean flow</option><option value="aurora">Aurora flow</option><option value="rose">Rose flow</option>';
+ label.appendChild(select);panel.insertBefore(label,panel.querySelector(".vsSettingsDivider")||null);
+ select.value=read().dynamic||"off";select.addEventListener("change",()=>{write({dynamic:select.value});applyDynamic()});
 }
-function observeMessages(){const host=$("chatMessages");if(!host||host.dataset.vsMemoryObserver)return;host.dataset.vsMemoryObserver="1";const attach=root=>{const boxes=[];if(root.matches&&root.matches(".message"))boxes.push(root);if(root.querySelectorAll)root.querySelectorAll(".message").forEach(x=>boxes.push(x));boxes.forEach(box=>{if(box.querySelector(".vsSaveMemory"))return;const b=document.createElement("button");b.type="button";b.className="vsSaveMemory";b.textContent="＋ Save";b.addEventListener("click",e=>{e.stopPropagation();saveMessageMemory(box)});box.appendChild(b)})};new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1)attach(n)}))).observe(host,{childList:true,subtree:true});attach(host)}
-function insertSettingsTools(){const panel=document.querySelector("#settingsPage .settingsPanel");if(!panel||$("vsDynamicChoice"))return;const label=document.createElement("label");label.className="vsSettingRow";label.innerHTML='<span><b>Dynamic backgrounds</b><small>Animated colour movement across VibeSnap</small></span>';const select=document.createElement("select");select.id="vsDynamicChoice";select.className="vsDynamicChoice";select.innerHTML='<option value="off">Off</option><option value="violet">Violet flow</option><option value="ocean">Ocean flow</option><option value="aurora">Aurora flow</option><option value="rose">Rose flow</option>';label.appendChild(select);panel.insertBefore(label,panel.querySelector(".vsSettingsDivider")||null);select.value=read().dynamic||"off";select.addEventListener("change",()=>{write({dynamic:select.value});applyDynamic()})}
-function applyDynamic(){const app=$("app");if(!app)return;const mode=read().dynamic||"off";app.classList.toggle("vsDynamicBackdrop",mode!=="off");const bg={violet:"linear-gradient(120deg,#11101b,#35205d,#111827,#241544)",ocean:"linear-gradient(120deg,#081c2b,#14536a,#172c53,#101827)",aurora:"linear-gradient(120deg,#092b2a,#27416b,#4a245f,#0d2631)",rose:"linear-gradient(120deg,#2b1028,#6b2452,#30204f,#161327)"};app.style.background=bg[mode]||""}
+function applyDynamic(){
+ const app=$("app");if(!app)return;const mode=read().dynamic||"off";app.classList.toggle("vsDynamicBackdrop",mode!=="off");
+ const backgrounds={violet:"linear-gradient(120deg,#11101b,#35205d,#111827,#241544)",ocean:"linear-gradient(120deg,#081c2b,#14536a,#172c53,#101827)",aurora:"linear-gradient(120deg,#092b2a,#27416b,#4a245f,#0d2631)",rose:"linear-gradient(120deg,#2b1028,#6b2452,#30204f,#161327)"};
+ app.style.background=backgrounds[mode]||"";
+}
 const walls=["midnight","violet","ocean","rose","aurora"];
-function applyFriendWallpaper(){const host=$("chatMessages");if(!host||typeof selectedFriend==="undefined"||!selectedFriend)return;const map=read().friendWallpapers||{},v=map[selectedFriend.uid]||"midnight";walls.forEach(x=>host.classList.remove("vsFriendWall-"+x));host.classList.add("vsFriendWall-"+v);const b=$("vsFriendWallpaperButton");if(b)b.title="Chat wallpaper: "+v}
-function addChatWallpaperButton(){const head=document.querySelector("#chatConversation .conversationHeader");if(!head||$("vsFriendWallpaperButton"))return;const b=document.createElement("button");b.id="vsFriendWallpaperButton";b.className="vsFriendWallpaperButton";b.type="button";b.textContent="▧";b.title="Change wallpaper for this friend";b.onclick=()=>{if(typeof selectedFriend==="undefined"||!selectedFriend)return;const map={...(read().friendWallpapers||{})};const current=map[selectedFriend.uid]||"midnight";map[selectedFriend.uid]=walls[(walls.indexOf(current)+1)%walls.length];write({friendWallpapers:map});applyFriendWallpaper();if(typeof showVibeNotice==="function")showVibeNotice("Wallpaper for this chat: "+map[selectedFriend.uid],"success")};const cam=$("conversationCamera");head.insertBefore(b,cam||null)}
-function addVoiceSpeedControls(){document.querySelectorAll("#chatMessages audio").forEach(audio=>{if(audio.dataset.vsSpeedControl)return;audio.dataset.vsSpeedControl="1";const select=document.createElement("select");select.className="vsVoiceSpeed";select.setAttribute("aria-label","Voice playback speed");select.innerHTML='<option value="1">1× speed</option><option value="1.5">1.5× speed</option><option value="2">2× speed</option>';select.addEventListener("change",()=>{audio.playbackRate=Number(select.value)});audio.parentElement.appendChild(select)})}
-function friendshipSince(){const head=$("chatName");if(!head||typeof selectedFriend==="undefined"||!selectedFriend)return;let node=$("vsFriendSince");if(!node){node=document.createElement("small");node.id="vsFriendSince";node.className="vsFriendSince";head.insertAdjacentElement("afterend",node)}let since=null;try{const f=(acceptedFriendships||[]).find(x=>Array.isArray(x.members)&&x.members.includes(currentUser.uid)&&x.members.includes(selectedFriend.uid));since=f&&f.createdAt?f.createdAt:null}catch(_){}node.textContent=since?"Friends since "+new Date(since).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}):""}
-function showProfileQr(){const username=typeof currentUser!=="undefined"&&currentUser?(currentUser.username||currentUser.displayName||"VibeSnap user"):"VibeSnap";const overlay=document.createElement("div");overlay.className="vsQrOverlay";overlay.innerHTML='<div class="vsQrCard"><h3>Your VibeSnap QR</h3><p>Scan to read this username and find the profile in VibeSnap.</p><img alt="Profile QR code"><p class="vsQrUsername"></p><button type="button" class="vsQrCopy">Copy username</button><button type="button" class="vsQrClose">Close</button></div>';overlay.querySelector("img").src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent("@"+username);overlay.querySelector(".vsQrUsername").textContent="@"+username;overlay.querySelector(".vsQrCopy").onclick=()=>{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText("@"+username).then(()=>typeof showVibeNotice==="function"&&showVibeNotice("Username copied.","success"))};overlay.querySelector(".vsQrClose").onclick=()=>overlay.remove();overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove()});$("app").appendChild(overlay)}
-function refresh(){insertProfileTools();insertSettingsTools();observeMessages();addChatWallpaperButton();addVoiceSpeedControls();applyFrame();applyDynamic();applyFriendWallpaper();friendshipSince()}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",refresh);else refresh();
-const chat=$("chatConversation");if(chat)new MutationObserver(()=>{addChatWallpaperButton();addVoiceSpeedControls();applyFriendWallpaper();friendshipSince()}).observe(chat,{attributes:true,subtree:true,childList:true,attributeFilter:["class"]});
+function applyFriendWallpaper(){
+ const host=$("chatMessages"),active=friend();if(!host||!active)return;
+ const map=read().friendWallpapers||{},value=map[active.uid]||"midnight";
+ walls.forEach(x=>host.classList.remove("vsFriendWall-"+x));host.classList.add("vsFriendWall-"+value);
+ const button=$("vsFriendWallpaperButton");if(button)button.title="Chat wallpaper: "+value;
+}
+function addChatWallpaperButton(){
+ const head=document.querySelector("#chatConversation .conversationHeader");if(!head||$("vsFriendWallpaperButton"))return;
+ const button=document.createElement("button");button.id="vsFriendWallpaperButton";button.className="vsFriendWallpaperButton";button.type="button";
+ button.textContent="▧";button.title="Change wallpaper for this friend";button.setAttribute("aria-label","Change chat wallpaper");
+ button.addEventListener("click",()=>{const active=friend();if(!active)return;const map={...(read().friendWallpapers||{})};const current=map[active.uid]||"midnight";map[active.uid]=walls[(walls.indexOf(current)+1)%walls.length];write({friendWallpapers:map});applyFriendWallpaper();notify("Wallpaper for this chat: "+map[active.uid],"success")});
+ const camera=$("conversationCamera");head.insertBefore(button,camera||null);
+}
+function friendshipSince(){
+ const heading=$("chatName"),active=friend(),me=user();if(!heading||!active||!me)return;
+ let node=$("vsFriendSince");if(!node){node=document.createElement("small");node.id="vsFriendSince";node.className="vsFriendSince";heading.insertAdjacentElement("afterend",node)}
+ const rows=bridge().acceptedFriendships||[];
+ const friendship=rows.find(x=>Array.isArray(x.members)&&x.members.includes(me.uid)&&x.members.includes(active.uid));
+ const created=friendship&&(friendship.createdAt||friendship.created_at);
+ node.textContent=created?"Friends since "+new Date(created).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}):"";
+}
+function addVoiceSpeedControls(root=document){
+ root.querySelectorAll?.("#chatMessages audio").forEach(audio=>{
+  if(audio.dataset.vsSpeedControl)return;audio.dataset.vsSpeedControl="1";
+  const select=document.createElement("select");select.className="vsVoiceSpeed";select.setAttribute("aria-label","Voice playback speed");
+  select.innerHTML='<option value="1">1× speed</option><option value="1.5">1.5× speed</option><option value="2">2× speed</option>';
+  select.addEventListener("change",()=>{audio.playbackRate=Number(select.value)});audio.parentElement?.appendChild(select);
+ });
+}
+function refresh(){insertProfileTools();insertSettingsTools();addChatWallpaperButton();addVoiceSpeedControls();applyFrame();applyDynamic();applyFriendWallpaper();friendshipSince()}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",refresh,{once:true});else refresh();
+const chat=$("chatConversation");if(chat)new MutationObserver(()=>{addChatWallpaperButton();applyFriendWallpaper();friendshipSince()}).observe(chat,{attributes:true,subtree:true,childList:true,attributeFilter:["class"]});
+const messages=$("chatMessages");if(messages)new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node.nodeType===1)addVoiceSpeedControls(node.parentElement||messages)}))).observe(messages,{childList:true,subtree:true});
 const profile=$("profilePage");if(profile)new MutationObserver(()=>{insertProfileTools();applyFrame()}).observe(profile,{childList:true,subtree:true});
 const settings=$("settingsPage");if(settings)new MutationObserver(()=>{insertSettingsTools();applyDynamic()}).observe(settings,{childList:true,subtree:true});
-setInterval(()=>{if($("chatConversation")&&!$("chatConversation").classList.contains("hidden")){addVoiceSpeedControls();applyFriendWallpaper();friendshipSince()}},1500);
-window.VibeSnapExtras={refresh,renderMemories,showProfileQr};
+window.VibeSnapExtras={refresh};
 })();
