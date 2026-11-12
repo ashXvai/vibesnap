@@ -242,7 +242,7 @@ The current `main` markup confirms the following PR #7 insertion points exist:
 
 The Supabase compatibility adapter maps friendships to `{ members: [user_one, user_two], createdAt: created_at }`, matching the shape expected by the friendship-since label. The extra script is loaded as a module, and the per-user preference key is namespaced by the current user ID. Local-storage reads/writes catch parse and quota errors. The dynamic background animation has a `prefers-reduced-motion` override.
 
-One unresolved issue remains: the extras script applies dynamic background preferences during its initial refresh and when settings DOM changes, but it does not subscribe to auth/account changes. If an account is switched without a full page reload, the prior account's dynamic background can remain applied until another refresh occurs. This is a cosmetic preference-isolation issue, not a data/key leak, but should be fixed before PR #7 is merged. No runtime test was performed.
+An account-switch issue was identified: the extras script did not refresh account-scoped preferences after sign-in/sign-out changes, so the prior account's dynamic background could remain applied. A follow-up fix was committed to PR #7's branch on 2026-11-12 (commit `399c68d`): it listens for Supabase auth-state changes, refreshes after the main app updates its bridge, and clears the prior chat wallpaper when no friend is selected. This is a code-level fix only; no browser runtime or account-switch test was performed.
 
 ## 9. Updated Phase 0 exit status and next steps
 
