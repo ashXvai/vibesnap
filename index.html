@@ -1196,7 +1196,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </div>
 <div id="notificationPanel" class="notificationPanel hidden" role="dialog" aria-label="Notifications"><div class="notificationPanelHead"><div><strong>Notifications</strong><p>Recent activity in your chats</p></div><button id="closeNotifications" aria-label="Close notifications">×</button></div><div id="notificationItems" class="notificationItems"><div class="notificationEmpty">Your chat notifications will appear here.</div></div></div>
 <div id="conversationProfilePanel" class="conversationProfilePanel hidden"><div id="conversationProfileAvatar" class="rowAvatar">?</div><strong id="conversationProfileName">Friend</strong><p id="conversationProfileContact"></p><button id="closeConversationProfile" type="button">Close</button></div>
-<div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="conversationCamera" type="button" aria-label="Open camera to send a photo or video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" name="vibesnap-chat-message" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
+<div id="chatConversation" class="hidden"><div class="conversationHeader"><button id="backFromChat">‹</button><div id="chatAvatar" class="rowAvatar">?</div><div class="conversationTitle" id="chatName">Chat</div><button id="chatMediaGallery" type="button" aria-label="View shared media" title="Shared media">▦</button><button id="conversationCamera" type="button" aria-label="Open camera to send a photo or video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.7-2.5h6.6L17 7.5h3A1.5 1.5 0 0 1 21.5 9v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="4"/></svg></button></div><div id="chatMessages" class="chatMessages"></div><div class="chatInput"><input id="messageInput" type="text" name="vibesnap-chat-message" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Write a message..."><button id="sendMessage">➤</button></div></div>
 </div><div id="recipientPickerModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="recipientPickerTitle"><div id="recipientPickerCard"><div class="recipientPickerHead"><div><h2 id="recipientPickerTitle">Send to friends</h2><p>Choose one or more friends for this snap.</p></div><button type="button" id="recipientPickerClose" class="recipientPickerClose" aria-label="Close">×</button></div><div id="recipientPickerList" class="recipientPickerList"></div><div class="recipientPickerFoot"><button type="button" id="recipientPickerCancel" class="recipientPickerCancel">Cancel</button><button type="button" id="recipientPickerSend" class="recipientPickerSend">Send to selected</button></div></div></div>
 <div id="previewModal" class="hidden"><img id="previewImage" alt="Captured photo" class="previewMediaElement hidden"><video id="previewVideo" controls playsinline class="previewMediaElement hidden"></video><div class="previewButtons"><button class="cancelPreviewBtn" id="cancelPreviewBtn" type="button" aria-label="Discard video or photo">✕</button><button class="retakeBtn" id="retakeBtn" type="button">↻ Retake</button><button class="sendBtn" id="sendMediaBtn" type="button">Send ➤</button></div></div>
 <script type="module">
@@ -1932,9 +1932,9 @@ for(const doc of snapshot.docs){
 const message=doc.data(),mine=message.senderUid===currentUser.uid;
 const row=document.createElement("div");row.className="messageRow "+(mine?"mine":"theirs");
 const box=document.createElement("div");box.className="message "+(mine?"mine":"theirs");
-if(message.type==="image"&&message.mediaUrl){const media=document.createElement("img");media.src=message.mediaUrl;media.alt="Shared photo";media.loading="lazy";box.appendChild(media)}
-else if(message.type==="video"&&message.mediaUrl){const media=document.createElement("video");media.src=message.mediaUrl;media.controls=true;media.playsInline=true;media.preload="metadata";box.appendChild(media)}
-else {try{box.textContent=await decryptChatText(message,chatId)}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
+if(message.type==="image"&&message.mediaUrl){const media=document.createElement("img");media.src=message.mediaUrl;media.alt="Shared photo";media.loading="lazy";media.addEventListener("click",()=>openVibeMediaViewer(message.mediaUrl,"image"));box.appendChild(media)}
+else if(message.type==="video"&&message.mediaUrl){const media=document.createElement("video");media.src=message.mediaUrl;media.controls=true;media.playsInline=true;media.preload="metadata";media.addEventListener("dblclick",()=>openVibeMediaViewer(message.mediaUrl,"video"));box.appendChild(media)}
+else {try{const plainText=await decryptChatText(message,chatId);box.textContent=plainText;box.dataset.copyText=plainText;box.title="Long-press or right-click to copy";box.addEventListener("contextmenu",async event=>{event.preventDefault();try{await navigator.clipboard.writeText(box.dataset.copyText||"");showVibeNotice("Message copied.","success")}catch(_){showVibeNotice("Clipboard access is unavailable in this browser.","error")}})}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
 row.appendChild(box);
 const sentAt=timestampMillis(message.createdAt);
 if(sentAt){const time=document.createElement("span");time.className="messageTime";time.textContent=new Date(sentAt).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true});row.appendChild(time)}
@@ -2026,6 +2026,28 @@ function refreshCameraZoomControl(){
 }
 $("vsCameraZoom")?.addEventListener("input",async e=>{const track=currentStream?.getVideoTracks?.()[0];if(!track)return;try{await track.applyConstraints({advanced:[{zoom:Number(e.target.value)}]})}catch(_){showVibeNotice("This camera does not support the selected zoom level.","info")}});
 applyVibePreferences();
+
+
+function openVibeMediaViewer(url,type="image"){
+ const overlay=document.createElement("div");overlay.className="vsMediaViewer";overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");
+ const close=document.createElement("button");close.className="vsMediaClose";close.type="button";close.textContent="×";close.setAttribute("aria-label","Close media");
+ const stage=document.createElement(type==="video"?"video":"img");stage.className="vsMediaStage";stage.src=url;if(type==="video"){stage.controls=true;stage.playsInline=true;stage.autoplay=true}else stage.alt="Shared media";
+ const actions=document.createElement("div");actions.className="vsMediaActions";const download=document.createElement("button");download.type="button";download.textContent="Download";download.onclick=async()=>{try{const response=await fetch(url);if(!response.ok)throw new Error("Download unavailable");const blob=await response.blob(),objectUrl=URL.createObjectURL(blob),a=document.createElement("a");a.href=objectUrl;a.download="vibesnap-media."+((blob.type||"image/jpeg").includes("video")?"mp4":"jpg");document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),1500)}catch(_){showVibeNotice("Could not download this media. Try opening it in a new tab.","error")}};
+ actions.appendChild(download);overlay.append(close,stage,actions);document.body.appendChild(overlay);
+ const dismiss=()=>{if(type==="video")stage.pause();overlay.remove();document.removeEventListener("keydown",keyHandler)};
+ const keyHandler=e=>{if(e.key==="Escape")dismiss()};close.onclick=dismiss;overlay.addEventListener("click",e=>{if(e.target===overlay)dismiss()});document.addEventListener("keydown",keyHandler);close.focus();
+}
+function openChatMediaGallery(){
+ const host=$("chatMessages"),items=[...host.querySelectorAll(".message img,.message video")];
+ const overlay=document.createElement("div");overlay.className="vsGalleryOverlay";overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");
+ const panel=document.createElement("div");panel.className="vsGalleryPanel";const head=document.createElement("div");head.className="vsGalleryHead";
+ const title=document.createElement("strong");title.textContent="Shared media";const close=document.createElement("button");close.type="button";close.textContent="×";close.setAttribute("aria-label","Close gallery");close.onclick=()=>overlay.remove();head.append(title,close);
+ const grid=document.createElement("div");grid.className="vsGalleryGrid";
+ items.forEach(item=>{const tile=document.createElement("button");tile.type="button";tile.className="vsGalleryTile";const thumb=item.cloneNode(false);thumb.removeAttribute("controls");thumb.muted=true;thumb.preload="metadata";tile.appendChild(thumb);tile.onclick=()=>openVibeMediaViewer(item.currentSrc||item.src,item.tagName.toLowerCase());grid.appendChild(tile)});
+ if(!items.length){const empty=document.createElement("p");empty.className="vsGalleryEmpty";empty.textContent="Photos and videos shared in this conversation will appear here.";grid.appendChild(empty)}
+ panel.append(head,grid);overlay.appendChild(panel);overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove()});document.body.appendChild(overlay);
+}
+$("chatMediaGallery")?.addEventListener("click",openChatMediaGallery);
 
 </script>
 
@@ -2368,4 +2390,22 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 #chatConversation .messageReceipt{display:inline-block;align-self:flex-end;padding:0 0 3px;font-size:10px;line-height:1.2;white-space:nowrap;color:#9d8ac8}
 #chatConversation .messageRow.mine .messageReceipt{color:#bca9ed}
 #chatConversation .messageRow.mine .messageReceipt::before{content:"✓ ";font-weight:900}
+</style>
+<style id="vibesnap-media-gallery-layer">
+#chatConversation #chatMediaGallery{width:40px;height:40px;flex:none;border-radius:13px;background:rgba(255,255,255,.09);border:1px solid var(--vs-line);color:#fff;font-size:21px}
+#chatConversation .message[title*="copy"]{cursor:context-menu}
+#chatConversation .message img,#chatConversation .message video{cursor:zoom-in}
+.vsMediaViewer,.vsGalleryOverlay{position:fixed;inset:0;z-index:99990;background:rgba(5,4,10,.96);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(18px)}
+.vsMediaStage{max-width:min(94vw,1200px);max-height:84vh;object-fit:contain;border-radius:14px}
+.vsMediaClose{position:absolute;top:18px;right:18px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.13);color:#fff;font-size:30px;z-index:2}
+.vsMediaActions{position:absolute;bottom:18px;display:flex;justify-content:center}
+.vsMediaActions button{padding:12px 24px;border-radius:22px;background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2));color:#fff;font-weight:800}
+.vsGalleryOverlay{padding:18px}
+.vsGalleryPanel{width:min(860px,100%);max-height:86vh;overflow:auto;border:1px solid var(--vs-line);border-radius:22px;background:#1d192b;padding:18px;color:#fff}
+.vsGalleryHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:19px}
+.vsGalleryHead button{width:38px;height:38px;border-radius:12px;background:#302a40;color:#fff;font-size:25px}
+.vsGalleryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.vsGalleryTile{height:140px;overflow:hidden;border-radius:14px;background:#111;border:1px solid var(--vs-line)}
+.vsGalleryTile img,.vsGalleryTile video{width:100%;height:100%;object-fit:cover}
+.vsGalleryEmpty{grid-column:1/-1;padding:30px;text-align:center;color:#aaa2bf}
 </style>
