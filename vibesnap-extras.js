@@ -1,3 +1,4 @@
+import { supabase } from "./supabase-adapter.js";
 (()=>{"use strict";
 const $=id=>document.getElementById(id);
 const bridge=()=>window.VibeSnapBridge||{};
@@ -52,9 +53,12 @@ function applyDynamic(){
 }
 const walls=["midnight","violet","ocean","rose","aurora"];
 function applyFriendWallpaper(){
- const host=$("chatMessages"),active=friend();if(!host||!active)return;
+ const host=$("chatMessages");if(!host)return;
+ const active=friend();
+ walls.forEach(x=>host.classList.remove("vsFriendWall-"+x));
+ if(!active){const button=$("vsFriendWallpaperButton");if(button)button.title="Change wallpaper for this friend";return}
  const map=read().friendWallpapers||{},value=map[active.uid]||"midnight";
- walls.forEach(x=>host.classList.remove("vsFriendWall-"+x));host.classList.add("vsFriendWall-"+value);
+ host.classList.add("vsFriendWall-"+value);
  const button=$("vsFriendWallpaperButton");if(button)button.title="Chat wallpaper: "+value;
 }
 function addChatWallpaperButton(){
@@ -86,5 +90,12 @@ const chat=$("chatConversation");if(chat)new MutationObserver(()=>{addChatWallpa
 const messages=$("chatMessages");if(messages)new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node.nodeType===1)addVoiceSpeedControls(node.parentElement||messages)}))).observe(messages,{childList:true,subtree:true});
 const profile=$("profilePage");if(profile)new MutationObserver(()=>{insertProfileTools();applyFrame()}).observe(profile,{childList:true,subtree:true});
 const settings=$("settingsPage");if(settings)new MutationObserver(()=>{insertSettingsTools();applyDynamic()}).observe(settings,{childList:true,subtree:true});
+// Re-apply account-scoped preferences after sign-in, sign-out, or account changes.
+supabase.auth.onAuthStateChange((event)=>{
+ if(event==="SIGNED_IN"||event==="SIGNED_OUT"||event==="USER_UPDATED"||event==="INITIAL_SESSION"){
+  // Let the main app's auth listener update the bridge's currentUser first.
+  setTimeout(()=>refresh(),0);
+ }
+});
 window.VibeSnapExtras={refresh};
 })();
