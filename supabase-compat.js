@@ -14,19 +14,21 @@ const mapped=async(n,rows)=>n==="messages"?Promise.all(rows.map(message)):n==="u
 const toProfile=v=>{const x={};if("username"in v)x.username=v.username;if("displayName"in v)x.display_name=v.displayName;if("photoURL"in v)x.avatar_url=v.photoURL||null;if("lastActiveAt"in v)x.last_seen_at=v.lastActiveAt;if("isOnline"in v)x.is_online=!!v.isOnline;if("encryptionPublicKey"in v)x.encryption_public_key=v.encryptionPublicKey;return x};
 class Snap{constructor(rows){this.docs=rows.map(x=>({id:x.id,exists:true,data:()=>x}));this.empty=!rows.length;this.size=rows.length}forEach(f){this.docs.forEach(f)}}
 class Ref{
- constructor(name,chat=null,doc=null,filters=[],sort=null){Object.assign(this,{name,chat,docId:doc,filters,sort})}
+ constructor(name,chat=null,doc=null,filters=[],sort=null,limitCount=null){Object.assign(this,{name,chat,docId:doc,filters,sort,limitCount})}
  get id(){return this.docId}
  collection(n){if(this.name!=="chats"||n!=="messages")throw Error("Unsupported collection");return new Ref("messages",this.docId)}
  doc(id){return new Ref(this.name,this.chat,id||crypto.randomUUID())}
- where(f,o,v){return new Ref(this.name,this.chat,this.docId,[...this.filters,[f,o,v]],this.sort)}
- orderBy(f,d="asc"){return new Ref(this.name,this.chat,this.docId,this.filters,[f,d])}
+ where(f,o,v){return new Ref(this.name,this.chat,this.docId,[...this.filters,[f,o,v]],this.sort,this.limitCount)}
+ orderBy(f,d="asc"){return new Ref(this.name,this.chat,this.docId,this.filters,[f,d],this.limitCount)}
+ limit(n){return new Ref(this.name,this.chat,this.docId,this.filters,this.sort,Math.max(1,Math.min(500,Number(n)||1)))}
  async rows(){
  let table={users:"profiles",friendRequests:"friend_requests",friendships:"friendships",messages:"messages",chats:"conversations"}[this.name];
  let q=supabase.from(table).select(this.name==="users"?"user_id,username,display_name,avatar_url,last_seen_at,is_online,encryption_public_key,created_at":"*");
  if(this.docId){if(this.name==="users")q=q.eq("user_id",this.docId);else if(this.name==="friendRequests"){let [a,b]=this.docId.split("_");q=q.eq("sender_id",a).eq("receiver_id",b)}else if(this.name==="friendships"){let [a,b]=this.docId.split("_");q=q.eq("user_one",a).eq("user_two",b)}else if(this.name==="chats")q=q.eq("id",this.docId);else q=q.eq("id",this.docId).eq("conversation_id",this.chat)}
  if(this.name==="messages")q=q.eq("conversation_id",this.chat);
- for(const [f,o,v] of this.filters){let col=this.name==="friendRequests"?(f==="toUid"?"receiver_id":"sender_id"):this.name==="messages"?(f==="senderUid"?"sender_uid":"receiver_uid"):f;if(this.name==="friendships"&&f==="members"&&o==="array-contains")q=q.or("user_one.eq."+v+",user_two.eq."+v);else if(o==="==")q=q.eq(col,v)}
+ for(const [f,o,v] of this.filters){let col=this.name==="friendRequests"?(f==="toUid"?"receiver_id":"sender_id"):this.name==="messages"?(f==="senderUid"?"sender_uid":f==="receiverUid"?"receiver_uid":f==="createdAt"?"created_at":f):f;if(this.name==="friendships"&&f==="members"&&o==="array-contains")q=q.or("user_one.eq."+v+",user_two.eq."+v);else if(o==="==")q=q.eq(col,v);else if(o==="<")q=q.lt(col,v);else if(o==="<=")q=q.lte(col,v);else if(o===">")q=q.gt(col,v);else if(o===">=")q=q.gte(col,v)}
  if(this.sort)q=q.order(this.sort[0]==="createdAt"?"created_at":this.sort[0],{ascending:this.sort[1]!=="desc"});
+ if(this.limitCount)q=q.limit(this.limitCount);
  const {data,error}=await q;if(error)throw error;
  let rows=data||[];
  if(this.name==="users"&&rows.length){
