@@ -1343,9 +1343,10 @@ profile=snap.data()||{};
 currentUser.friendNicknames=profile.friendNicknames||{};
 }
 // Username is the public identity; the internal Supabase login email is never shown.
-const publicName=profile.username||profile.displayName||currentUser.displayName||((currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"")||"VibeSnap User";
+const publicName=profile.displayName||profile.username||currentUser.displayName||((currentUser.email||"").endsWith("@users.vibesnap.invalid")?currentUser.email.split("@")[0]:"")||"VibeSnap User";
 currentUser.publicUsername=profile.username||publicName;
 currentUser.displayName=publicName;
+currentUser.photoURL=profile.photoURL||currentUser.photoURL||"";
 if(currentUser.displayName!==currentUser.authDisplayName){
 try{await currentUser.updateProfile({displayName:publicName});}catch(e){console.warn("Could not sync profile display name:",e);}
 }
@@ -1654,7 +1655,7 @@ $("vsAvatarFile")?.addEventListener("change",async event=>{
 });
 async function loadVibeBlockedUsers(){
  const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client;if(!client||!currentUser)return;
- try{const result=await client.from("user_blocks").select("blocked_id").eq("blocker_id",currentUser.uid);if(result.error)throw result.error;blockedUserIds=(result.data||[]).map(row=>row.blocked_id);renderVibeBlockedUsers()}catch(error){console.warn("Blocked list unavailable:",error);const host=$("vsBlockedUsersList");if(host)host.textContent="Could not load blocked users."}
+ try{const result=await client.from("user_blocks").select("blocked_id").eq("blocker_id",currentUser.uid);if(result.error)throw result.error;blockedUserIds=(result.data||[]).map(row=>row.blocked_id);renderVibeBlockedUsers();renderChatList();renderGlobalSearch($("globalSearchInput")?.value||"");}catch(error){console.warn("Blocked list unavailable:",error);const host=$("vsBlockedUsersList");if(host)host.textContent="Could not load blocked users."}
 }
 async function renderVibeBlockedUsers(){
  const host=$("vsBlockedUsersList");if(!host)return;host.innerHTML="";
