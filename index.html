@@ -2255,7 +2255,7 @@ $("vsCameraGridToggle")?.addEventListener("change",e=>{$("vsCameraGrid")?.classL
 $("cameraPage")?.addEventListener("click",async e=>{
  if(!currentStream||$("cameraPage").classList.contains("hidden"))return;
  if(e.target.closest("button,input,select,label,.cameraTop,.cameraSidePanel,.cameraControls,.cameraMoreMenu,.vsVideoRecordingTools"))return;const rect=$("cameraVideo").getBoundingClientRect(),x=(e.clientX-rect.left)/rect.width,y=(e.clientY-rect.top)/rect.height,ring=$("vsFocusRing");
- if(ring){ring.style.left=(e.clientX-rect.left)+"px";ring.style.top=(e.clientY-rect.top)+"px";ring.classList.remove("hidden");void ring.offsetWidth;ring.style.animation="none";ring.offsetHeight;ring.style.animation="";setTimeout(()=>ring.classList.add("hidden"),800)}
+ if(ring){ring.style.left=e.clientX+"px";ring.style.top=e.clientY+"px";ring.classList.remove("hidden");void ring.offsetWidth;ring.style.animation="none";ring.offsetHeight;ring.style.animation="";setTimeout(()=>ring.classList.add("hidden"),800)}
  const track=currentStream.getVideoTracks()[0];
  try{const caps=track.getCapabilities?.();if(caps?.focusMode?.includes("single-shot"))await track.applyConstraints({advanced:[{focusMode:"single-shot"}]});if(caps?.pointsOfInterest)await track.applyConstraints({advanced:[{pointsOfInterest:[{x,y}]}]})}catch(_){}
 });
@@ -2326,7 +2326,7 @@ $("vsVideoStop")?.addEventListener("click",stopRecording);
 .vsDateSeparator{display:flex;align-items:center;gap:12px;justify-content:center;margin:18px 0;color:#8992aa;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .vsDateSeparator:before,.vsDateSeparator:after{content:"";height:1px;background:rgba(130,140,170,.25);flex:1;max-width:90px}
 .vsCameraGrid{position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(to right,transparent 33.2%,rgba(255,255,255,.48) 33.33%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.48) 66.66%,transparent 66.8%),linear-gradient(to bottom,transparent 33.2%,rgba(255,255,255,.48) 33.33%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.48) 66.66%,transparent 66.8%)}
-.vsFocusRing{position:absolute;z-index:18;width:58px;height:58px;border:2px solid #ffe56b;border-radius:10px;transform:translate(-50%,-50%);pointer-events:none;animation:vsFocus .75s ease-out forwards}
+.vsFocusRing{position:fixed;z-index:180;width:58px;height:58px;border:2px solid #ffe56b;border-radius:10px;transform:translate(-50%,-50%);pointer-events:none;animation:vsFocus .75s ease-out forwards}
 @keyframes vsFocus{0%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(.92)}}
 @media(prefers-reduced-motion:reduce){.vsFocusRing{animation:none;opacity:0}}
 </style>
