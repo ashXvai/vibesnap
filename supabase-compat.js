@@ -16,6 +16,7 @@ const toProfile=v=>{const x={};if("username"in v)x.username=v.username;if("displ
 class Snap{constructor(rows){this.docs=rows.map(x=>({id:x.id,exists:true,data:()=>x}));this.empty=!rows.length;this.size=rows.length}forEach(f){this.docs.forEach(f)}}
 class Ref{
  constructor(name,chat=null,doc=null,filters=[],sort=null){Object.assign(this,{name,chat,docId:doc,filters,sort})}
+ get id(){return this.docId}
  collection(n){if(this.name!=="chats"||n!=="messages")throw Error("Unsupported collection");return new Ref("messages",this.docId)}
  doc(id){return new Ref(this.name,this.chat,id||crypto.randomUUID())}
  where(f,o,v){return new Ref(this.name,this.chat,this.docId,[...this.filters,[f,o,v]],this.sort)}
