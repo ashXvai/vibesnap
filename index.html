@@ -1165,7 +1165,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </div>
 <div class="searchBar"><span class="searchBarIcon">⌕</span><input id="chatSearchInput" type="search" placeholder="Search chats, friends..."></div>
 <div class="categoryRow"><span>Unread <b id="unreadCount">0</b></span></div>
-<div id="favoriteFriendsSection" class="favoriteFriendsSection hidden"><div class="favoriteFriendsHeading">Favourites</div><div id="favoriteFriendsList"></div></div><div id="chatList" class="chatList"></div>
+<div id="vsRecentlyChattedSection" class="favoriteFriendsSection hidden"><div class="favoriteFriendsHeading">Recently chatted</div><div id="vsRecentlyChattedList"></div></div><div id="favoriteFriendsSection" class="favoriteFriendsSection hidden"><div class="favoriteFriendsHeading">Favourites</div><div id="favoriteFriendsList"></div></div><div id="chatList" class="chatList"></div>
 <button class="composeBtn" id="composeBtn">✎</button>
 </div>
 <div id="searchPage" class="page hidden"><div class="searchPageHeader"><div class="searchPageTitle">Search</div><div class="searchPageSubtitle">Find people by username</div></div><div class="searchPageBox"><span>⌕</span><input id="globalSearchInput" type="search" placeholder="Search by username" autocomplete="off"></div><div class="searchSectionLabel" id="searchResultsLabel">People you can add</div><div id="globalSearchResults"></div><div id="searchEmptyState" class="searchEmptyState"><span>⌕</span><b>Find your people</b><p>Search for someone by their VibeSnap username.</p></div></div>
@@ -1992,9 +1992,10 @@ function saveVibeSocialPrefs(prefs){try{localStorage.setItem("vibesnap-social-"+
 function toggleVibeSocialList(kind,uid){const prefs=getVibeSocialPrefs(),items=Array.isArray(prefs[kind])?prefs[kind]:[],index=items.indexOf(uid);if(index>=0)items.splice(index,1);else items.push(uid);prefs[kind]=items;saveVibeSocialPrefs(prefs);renderChatList();return index<0}
 function renderChatList(){
 const list=$("chatList");if(!list)return;list.innerHTML="";
-const prefs=getVibeSocialPrefs(),pinned=prefs.pinned||[],favorites=prefs.favorites||[];
-const friends=usersCache.filter(user=>getRelationshipState(user.uid)==="friends").sort((a,b)=>(pinned.includes(b.uid)?1:0)-(pinned.includes(a.uid)?1:0)||(favorites.includes(b.uid)?1:0)-(favorites.includes(a.uid)?1:0));
+const prefs=getVibeSocialPrefs(),pinned=prefs.pinned||[],favorites=prefs.favorites||[],recent=vsRecentChats();
+const friends=usersCache.filter(user=>getRelationshipState(user.uid)==="friends").sort((a,b)=>(pinned.includes(b.uid)?1:0)-(pinned.includes(a.uid)?1:0)||(favorites.includes(b.uid)?1:0)-(favorites.includes(a.uid)?1:0)||(recent[b.uid]||0)-(recent[a.uid]||0));
 const favHost=$("favoriteFriendsList"),favSection=$("favoriteFriendsSection");if(favHost&&favSection){favHost.innerHTML="";const favUsers=friends.filter(user=>favorites.includes(user.uid));favSection.classList.toggle("hidden",!favUsers.length);favUsers.forEach(user=>{const chip=document.createElement("button");chip.type="button";chip.className="favoriteFriendChip";chip.innerHTML=avatarHTML(user,"favoriteFriendAvatar") + '<span>'+escapeHTML(friendLabel(user))+'</span>';chip.onclick=()=>openChat(user);favHost.appendChild(chip)})}
+const recentHost=$("vsRecentlyChattedList"),recentSection=$("vsRecentlyChattedSection");if(recentHost&&recentSection){recentHost.innerHTML="";const recentUsers=friends.filter(user=>recent[user.uid]).sort((a,b)=>(recent[b.uid]||0)-(recent[a.uid]||0)).slice(0,6);recentSection.classList.toggle("hidden",!recentUsers.length);recentUsers.forEach(user=>{const chip=document.createElement("button");chip.type="button";chip.className="favoriteFriendChip";chip.innerHTML=avatarHTML(user,"favoriteFriendAvatar")+'<span>'+escapeHTML(friendLabel(user))+'</span>';chip.onclick=()=>openChat(user);recentHost.appendChild(chip)})}
 friends.forEach((user,i)=>{
 const row=document.createElement("div");row.className="chatRow";
 const name=friendLabel(user);
@@ -2012,7 +2013,7 @@ $("recipientSelect").onchange=async()=>{const uid=$("recipientSelect").value;sel
 function getChatId(uid1,uid2){return[uid1,uid2].sort().join("_")}
 async function ensureChat(chatId,friendUid){await db.collection("chats").doc(chatId).set({members:[currentUser.uid,friendUid],updatedAt:new Date().toISOString()},{merge:true})}
 async function openChat(user){
-selectedFriend=user;try{sessionStorage.setItem("vibesnap-last-page","chat");sessionStorage.setItem("vibesnap-last-conversation",user.uid);}catch(_){ }
+selectedFriend=user;vsMarkRecentChat(user.uid);renderChatList();try{sessionStorage.setItem("vibesnap-last-page","chat");sessionStorage.setItem("vibesnap-last-conversation",user.uid);}catch(_){ }
 $("recipientSelect").value=user.uid;$("chatName").textContent=user.displayName||user.email||"VibeSnap User";$("chatAvatar").innerHTML=avatarHTML(user,"rowAvatar");const pins=getVibeSocialPrefs().pinned||[];$("chatPinToggle").textContent=pins.includes(user.uid)?"★":"☆";$("chatPinToggle").setAttribute("aria-label",pins.includes(user.uid)?"Unpin conversation":"Pin conversation");showPage("chat");$("chatConversation").classList.remove("hidden");
 const chatId=getChatId(currentUser.uid,user.uid);await ensureChat(chatId,user.uid);loadMessages(chatId);startVibeTypingListener(chatId);
 }
@@ -2399,6 +2400,9 @@ async function vsSavePrivacySettings(){
 }
 $("vsShowOnlineStatusToggle")?.addEventListener("change",vsSavePrivacySettings);
 $("vsFriendRequestPolicy")?.addEventListener("change",vsSavePrivacySettings);
+
+function vsRecentChats(){try{return JSON.parse(localStorage.getItem("vibesnap-recent-"+currentUser.uid)||"{}")}catch(_){return {}}}
+function vsMarkRecentChat(uid){const recent=vsRecentChats();recent[uid]=Date.now();const sorted=Object.entries(recent).sort((a,b)=>b[1]-a[1]).slice(0,30);localStorage.setItem("vibesnap-recent-"+currentUser.uid,JSON.stringify(Object.fromEntries(sorted)))}
 </script>
 
 <style id="vibesnap-desktop-camera-final-layout">
