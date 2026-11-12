@@ -1926,6 +1926,8 @@ function loadMessages(chatId){
 if(currentChatUnsubscribe)currentChatUnsubscribe();
 currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt").onSnapshot(async snapshot=>{
 $("chatMessages").innerHTML="";
+let recipientReadAt=0;
+try{const client=window.VibeSnapSupabase?.client;if(client&&currentUser){await client.from("conversation_members").update({last_read_at:new Date().toISOString()}).eq("conversation_id",chatId).eq("user_id",currentUser.uid);const {data:members}=await client.from("conversation_members").select("user_id,last_read_at").eq("conversation_id",chatId);const peer=members?.find(member=>member.user_id===selectedFriend?.uid);recipientReadAt=peer?.last_read_at?Date.parse(peer.last_read_at):0;}}catch(readError){console.warn("VibeSnap read receipt update skipped:",readError)}
 for(const doc of snapshot.docs){
 const message=doc.data(),mine=message.senderUid===currentUser.uid;
 const row=document.createElement("div");row.className="messageRow "+(mine?"mine":"theirs");
@@ -1936,6 +1938,7 @@ else {try{box.textContent=await decryptChatText(message,chatId)}catch(e){console
 row.appendChild(box);
 const sentAt=timestampMillis(message.createdAt);
 if(sentAt){const time=document.createElement("span");time.className="messageTime";time.textContent=new Date(sentAt).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true});row.appendChild(time)}
+if(mine){const receipt=document.createElement("span");receipt.className="messageReceipt";receipt.textContent=recipientReadAt>=sentAt&&sentAt>0?"Read":"Sent";receipt.setAttribute("aria-label","Message "+receipt.textContent.toLowerCase());row.appendChild(receipt)}
 $("chatMessages").appendChild(row);
 }
 $("chatMessages").scrollTop=$("chatMessages").scrollHeight
@@ -2360,4 +2363,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
  #app #settingsPage{padding:22px 12px 100px!important}
 }
 @media(prefers-reduced-motion:reduce){.page,button,#app .captureBtn{animation:none!important;transition:none!important}}
+</style>
+<style id="vibesnap-read-receipts">
+#chatConversation .messageReceipt{display:inline-block;align-self:flex-end;padding:0 0 3px;font-size:10px;line-height:1.2;white-space:nowrap;color:#9d8ac8}
+#chatConversation .messageRow.mine .messageReceipt{color:#bca9ed}
+#chatConversation .messageRow.mine .messageReceipt::before{content:"✓ ";font-weight:900}
 </style>
