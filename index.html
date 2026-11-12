@@ -1912,19 +1912,20 @@ if(!ids.length)return showVibeNotice("Select at least one friend to send to.");
 const recipients=ids.map(uid=>usersCache.find(user=>user.uid===uid)).filter(Boolean);
 if(!recipients.length)return showVibeNotice("No valid friends selected. Please try again.");
 const sendButton=$("recipientPickerSend");sendButton.disabled=true;sendButton.textContent="Sending…";
-let sent=0;const failures=[];
+let sent=0;const failures=[];let mediaToSend=currentMediaBlob;
 try{
+if(currentMediaType==="image")mediaToSend=await vsPreparePhotoForUpload(currentMediaBlob);
 for(const friend of recipients){
 try{
 const chatId=getChatId(currentUser.uid,friend.uid);await ensureChat(chatId,friend.uid);
-const mimeType=currentMediaBlob.type||(currentMediaType==="image"?"image/jpeg":"video/webm");
+const mimeType=mediaToSend.type||(currentMediaType==="image"?"image/webp":"video/webm");
 const extension=mimeType.includes("mp4")?"mp4":mimeType.includes("quicktime")?"mov":mimeType.includes("webm")?"webm":currentMediaType==="image"?"jpg":"webm";
 const messageRef=db.collection("chats").doc(chatId).collection("messages").doc();
 const path=`chatMedia/${chatId}/${messageRef.id}.${extension}`;
 const uploadRef=storage.ref().child(path);
-await uploadRef.put(currentMediaBlob,{contentType:mimeType});
+await uploadRef.put(mediaToSend,{contentType:mimeType});
 const mediaUrl=await uploadRef.getDownloadURL();
-await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:currentMediaBlob.size||0,createdAt:new Date().toISOString()});sent++;
+await messageRef.set({senderUid:currentUser.uid,receiverUid:friend.uid,type:currentMediaType,text:"",mediaUrl,storagePath:path,mediaContentType:mimeType,mediaSize:mediaToSend.size||0,createdAt:new Date().toISOString()});sent++;
 }catch(err){console.error("Could not send media to",friend.uid,err);const code=err.code?(" ["+err.code+"]"):"";failures.push((friend.displayName||"A friend")+": "+(err.message||"send failed")+code)}
 }
 if(sent>0){closeRecipientPicker();closeMediaPreview();if(failures.length)showVibeNotice("Sent to "+sent+" friend(s). Some sends failed:\\n"+failures.join("\\n"));else showVibeNotice("Media sent to "+sent+" friend(s)!")}
@@ -2403,6 +2404,10 @@ $("vsFriendRequestPolicy")?.addEventListener("change",vsSavePrivacySettings);
 
 function vsRecentChats(){try{return JSON.parse(localStorage.getItem("vibesnap-recent-"+currentUser.uid)||"{}")}catch(_){return {}}}
 function vsMarkRecentChat(uid){const recent=vsRecentChats();recent[uid]=Date.now();const sorted=Object.entries(recent).sort((a,b)=>b[1]-a[1]).slice(0,30);localStorage.setItem("vibesnap-recent-"+currentUser.uid,JSON.stringify(Object.fromEntries(sorted)))}
+
+async function vsPreparePhotoForUpload(blob){
+ try{const bitmap=await createImageBitmap(blob),scale=Math.min(1,2560/Math.max(bitmap.width,bitmap.height)),canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext("2d",{alpha:false}).drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();const optimized=await new Promise(resolve=>canvas.toBlob(resolve,"image/webp",.96));return optimized&&optimized.size<blob.size?optimized:(optimized||blob)}catch(error){console.warn("Photo optimization skipped:",error);return blob}
+}
 </script>
 
 <style id="vibesnap-desktop-camera-final-layout">
