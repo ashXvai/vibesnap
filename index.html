@@ -1934,13 +1934,28 @@ const row=document.createElement("div");row.className="messageRow "+(mine?"mine"
 const box=document.createElement("div");box.className="message "+(mine?"mine":"theirs");box.dataset.messageId=doc.id;
 if(message.type==="image"&&message.mediaUrl){const media=document.createElement("img");media.src=message.mediaUrl;media.alt="Shared photo";media.loading="lazy";media.addEventListener("click",()=>openVibeMediaViewer(message.mediaUrl,"image"));box.appendChild(media)}
 else if(message.type==="video"&&message.mediaUrl){const media=document.createElement("video");media.src=message.mediaUrl;media.controls=true;media.playsInline=true;media.preload="metadata";media.addEventListener("dblclick",()=>openVibeMediaViewer(message.mediaUrl,"video"));box.appendChild(media)}
-else {try{const plainText=await decryptChatText(message,chatId);box.textContent=plainText;box.dataset.copyText=plainText;box.title="Right-click or long-press for message actions";box.addEventListener("contextmenu",event=>showVibeMessageMenu(event,message,chatId,box,mine))}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
+else {try{const plainText=await decryptChatText(message,chatId);box.textContent=plainText;box.dataset.copyText=plainText;box.title="Right-click or long-press for message actions"}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
+box.addEventListener("contextmenu",event=>showVibeMessageMenu(event,message,chatId,box,mine));
+if(message.replyToId){const quote=document.createElement("div");quote.className="vsReplyQuote";quote.textContent="↪ Reply to a message";box.insertBefore(quote,box.firstChild)}
+if(message.editedAt){const edited=document.createElement("small");edited.className="vsEditedLabel";edited.textContent="edited";box.appendChild(edited)}
 row.appendChild(box);
 const sentAt=timestampMillis(message.createdAt);
 if(sentAt){const time=document.createElement("span");time.className="messageTime";time.textContent=new Date(sentAt).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true});row.appendChild(time)}
 if(mine){const receipt=document.createElement("span");receipt.className="messageReceipt";receipt.textContent=recipientReadAt>=sentAt&&sentAt>0?"Read":"Sent";receipt.setAttribute("aria-label","Message "+receipt.textContent.toLowerCase());row.appendChild(receipt)}
 $("chatMessages").appendChild(row);
 }
+try{
+ const client=window.VibeSnapSupabase&&window.VibeSnapSupabase.client,ids=snapshot.docs.map(doc=>doc.id);
+ if(client&&ids.length){
+  const result=await client.from("message_reactions").select("message_id,user_id,reaction").in("message_id",ids);
+  if(!result.error)(result.data||[]).forEach(reaction=>{
+   const row=$("chatMessages").querySelector('[data-message-id="'+reaction.message_id+'"]');if(!row)return;
+   let strip=row.querySelector(".vsReactionStrip");if(!strip){strip=document.createElement("div");strip.className="vsReactionStrip";row.appendChild(strip)}
+   let chip=strip.querySelector('[data-reaction="'+reaction.reaction+'"]');if(!chip){chip=document.createElement("span");chip.className="vsReactionChip";chip.dataset.reaction=reaction.reaction;chip.textContent=reaction.reaction+" 0";strip.appendChild(chip)}
+   const count=Number((chip.textContent.match(/\d+/)||["0"])[0])+1;chip.textContent=reaction.reaction+" "+count;
+  });
+ }
+}catch(reactionError){console.warn("Could not load message reactions",reactionError)}
 $("chatMessages").scrollTop=$("chatMessages").scrollHeight
 },err=>{console.error("VibeSnap message listener error:",err);$("chatMessages").innerHTML='<div class="notificationEmpty">Messages could not load. Check your Supabase permissions and connection.</div>';})
 }
@@ -2057,15 +2072,17 @@ $("messageInput").addEventListener("input",()=>setVibeTyping(!!$("messageInput")
 $("messageInput").addEventListener("blur",()=>setVibeTyping(false));
 function cancelVibeReply(){replyingToMessage=null;$("vsReplyPreview")?.classList.add("hidden")}
 $("vsCancelReply")?.addEventListener("click",cancelVibeReply);
+function vibeAskText(title,message,initial=""){return new Promise(resolve=>{const overlay=document.createElement("div");overlay.className="vsActionDialogOverlay";const card=document.createElement("div");card.className="vsActionDialog";const heading=document.createElement("h3");heading.textContent=title;const hint=document.createElement("p");hint.textContent=message;const input=document.createElement("input");input.value=initial;input.maxLength=4000;const actions=document.createElement("div");actions.className="vsActionDialogActions";const cancel=document.createElement("button");cancel.textContent="Cancel";const save=document.createElement("button");save.textContent="Continue";const finish=value=>{overlay.remove();resolve(value)};cancel.onclick=()=>finish(null);save.onclick=()=>finish(input.value);overlay.addEventListener("click",e=>{if(e.target===overlay)finish(null)});input.addEventListener("keydown",e=>{if(e.key==="Enter")finish(input.value);if(e.key==="Escape")finish(null)});actions.append(cancel,save);card.append(heading,hint,input,actions);overlay.appendChild(card);document.body.appendChild(overlay);input.focus();input.select()})}
+function vibeAskConfirm(title,message){return new Promise(resolve=>{const overlay=document.createElement("div");overlay.className="vsActionDialogOverlay";const card=document.createElement("div");card.className="vsActionDialog";const heading=document.createElement("h3");heading.textContent=title;const hint=document.createElement("p");hint.textContent=message;const actions=document.createElement("div");actions.className="vsActionDialogActions";const cancel=document.createElement("button");cancel.textContent="Cancel";const yes=document.createElement("button");yes.textContent="Delete";yes.className="danger";const finish=value=>{overlay.remove();resolve(value)};cancel.onclick=()=>finish(false);yes.onclick=()=>finish(true);overlay.addEventListener("click",e=>{if(e.target===overlay)finish(false)});actions.append(cancel,yes);card.append(heading,hint,actions);overlay.appendChild(card);document.body.appendChild(overlay)})}
 function showVibeMessageMenu(event,message,chatId,box,mine){
  event.preventDefault();document.querySelector(".vsMessageMenu")?.remove();
  const menu=document.createElement("div");menu.className="vsMessageMenu";
  const add=(label,action)=>{const button=document.createElement("button");button.type="button";button.textContent=label;button.onclick=()=>{menu.remove();action()};menu.appendChild(button)};
  if(box.dataset.copyText)add("Copy message",async()=>{try{await navigator.clipboard.writeText(box.dataset.copyText);showVibeNotice("Message copied.","success")}catch(_){showVibeNotice("Clipboard access is unavailable.","error")}});
  add("Reply",()=>{replyingToMessage={id:message.id||box.dataset.messageId};$("vsReplyText").textContent="Replying to "+(mine?"your message":"their message")+": "+(box.dataset.copyText||"Shared media").slice(0,80);$("vsReplyPreview").classList.remove("hidden");$("messageInput").focus()});
- add("React",async()=>{const choices=["❤️","😂","😮","😢","🔥","👍","👎","🎉"];const emoji=prompt("Choose a reaction: "+choices.join(" "),"❤️");if(!choices.includes(emoji))return;try{const result=await window.VibeSnapSupabase.client.from("message_reactions").insert({message_id:message.id||box.dataset.messageId,user_id:currentUser.uid,reaction:emoji});if(result.error&&result.error.code!=="23505")throw result.error;showVibeNotice("Reaction added.","success");loadMessages(chatId)}catch(error){showVibeNotice("Could not add reaction: "+(error.message||"Try again."),"error")}});
- if(mine&&message.type==="text")add("Edit message",async()=>{const next=prompt("Edit your message",box.dataset.copyText||"");if(next===null||!next.trim()||next===box.dataset.copyText)return;try{const encrypted=await encryptChatText(next.trim(),selectedFriend,chatId);await db.collection("chats").doc(chatId).collection("messages").doc(message.id||box.dataset.messageId).update({...encrypted,editedAt:new Date().toISOString()});showVibeNotice("Message updated.","success")}catch(error){showVibeNotice("Could not edit message: "+(error.message||"Try again."),"error")}});
- if(mine)add("Delete message",async()=>{if(!confirm("Delete this message for everyone in this chat?"))return;try{await db.collection("chats").doc(chatId).collection("messages").doc(message.id||box.dataset.messageId).delete();showVibeNotice("Message deleted.","success")}catch(error){showVibeNotice("Could not delete message: "+(error.message||"Try again."),"error")}});
+ add("React",async()=>{const choices=["❤️","😂","😮","😢","🔥","👍","👎","🎉"];const emoji=await vibeAskText("React to message","Choose one: "+choices.join(" "),"❤️");if(!choices.includes(emoji))return;try{const result=await window.VibeSnapSupabase.client.from("message_reactions").insert({message_id:message.id||box.dataset.messageId,user_id:currentUser.uid,reaction:emoji});if(result.error&&result.error.code!=="23505")throw result.error;showVibeNotice("Reaction added.","success");loadMessages(chatId)}catch(error){showVibeNotice("Could not add reaction: "+(error.message||"Try again."),"error")}});
+ if(mine&&message.type==="text")add("Edit message",async()=>{const next=await vibeAskText("Edit message","Update the text of your message.",box.dataset.copyText||"");if(next===null||!next.trim()||next===box.dataset.copyText)return;try{const encrypted=await encryptChatText(next.trim(),selectedFriend,chatId);await db.collection("chats").doc(chatId).collection("messages").doc(message.id||box.dataset.messageId).update({...encrypted,editedAt:new Date().toISOString()});showVibeNotice("Message updated.","success")}catch(error){showVibeNotice("Could not edit message: "+(error.message||"Try again."),"error")}});
+ if(mine)add("Delete message",async()=>{if(!await vibeAskConfirm("Delete message","This will remove your message from this conversation. Continue?"))return;try{await db.collection("chats").doc(chatId).collection("messages").doc(message.id||box.dataset.messageId).delete();showVibeNotice("Message deleted.","success")}catch(error){showVibeNotice("Could not delete message: "+(error.message||"Try again."),"error")}});
  document.body.appendChild(menu);menu.style.left=Math.max(8,Math.min(event.clientX,window.innerWidth-190))+"px";menu.style.top=Math.max(8,Math.min(event.clientY,window.innerHeight-240))+"px";
  const close=e=>{if(!menu.contains(e.target)){menu.remove();document.removeEventListener("pointerdown",close,true)}};setTimeout(()=>document.addEventListener("pointerdown",close,true),0);
 }
@@ -2438,4 +2455,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .vsMessageMenu{position:fixed;z-index:99980;min-width:170px;padding:6px;border:1px solid var(--vs-line);border-radius:14px;background:#211b30;box-shadow:0 16px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:3px}
 .vsMessageMenu button{padding:10px 12px;border-radius:9px;background:transparent;color:#fff;text-align:left;font-size:13px}
 .vsMessageMenu button:hover{background:rgba(255,255,255,.1)}
+</style><style id="vibesnap-message-action-dialog">
+.vsActionDialogOverlay{position:fixed;inset:0;z-index:99985;display:grid;place-items:center;padding:18px;background:rgba(5,4,10,.76);backdrop-filter:blur(12px)}
+.vsActionDialog{width:min(420px,100%);padding:22px;border:1px solid var(--vs-line);border-radius:20px;background:#211b30;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.vsActionDialog h3{font-size:19px;margin:0 0 7px}.vsActionDialog p{color:#b8aecb;font-size:13px;line-height:1.5;margin:0 0 14px}
+.vsActionDialog input{width:100%;height:46px;padding:0 13px;border:1px solid var(--vs-line);border-radius:12px;background:#151220;color:#fff}
+.vsActionDialogActions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+.vsActionDialogActions button{padding:10px 16px;border-radius:12px;background:#383047;color:#fff;font-weight:800}
+.vsActionDialogActions button:last-child{background:linear-gradient(120deg,var(--vs-accent),var(--vs-accent2))}
+.vsActionDialogActions button.danger{background:#a83254}
 </style>
