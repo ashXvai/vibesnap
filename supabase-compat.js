@@ -30,7 +30,7 @@ class Ref{
  const {data,error}=await q;if(error)throw error;return mapped(this.name,data||[]);
  }
  async get(){const a=await this.rows();return this.docId?{id:this.docId,exists:!!a[0],data:()=>a[0]}:new Snap(a)}
- onSnapshot(cb,err){let active=true;const refresh=()=>this.rows().then(a=>{if(active)cb(new Snap(a))}).catch(e=>{if(active&&err)err(e)});refresh();const table={users:"profiles",friendRequests:"friend_requests",friendships:"friendships",messages:"messages"}[this.name];const ch=supabase.channel("vs-"+id()).on("postgres_changes",{event:"*",schema:"public",table},refresh).subscribe();return()=>{active=false;supabase.removeChannel(ch)}}
+ onSnapshot(cb,err){let active=true,pollTimer=null;const refresh=()=>this.rows().then(a=>{if(active)cb(new Snap(a))}).catch(e=>{if(active&&err)err(e)});refresh();const table={users:"profiles",friendRequests:"friend_requests",friendships:"friendships",messages:"messages"}[this.name];const ch=supabase.channel("vs-"+id()).on("postgres_changes",{event:"*",schema:"public",table},refresh).subscribe();if(this.name==="users"){pollTimer=setInterval(refresh,10000)}return()=>{active=false;if(pollTimer)clearInterval(pollTimer);supabase.removeChannel(ch)}}
  async set(v){let e;
  if(this.name==="users"){let x=toProfile(v);x.user_id=this.docId;if(!x.username){const {data}=await supabase.auth.getUser();x.username=data.user?.user_metadata?.username||"user_"+this.docId.slice(0,8)}({error:e}=await supabase.from("profiles").upsert(x,{onConflict:"user_id"}))}
  else if(this.name==="friendRequests"){let [a,b]=this.docId.split("_");({error:e}=await supabase.from("friend_requests").insert({sender_id:v.fromUid||a,receiver_id:v.toUid||b,status:v.status||"pending"}))}
