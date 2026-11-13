@@ -1761,8 +1761,7 @@ if(!map[page])return;
 currentPage=page;
 try{sessionStorage.setItem("vibesnap-last-page",page);if(page!=="chat")sessionStorage.removeItem("vibesnap-last-conversation");}catch(_){ }
 $(map[page]).classList.remove("hidden");
-const activeButton=document.querySelector('.navBtn[data-page="'+page+'"]');
-if(activeButton)activeButton.classList.add("active");
+document.querySelectorAll('.navBtn[data-page="'+page+'"]').forEach(button=>button.classList.add("active"));
 if(page==="camera")startCamera();else stopCamera();
 }
 document.querySelectorAll(".navBtn").forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
