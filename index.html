@@ -2851,8 +2851,11 @@ function vsRenderPinnedBanner(chatId){
 const VS_PROFILE_THEMES={violet:{accent:"#9675ff",glow:"rgba(150,117,255,.22)"},ocean:{accent:"#32b9ed",glow:"rgba(50,185,237,.22)"},rose:{accent:"#ed6aa6",glow:"rgba(237,106,166,.22)"},aurora:{accent:"#3ac8a7",glow:"rgba(58,200,167,.22)"}};
 function vsApplyProfileTheme(){if(!currentUser)return;let choice="violet";try{choice=localStorage.getItem("vibesnap-profile-theme-"+currentUser.uid)||"violet"}catch(_){}const theme=VS_PROFILE_THEMES[choice]||VS_PROFILE_THEMES.violet,box=document.querySelector("#profilePage .profileBox");if(box){box.style.setProperty("--vs-profile-accent",theme.accent);box.style.setProperty("--vs-profile-glow",theme.glow)}if($("vsProfileThemeChoice"))$("vsProfileThemeChoice").value=choice}
 $("vsProfileThemeChoice")?.addEventListener("change",event=>{if(!currentUser)return;localStorage.setItem("vibesnap-profile-theme-"+currentUser.uid,event.target.value);vsApplyProfileTheme()});
+// Narrow read-only bridge for separately loaded feature modules.
+window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get selectedFriend(){return selectedFriend},get acceptedFriendships(){return acceptedFriendships},notify:showVibeNotice});
 </script>
 <script type="module" src="./vibesnap-desktop-extras.js"></script>
+<script type="module" src="./vibesnap-extras.js"></script>
 
 <style id="vibesnap-desktop-camera-final-layout">
 @media (min-width:1024px) {
