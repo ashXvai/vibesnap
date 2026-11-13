@@ -1709,9 +1709,17 @@ const ciphertext=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,encoder.enc
 return {encryptedText:bytesToBase64(new Uint8Array(ciphertext)),iv:bytesToBase64(iv),cryptoVersion:1};
 }
 async function decryptChatText(message,chatId){
-if(message.cryptoVersion!==1||!message.encryptedText||!message.iv)return message.text||"[Older unencrypted message]";
-const otherUid=message.senderUid===currentUser.uid?(message.receiverUid||(selectedFriend&&selectedFriend.uid)):message.senderUid;
-if(!otherUid||otherUid===currentUser.uid)throw new Error("The other participant could not be identified for this message.");
+if(Number(message.cryptoVersion)!==1||!message.encryptedText||!message.iv)return message.text||"[Older unencrypted message]";
+// Resolve the peer from this conversation's stable ID, never from mutable UI selection.
+// This also supports older messages whose receiver_uid was not stored.
+const participants=String(chatId||"").split("_").filter(Boolean);
+if(!currentUser||participants.length!==2||!participants.includes(currentUser.uid))throw new Error("This message does not belong to the active account's conversation.");
+const peerUid=participants.find(uid=>uid!==currentUser.uid);
+const senderUid=String(message.senderUid||"");
+if(!peerUid||!participants.includes(senderUid))throw new Error("The message sender does not match this conversation.");
+const expectedReceiver=senderUid===currentUser.uid?peerUid:currentUser.uid;
+if(message.receiverUid&&String(message.receiverUid)!==expectedReceiver)throw new Error("The message recipient does not match this conversation.");
+const otherUid=peerUid;
 let other=usersCache.find(u=>u.uid===otherUid)||null;
 const refreshOtherProfile=async()=>{
 const snap=await db.collection("users").doc(otherUid).get();
@@ -2594,10 +2602,14 @@ function vsStopVoice(){if(vsVoiceRecorder&&vsVoiceRecorder.state!=="inactive")vs
 $("vsVoiceRecord")?.addEventListener("click",()=>{if(vsVoiceRecorder&&vsVoiceRecorder.state==="recording")vsStopVoice();else vsStartVoice()});
 /* Group messages by calendar day; preserve the existing chronological ordering. */
 const vsOriginalLoadMessages=loadMessages;
+let vsActiveChatRenderToken=0;
 loadMessages=function(chatId){
+ const renderToken=++vsActiveChatRenderToken;
+ const isCurrentRender=()=>renderToken===vsActiveChatRenderToken&&!!currentUser&&!!selectedFriend&&getChatId(currentUser.uid,selectedFriend.uid)===chatId&&$("chatConversation")&&!$("chatConversation").classList.contains("hidden");
  if(currentChatUnsubscribe){currentChatUnsubscribe();currentChatUnsubscribe=null}
  if(!$("chatMessages").children.length){$("chatMessages").innerHTML='<div class="vsChatSkeleton" aria-hidden="true"><i></i><i></i><i></i></div>'}
  currentChatUnsubscribe=db.collection("chats").doc(chatId).collection("messages").orderBy("createdAt","desc").limit(50).onSnapshot(async snapshot=>{
+  if(!isCurrentRender())return;
   const chatHost=$("chatMessages"),preserveScroll=window.__vsPreserveChatScroll||null;window.__vsPreserveChatScroll=null;
   if(window.__vsOlderChatId!==chatId){window.__vsOlderChatId=chatId;window.__vsOlderLoadedDocs=[];window.__vsNoMoreOlder=false}
   const liveDocs=snapshot.docs.slice().reverse();window.__vsLatestSnapshotDocs=liveDocs;
@@ -2608,7 +2620,9 @@ loadMessages=function(chatId){
   let priorDay="",unreadDividerAdded=false;const vsMessageText=new Map();
   let recipientReadAt=0,ownLastReadAt=0;
   try{const client=window.VibeSnapSupabase?.client;if(client&&currentUser){const {data:members}=await client.from("conversation_members").select("user_id,last_read_at").eq("conversation_id",chatId);const mine=members?.find(member=>member.user_id===currentUser.uid),peer=members?.find(member=>member.user_id===selectedFriend?.uid);ownLastReadAt=mine?.last_read_at?Date.parse(mine.last_read_at):0;recipientReadAt=peer?.last_read_at?Date.parse(peer.last_read_at):0;const {error}=await client.from("conversation_members").update({last_read_at:new Date().toISOString()}).eq("conversation_id",chatId).eq("user_id",currentUser.uid);if(error)throw error;}}catch(readError){console.warn("VibeSnap read receipt update skipped:",readError)}
+  if(!isCurrentRender())return;
   for(const doc of allDocs){
+   if(!isCurrentRender())return;
    const message=doc.data(),mine=message.senderUid===currentUser.uid,sentAt=timestampMillis(message.createdAt),dayKey=sentAt?new Date(sentAt).toDateString():"";
    if(dayKey&&dayKey!==priorDay){const divider=document.createElement("div");divider.className="vsDateSeparator";divider.textContent=vsDateLabel(new Date(sentAt));$("chatMessages").appendChild(divider);priorDay=dayKey}
    if(!mine&&!unreadDividerAdded&&sentAt>ownLastReadAt){const unread=document.createElement("div");unread.className="vsUnreadDivider";unread.textContent="Unread messages";$("chatMessages").appendChild(unread);unreadDividerAdded=true}
@@ -2616,7 +2630,7 @@ loadMessages=function(chatId){
    const box=document.createElement("div");box.className="message "+(mine?"mine":"theirs");box.dataset.messageId=doc.id;
    if((message.type==="image"||message.type==="video")&&message.mediaUrl){const media=document.createElement(message.type==="video"?"video":"img");media.src=message.mediaUrl;media.alt=message.type==="video"?"Shared video":"Shared photo";if(message.type==="video"){media.controls=true;media.playsInline=true;media.preload="metadata";media.addEventListener("dblclick",()=>openVibeMediaViewer(message.mediaUrl,"video"))}else{media.loading="lazy";media.addEventListener("click",()=>openVibeMediaViewer(message.mediaUrl,"image"))}box.appendChild(media)}
    else if(message.type==="voice"&&message.mediaUrl){const player=document.createElement("div");player.className="vsVoicePlayer";const audio=document.createElement("audio");audio.controls=true;audio.preload="metadata";audio.src=message.mediaUrl;audio.setAttribute("aria-label","Voice message");player.appendChild(audio);box.appendChild(player)}
-   else{try{const plainText=await decryptChatText(message,chatId);box.textContent=plainText;box.dataset.copyText=plainText;box.dataset.searchText=plainText.toLowerCase();vsMessageText.set(doc.id,plainText);box.title="Right-click or long-press for message actions"}catch(e){console.error("VibeSnap decrypt error:",e);box.textContent=message.cryptoVersion===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
+   else{try{const plainText=await decryptChatText(message,chatId);if(!isCurrentRender())return;box.textContent=plainText;box.dataset.copyText=plainText;box.dataset.searchText=plainText.toLowerCase();vsMessageText.set(doc.id,plainText);box.title="Right-click or long-press for message actions"}catch(e){if(!isCurrentRender())return;console.error("VibeSnap decrypt error:",e);box.textContent=Number(message.cryptoVersion)===1?"🔒 Unable to decrypt this message":"[Older unencrypted message]"}}
    box.addEventListener("contextmenu",event=>showVibeMessageMenu(event,message,chatId,box,mine));
    if(message.replyToId){const quote=document.createElement("div");quote.className="vsReplyQuote";quote.textContent="↪ "+(vsMessageText.get(message.replyToId)||"Replying to a shared item").slice(0,120);box.insertBefore(quote,box.firstChild)}
    if(message.editedAt){const edited=document.createElement("small");edited.className="vsEditedLabel";edited.textContent="edited";box.appendChild(edited)}
@@ -2625,6 +2639,7 @@ loadMessages=function(chatId){
    if(mine){const receipt=document.createElement("span");receipt.className="messageReceipt";receipt.textContent=recipientReadAt>=sentAt&&sentAt>0?"Read":"Sent";receipt.setAttribute("aria-label","Message "+receipt.textContent.toLowerCase());row.appendChild(receipt)}
    $("chatMessages").appendChild(row);
   }
+  if(!isCurrentRender())return;
   if(!allDocs.length){const empty=document.createElement("div");empty.className="vsChatEmpty";empty.textContent="No messages yet. Say hello to start the conversation.";chatHost.appendChild(empty)}
   try{const client=window.VibeSnapSupabase?.client,ids=allDocs.map(doc=>doc.id);if(client&&ids.length){const result=await client.from("message_reactions").select("message_id,user_id,reaction").in("message_id",ids);if(!result.error)(result.data||[]).forEach(reaction=>{const row=$("chatMessages").querySelector('[data-message-id="'+reaction.message_id+'"]');if(!row)return;let strip=row.querySelector(".vsReactionStrip");if(!strip){strip=document.createElement("div");strip.className="vsReactionStrip";row.appendChild(strip)}let chip=strip.querySelector('[data-reaction="'+reaction.reaction+'"]');if(!chip){chip=document.createElement("span");chip.className="vsReactionChip";chip.dataset.reaction=reaction.reaction;chip.textContent=reaction.reaction+" 0";strip.appendChild(chip)}const count=Number((chip.textContent.match(/\d+/)||["0"])[0])+1;chip.textContent=reaction.reaction+" "+count})}}catch(error){console.warn("Reaction load skipped",error)}
   if(preserveScroll){chatHost.scrollTop=preserveScroll.top+(chatHost.scrollHeight-preserveScroll.height)}else{chatHost.scrollTop=chatHost.scrollHeight}vibeUnreadRefreshAt=0;refreshVibeUnreadCounts();
