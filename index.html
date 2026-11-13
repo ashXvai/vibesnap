@@ -3027,5 +3027,72 @@ $("vsProfileThemeChoice")?.addEventListener("change",event=>{if(!currentUser)ret
   }
 }
 </style>
+
+<style id="vibesnap-desktop-control-polish">
+/* Desktop-only interaction and button polish. No phone/tablet layout or controls are modified. */
+@media (min-width:1024px) {
+  #app button, #app .navBtn, #app .cameraTool {
+    -webkit-tap-highlight-color:transparent;
+    transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease,filter .18s ease;
+  }
+  #app button:focus-visible, #app .navBtn:focus-visible, #app .cameraTool:focus-visible {
+    outline:2px solid #bba7ff !important;
+    outline-offset:3px !important;
+    box-shadow:0 0 0 5px rgba(137,87,255,.16) !important;
+  }
+  #app > #cameraPage .cameraTop .cameraIconBtn:hover,
+  #app > #cameraPage .cameraTop .cameraAvatar:hover,
+  #app > #cameraPage .cameraSidePanel .cameraToolIcon:hover {
+    color:#fff !important;
+    border-color:rgba(177,151,255,.62) !important;
+    background:linear-gradient(135deg,rgba(137,87,255,.34),rgba(67,140,255,.24)) !important;
+    box-shadow:0 8px 24px rgba(91,66,180,.24) !important;
+    transform:translateY(-2px);
+  }
+  #app > #cameraPage .cameraControls {
+    gap:30px !important;
+    padding:12px 24px !important;
+    border-color:rgba(190,174,255,.22) !important;
+    box-shadow:0 18px 48px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.09),0 0 28px rgba(112,82,255,.10) !important;
+  }
+  #app > #cameraPage .cameraSideBtn:hover {
+    transform:translateY(-2px) scale(1.05) !important;
+    box-shadow:0 10px 26px rgba(137,87,255,.28) !important;
+  }
+  #app > #cameraPage .captureBtn:hover {
+    filter:brightness(1.04);
+    transform:scale(1.055) !important;
+    box-shadow:0 0 0 3px rgba(137,87,255,.95),0 12px 34px rgba(137,87,255,.34),inset 0 0 0 1px rgba(45,35,70,.12) !important;
+  }
+  #app .composeBtn:hover,
+  #app #chatConversation .chatInput button:hover,
+  #app .chatOpenBtn:hover,
+  #app .searchResultCard button:hover {
+    filter:brightness(1.12);
+    transform:translateY(-2px);
+    box-shadow:0 12px 28px rgba(104,83,255,.30) !important;
+  }
+  #app .headerIcon:hover {
+    color:#fff !important;
+    border-color:rgba(177,151,255,.48) !important;
+    background:#39314e !important;
+    transform:translateY(-1px);
+  }
+  #app .userCard, #app .searchResultCard, #app .profileBox {
+    transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+  }
+  #app .userCard:hover, #app .searchResultCard:hover {
+    border-color:rgba(155,125,255,.38) !important;
+    box-shadow:0 14px 34px rgba(0,0,0,.24),0 0 24px rgba(112,82,255,.08) !important;
+    transform:translateY(-2px);
+  }
+}
+@media (min-width:1024px) and (prefers-reduced-motion:reduce) {
+  #app button, #app .navBtn, #app .cameraTool, #app .userCard, #app .searchResultCard, #app .profileBox {
+    transition:none !important;
+  }
+}
+</style>
+
 </body>
 </html>
