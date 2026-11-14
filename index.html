@@ -4002,5 +4002,118 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-login-interactive-universe">
+/* Interactive login universe: pointer parallax, live signal and tactile feedback. */
+#loginScreen .loginLiveScene:after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.72;
+  background:radial-gradient(420px circle at var(--login-pointer-x,50%) var(--login-pointer-y,50%),rgba(133,111,255,.18),rgba(72,151,255,.07) 38%,transparent 72%);
+  transition:opacity .3s ease;
+}
+#loginScreen .loginScenePortal{translate:var(--login-shift-x,0px) var(--login-shift-y,0px)}
+#loginScreen .loginSceneRingA{translate:calc(var(--login-shift-x,0px)*-.65) calc(var(--login-shift-y,0px)*-.65)}
+#loginScreen .loginSceneRingB{translate:calc(var(--login-shift-x,0px)*.85) calc(var(--login-shift-y,0px)*.85)}
+#loginScreen .loginSceneRingC{translate:calc(var(--login-shift-x,0px)*-.35) calc(var(--login-shift-y,0px)*-.35)}
+#loginScreen .loginSceneCard{transition:filter .25s ease}
+#loginScreen .loginSceneCard:hover{filter:brightness(1.45) drop-shadow(0 0 18px rgba(155,132,255,.8))}
+#loginScreen .loginSignal{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  margin-top:17px;padding:8px 13px;border:1px solid rgba(128,112,235,.22);
+  border-radius:30px;background:rgba(255,255,255,.62);color:#66719a;
+  font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
+  box-shadow:0 5px 18px rgba(85,91,170,.07);transition:all .25s ease;
+}
+#loginScreen .loginSignal:before{
+  content:"";width:7px;height:7px;border-radius:50%;background:#7f8cae;
+  box-shadow:0 0 0 4px rgba(127,140,174,.12);transition:all .25s ease;
+}
+#loginScreen .loginSignal.is-ready{color:#4d43a5;border-color:rgba(112,91,255,.38);background:rgba(239,236,255,.82)}
+#loginScreen .loginSignal.is-ready:before{background:#42d9b0;box-shadow:0 0 0 4px rgba(66,217,176,.15),0 0 14px rgba(66,217,176,.7)}
+#loginScreen .loginSignal.is-active{color:#2376b9;border-color:rgba(72,151,255,.4)}
+#loginScreen .loginSignal.is-active:before{background:#4f9cff;box-shadow:0 0 0 4px rgba(79,156,255,.15),0 0 14px rgba(79,156,255,.7)}
+#loginScreen .loginBtn .loginRipple{
+  position:absolute;z-index:0;width:12px;height:12px;border-radius:50%;pointer-events:none;
+  background:rgba(255,255,255,.55);transform:translate(-50%,-50%) scale(0);
+  animation:loginRippleBurst .65s ease-out forwards;
+}
+#loginScreen .loginBtn{touch-action:manipulation}
+#loginScreen .loginBtn:focus-visible,#loginScreen .passwordToggle:focus-visible{
+  outline:3px solid rgba(117,99,255,.55);outline-offset:4px;
+}
+#loginScreen .loginBox.login-is-focused{box-shadow:0 32px 100px rgba(10,14,42,.28),0 0 0 1px rgba(157,137,255,.22),inset 0 1px rgba(255,255,255,.96)}
+@keyframes loginRippleBurst{to{transform:translate(-50%,-50%) scale(18);opacity:0}}
+@media(max-width:600px){
+  #loginScreen .loginSignal{margin-top:13px}
+  #loginScreen .loginLiveScene:after{background:radial-gradient(280px circle at var(--login-pointer-x,50%) var(--login-pointer-y,50%),rgba(133,111,255,.13),transparent 72%)}
+}
+@media(prefers-reduced-motion:reduce){
+  #loginScreen .loginSignal,#loginScreen .loginSceneCard{transition:none!important}
+  #loginScreen .loginBtn .loginRipple{animation:none!important;display:none}
+}
+</style>
+<script id="vibesnap-login-interactive-universe-script">
+(()=>{
+  const screen=document.getElementById('loginScreen');
+  if(!screen||screen.dataset.interactiveUniverse==='ready')return;
+  screen.dataset.interactiveUniverse='ready';
+  const box=screen.querySelector('.loginBox');
+  const scene=screen.querySelector('.loginLiveScene');
+  const username=screen.querySelector('#accountUsername');
+  const password=screen.querySelector('#accountPassword');
+  const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer=window.matchMedia&&window.matchMedia('(pointer: fine)').matches;
+  const signal=document.createElement('div');
+  signal.className='loginSignal';
+  signal.setAttribute('role','status');
+  signal.setAttribute('aria-live','polite');
+  signal.textContent='VIBESNAP SYSTEM READY';
+  box?.appendChild(signal);
+  const updateSignal=()=>{
+    const hasUser=!!username?.value.trim();
+    const hasPass=!!password?.value;
+    signal.classList.toggle('is-ready',hasUser&&hasPass);
+    signal.classList.toggle('is-active',hasUser&&!hasPass);
+    signal.textContent=hasUser&&hasPass?'IDENTITY READY · SECURE SIGN-IN':hasUser?'USERNAME DETECTED · PASSWORD NEEDED':'VIBESNAP SYSTEM READY';
+    box?.classList.toggle('login-is-focused',document.activeElement===username||document.activeElement===password);
+  };
+  username?.addEventListener('input',updateSignal);
+  password?.addEventListener('input',updateSignal);
+  [username,password].forEach(el=>{
+    el?.addEventListener('focus',updateSignal);
+    el?.addEventListener('blur',()=>setTimeout(updateSignal,0));
+  });
+  if(scene&&!reduced&&finePointer){
+    screen.addEventListener('pointermove',event=>{
+      const rect=screen.getBoundingClientRect();
+      const x=event.clientX-rect.left,y=event.clientY-rect.top;
+      const dx=(x/rect.width-.5),dy=(y/rect.height-.5);
+      screen.style.setProperty('--login-pointer-x',x+'px');
+      screen.style.setProperty('--login-pointer-y',y+'px');
+      screen.style.setProperty('--login-shift-x',(dx*18).toFixed(1)+'px');
+      screen.style.setProperty('--login-shift-y',(dy*14).toFixed(1)+'px');
+    },{passive:true});
+    screen.addEventListener('pointerleave',()=>{
+      screen.style.setProperty('--login-shift-x','0px');
+      screen.style.setProperty('--login-shift-y','0px');
+      screen.style.setProperty('--login-pointer-x','50%');
+      screen.style.setProperty('--login-pointer-y','50%');
+    },{passive:true});
+  }
+  screen.querySelectorAll('.loginBtn').forEach(button=>{
+    button.addEventListener('pointerdown',event=>{
+      if(reduced)return;
+      const rect=button.getBoundingClientRect();
+      const ripple=document.createElement('span');
+      ripple.className='loginRipple';
+      ripple.style.left=(event.clientX-rect.left)+'px';
+      ripple.style.top=(event.clientY-rect.top)+'px';
+      button.appendChild(ripple);
+      ripple.addEventListener('animationend',()=>ripple.remove(),{once:true});
+    });
+  });
+  updateSignal();
+})();
+</script>
+
 </body>
 </html>
