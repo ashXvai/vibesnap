@@ -4571,6 +4571,10 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 /* Futuristic login redesign: black + electric purple + VibeSnap yellow.
    Decorative desktop-only scene; auth controls and the 9-second intro remain untouched. */
 @media (min-width:900px) {
+  #loginScreen:before {
+    opacity:.34!important;
+    background-image:radial-gradient(1px 1px at 8% 18%,#fff 98%,transparent),radial-gradient(1px 1px at 18% 72%,#c7a6ff 98%,transparent),radial-gradient(2px 2px at 34% 28%,#ffe85a 98%,transparent),radial-gradient(1px 1px at 49% 82%,#b98cff 98%,transparent),radial-gradient(1px 1px at 67% 16%,#fff 98%,transparent),radial-gradient(2px 2px at 82% 66%,#ffe85a 98%,transparent),radial-gradient(1px 1px at 94% 32%,#d3b5ff 98%,transparent)!important;
+  }
   #loginScreen {
     display:grid!important;
     grid-template-columns:minmax(0,1.08fr) minmax(370px,.82fr)!important;
@@ -4596,7 +4600,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
       linear-gradient(145deg,rgba(255,255,255,.018),transparent 55%)!important;
   }
   #loginScreen .loginLiveScene:before {
-    content:"YOUR WORLD.\\A YOUR PEOPLE.\\A YOUR VIBE."!important;
+    content:"YOUR WORLD.\A YOUR PEOPLE.\A YOUR VIBE."!important;
     position:absolute!important;z-index:12!important;left:4%!important;right:3%!important;
     top:6%!important;bottom:auto!important;width:auto!important;max-width:610px!important;
     color:#fff!important;font-size:clamp(38px,4.3vw,66px)!important;
