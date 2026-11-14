@@ -1428,6 +1428,238 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 #app button:focus-visible,#app input:focus-visible,#app select:focus-visible{outline:2px solid var(--vs-accent2)!important;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){#app *,#app *::before,#app *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
+
+<style id="vibesnap-living-neon-world">
+/* Carry the cinematic intro's violet/blue energy into the everyday app.
+   Visual-only layer: keeps existing navigation, sizing, and feature logic intact. */
+:root{
+  --vs-world-violet:#9a78ff;
+  --vs-world-blue:#55aaff;
+  --vs-world-pink:#f17bc0;
+  --vs-world-panel:rgba(28,24,43,.88);
+  --vs-world-edge:rgba(185,164,255,.19);
+  --vs-world-glow:rgba(133,102,255,.18);
+}
+#loginScreen{
+  background:
+    radial-gradient(ellipse at 18% 18%,rgba(142,105,255,.28),transparent 34%),
+    radial-gradient(ellipse at 84% 78%,rgba(66,157,255,.23),transparent 36%),
+    linear-gradient(135deg,#090b19 0%,#17132e 48%,#101b32 100%) !important;
+}
+#loginScreen:before{background:linear-gradient(135deg,rgba(174,124,255,.25),rgba(85,170,255,.03))!important;filter:blur(18px)}
+#loginScreen:after{background:linear-gradient(135deg,rgba(85,170,255,.24),rgba(241,123,192,.06))!important;filter:blur(22px)}
+#loginScreen .loginBox{
+  border:1px solid rgba(198,183,255,.24)!important;
+  background:linear-gradient(145deg,rgba(35,29,56,.94),rgba(20,24,43,.96))!important;
+  box-shadow:0 30px 90px rgba(0,0,0,.48),0 0 55px rgba(118,87,255,.13),inset 0 1px rgba(255,255,255,.08)!important;
+  color:#f8f5ff!important;
+}
+#loginScreen .loginTitle{color:#fff!important;text-shadow:0 0 28px rgba(154,120,255,.24)}
+#loginScreen .loginSub{color:#b9b1d0!important}
+#loginScreen .loginLabel{color:#d4c8f4!important}
+#loginScreen #accountUsername,#loginScreen #accountPassword{
+  color:#fff!important;background:rgba(255,255,255,.07)!important;
+  border:1px solid rgba(196,179,255,.2)!important;
+}
+#loginScreen #accountUsername::placeholder,#loginScreen #accountPassword::placeholder{color:#958ba9!important}
+#loginScreen #accountUsername:focus,#loginScreen #accountPassword:focus{
+  border-color:#a58aff!important;box-shadow:0 0 0 4px rgba(137,104,255,.17)!important;
+}
+#loginScreen #emailLogin{background:rgba(153,126,255,.16)!important;color:#e7ddff!important;border:1px solid rgba(185,164,255,.28)!important}
+#loginScreen #emailLogin:hover{background:rgba(153,126,255,.25)!important}
+#loginScreen .signupBtn{background:linear-gradient(110deg,#8057ff,#398fff)!important;color:#fff!important;box-shadow:0 10px 28px rgba(100,91,255,.34)!important}
+#loginScreen .loginBox>.loginSub:last-child{color:#a69dbb!important}
+#loginScreen .passwordToggle{color:#c7b9f0!important}
+#app{
+  background:
+    radial-gradient(ellipse at 78% 0%,rgba(79,139,255,.12),transparent 36%),
+    radial-gradient(ellipse at 8% 92%,rgba(142,91,255,.13),transparent 42%),
+    linear-gradient(145deg,#100e19,#151225 58%,#101827)!important;
+}
+#app > .page:not(#cameraPage){
+  background:
+    radial-gradient(ellipse at 92% 0%,rgba(85,146,255,.075),transparent 38%),
+    radial-gradient(ellipse at 0% 100%,rgba(144,99,255,.075),transparent 42%),
+    linear-gradient(145deg,#12101b,#171426 62%,#101827)!important;
+}
+#app .topHeader{
+  background:linear-gradient(105deg,rgba(25,21,39,.96),rgba(24,25,43,.92))!important;
+  border-bottom:1px solid var(--vs-world-edge)!important;
+  box-shadow:0 12px 35px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.035)!important;
+}
+#app .brandLogo{
+  background:linear-gradient(100deg,#fff 4%,#cbbaff 43%,#80c9ff 82%,#fff)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;
+  filter:drop-shadow(0 0 16px rgba(145,116,255,.22));
+}
+#app .brandSpark{color:#b79aff!important;text-shadow:0 0 16px rgba(157,127,255,.7)}
+#app .headerIcon,#app .topAvatar{
+  background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.045))!important;
+  border:1px solid rgba(190,171,255,.18)!important;
+  color:#eee8ff!important;box-shadow:0 8px 22px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.07)!important;
+}
+#app .headerActions .headerIcon:nth-child(2),
+#app .composeBtn,#app .chatInput button,#app .chatOpenBtn,#app .sendBtn{
+  background:linear-gradient(125deg,#986bff 0%,#6d6bff 48%,#399eff 100%)!important;
+  color:#fff!important;box-shadow:0 9px 28px rgba(105,91,255,.28),inset 0 1px rgba(255,255,255,.22)!important;
+}
+#app .searchBar,#app .searchPageBox{
+  background:linear-gradient(110deg,rgba(39,32,57,.92),rgba(26,31,51,.92))!important;
+  border:1px solid rgba(185,164,255,.17)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.13),inset 0 1px rgba(255,255,255,.035)!important;
+}
+#app .categoryRow{background:transparent!important}
+#app .categoryRow span{
+  background:rgba(255,255,255,.065)!important;color:#d8d0e9!important;
+  border:1px solid rgba(190,171,255,.1);
+}
+#app .categoryRow span:first-child{
+  background:linear-gradient(110deg,rgba(137,91,255,.88),rgba(65,139,255,.88))!important;
+  border-color:rgba(210,195,255,.25)!important;color:#fff!important;
+  box-shadow:0 5px 18px rgba(111,91,255,.2);
+}
+#app .chatRow,#app .userCard,#app .searchResultCard{
+  background:linear-gradient(115deg,rgba(34,29,50,.92),rgba(25,29,47,.9))!important;
+  border:1px solid rgba(185,164,255,.12)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.12),inset 0 1px rgba(255,255,255,.035)!important;
+  color:#f7f3ff!important;
+}
+#app .chatRow:hover,#app .userCard:hover,#app .searchResultCard:hover{
+  background:linear-gradient(115deg,rgba(48,38,73,.96),rgba(28,43,68,.94))!important;
+  border-color:rgba(174,146,255,.32)!important;
+  box-shadow:0 13px 32px rgba(0,0,0,.2),0 0 24px rgba(128,97,255,.09)!important;
+}
+#app .chatRowName,#app .userName,#app .searchResultName{color:#fff!important}
+#app .chatRowMeta,#app .userEmail,#app .searchResultMeta{color:#aaa3bf!important}
+#app .rowAvatar,#app .avatar,#app .profileAvatar{
+  background:linear-gradient(135deg,#5b478d,#285c8a)!important;
+  border:1px solid rgba(206,189,255,.28)!important;
+  color:#fff!important;box-shadow:0 0 0 4px rgba(142,111,255,.08),0 8px 22px rgba(0,0,0,.24)!important;
+}
+#app .friendsHeader,#app .pageTitle,#app .searchPageTitle{color:#fff!important;text-shadow:0 4px 24px rgba(127,103,255,.14)}
+#app .searchPageSubtitle,#app .searchSectionLabel{color:#b7afca!important}
+#app .friendSuggestion{
+  background:linear-gradient(110deg,rgba(126,88,255,.19),rgba(57,146,255,.12))!important;
+  border:1px solid rgba(185,164,255,.18)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.14),inset 0 1px rgba(255,255,255,.05)!important;
+}
+#app .friendSuggestionTitle{color:#f8f4ff!important}
+#app .friendSuggestionSub{color:#b3abc7!important}
+#app .bottomNav{
+  background:linear-gradient(180deg,rgba(28,23,43,.97),rgba(17,19,33,.98))!important;
+  border-color:rgba(185,164,255,.18)!important;
+  box-shadow:0 -12px 38px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.04)!important;
+}
+#app .navBtn{color:#a9a1bc!important}
+#app .navBtn.active{
+  color:#fff!important;
+  text-shadow:0 0 16px rgba(164,133,255,.55);
+}
+#app .navBtn.active:after{
+  background:linear-gradient(90deg,#a77bff,#5db7ff)!important;
+  box-shadow:0 0 16px rgba(139,111,255,.62)!important;
+}
+#app #chatConversation{
+  background:radial-gradient(ellipse at 15% 0%,rgba(122,85,255,.11),transparent 38%),#12101b!important;
+}
+#app .conversationHeader{
+  background:linear-gradient(105deg,rgba(30,25,45,.98),rgba(24,29,47,.98))!important;
+  border-color:var(--vs-world-edge)!important;
+}
+#app .conversationTitle{color:#fff!important}
+#app .chatMessages{
+  background:
+    radial-gradient(ellipse at 85% 5%,rgba(73,137,255,.09),transparent 38%),
+    radial-gradient(ellipse at 8% 90%,rgba(142,91,255,.09),transparent 42%),
+    linear-gradient(145deg,#12101b,#171426 62%,#101827)!important;
+}
+#app .message.mine{
+  background:linear-gradient(125deg,#875cff,#596dff 58%,#438fff)!important;
+  color:#fff!important;box-shadow:0 7px 22px rgba(101,86,255,.18)!important;
+}
+#app .message.theirs{
+  background:linear-gradient(135deg,rgba(48,42,65,.96),rgba(35,42,59,.96))!important;
+  border:1px solid rgba(190,171,255,.13)!important;color:#f5f0ff!important;
+}
+#app .chatInput{
+  background:linear-gradient(100deg,rgba(28,24,42,.98),rgba(22,28,44,.98))!important;
+  border-color:var(--vs-world-edge)!important;
+}
+#app .chatInput input{
+  color:#fff!important;background:rgba(255,255,255,.07)!important;
+  border:1px solid rgba(190,171,255,.16)!important;
+}
+#app .chatInput input::placeholder{color:#9e96b2!important}
+#app .profileBox,#app .settingsPanel{
+  background:linear-gradient(145deg,rgba(36,30,54,.96),rgba(23,27,44,.96))!important;
+  border:1px solid rgba(190,171,255,.18)!important;
+  box-shadow:0 20px 60px rgba(0,0,0,.24),0 0 35px rgba(123,94,255,.07)!important;
+  color:#f8f4ff!important;
+}
+#app .profileBox h2,#app .settingsPanel h2{color:#fff!important}
+#app .profilePresence,#app .settingsPanel>p{color:#b8afcc!important}
+#app .vsProfileEditor{
+  background:rgba(255,255,255,.045)!important;
+  border:1px solid rgba(190,171,255,.14)!important;
+}
+#app .vsProfileEditor label{color:#d5c9ef!important}
+#app .vsProfileEditor input,#app .vsProfileEditor select,
+#app .settingsPanel input:not([type="checkbox"]):not([type="file"]),
+#app .settingsPanel select{
+  background:rgba(12,12,22,.52)!important;color:#fff!important;
+  border:1px solid rgba(190,171,255,.2)!important;
+}
+#app .logoutBtn{
+  background:linear-gradient(110deg,rgba(105,55,83,.8),rgba(52,36,65,.95))!important;
+  border:1px solid rgba(255,133,174,.2)!important;color:#fff!important;
+}
+#app .cameraTop button,#app .cameraSideBtn{
+  background:linear-gradient(145deg,rgba(34,29,51,.82),rgba(19,25,42,.8))!important;
+  color:#fff!important;border:1px solid rgba(200,184,255,.22)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.1)!important;
+}
+#app .cameraToolIcon{
+  background:linear-gradient(145deg,rgba(126,91,205,.38),rgba(42,91,145,.3))!important;
+  border:1px solid rgba(205,187,255,.24)!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.12)!important;
+}
+#app .captureBtn{
+  border:5px solid rgba(255,255,255,.96)!important;
+  box-shadow:0 0 0 3px rgba(142,109,255,.92),0 0 30px rgba(116,106,255,.36),0 10px 30px rgba(0,0,0,.38)!important;
+}
+#app .cameraModeLabel{color:#e7ddff!important;text-shadow:0 0 18px rgba(144,115,255,.5)!important}
+#app .cameraMoreMenu{
+  background:linear-gradient(145deg,rgba(30,24,46,.97),rgba(18,24,40,.97))!important;
+  border:1px solid rgba(190,171,255,.22)!important;
+  box-shadow:0 18px 55px rgba(0,0,0,.5),0 0 28px rgba(126,91,255,.12)!important;
+}
+#app .cameraMoreTitle{color:#d8caff!important}
+#app .cameraMoreOption{color:#f5efff!important}
+#app .cameraMoreValue{color:#9dcfff!important}
+#app .searchPageBox input,#app .searchBar input{color:#fff!important}
+#app .searchPageBox input::placeholder,#app .searchBar input::placeholder{color:#9e96b2!important}
+#app button:focus-visible,#app input:focus-visible,#app select:focus-visible{
+  outline:2px solid #b59aff!important;outline-offset:3px!important;
+  box-shadow:0 0 0 5px rgba(137,104,255,.15)!important;
+}
+@media(min-width:1024px){
+  #app{border-color:rgba(186,164,255,.22)!important;box-shadow:0 30px 110px rgba(0,0,0,.58),0 0 80px rgba(111,87,255,.12)!important}
+  #app .topHeader{background:linear-gradient(100deg,rgba(28,23,43,.98),rgba(21,29,48,.96))!important}
+}
+@media(max-width:699px){
+  #loginScreen .loginBox{padding-left:23px!important;padding-right:23px!important}
+  #app .bottomNav{backdrop-filter:blur(22px)!important}
+}
+@keyframes vsWorldGlow{
+  0%,100%{box-shadow:0 0 0 4px rgba(142,111,255,.07),0 8px 22px rgba(0,0,0,.2)}
+  50%{box-shadow:0 0 0 5px rgba(142,111,255,.12),0 8px 28px rgba(0,0,0,.24),0 0 18px rgba(123,94,255,.12)}
+}
+#app .profileAvatar{animation:vsWorldGlow 4.8s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){
+  #app .profileAvatar{animation:none!important}
+}
+</style>
+
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingScene" aria-hidden="true"><div class="introPortal"></div><div class="introOrbit introOrbitOne"></div><div class="introOrbit introOrbitTwo"></div><div class="introEnergy"></div><div class="introBeam introBeamOne"></div><div class="introBeam introBeamTwo"></div><div class="introSnapCard introSnapCardOne"><b>✦</b><span>CAPTURE</span></div><div class="introSnapCard introSnapCardTwo"><b>↗</b><span>SHARE</span></div><div class="introSnapCard introSnapCardThree"><b>♡</b><span>VIBE</span></div><div class="introSnapCard introSnapCardFour"><b>◉</b><span>CONNECT</span></div><div class="introSpark introSparkOne"></div><div class="introSpark introSparkTwo"></div><div class="introSpark introSparkThree"></div><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="authLoadingBrand"><div class="authLoadingMark">V</div><div class="authLoadingWord">Vibe<span>Snap</span></div></div><div class="authLoadingMessage">Getting everything ready</div><div class="authLoadingProgress" aria-hidden="true"><span></span></div><div class="authLoadingHint">YOUR MOMENTS. YOUR VIBE.</div></div>
