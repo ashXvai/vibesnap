@@ -2009,6 +2009,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   <div class="loginSceneCard loginSceneCardA"><b>✦</b><span>CAPTURE</span></div><div class="loginSceneCard loginSceneCardB"><b>↗</b><span>SHARE</span></div><div class="loginSceneCard loginSceneCardC"><b>♡</b><span>VIBE</span></div><div class="loginSceneCard loginSceneCardD"><b>◉</b><span>CONNECT</span></div>
   <i class="loginSceneSpark loginSceneSparkA"></i><i class="loginSceneSpark loginSceneSparkB"></i><i class="loginSceneSpark loginSceneSparkC"></i><i class="loginSceneSpark loginSceneSparkD"></i><i class="loginSceneSpark loginSceneSparkE"></i><i class="loginSceneSpark loginSceneSparkF"></i><i class="loginSceneSpark loginSceneSparkG"></i><i class="loginSceneSpark loginSceneSparkH"></i>
   <div class="loginSceneFloor"></div>
+  <div class="vsFxCore" aria-hidden="true"><span></span><i></i></div>
+  <div class="vsFxGrid" aria-hidden="true"></div>
+  <div class="vsFxArc vsFxArcA" aria-hidden="true"></div><div class="vsFxArc vsFxArcB" aria-hidden="true"></div>
+  <div class="vsFxLightning vsFxLightningA" aria-hidden="true"></div><div class="vsFxLightning vsFxLightningB" aria-hidden="true"></div>
+  <div class="vsFxScan" aria-hidden="true"></div>
+  <div class="vsFxDust" aria-hidden="true"></div>
+
 </div>
 <div class="loginBox">
 <div class="loginBrand" aria-label="VibeSnap logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap Neon Core logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -4257,6 +4264,143 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   #loginScreen:before{animation:none!important}
 }
 </style>
+
+
+<style id="vibesnap-login-cinematic-effects">
+/* Extra cinematic layers, all decorative and isolated to the login screen. */
+#loginScreen .loginLiveScene{isolation:isolate}
+#loginScreen .vsFxCore{
+ position:absolute;left:31%;top:50%;width:clamp(105px,17vw,230px);aspect-ratio:1;
+ transform:translate(-50%,-50%);border-radius:50%;z-index:1;
+ background:radial-gradient(circle at 50% 50%,#fff 0 1%,#c9c2ff 2%,rgba(121,114,255,.95) 5%,rgba(72,123,255,.42) 13%,rgba(68,92,255,.12) 29%,transparent 67%);
+ box-shadow:0 0 25px rgba(192,181,255,.95),0 0 75px rgba(126,105,255,.75),0 0 160px rgba(68,151,255,.4);
+ animation:vsCorePulse 3.6s ease-in-out infinite;
+}
+#loginScreen .vsFxCore span{
+ position:absolute;inset:-18%;border:2px solid transparent;border-top-color:rgba(207,198,255,.9);
+ border-right-color:rgba(87,199,255,.7);border-radius:50%;filter:drop-shadow(0 0 9px #8e8aff);
+ animation:vsCoreSpin 4.5s linear infinite;
+}
+#loginScreen .vsFxCore i{
+ position:absolute;inset:12%;border:1px solid rgba(155,204,255,.65);border-left-color:transparent;
+ border-bottom-color:rgba(192,143,255,.8);border-radius:50%;animation:vsCoreSpin 7s linear infinite reverse;
+}
+#loginScreen .vsFxGrid{
+ position:absolute;left:31%;bottom:-20%;width:min(95vw,1100px);height:48%;
+ transform:translateX(-50%) perspective(320px) rotateX(66deg);transform-origin:bottom center;
+ opacity:.24;z-index:0;pointer-events:none;
+ background-image:linear-gradient(rgba(126,137,255,.42) 1px,transparent 1px),linear-gradient(90deg,rgba(126,137,255,.42) 1px,transparent 1px);
+ background-size:48px 35px;
+ mask-image:linear-gradient(to top,black,transparent 88%);
+ animation:vsGridFlow 9s linear infinite;
+}
+#loginScreen .vsFxArc{
+ position:absolute;left:31%;top:50%;width:min(76vw,900px);height:min(76vw,900px);
+ border-radius:50%;border:1px solid transparent;z-index:1;pointer-events:none;transform:translate(-50%,-50%);
+}
+#loginScreen .vsFxArcA{
+ border-left:3px solid rgba(105,205,255,.78);border-bottom:2px solid rgba(155,126,255,.75);
+ filter:drop-shadow(0 0 8px rgba(95,165,255,.9));animation:vsArcOrbit 8s linear infinite;
+}
+#loginScreen .vsFxArcB{
+ width:min(67vw,790px);height:min(67vw,790px);
+ border-right:2px solid rgba(255,153,239,.65);border-top:2px solid rgba(119,148,255,.7);
+ filter:drop-shadow(0 0 10px rgba(185,113,255,.8));animation:vsArcOrbit 12s linear infinite reverse;
+}
+#loginScreen .vsFxLightning{
+ position:absolute;left:31%;top:50%;width:min(82vw,1000px);height:2px;z-index:2;
+ transform-origin:center;opacity:0;pointer-events:none;
+ background:linear-gradient(90deg,transparent,rgba(107,192,255,.9),#fff,rgba(169,112,255,.8),transparent);
+ filter:blur(.5px) drop-shadow(0 0 8px #8a8aff);
+}
+#loginScreen .vsFxLightningA{animation:vsLightningFlash 6.5s ease-in-out infinite}
+#loginScreen .vsFxLightningB{rotate:62deg;animation:vsLightningFlash 8.2s 2.6s ease-in-out infinite}
+#loginScreen .vsFxScan{
+ position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.22;
+ background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(172,184,255,.10) 4px,transparent 5px);
+ mix-blend-mode:screen;
+}
+#loginScreen .vsFxDust{position:absolute;inset:0;z-index:2;pointer-events:none}
+#loginScreen .vsFxParticle{
+ position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);
+ border-radius:50%;background:var(--c);opacity:0;
+ box-shadow:0 0 7px 2px var(--c),0 0 18px var(--c);
+ animation:vsParticleRise var(--d) var(--delay) ease-in-out infinite;
+}
+#loginScreen .loginSceneSpark{filter:drop-shadow(0 0 7px #a7a0ff)}
+#loginScreen .loginSceneCard{animation-name:loginFloatA,vsCardGlow!important}
+#loginScreen .loginSceneCard b{animation:vsGlyphFlash 2.8s ease-in-out infinite}
+#loginScreen .loginBox{
+ animation:vsConsoleFloat 7s ease-in-out infinite,vsConsoleGlow 5s ease-in-out infinite!important;
+}
+#loginScreen .loginBox:after{
+ content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+ background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.09) 48%,transparent 68%);
+ transform:translateX(-130%);animation:vsGlassSweep 7s ease-in-out infinite;
+}
+#loginScreen .loginBrand{animation:vsBrandHover 4.5s ease-in-out infinite}
+#loginScreen .loginBtn{position:relative;overflow:hidden}
+#loginScreen .loginBtn:before{
+ content:"";position:absolute;inset:-2px;pointer-events:none;
+ background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.28) 48%,transparent 70%);
+ transform:translateX(-130%);animation:vsButtonSweep 5.5s ease-in-out infinite;
+}
+#loginScreen #emailLogin:focus-visible,#loginScreen #emailSignup:focus-visible{
+ box-shadow:0 0 0 3px rgba(161,143,255,.24),0 0 30px rgba(91,144,255,.4)!important;
+}
+@keyframes vsCorePulse{0%,100%{transform:translate(-50%,-50%) scale(.94);filter:brightness(.9)}50%{transform:translate(-50%,-50%) scale(1.08);filter:brightness(1.35)}}
+@keyframes vsCoreSpin{to{rotate:360deg}}
+@keyframes vsArcOrbit{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes vsGridFlow{to{background-position:0 35px,48px 0}}
+@keyframes vsLightningFlash{0%,72%,76%,100%{opacity:0}73%{opacity:.95}74%{opacity:.12}75%{opacity:.8}}
+@keyframes vsParticleRise{0%{transform:translate3d(0,22px,0) scale(.3);opacity:0}15%{opacity:.9}80%{opacity:.65}100%{transform:translate3d(var(--drift),-110px,0) scale(1.5);opacity:0}}
+@keyframes vsCardGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(120,125,255,0))}50%{filter:drop-shadow(0 0 12px rgba(120,125,255,.28))}}
+@keyframes vsGlyphFlash{0%,100%{text-shadow:0 0 7px rgba(170,144,255,.35)}50%{text-shadow:0 0 20px rgba(170,190,255,1),0 0 32px rgba(135,111,255,.8)}}
+@keyframes vsConsoleFloat{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes vsConsoleGlow{0%,100%{box-shadow:0 34px 100px rgba(0,0,0,.52),0 0 65px rgba(86,83,255,.17),inset 0 1px rgba(255,255,255,.12)}50%{box-shadow:0 38px 110px rgba(0,0,0,.58),0 0 85px rgba(95,105,255,.3),inset 0 1px rgba(255,255,255,.16)}}
+@keyframes vsGlassSweep{0%,35%{transform:translateX(-130%)}65%,100%{transform:translateX(130%)}}
+@keyframes vsButtonSweep{0%,45%{transform:translateX(-130%)}75%,100%{transform:translateX(130%)}}
+@keyframes vsBrandHover{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+@media(max-width:700px){
+ #loginScreen .vsFxCore{left:50%;top:24%;width:clamp(90px,23vw,145px)}
+ #loginScreen .vsFxArcA,#loginScreen .vsFxArcB{left:50%;top:24%}
+ #loginScreen .vsFxArcA{width:110vw;height:110vw}
+ #loginScreen .vsFxArcB{width:90vw;height:90vw}
+ #loginScreen .vsFxGrid{left:50%;width:130vw;opacity:.13}
+ #loginScreen .vsFxLightning{left:50%;top:24%;width:140vw}
+ #loginScreen .loginBox{animation:vsConsoleGlow 5s ease-in-out infinite!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #loginScreen .vsFxCore,#loginScreen .vsFxCore span,#loginScreen .vsFxCore i,
+ #loginScreen .vsFxArc,#loginScreen .vsFxLightning,#loginScreen .vsFxGrid,
+ #loginScreen .vsFxParticle,#loginScreen .loginBox,#loginScreen .loginBrand,
+ #loginScreen .loginSceneCard,#loginScreen .loginSceneCard b,#loginScreen .loginBtn:before,
+ #loginScreen .loginBox:after{animation:none!important}
+ #loginScreen .vsFxParticle{display:none!important}
+}
+</style>
+<script id="vibesnap-login-effects-particles">
+(()=> {
+ const scene=document.querySelector('#loginScreen .vsFxDust');
+ if(!scene||scene.dataset.ready==='1')return;
+ scene.dataset.ready='1';
+ const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+ if(reduced)return;
+ const colors=['#b9a7ff','#78c9ff','#f0a8ff','#ffffff'];
+ for(let i=0;i<34;i++){
+  const p=document.createElement('i');
+  p.className='vsFxParticle';
+  p.style.setProperty('--x',(4+Math.random()*92)+'%');
+  p.style.setProperty('--y',(12+Math.random()*82)+'%');
+  p.style.setProperty('--s',(1+Math.random()*2.5)+'px');
+  p.style.setProperty('--c',colors[i%colors.length]);
+  p.style.setProperty('--d',(5+Math.random()*8)+'s');
+  p.style.setProperty('--delay',(-Math.random()*12)+'s');
+  p.style.setProperty('--drift',(-45+Math.random()*90)+'px');
+  scene.appendChild(p);
+ }
+})();
+</script>
 
 </body>
 </html>
