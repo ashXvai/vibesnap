@@ -2000,6 +2000,77 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 }
 </style>
 
+
+<style id="vibesnap-cinematic-login-reset">
+/* VIBESNAP-CINEMATIC-LOGIN-RESET: simplify the login visual language */
+#loginScreen{
+  position:relative;isolation:isolate;min-height:100svh;overflow:auto;
+  padding:30px;background:#090d18;
+  background-image:radial-gradient(ellipse at 12% 18%,rgba(86,104,180,.16),transparent 38%),radial-gradient(ellipse at 88% 84%,rgba(93,68,170,.12),transparent 35%);
+}
+#loginScreen .loginLiveScene{display:none!important}
+#loginScreen .loginBox{
+  position:relative;width:min(1160px,100%);height:min(720px,calc(100svh - 60px));min-height:600px;
+  margin:auto;padding:52px 7% 48px 55%;
+  display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:0;
+  border:1px solid rgba(255,255,255,.10);border-radius:30px;overflow:hidden;
+  background:linear-gradient(90deg,#111a30 0%,#111a30 51%,#151a2b 51%,#151a2b 100%);
+  box-shadow:0 28px 90px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.05);
+}
+#loginScreen .loginBox:before{
+  content:"";position:absolute;z-index:0;left:0;top:0;bottom:0;width:51%;
+  background:radial-gradient(ellipse at 50% 34%,rgba(112,133,220,.18),transparent 46%),linear-gradient(145deg,rgba(255,255,255,.025),transparent 55%);
+  border-right:1px solid rgba(255,255,255,.07);pointer-events:none;
+}
+#loginScreen .loginBrand{position:absolute;z-index:1;left:12%;top:29%;width:88px;height:88px;margin:0;border-radius:26px;background:linear-gradient(145deg,#8174f5,#557fda);box-shadow:0 16px 34px rgba(76,99,190,.22),inset 0 1px 0 rgba(255,255,255,.3)}
+#loginScreen .loginCameraLogo{width:58px;height:58px}
+#loginScreen .loginTitle{position:absolute;z-index:1;left:12%;top:48%;margin:0;font-size:clamp(42px,5vw,62px);line-height:1.02;letter-spacing:-2.5px;color:#f4f5ff;text-align:left}
+#loginScreen .loginSub:nth-child(3){position:absolute;z-index:1;left:12%;top:58%;width:34%;margin:0;color:#aeb8d2;font-size:15px;line-height:1.7;text-align:left}
+#loginScreen .loginBox:after{
+  content:"A calmer space for your people.";position:absolute;z-index:1;left:12%;bottom:12%;color:#7f8bab;
+  font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;pointer-events:none;
+}
+#loginScreen .loginLabel{position:relative;z-index:1;width:100%;margin:12px 0 7px;color:#b9c3df;font-size:11px;letter-spacing:1.5px}
+#loginScreen #accountUsername,#loginScreen #accountPassword{
+  position:relative;z-index:1;width:100%;height:54px;padding:0 16px;border:1px solid rgba(190,201,231,.18);
+  border-radius:13px;background:rgba(7,11,22,.42);color:#f5f6ff;font-size:15px;outline:none;
+  box-shadow:none;transition:border-color .18s,background .18s;
+}
+#loginScreen #accountUsername::placeholder,#loginScreen #accountPassword::placeholder{color:#78839f}
+#loginScreen #accountUsername:focus,#loginScreen #accountPassword:focus{border-color:#8995e9;background:rgba(7,11,22,.68);box-shadow:0 0 0 3px rgba(126,139,230,.12)}
+#loginScreen .passwordField{position:relative;z-index:1;width:100%;display:flex;align-items:center}
+#loginScreen .passwordField #accountPassword{padding-right:54px}
+#loginScreen .passwordToggle{position:absolute;right:8px;width:38px;height:38px;border-radius:10px;background:transparent;color:#aeb8d2}
+#loginScreen .loginBtn{position:relative;z-index:1;width:100%;max-width:none;height:54px;margin:18px 0 0;border-radius:13px;background:#f1f2ff;color:#1b2033;font-size:15px;font-weight:800;box-shadow:none;transition:transform .16s,background .16s}
+#loginScreen .loginBtn:active{transform:translateY(1px)}
+#loginScreen .loginBtn.signupBtn{margin-top:10px;background:linear-gradient(110deg,#7779ed,#6594df);color:#fff;box-shadow:0 8px 22px rgba(89,112,206,.18)}
+#loginScreen .loginSub:last-child{position:relative;z-index:1;width:100%;margin:16px 0 0!important;color:#8994af;font-size:12px;line-height:1.55;text-align:center}
+@media(max-width:760px){
+  #loginScreen{padding:20px 14px;background:#0b1020}
+  #loginScreen .loginBox{
+    width:min(460px,100%);height:auto;min-height:0;margin:auto;padding:34px 24px 30px;
+    align-items:center;border-radius:25px;background:linear-gradient(155deg,#151d34,#111728);
+    box-shadow:0 20px 60px rgba(0,0,0,.34);
+  }
+  #loginScreen .loginBox:before,#loginScreen .loginBox:after{display:none}
+  #loginScreen .loginBrand{position:relative;left:auto;top:auto;width:72px;height:72px;margin:0 auto 18px;border-radius:22px}
+  #loginScreen .loginCameraLogo{width:48px;height:48px}
+  #loginScreen .loginTitle{position:relative;left:auto;top:auto;width:100%;margin:0 0 6px;text-align:center;font-size:40px;letter-spacing:-1.8px}
+  #loginScreen .loginSub:nth-child(3){position:relative;left:auto;top:auto;width:100%;margin:0 0 20px;text-align:center;font-size:13px}
+  #loginScreen .loginLabel{margin-top:12px}
+  #loginScreen .loginBtn{margin-top:16px}
+  #loginScreen .loginSub:last-child{margin-top:14px!important}
+}
+@media(max-height:650px) and (min-width:761px){
+  #loginScreen .loginBox{height:auto;min-height:570px;padding-top:32px;padding-bottom:32px}
+  #loginScreen .loginBrand{top:24%}
+  #loginScreen .loginTitle{top:45%}
+  #loginScreen .loginSub:nth-child(3){top:56%}
+}
+@media(prefers-reduced-motion:reduce){
+  #loginScreen #accountUsername,#loginScreen #accountPassword,#loginScreen .loginBtn{transition:none}
+}
+</style>
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingScene" aria-hidden="true"><div class="introPortal"></div><div class="introOrbit introOrbitOne"></div><div class="introOrbit introOrbitTwo"></div><div class="introEnergy"></div><div class="introBeam introBeamOne"></div><div class="introBeam introBeamTwo"></div><div class="introSnapCard introSnapCardOne"><b>✦</b><span>CAPTURE</span></div><div class="introSnapCard introSnapCardTwo"><b>↗</b><span>SHARE</span></div><div class="introSnapCard introSnapCardThree"><b>♡</b><span>VIBE</span></div><div class="introSnapCard introSnapCardFour"><b>◉</b><span>CONNECT</span></div><div class="introSpark introSparkOne"></div><div class="introSpark introSparkTwo"></div><div class="introSpark introSparkThree"></div><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="authLoadingBrand"><div class="authLoadingMark">V</div><div class="authLoadingWord">Vibe<span>Snap</span></div></div><div class="authLoadingMessage">Getting everything ready</div><div class="authLoadingProgress" aria-hidden="true"><span></span></div><div class="authLoadingHint">YOUR MOMENTS. YOUR VIBE.</div></div>
