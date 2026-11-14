@@ -4539,5 +4539,32 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
  #loginScreen .loginSceneCardC,#loginScreen .loginSceneCardD{top:76%!important}
 }
 </style>
+
+
+<style id="vibesnap-login-desktop-text-spacing-v2">
+/* Keep the desktop hero copy in its own clear vertical area. Mobile/tablet rules are untouched. */
+@media (min-width:900px){
+ #loginScreen .loginLiveScene:before{
+  left:4%!important;right:4%!important;top:6%!important;
+  width:auto!important;max-width:520px!important;
+  font-size:clamp(30px,3.2vw,48px)!important;
+  line-height:1.1!important;letter-spacing:-.04em!important;
+  text-wrap:balance!important;overflow-wrap:normal!important;word-break:normal!important;
+ }
+ #loginScreen .loginLiveScene:after{
+  left:4%!important;right:6%!important;top:35%!important;
+  width:auto!important;max-width:430px!important;
+  font-size:clamp(14px,1.15vw,17px)!important;
+  line-height:1.55!important;white-space:normal!important;
+ }
+}
+@media (min-width:900px) and (max-height:720px){
+ #loginScreen .loginLiveScene:before{
+  top:4%!important;font-size:clamp(28px,2.8vw,40px)!important;line-height:1.08!important;
+ }
+ #loginScreen .loginLiveScene:after{top:32%!important}
+}
+</style>
+
 </body>
 </html>
