@@ -1430,7 +1430,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 </style>
 </head>
 <body>
-<div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingScene" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="authLoadingBrand"><div class="authLoadingMark">V</div><div class="authLoadingWord">Vibe<span>Snap</span></div></div><div class="authLoadingMessage">Getting everything ready</div><div class="authLoadingProgress" aria-hidden="true"><span></span></div><div class="authLoadingHint">YOUR MOMENTS. YOUR VIBE.</div></div>
+<div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingScene" aria-hidden="true"><div class="introOrbit introOrbitOne"></div><div class="introOrbit introOrbitTwo"></div><div class="introEnergy"></div><div class="introSnapCard introSnapCardOne"><b>✦</b><span>CAPTURE</span></div><div class="introSnapCard introSnapCardTwo"><b>↗</b><span>SHARE</span></div><div class="introSnapCard introSnapCardThree"><b>♡</b><span>VIBE</span></div><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="authLoadingBrand"><div class="authLoadingMark">V</div><div class="authLoadingWord">Vibe<span>Snap</span></div></div><div class="authLoadingMessage">Getting everything ready</div><div class="authLoadingProgress" aria-hidden="true"><span></span></div><div class="authLoadingHint">YOUR MOMENTS. YOUR VIBE.</div></div>
 <div id="loginScreen" class="hidden"><div class="loginBox">
 <div class="loginBrand" aria-label="VibeSnap logo"><svg class="loginCameraLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap Neon Core logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
 <div class="loginTitle"><span class="wordVibe">Vibe</span><span class="wordSnap">Snap</span></div><div class="loginSub">Snap. Share. Vibe.</div>
@@ -1614,7 +1614,7 @@ $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailL
 
 // Keep the animated opening visible briefly before revealing the login screen.
 // This promise is shared by auth callbacks so the intro only runs once per page load.
-const authIntroReady=new Promise(resolve=>window.setTimeout(resolve,2800));
+const authIntroReady=new Promise(resolve=>window.setTimeout(resolve,5200));
 auth.onAuthStateChanged(async user=>{
 await authIntroReady;
 $("authLoading").classList.add("hidden");
@@ -3119,54 +3119,98 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 
 
 <style id="vibesnap-animated-opening">
-/* Lightweight, transform/opacity-only intro animation for the auth loading screen. */
+/* Cinematic VibeSnap intro: layered motion, orbiting cards, energy sweep and a dramatic logo reveal. */
 #authLoading{
   isolation:isolate;overflow:hidden;gap:0;
-  background:
-    radial-gradient(ellipse at 50% 42%,rgba(103,75,255,.22),transparent 35%),
-    radial-gradient(ellipse at 18% 82%,rgba(48,112,255,.13),transparent 34%),
-    linear-gradient(135deg,#0c1024 0%,#171536 48%,#101b35 100%);
+  background:linear-gradient(125deg,#090d20,#171239 32%,#21174a 62%,#0d1c38);
+  background-size:240% 240%;animation:vsBackdrop 8s ease-in-out infinite;
 }
 #authLoading:before,#authLoading:after{
-  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:min(72vw,520px);aspect-ratio:1;
-  border:1px solid rgba(173,153,255,.13);border-radius:50%;transform:translate(-50%,-50%);
-  animation:vsIntroOrbit 18s linear infinite;
+  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:min(76vw,590px);aspect-ratio:1;
+  border:1px solid rgba(173,153,255,.22);border-radius:50%;transform:translate(-50%,-50%);
+  box-shadow:0 0 55px rgba(112,83,255,.09),inset 0 0 55px rgba(112,83,255,.06);
+  animation:vsIntroOrbit 13s linear infinite;
 }
-#authLoading:after{width:min(88vw,660px);border-color:rgba(91,157,255,.09);animation-duration:26s;animation-direction:reverse}
+#authLoading:after{width:min(108vw,850px);border-style:dashed;border-color:rgba(91,157,255,.14);animation-duration:22s;animation-direction:reverse}
 .authLoadingScene{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.authLoadingScene i{position:absolute;width:5px;height:5px;border-radius:50%;background:#c9bdff;opacity:0;box-shadow:0 0 16px rgba(173,151,255,.9);animation:vsIntroParticle 7s ease-in-out infinite}
-.authLoadingScene i:nth-child(1){left:17%;top:27%;animation-delay:-1s}
-.authLoadingScene i:nth-child(2){left:79%;top:23%;animation-delay:-3s;transform:scale(.7)}
-.authLoadingScene i:nth-child(3){left:73%;top:73%;animation-delay:-5s}
-.authLoadingScene i:nth-child(4){left:24%;top:77%;animation-delay:-2s;transform:scale(.65)}
-.authLoadingScene i:nth-child(5){left:50%;top:16%;animation-delay:-4s;transform:scale(.55)}
-.authLoadingScene i:nth-child(6){left:88%;top:52%;animation-delay:-6s;transform:scale(.8)}
-.authLoadingBrand{display:flex;flex-direction:column;align-items:center;gap:18px;animation:vsIntroRise .8s cubic-bezier(.2,.75,.25,1) both}
-.authLoadingMark{
-  position:relative;width:76px;height:76px;border-radius:25px;display:grid;place-items:center;
-  background:linear-gradient(135deg,#8258ff 0%,#6158ff 48%,#438fff 100%);
-  box-shadow:0 12px 36px rgba(92,78,225,.38);font-size:42px;font-weight:900;
-  animation:vsIntroFloat 3.2s ease-in-out infinite;
+.authLoadingScene:before{
+  content:"";position:absolute;inset:-40%;opacity:.26;
+  background:repeating-linear-gradient(115deg,transparent 0 70px,rgba(153,135,255,.08) 71px 73px,transparent 74px 145px);
+  animation:vsGridDrift 12s linear infinite;
 }
-.authLoadingMark:before{content:"";position:absolute;inset:-8px;border:1px solid rgba(172,153,255,.48);border-radius:30px;animation:vsIntroHalo 2.8s ease-out infinite}
-.authLoadingMark:after{content:"";position:absolute;inset:-15px;border:1px solid rgba(105,157,255,.2);border-radius:35px;animation:vsIntroHalo 2.8s ease-out 1.2s infinite}
-.authLoadingWord{font-size:clamp(34px,6vw,48px);font-weight:900;letter-spacing:-2px;color:#fff;text-shadow:0 4px 24px rgba(109,74,255,.25)}
-.authLoadingWord span{background:linear-gradient(100deg,#b8a2ff,#79baff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.authLoadingMessage{margin-top:20px;color:#d6d1f3;font-size:14px;font-weight:600;letter-spacing:.04em;animation:vsIntroRise .9s .18s both}
-.authLoadingProgress{width:min(190px,52vw);height:4px;margin-top:22px;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.14)}
-.authLoadingProgress span{display:block;width:42%;height:100%;border-radius:9px;background:linear-gradient(90deg,#8d68ff,#66b5ff);animation:vsIntroProgress 1.7s ease-in-out infinite}
-.authLoadingHint{margin-top:17px;color:rgba(208,204,244,.52);font-size:9px;font-weight:800;letter-spacing:.24em;animation:vsIntroRise 1s .3s both}
-@keyframes vsIntroRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes vsIntroFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
-@keyframes vsIntroHalo{0%{transform:scale(.88);opacity:.7}100%{transform:scale(1.28);opacity:0}}
-@keyframes vsIntroParticle{0%,100%{opacity:0;transform:translate3d(0,12px,0) scale(.7)}35%,65%{opacity:.75}50%{transform:translate3d(10px,-20px,0) scale(1.15)}}
+.authLoadingScene:after{
+  content:"";position:absolute;width:min(55vw,500px);aspect-ratio:1;left:50%;top:50%;
+  border-radius:50%;background:conic-gradient(from 0deg,transparent 0 48%,rgba(107,147,255,.24) 55%,transparent 66% 100%);
+  filter:blur(15px);transform:translate(-50%,-50%);animation:vsIntroOrbit 5s linear infinite;
+}
+.authLoadingScene i{
+  position:absolute;width:6px;height:6px;border-radius:50%;background:#d8ceff;opacity:0;
+  box-shadow:0 0 18px 4px rgba(173,151,255,.75);animation:vsIntroParticle 4.5s ease-in-out infinite
+}
+.authLoadingScene i:nth-of-type(1){left:17%;top:27%;animation-delay:-1s}
+.authLoadingScene i:nth-of-type(2){left:79%;top:23%;animation-delay:-3s;transform:scale(.7)}
+.authLoadingScene i:nth-of-type(3){left:73%;top:73%;animation-delay:-2s}
+.authLoadingScene i:nth-of-type(4){left:24%;top:77%;animation-delay:-1.5s;transform:scale(.65)}
+.authLoadingScene i:nth-of-type(5){left:50%;top:16%;animation-delay:-3.5s;transform:scale(.55)}
+.authLoadingScene i:nth-of-type(6){left:88%;top:52%;animation-delay:-2.5s;transform:scale(.8)}
+.introOrbit{position:absolute;left:50%;top:50%;width:min(64vw,470px);height:min(64vw,470px);border:1px solid rgba(133,119,255,.22);border-radius:50%;transform:translate(-50%,-50%) rotate(-25deg);animation:vsOrbitPulse 5s ease-in-out infinite}
+.introOrbit:before,.introOrbit:after{content:"";position:absolute;width:11px;height:11px;border-radius:50%;background:#9b8bff;box-shadow:0 0 22px 6px rgba(130,111,255,.7)}
+.introOrbit:before{top:12%;left:16%}.introOrbit:after{right:8%;bottom:22%;width:7px;height:7px;background:#66baff}
+.introOrbitTwo{width:min(83vw,630px);height:min(43vw,330px);border-color:rgba(80,167,255,.19);transform:translate(-50%,-50%) rotate(34deg);animation:vsOrbitPulse 6s ease-in-out -2s infinite reverse}
+.introEnergy{position:absolute;left:50%;top:50%;width:130vw;height:2px;background:linear-gradient(90deg,transparent,rgba(105,170,255,.0),rgba(153,132,255,.85),rgba(105,170,255,.0),transparent);filter:blur(1px);transform:translate(-50%,-50%) rotate(-28deg);animation:vsEnergySweep 3.8s ease-in-out infinite}
+.introSnapCard{
+  position:absolute;display:flex;align-items:center;gap:8px;padding:10px 13px;border:1px solid rgba(206,196,255,.3);
+  border-radius:14px;background:linear-gradient(130deg,rgba(117,88,255,.2),rgba(67,145,255,.12));
+  color:#e9e4ff;font-size:9px;font-weight:900;letter-spacing:.16em;box-shadow:0 12px 38px rgba(0,0,0,.2);
+  backdrop-filter:blur(12px);opacity:0;animation:vsCardFloat 5.4s ease-in-out infinite;
+}
+.introSnapCard b{display:grid;place-items:center;width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,#9268ff,#4e9eff);font-size:15px;color:#fff}
+.introSnapCardOne{left:calc(50% - min(36vw,290px));top:28%;animation-delay:-.4s}
+.introSnapCardTwo{right:calc(50% - min(37vw,300px));top:36%;animation-delay:-2.2s}
+.introSnapCardThree{left:calc(50% - min(31vw,245px));bottom:27%;animation-delay:-3.8s}
+.authLoadingBrand{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:18px;animation:vsBrandEntrance 1.15s cubic-bezier(.16,1,.3,1) both}
+.authLoadingMark{
+  position:relative;width:92px;height:92px;border-radius:29px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#a06bff 0%,#6557ff 48%,#379bff 100%);
+  box-shadow:0 18px 60px rgba(92,78,225,.55),0 0 0 1px rgba(255,255,255,.35) inset;
+  font-size:51px;font-weight:950;animation:vsCoreMotion 3.2s cubic-bezier(.45,0,.55,1) .9s infinite;
+}
+.authLoadingMark:before{content:"";position:absolute;inset:-12px;border:2px solid rgba(190,174,255,.58);border-radius:36px;box-shadow:0 0 28px rgba(140,115,255,.24);animation:vsRingBurst 2.6s ease-out infinite}
+.authLoadingMark:after{content:"";position:absolute;inset:-23px;border:1px solid rgba(105,190,255,.36);border-radius:42px;animation:vsRingBurst 2.6s ease-out .85s infinite}
+.authLoadingWord{font-size:clamp(38px,7vw,54px);font-weight:950;letter-spacing:-2.8px;color:#fff;text-shadow:0 5px 30px rgba(109,74,255,.42);animation:vsWordReveal .95s .35s both}
+.authLoadingWord span{background:linear-gradient(100deg,#d6c2ff,#8ed4ff,#fff);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:vsWordShine 3s linear infinite}
+.authLoadingMessage{margin-top:22px;color:#dcd7ff;font-size:14px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;animation:vsMessageReveal .9s .8s both}
+.authLoadingProgress{width:min(220px,55vw);height:5px;margin-top:24px;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.13);box-shadow:0 0 20px rgba(117,93,255,.2)}
+.authLoadingProgress span{display:block;width:38%;height:100%;border-radius:9px;background:linear-gradient(90deg,#9d73ff,#73c8ff,#fff);box-shadow:0 0 16px rgba(120,177,255,.8);animation:vsIntroProgress 1.2s cubic-bezier(.4,0,.2,1) infinite}
+.authLoadingHint{margin-top:18px;color:rgba(220,216,255,.64);font-size:9px;font-weight:900;letter-spacing:.3em;animation:vsMessageReveal 1s 1s both}
+#loginScreen:not(.hidden) .loginBox{animation:vsLoginReveal .85s cubic-bezier(.16,1,.3,1) both}
+@keyframes vsBackdrop{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes vsGridDrift{to{transform:translate3d(90px,-45px,0)}}
+@keyframes vsBrandEntrance{0%{opacity:0;transform:translateY(42px) scale(.65) rotate(-8deg);filter:blur(12px)}65%{opacity:1;filter:blur(0)}100%{transform:translateY(0) scale(1) rotate(0)}}
+@keyframes vsCoreMotion{0%,100%{transform:translateY(0) rotate(0) scale(1)}25%{transform:translateY(-11px) rotate(-7deg) scale(1.06)}50%{transform:translateY(0) rotate(0) scale(1)}75%{transform:translateY(-6px) rotate(7deg) scale(1.035)}}
+@keyframes vsRingBurst{0%{transform:scale(.72);opacity:.85}100%{transform:scale(1.65);opacity:0}}
+@keyframes vsOrbitPulse{0%,100%{opacity:.35;transform:translate(-50%,-50%) rotate(-25deg) scale(.9)}50%{opacity:1;transform:translate(-50%,-50%) rotate(25deg) scale(1.08)}}
+@keyframes vsEnergySweep{0%,100%{opacity:0;transform:translate(-50%,-50%) rotate(-28deg) scaleX(.35)}45%{opacity:.8}60%{opacity:.8;transform:translate(-50%,-50%) rotate(18deg) scaleX(1)}}
+@keyframes vsCardFloat{0%,12%,100%{opacity:0;transform:translate3d(0,22px,0) rotate(-8deg) scale(.8)}24%,76%{opacity:1}50%{transform:translate3d(0,-16px,0) rotate(5deg) scale(1)}88%{opacity:0;transform:translate3d(0,-28px,0) rotate(9deg) scale(.9)}}
+@keyframes vsWordReveal{from{opacity:0;clip-path:inset(0 50% 0 50%);transform:scale(.86);filter:blur(8px)}to{opacity:1;clip-path:inset(0 0 0 0);transform:scale(1);filter:blur(0)}}
+@keyframes vsWordShine{to{background-position:220% center}}
+@keyframes vsMessageReveal{from{opacity:0;transform:translateY(13px);letter-spacing:.35em}to{opacity:1;transform:translateY(0)}}
+@keyframes vsIntroProgress{0%{transform:translateX(-120%)}100%{transform:translateX(300%)}}
+@keyframes vsIntroParticle{0%,100%{opacity:0;transform:translate3d(0,16px,0) scale(.6)}35%,65%{opacity:.9}50%{transform:translate3d(14px,-25px,0) scale(1.5)}}
 @keyframes vsIntroOrbit{to{transform:translate(-50%,-50%) rotate(360deg)}}
-@keyframes vsIntroProgress{0%{transform:translateX(-115%)}100%{transform:translateX(260%)}}
-@media(max-width:480px){.authLoadingMark{width:68px;height:68px;border-radius:23px}.authLoadingWord{font-size:38px}}
+@keyframes vsLoginReveal{from{opacity:0;transform:translateY(24px) scale(.97);filter:blur(7px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@media(max-width:480px){
+ .authLoadingMark{width:78px;height:78px;border-radius:25px;font-size:44px}
+ .authLoadingWord{font-size:40px}
+ .introSnapCard{padding:8px 10px;font-size:8px}
+ .introSnapCardOne{left:5%;top:24%}.introSnapCardTwo{right:4%;top:33%}.introSnapCardThree{left:7%;bottom:23%}
+}
 @media(prefers-reduced-motion:reduce){
- #authLoading:before,#authLoading:after,.authLoadingScene i,.authLoadingMark,.authLoadingMark:before,.authLoadingMark:after,
- .authLoadingBrand,.authLoadingMessage,.authLoadingProgress span,.authLoadingHint{animation:none!important}
- .authLoadingProgress span{width:100%;opacity:.75}
+ #authLoading,#authLoading:before,#authLoading:after,.authLoadingScene:before,.authLoadingScene:after,.authLoadingScene i,
+ .introOrbit,.introEnergy,.introSnapCard,.authLoadingMark,.authLoadingMark:before,.authLoadingMark:after,
+ .authLoadingBrand,.authLoadingWord,.authLoadingWord span,.authLoadingMessage,.authLoadingProgress span,.authLoadingHint,
+ #loginScreen:not(.hidden) .loginBox{animation:none!important;filter:none!important}
+ .authLoadingProgress span{width:100%;opacity:.8}
 }
 </style>
 
