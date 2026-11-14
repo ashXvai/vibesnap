@@ -4511,5 +4511,33 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 #loginScreen .signupBtn{background:linear-gradient(110deg,#7956ff 0%,#4b8cff 55%,#ec5aa9 120%)!important;box-shadow:0 14px 30px rgba(107,82,255,.30)!important}
 @media(prefers-reduced-motion:reduce){#loginScreen .loginSceneCard{animation:none!important}}
 </style>
+<style id="vibesnap-login-overlap-fix">
+@media(min-width:900px){
+ #loginScreen .loginLiveScene{min-width:0!important;height:min(780px,88vh)!important;min-height:620px!important}
+ #loginScreen .loginLiveScene:before{
+  left:3%!important;right:5%!important;top:7%!important;width:auto!important;max-width:700px!important;
+  font-size:clamp(38px,4.5vw,68px)!important;line-height:1.04!important;letter-spacing:-.055em!important;
+  overflow-wrap:normal!important;word-break:normal!important
+ }
+ #loginScreen .loginLiveScene:after{
+  left:4%!important;right:8%!important;top:32%!important;width:auto!important;
+  max-width:460px!important;font-size:clamp(14px,1.15vw,17px)!important;line-height:1.5!important
+ }
+ #loginScreen .loginScenePortal{left:50%!important;top:72%!important;width:min(28vw,330px)!important;height:min(28vw,330px)!important}
+ #loginScreen .loginSceneRing{left:50%!important;top:72%!important}
+ #loginScreen .loginSceneCardA{left:4%!important;right:auto!important;top:57%!important;bottom:auto!important}
+ #loginScreen .loginSceneCardB{left:auto!important;right:4%!important;top:57%!important;bottom:auto!important}
+ #loginScreen .loginSceneCardC{left:13%!important;right:auto!important;top:78%!important;bottom:auto!important}
+ #loginScreen .loginSceneCardD{left:auto!important;right:13%!important;top:78%!important;bottom:auto!important}
+ #loginScreen .loginSceneCard{max-width:44%!important;box-sizing:border-box!important;padding:10px 12px!important;gap:7px!important;font-size:9px!important;letter-spacing:1.3px!important}
+}
+@media(min-width:900px) and (max-height:720px){
+ #loginScreen .loginLiveScene{min-height:540px!important;height:84vh!important}
+ #loginScreen .loginLiveScene:before{top:5%!important;font-size:clamp(34px,4vw,54px)!important}
+ #loginScreen .loginLiveScene:after{top:29%!important}
+ #loginScreen .loginSceneCardA,#loginScreen .loginSceneCardB{top:55%!important}
+ #loginScreen .loginSceneCardC,#loginScreen .loginSceneCardD{top:76%!important}
+}
+</style>
 </body>
 </html>
