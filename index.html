@@ -1612,7 +1612,11 @@ passwordToggle.addEventListener("click",()=>{const show=passwordInput.type==="pa
 $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailLogin").click()});
 
 
+// Keep the animated opening visible briefly before revealing the login screen.
+// This promise is shared by auth callbacks so the intro only runs once per page load.
+const authIntroReady=new Promise(resolve=>window.setTimeout(resolve,2800));
 auth.onAuthStateChanged(async user=>{
+await authIntroReady;
 $("authLoading").classList.add("hidden");
 if(user){
 vsPrivacyReady=false;vsShowOnlineStatus=true;currentUser=user;$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
@@ -1625,7 +1629,8 @@ showPage("camera");
 hasInitializedAppSession=true;
 }
 else{stopPresence();stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];vsPrivacyReady=false;vsShowOnlineStatus=true;currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
-},error=>{
+},async error=>{
+await authIntroReady;
 console.error("VibeSnap auth state error:",error);
 $("authLoading").classList.add("hidden");
 $("app").classList.add("hidden");
