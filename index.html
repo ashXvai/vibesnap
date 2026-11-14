@@ -4473,5 +4473,43 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 })();
 </script>
 
+<style id="vibesnap-login-world-stage">
+@media(min-width:900px){
+ #loginScreen{display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(390px,.85fr)!important;gap:clamp(28px,5vw,88px)!important;align-items:center!important;justify-content:center!important;padding:5vh clamp(42px,8vw,140px)!important;overflow:hidden!important}
+ #loginScreen .loginLiveScene{position:relative!important;inset:auto!important;grid-column:1!important;grid-row:1!important;width:100%!important;height:min(780px,88vh)!important;min-height:560px!important;overflow:visible!important;display:block!important;opacity:1!important;pointer-events:none!important}
+ #loginScreen .loginLiveScene:before{content:"YOUR PEOPLE. YOUR MOMENTS. YOUR VIBE.";position:absolute;z-index:8;left:4%;top:12%;max-width:620px;color:#fff;font-size:clamp(42px,5.7vw,82px);font-weight:1000;line-height:.98;letter-spacing:-.065em;text-wrap:balance;text-shadow:0 8px 40px rgba(0,0,0,.25)}
+ #loginScreen .loginLiveScene:after{content:"A little less scrolling. A lot more connecting.";position:absolute;z-index:8;left:5%;top:42%;color:rgba(231,229,255,.82);font-size:clamp(15px,1.4vw,19px);font-weight:600;letter-spacing:.01em}
+ #loginScreen .loginScenePortal{left:48%!important;top:69%!important;width:min(34vw,390px)!important;height:min(34vw,390px)!important;opacity:.92!important;filter:saturate(1.4)!important}
+ #loginScreen .loginSceneRing{left:48%!important;top:69%!important;opacity:.9!important}
+ #loginScreen .loginSceneCard{z-index:9!important;opacity:1!important;filter:drop-shadow(0 18px 24px rgba(0,0,0,.22))!important}
+ #loginScreen .loginSceneCardA{left:8%!important;top:61%!important}
+ #loginScreen .loginSceneCardB{left:62%!important;top:53%!important}
+ #loginScreen .loginSceneCardC{left:23%!important;top:83%!important}
+ #loginScreen .loginSceneCardD{left:73%!important;top:82%!important}
+ #loginScreen .loginBox{grid-column:2!important;grid-row:1!important;justify-self:center!important;width:min(100%,490px)!important;min-height:0!important;padding:clamp(32px,3.5vw,50px)!important;border-radius:34px!important;background:linear-gradient(150deg,rgba(255,255,255,.97),rgba(246,241,255,.94))!important;border:1px solid rgba(255,255,255,.72)!important;box-shadow:0 35px 100px rgba(2,5,28,.48),0 0 0 1px rgba(255,255,255,.08)!important;text-align:left!important}
+ #loginScreen .loginBrand{margin:0 0 22px!important;width:82px!important;height:82px!important}
+ #loginScreen .loginTitle{text-align:left!important;font-size:clamp(42px,4vw,54px)!important;letter-spacing:-2.5px!important}
+ #loginScreen .loginSub{text-align:left!important;max-width:none!important}
+ #loginScreen .loginLabel{margin-top:18px!important}
+ #loginScreen #accountUsername,#loginScreen #accountPassword{height:58px!important;border-radius:16px!important;font-size:16px!important}
+ #loginScreen .passwordField{width:100%!important}
+ #loginScreen .loginBtn{height:58px!important;border-radius:17px!important;font-size:16px!important}
+ #loginScreen .loginBox>.loginSub:last-child{font-size:12px!important;text-align:center!important}
+}
+@media(max-width:899px){
+ #loginScreen{display:flex!important;align-items:center!important;justify-content:center!important;padding:22px!important}
+ #loginScreen .loginLiveScene{display:none!important}
+ #loginScreen .loginBox{width:min(460px,100%)!important;min-height:0!important;padding:30px 25px!important;border-radius:30px!important;background:linear-gradient(150deg,rgba(255,255,255,.98),rgba(246,241,255,.96))!important;box-shadow:0 24px 70px rgba(4,8,32,.38)!important}
+ #loginScreen .loginBrand{width:76px!important;height:76px!important;margin-bottom:16px!important}
+ #loginScreen .loginTitle{font-size:39px!important}
+ #loginScreen .loginBtn{height:54px!important}
+}
+#loginScreen .loginSceneCard{border:1px solid rgba(255,255,255,.32)!important;background:linear-gradient(135deg,rgba(255,255,255,.20),rgba(132,111,255,.18))!important;backdrop-filter:blur(18px)!important;border-radius:20px!important}
+#loginScreen .loginSceneCard b{color:#fff!important;text-shadow:0 0 20px rgba(255,255,255,.65)!important}
+#loginScreen .loginSceneCard span{color:#fff!important;font-weight:900!important;letter-spacing:.16em!important}
+#loginScreen .loginTitle .wordSnap{color:#7755ff!important;-webkit-text-fill-color:#7755ff!important}
+#loginScreen .signupBtn{background:linear-gradient(110deg,#7956ff 0%,#4b8cff 55%,#ec5aa9 120%)!important;box-shadow:0 14px 30px rgba(107,82,255,.30)!important}
+@media(prefers-reduced-motion:reduce){#loginScreen .loginSceneCard{animation:none!important}}
+</style>
 </body>
 </html>
