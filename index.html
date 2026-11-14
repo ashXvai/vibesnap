@@ -1767,54 +1767,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 
 <style id="vibesnap-modern-login-motion">
-/* Modern, restrained login motion: soft ambient light, crisp glass surface, short transitions. */
-#authLoading{
-  isolation:isolate;overflow:hidden;gap:0;
-  background:linear-gradient(135deg,#090b18 0%,#15152d 52%,#101d32 100%)!important;
-  animation:none!important;
-}
-#authLoading:before,#authLoading:after{
-  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:min(72vw,560px);aspect-ratio:1;
-  border:0!important;border-radius:50%;transform:translate(-50%,-50%);
-  background:radial-gradient(circle,rgba(130,103,255,.20),rgba(74,151,255,.07) 42%,transparent 70%);
-  box-shadow:none!important;filter:blur(12px);animation:vsModernGlow 7s ease-in-out infinite!important;
-}
-#authLoading:after{width:min(105vw,820px);background:radial-gradient(circle,rgba(76,150,255,.10),transparent 67%);animation-delay:-3.5s!important}
-#authLoading .authLoadingScene{opacity:.0!important}
-#authLoading .authLoadingBrand{gap:16px;animation:vsModernEnter .75s cubic-bezier(.2,.8,.2,1) both!important}
-#authLoading .authLoadingMark{
-  width:78px;height:78px;border-radius:24px;font-size:43px;
-  background:linear-gradient(145deg,#9877ff 0%,#6d67ff 52%,#4b9fff 100%);
-  box-shadow:0 16px 42px rgba(105,91,255,.34),inset 0 1px rgba(255,255,255,.38);
-  animation:vsModernFloat 4.8s ease-in-out 1s infinite!important;
-}
-#authLoading .authLoadingMark:before,#authLoading .authLoadingMark:after{display:none!important}
-#authLoading .authLoadingWord{
-  font-size:clamp(38px,6vw,50px);font-weight:850;letter-spacing:-2.4px;
-  text-shadow:0 8px 30px rgba(116,105,255,.2);
-  animation:vsModernWord .7s .12s both!important;
-}
-#authLoading .authLoadingWord span{
-  background:linear-gradient(100deg,#cbbcff,#8ccfff);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:none!important;
-}
-#authLoading .authLoadingMessage{
-  margin-top:18px;font-size:12px;font-weight:600;letter-spacing:.08em;
-  text-transform:none;color:rgba(229,230,255,.78);
-  animation:vsModernEnter .6s .28s both!important;
-}
-#authLoading .authLoadingProgress{
-  width:132px;height:3px;margin-top:20px;border-radius:99px;
-  background:rgba(255,255,255,.12);box-shadow:none;
-  animation:vsModernEnter .6s .35s both;
-}
-#authLoading .authLoadingProgress span{
-  width:42%;background:linear-gradient(90deg,#9a7cff,#72bdff);
-  box-shadow:0 0 12px rgba(123,157,255,.5);
-  animation:vsModernProgress 1.05s ease-in-out infinite;
-}
-#authLoading .authLoadingHint{display:none!important}
+/* Modern login-only motion. The original cinematic opening is intentionally untouched. */
 #loginScreen{
   background:
     radial-gradient(ellipse at 12% 12%,rgba(137,111,255,.22),transparent 35%),
@@ -1845,6 +1798,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.24),transparent);
   animation:vsModernShine 5s ease-in-out 1.5s infinite;
 }
+
 @keyframes vsModernEnter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes vsModernCard{from{opacity:0;transform:translateY(18px) scale(.985);filter:blur(5px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
 @keyframes vsModernLogo{from{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -1854,13 +1808,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 @keyframes vsModernProgress{0%{transform:translateX(-125%)}100%{transform:translateX(330%)}}
 @keyframes vsModernShine{0%,72%,100%{left:-65%}88%{left:135%}}
 @media(prefers-reduced-motion:reduce){
- #authLoading:before,#authLoading:after,#authLoading .authLoadingBrand,#authLoading .authLoadingMark,
- #authLoading .authLoadingWord,#authLoading .authLoadingMessage,#authLoading .authLoadingProgress,
- #authLoading .authLoadingProgress span,#loginScreen:before,#loginScreen:after,
+ #loginScreen:before,#loginScreen:after,
  #loginScreen:not(.hidden) .loginBox,#loginScreen .loginBrand,#loginScreen .loginTitle,
  #loginScreen .loginSub,#loginScreen .loginLabel,#loginScreen #accountUsername,
  #loginScreen #accountPassword,#loginScreen #emailLogin,#loginScreen #emailSignup{animation:none!important}
 }
+</style>
 </style>
 
 </head>
@@ -2049,7 +2002,7 @@ $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailL
 
 // Keep the animated opening visible briefly before revealing the login screen.
 // This promise is shared by auth callbacks so the intro only runs once per page load.
-const authIntroReady=new Promise(resolve=>window.setTimeout(resolve,2200));
+const authIntroReady=new Promise(resolve=>window.setTimeout(resolve,9000));
 auth.onAuthStateChanged(async user=>{
 await authIntroReady;
 $("authLoading").classList.add("hidden");
