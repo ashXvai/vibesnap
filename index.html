@@ -1658,6 +1658,111 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 @media(prefers-reduced-motion:reduce){
   #app .profileAvatar{animation:none!important}
 }
+
+/* Continuous motion layer: the neon atmosphere stays alive after the intro. */
+@keyframes vsAmbientDrift{
+  0%{background-position:0% 0%,100% 100%,0% 50%}
+  50%{background-position:65% 35%,30% 65%,100% 50%}
+  100%{background-position:0% 0%,100% 100%,0% 50%}
+}
+@keyframes vsLoginFloat{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-7px) scale(1.006)}
+}
+@keyframes vsLoginReveal{
+  from{opacity:0;transform:translateY(24px) scale(.97);filter:blur(7px)}
+  to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@keyframes vsNeonPulse{
+  0%,100%{box-shadow:0 0 0 rgba(135,103,255,0),0 0 22px rgba(135,103,255,.10)}
+  50%{box-shadow:0 0 24px rgba(135,103,255,.22),0 0 42px rgba(70,153,255,.10)}
+}
+@keyframes vsBorderTravel{
+  0%,100%{border-color:rgba(185,164,255,.15)}
+  50%{border-color:rgba(111,178,255,.38)}
+}
+@keyframes vsCardArrive{
+  from{opacity:0;transform:translateY(15px) scale(.985);filter:blur(3px)}
+  to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@keyframes vsTitleShimmer{
+  0%,100%{text-shadow:0 0 14px rgba(154,120,255,.18)}
+  50%{text-shadow:0 0 25px rgba(154,120,255,.48),0 0 38px rgba(85,170,255,.18)}
+}
+@keyframes vsNavBreathe{
+  0%,100%{filter:drop-shadow(0 0 2px rgba(157,127,255,.12))}
+  50%{filter:drop-shadow(0 0 9px rgba(157,127,255,.55))}
+}
+#loginScreen{
+  background-size:170% 170%,170% 170%,220% 220%!important;
+  animation:vsAmbientDrift 22s ease-in-out infinite!important;
+}
+#loginScreen:before{animation:vsAmbientDrift 18s ease-in-out infinite alternate!important}
+#loginScreen:after{animation:vsAmbientDrift 25s ease-in-out infinite reverse!important}
+#loginScreen .loginBox{
+  animation:vsLoginReveal 1.1s cubic-bezier(.2,.8,.2,1) both,vsLoginFloat 7s ease-in-out 1.2s infinite,vsNeonPulse 6s ease-in-out infinite!important;
+}
+#loginScreen .loginTitle{animation:vsTitleShimmer 5s ease-in-out infinite}
+#loginScreen .signupBtn,#loginScreen #emailLogin{
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),filter .28s ease,box-shadow .28s ease!important;
+}
+#loginScreen .signupBtn:hover,#loginScreen #emailLogin:hover{
+  transform:translateY(-3px)!important;filter:brightness(1.13)!important;
+}
+#loginScreen #accountUsername,#loginScreen #accountPassword{
+  transition:border-color .3s ease,box-shadow .3s ease,background .3s ease!important;
+}
+#app{
+  background-size:180% 180%,180% 180%,220% 220%!important;
+  animation:vsAmbientDrift 30s ease-in-out infinite!important;
+}
+#app > .page:not(#cameraPage){
+  background-size:180% 180%,180% 180%,220% 220%!important;
+  animation:vsAmbientDrift 34s ease-in-out infinite!important;
+}
+#app .topHeader{
+  animation:vsBorderTravel 8s ease-in-out infinite;
+}
+#app .brandLogo{background-size:220% auto!important;animation:vsAmbientDrift 8s ease-in-out infinite}
+#app .chatRow,#app .userCard,#app .searchResultCard,#app .friendSuggestion,
+#app .profileBox,#app .settingsPanel{
+  animation:vsCardArrive .65s cubic-bezier(.2,.75,.25,1) both,vsBorderTravel 9s ease-in-out infinite;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease,border-color .3s ease!important;
+}
+#app .chatRow:nth-child(2),#app .userCard:nth-child(2),#app .searchResultCard:nth-child(2){animation-delay:.08s,0s}
+#app .chatRow:nth-child(3),#app .userCard:nth-child(3),#app .searchResultCard:nth-child(3){animation-delay:.16s,0s}
+#app .chatRow:nth-child(4),#app .userCard:nth-child(4),#app .searchResultCard:nth-child(4){animation-delay:.24s,0s}
+#app .chatRow:nth-child(5),#app .userCard:nth-child(5),#app .searchResultCard:nth-child(5){animation-delay:.32s,0s}
+#app .chatRow:hover,#app .userCard:hover,#app .searchResultCard:hover{
+  transform:translateY(-4px) scale(1.008)!important;
+}
+#app .bottomNav{animation:vsNeonPulse 10s ease-in-out infinite}
+#app .navBtn{transition:transform .25s ease,color .25s ease,filter .25s ease!important}
+#app .navBtn:hover{transform:translateY(-3px)!important}
+#app .navBtn.active{animation:vsNavBreathe 3.5s ease-in-out infinite}
+#app .message{animation:vsCardArrive .35s ease-out both}
+#app .message.mine{transform-origin:bottom right}
+#app .message.theirs{transform-origin:bottom left}
+#app .conversationHeader{animation:vsBorderTravel 9s ease-in-out infinite}
+#app .captureBtn{animation:vsNeonPulse 3.8s ease-in-out infinite}
+#app .headerIcon,#app .topAvatar,#app .cameraTop button,#app .cameraSideBtn{
+  transition:transform .25s ease,filter .25s ease,box-shadow .25s ease!important;
+}
+#app .headerIcon:hover,#app .topAvatar:hover,#app .cameraTop button:hover,#app .cameraSideBtn:hover{
+  transform:translateY(-2px) scale(1.04)!important;filter:brightness(1.16)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #loginScreen,#loginScreen:before,#loginScreen:after,#loginScreen .loginBox,
+  #loginScreen .loginTitle,#app,#app > .page:not(#cameraPage),#app .topHeader,
+  #app .brandLogo,#app .chatRow,#app .userCard,#app .searchResultCard,
+  #app .friendSuggestion,#app .profileBox,#app .settingsPanel,#app .bottomNav,
+  #app .navBtn.active,#app .message,#app .conversationHeader,#app .captureBtn{
+    animation:none!important;
+  }
+  #app .chatRow,#app .userCard,#app .searchResultCard,#app .headerIcon,
+  #app .topAvatar,#app .cameraTop button,#app .cameraSideBtn{transition:none!important}
+}
+
 </style>
 
 </head>
