@@ -4296,7 +4296,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 #loginScreen .vsFxArc{
  position:absolute;left:31%;top:50%;width:min(76vw,900px);height:min(76vw,900px);
- border-radius:50%;border:1px solid transparent;z-index:1;pointer-events:none;
+ border-radius:50%;border:1px solid transparent;z-index:1;pointer-events:none;transform:translate(-50%,-50%);
 }
 #loginScreen .vsFxArcA{
  border-left:3px solid rgba(105,205,255,.78);border-bottom:2px solid rgba(155,126,255,.75);
@@ -4314,7 +4314,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
  filter:blur(.5px) drop-shadow(0 0 8px #8a8aff);
 }
 #loginScreen .vsFxLightningA{animation:vsLightningFlash 6.5s ease-in-out infinite}
-#loginScreen .vsFxLightningB{transform:rotate(62deg);animation:vsLightningFlash 8.2s 2.6s ease-in-out infinite}
+#loginScreen .vsFxLightningB{rotate:62deg;animation:vsLightningFlash 8.2s 2.6s ease-in-out infinite}
 #loginScreen .vsFxScan{
  position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.22;
  background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(172,184,255,.10) 4px,transparent 5px);
