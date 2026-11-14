@@ -1614,7 +1614,7 @@ $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailL
 
 // Keep the animated opening visible briefly before revealing the login screen.
 // This promise is shared by auth callbacks so the intro only runs once per page load.
-const authIntroReady=new Promise(resolve=>window.setTimeout(resolve,5200));
+const authIntroReady=new Promise(resolve=>window.setTimeout(resolve,9000));
 auth.onAuthStateChanged(async user=>{
 await authIntroReady;
 $("authLoading").classList.add("hidden");
@@ -3288,5 +3288,44 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-extended-cinematic-opening">
+/* Extended 9-second intro: layered cinematic motion, paced reveals, no JS animation loops. */
+#authLoading{background-size:320% 320%;animation:vsEpicBackground 11s ease-in-out infinite}
+#authLoading .authLoadingScene:before{opacity:.4;background-size:180px 180px;animation:vsEpicGrid 8s linear infinite}
+#authLoading .introPortal{width:min(82vw,680px);filter:drop-shadow(0 0 36px rgba(127,96,255,.22))}
+#authLoading .introOrbitOne{animation-duration:7s}
+#authLoading .introOrbitTwo{animation-duration:10s}
+#authLoading .introSnapCard{animation-duration:6.8s}
+#authLoading .introSnapCardOne{animation-delay:-.3s}
+#authLoading .introSnapCardTwo{animation-delay:-2s}
+#authLoading .introSnapCardThree{animation-delay:-3.7s}
+#authLoading .introSnapCardFour{animation-delay:-5.4s}
+#authLoading .authLoadingBrand{animation:vsEpicBrand 1.5s cubic-bezier(.16,1,.3,1) both}
+#authLoading .authLoadingMark{animation:vsEpicCore 3.8s cubic-bezier(.45,0,.55,1) 1.1s infinite}
+#authLoading .authLoadingWord{animation:vsEpicWord 1.35s .45s both}
+#authLoading .authLoadingMessage{animation:vsEpicCaption 1s 1.2s both}
+#authLoading .authLoadingProgress{height:5px;margin-top:28px}
+#authLoading .authLoadingProgress span{animation-duration:1.05s}
+#authLoading .introEnergy{animation-duration:3.2s}
+#authLoading .introBeamOne{animation-duration:4.5s}
+#authLoading .introBeamTwo{animation-duration:5.2s}
+#authLoading .introSpark{animation-duration:4.8s}
+#authLoading .authLoadingHint{letter-spacing:.38em}
+@keyframes vsEpicBackground{0%,100%{background-position:0% 40%}50%{background-position:100% 65%}}
+@keyframes vsEpicGrid{to{background-position:180px 180px;transform:translate3d(-70px,45px,0)}}
+@keyframes vsEpicBrand{0%{opacity:0;transform:translateY(55px) scale(.45) rotateX(35deg);filter:blur(18px)}65%{opacity:1;filter:blur(0)}82%{transform:translateY(-7px) scale(1.035)}100%{transform:translateY(0) scale(1) rotateX(0)}}
+@keyframes vsEpicCore{0%,100%{transform:translateY(0) rotateY(0) rotateZ(0) scale(1)}25%{transform:translateY(-12px) rotateY(18deg) rotateZ(-7deg) scale(1.08)}50%{transform:translateY(0) rotateY(0) rotateZ(0) scale(1)}75%{transform:translateY(-7px) rotateY(-18deg) rotateZ(7deg) scale(1.04)}}
+@keyframes vsEpicWord{0%{opacity:0;transform:translateY(20px) scale(.8);letter-spacing:8px;filter:blur(12px)}100%{opacity:1;transform:translateY(0) scale(1);letter-spacing:-2.8px;filter:blur(0)}}
+@keyframes vsEpicCaption{0%{opacity:0;transform:translateY(16px);letter-spacing:.5em}100%{opacity:1;transform:translateY(0);letter-spacing:.13em}}
+@media(max-width:480px){#authLoading .introPortal{width:110vw}#authLoading .authLoadingWord{font-size:39px}}
+@media(prefers-reduced-motion:reduce){
+ #authLoading,#authLoading .authLoadingScene:before,#authLoading .introPortal,#authLoading .introOrbitOne,
+ #authLoading .introOrbitTwo,#authLoading .introSnapCard,#authLoading .authLoadingBrand,
+ #authLoading .authLoadingMark,#authLoading .authLoadingWord,#authLoading .authLoadingMessage,
+ #authLoading .authLoadingProgress span,#authLoading .introEnergy,#authLoading .introBeamOne,
+ #authLoading .introBeamTwo,#authLoading .introSpark{animation:none!important}
+}
+</style>
 </body>
 </html>
