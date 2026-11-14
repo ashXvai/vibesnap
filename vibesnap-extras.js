@@ -55,10 +55,12 @@ const walls=["midnight","violet","ocean","rose","aurora"];
 function applyFriendWallpaper(){
  const host=$("chatMessages");if(!host)return;
  const active=friend();
- walls.forEach(x=>host.classList.remove("vsFriendWall-"+x));
- if(!active){const button=$("vsFriendWallpaperButton");if(button)button.title="Change wallpaper for this friend";return}
- const map=read().friendWallpapers||{},value=map[active.uid]||"midnight";
- host.classList.add("vsFriendWall-"+value);
+ if(!active){
+  walls.forEach(x=>{const className="vsFriendWall-"+x;if(host.classList.contains(className))host.classList.remove(className)});
+  const button=$("vsFriendWallpaperButton");if(button)button.title="Change wallpaper for this friend";return;
+ }
+ const map=read().friendWallpapers||{},value=walls.includes(map[active.uid])?map[active.uid]:"midnight";
+ walls.forEach(x=>{const className="vsFriendWall-"+x;const shouldApply=x===value;if(host.classList.contains(className)!==shouldApply)host.classList.toggle(className,shouldApply)});
  const button=$("vsFriendWallpaperButton");if(button)button.title="Chat wallpaper: "+value;
 }
 function addChatWallpaperButton(){
@@ -74,7 +76,8 @@ function friendshipSince(){
  const rows=bridge().acceptedFriendships||[];
  const friendship=rows.find(x=>Array.isArray(x.members)&&x.members.includes(me.uid)&&x.members.includes(active.uid));
  const created=friendship&&(friendship.createdAt||friendship.created_at);
- node.textContent=created?"Friends since "+new Date(created).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}):"";
+ const nextText=created?"Friends since "+new Date(created).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}):"";
+ if(node.textContent!==nextText)node.textContent=nextText;
 }
 function addVoiceSpeedControls(root=document){
  root.querySelectorAll?.("#chatMessages audio").forEach(audio=>{
