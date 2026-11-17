@@ -5631,6 +5631,134 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-modern-world-redesign">
+/* Rebuild the travel sequence as one coordinated shot, not a stack of competing overlays. */
+#authLoading.vs-intro-launch{
+  background:linear-gradient(110deg,#07060d 0%,#100c20 24%,#21163f 52%,#30215a 76%,#101b37 100%)!important;
+  background-size:320% 100%!important;
+  animation:vsWorldColorGrade 5s cubic-bezier(.4,0,.2,1) forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene{
+  transform-origin:50% 50%;
+  animation:vsWorldCameraMove 5s cubic-bezier(.4,0,.2,1) forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene:before{
+  content:""!important;inset:-12%!important;opacity:.42!important;
+  background:
+    radial-gradient(ellipse at 18% 52%,rgba(112,78,190,.10) 0%,transparent 36%),
+    radial-gradient(ellipse at 54% 48%,rgba(124,91,220,.18) 0%,transparent 42%),
+    radial-gradient(ellipse at 88% 50%,rgba(91,119,204,.22) 0%,transparent 46%),
+    linear-gradient(105deg,transparent 0%,rgba(122,93,203,.04) 48%,rgba(94,127,208,.14) 100%)!important;
+  filter:blur(16px)!important;
+  animation:vsWorldAtmosphere 5s ease-in-out forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene:after{
+  content:""!important;width:70vw!important;height:70vw!important;
+  border:0!important;border-radius:50%!important;
+  background:radial-gradient(ellipse at center,rgba(134,105,222,.16) 0%,rgba(79,93,174,.08) 38%,transparent 70%)!important;
+  filter:blur(20px)!important;
+  animation:vsWorldHorizon 5s ease-in-out forwards!important;
+}
+/* Keep the wordmark in place; only the actual V logo travels. */
+#authLoading.vs-intro-launch .authLoadingBrand{animation:none!important}
+#authLoading.vs-intro-launch .authLoadingWord{
+  animation:vsWordmarkExit .45s ease-out forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingMark{
+  z-index:5;animation:vsLogoCrossWorld 5s cubic-bezier(.38,.02,.18,1) forwards!important;
+  will-change:transform,filter;
+}
+#authLoading.vs-intro-launch .authLoadingMark:before{
+  content:""!important;position:absolute!important;
+  width:190px!important;height:3px!important;left:-178px!important;top:50%!important;
+  inset-inline:auto!important;transform:translateY(-50%)!important;
+  border:0!important;border-radius:99px!important;
+  background:linear-gradient(90deg,transparent,rgba(167,139,250,.10) 25%,rgba(186,164,255,.78) 82%,rgba(235,226,255,.95))!important;
+  box-shadow:0 0 18px rgba(151,119,255,.38)!important;
+  animation:vsLogoTrail .72s ease-out infinite!important;
+}
+#authLoading.vs-intro-launch .authLoadingMark:after{
+  content:""!important;position:absolute!important;
+  width:125px!important;height:1px!important;left:-115px!important;top:62%!important;
+  inset-inline:auto!important;transform:translateY(-50%)!important;
+  border:0!important;border-radius:99px!important;
+  background:linear-gradient(90deg,transparent,rgba(124,145,237,.72))!important;
+  box-shadow:none!important;animation:vsLogoTrail .95s ease-out .08s infinite!important;
+}
+/* Remove the old orbit/grid/card language from the travel shot. */
+#authLoading.vs-intro-launch .introOrbit,
+#authLoading.vs-intro-launch .introOrbitTwo,
+#authLoading.vs-intro-launch .introBeam,
+#authLoading.vs-intro-launch .introEnergy,
+#authLoading.vs-intro-launch .introSnapCard{opacity:0!important;animation:none!important}
+#authLoading.vs-intro-launch .introPortal{
+  border:0!important;
+  background:radial-gradient(ellipse at center,rgba(149,122,235,.13),rgba(98,93,184,.06) 42%,transparent 72%)!important;
+  box-shadow:none!important;filter:blur(4px)!important;
+  animation:vsWorldPortalGlow 5s ease-in-out forwards!important;
+}
+#authLoading.vs-intro-launch .introSpark,
+#authLoading.vs-intro-launch .authLoadingScene i{
+  opacity:.18!important;box-shadow:0 0 9px 2px rgba(193,177,255,.35)!important;
+  animation:vsWorldParticles 5s ease-in-out forwards!important;
+}
+@keyframes vsWorldColorGrade{
+  0%{background-position:0% 50%;filter:brightness(.94) saturate(.92)}
+  55%{background-position:56% 50%;filter:brightness(1.02) saturate(1.02)}
+  100%{background-position:100% 50%;filter:brightness(1.08) saturate(1.08)}
+}
+@keyframes vsLogoCrossWorld{
+  0%{transform:translate3d(-43vw,0,0) scale(.94);filter:drop-shadow(0 0 10px rgba(167,139,250,.24))}
+  24%{transform:translate3d(-17vw,-.5vh,0) scale(.99);filter:drop-shadow(0 0 14px rgba(167,139,250,.34))}
+  52%{transform:translate3d(15vw,.3vh,0) scale(1.04);filter:drop-shadow(0 0 20px rgba(157,145,239,.42))}
+  78%{transform:translate3d(47vw,-.2vh,0) scale(1.08);filter:drop-shadow(0 0 24px rgba(139,156,236,.48))}
+  100%{transform:translate3d(76vw,0,0) scale(1.12);filter:drop-shadow(0 0 28px rgba(139,156,236,.52))}
+}
+@keyframes vsWorldCameraMove{
+  0%{transform:translate3d(0,0,0) scale(1);filter:hue-rotate(0deg) brightness(1)}
+  45%{transform:translate3d(-4vw,0,0) scale(1.035);filter:hue-rotate(5deg) brightness(1.04)}
+  100%{transform:translate3d(-10vw,0,0) scale(1.09);filter:hue-rotate(11deg) brightness(1.1)}
+}
+@keyframes vsWorldAtmosphere{
+  0%{transform:translate3d(-7%,0,0) scale(.96);opacity:.22}
+  50%{transform:translate3d(0,0,0) scale(1.04);opacity:.46}
+  100%{transform:translate3d(7%,0,0) scale(1.13);opacity:.72}
+}
+@keyframes vsWorldHorizon{
+  0%{transform:translate3d(-12%,0,0) scale(.86);opacity:.12}
+  55%{transform:translate3d(0,0,0) scale(1.05);opacity:.34}
+  100%{transform:translate3d(12%,0,0) scale(1.22);opacity:.62}
+}
+@keyframes vsWorldPortalGlow{
+  0%{transform:translate(-50%,-50%) scale(.8);opacity:.18}
+  55%{transform:translate(-50%,-50%) scale(1.06);opacity:.42}
+  100%{transform:translate(-50%,-50%) scale(1.32);opacity:.68}
+}
+@keyframes vsLogoTrail{
+  0%{opacity:.28;filter:blur(1px)}
+  50%{opacity:.9;filter:blur(2px)}
+  100%{opacity:.28;filter:blur(1px)}
+}
+@keyframes vsWorldParticles{
+  0%{transform:translate3d(0,0,0) scale(.8);opacity:.12}
+  60%{transform:translate3d(-3vw,-1vh,0) scale(1);opacity:.42}
+  100%{transform:translate3d(-8vw,-2vh,0) scale(1.12);opacity:.08}
+}
+@keyframes vsWordmarkExit{to{opacity:0;transform:translateY(-8px);filter:blur(2px)}}
+@media(prefers-reduced-motion:reduce){
+ #authLoading.vs-intro-launch,
+ #authLoading.vs-intro-launch .authLoadingScene,
+ #authLoading.vs-intro-launch .authLoadingScene:before,
+ #authLoading.vs-intro-launch .authLoadingScene:after,
+ #authLoading.vs-intro-launch .authLoadingBrand,
+ #authLoading.vs-intro-launch .authLoadingWord,
+ #authLoading.vs-intro-launch .authLoadingMark,
+ #authLoading.vs-intro-launch .authLoadingMark:before,
+ #authLoading.vs-intro-launch .authLoadingMark:after{animation:none!important;filter:none!important}
+}
+</style>
+
 </body>
 </html>
 
