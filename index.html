@@ -2275,7 +2275,7 @@ const authIntroReady=new Promise(resolve=>{
  window.setTimeout(()=>{
   $("authLoading")?.classList.add("vs-intro-launch");
   // After the 10-second intro, let the logo and world rush past before revealing auth.
-  window.setTimeout(resolve,5000);
+  window.setTimeout(resolve,720);
  },10000);
 });
 auth.onAuthStateChanged(async user=>{
@@ -5399,6 +5399,37 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 @keyframes vsFiveSecondTrail{0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}35%{opacity:.62;transform:translate(-50%,-50%) scale(.7)}100%{opacity:.08;transform:translate(-50%,-50%) scale(1.5)}}
 @media(prefers-reduced-motion:reduce){
  #authLoading.vs-intro-launch .authLoadingBrand,#authLoading.vs-intro-launch .authLoadingScene,#authLoading.vs-intro-launch .authLoadingScene:before,#authLoading.vs-intro-launch .authLoadingScene:after,#authLoading.vs-intro-launch .introPortal,#authLoading.vs-intro-launch .introOrbit,#authLoading.vs-intro-launch .introOrbitTwo,#authLoading.vs-intro-launch .introBeam,#authLoading.vs-intro-launch .introEnergy,#authLoading.vs-intro-launch .introSnapCard,#authLoading.vs-intro-launch .authLoadingScene i{animation:none!important}
+}
+</style>
+
+
+<style id="vibesnap-hyperspeed-launch">
+#authLoading.vs-intro-launch .authLoadingBrand{animation:vsHyperspeedLogo .72s cubic-bezier(.08,.78,.12,1) forwards!important;will-change:transform,filter}
+#authLoading.vs-intro-launch .authLoadingScene{animation:vsHyperspeedWorld .72s cubic-bezier(.08,.78,.12,1) forwards!important;will-change:transform,filter}
+#authLoading.vs-intro-launch .authLoadingScene:before{animation:vsHyperspeedStreaks .075s linear infinite!important}
+#authLoading.vs-intro-launch .authLoadingScene:after,
+#authLoading.vs-intro-launch:before,#authLoading.vs-intro-launch:after,
+#authLoading.vs-intro-launch .introPortal,#authLoading.vs-intro-launch .introOrbit,
+#authLoading.vs-intro-launch .introOrbitTwo,#authLoading.vs-intro-launch .introBeam,
+#authLoading.vs-intro-launch .introEnergy,#authLoading.vs-intro-launch .introSnapCard,
+#authLoading.vs-intro-launch .authLoadingScene i{animation-duration:.72s!important;animation-timing-function:cubic-bezier(.08,.78,.12,1)!important}
+@keyframes vsHyperspeedLogo{
+  0%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) scale(1)}
+  12%{opacity:1;filter:blur(.4px);transform:translate3d(16vw,0,0) scale(1.08)}
+  38%{opacity:1;filter:blur(1.2px);transform:translate3d(58vw,0,0) scale(1.2)}
+  70%{opacity:1;filter:blur(2px);transform:translate3d(102vw,0,0) scale(1.34)}
+  100%{opacity:1;filter:blur(2.5px);transform:translate3d(145vw,0,0) scale(1.48)}
+}
+@keyframes vsHyperspeedWorld{
+  0%{transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+  24%{transform:translate3d(-22vw,0,0) scale(1.08);filter:blur(1px)}
+  62%{transform:translate3d(-78vw,0,0) scale(1.22);filter:blur(3px)}
+  100%{transform:translate3d(-150vw,0,0) scale(1.5);filter:blur(5px)}
+}
+@keyframes vsHyperspeedStreaks{from{background-position:0 0,0 0}to{background-position:-1500px 0,0 1100px}}
+@media(prefers-reduced-motion:reduce){
+ #authLoading.vs-intro-launch .authLoadingBrand,#authLoading.vs-intro-launch .authLoadingScene,
+ #authLoading.vs-intro-launch .authLoadingScene:before{animation:none!important}
 }
 </style>
 
