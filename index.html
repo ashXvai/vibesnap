@@ -5140,8 +5140,8 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 </style>
 
 <style id="vibesnap-logo-launch-transition">
-/* Final 800ms: the same VibeSnap glyph accelerates toward the viewer, then reveals auth. */
-#authLoading{perspective:1100px}
+/* Final 800ms: the VibeSnap mark races across the screen and clears the way for login. */
+#authLoading{perspective:1100px;overflow:hidden}
 #authLoading .authLoadingMark{
   display:grid!important;place-items:center!important;
   background:linear-gradient(145deg,rgba(153,112,239,.16),rgba(70,45,115,.08))!important;
@@ -5161,27 +5161,31 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 #loginScreen .loginTitle .wordVibe{color:#c7a0ff!important;-webkit-text-fill-color:#c7a0ff!important}
 #loginScreen .loginTitle .wordSnap{color:#f4eaff!important;-webkit-text-fill-color:#f4eaff!important}
 #authLoading.vs-intro-launch .authLoadingBrand{
-  animation:vsIntroLogoLaunch .8s cubic-bezier(.68,0,.92,.42) forwards!important;
+  animation:vsIntroLogoLaunch .8s cubic-bezier(.72,0,.96,.42) forwards!important;
   transform-origin:50% 50%;will-change:transform,opacity,filter;
 }
 #authLoading.vs-intro-launch .authLoadingBrand:after{
-  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:min(78vw,760px);height:10px;
-  transform:translate(-50%,-50%) scaleX(.08);border-radius:100%;
-  background:linear-gradient(90deg,transparent,rgba(174,139,255,.1),rgba(202,174,255,.95),rgba(174,139,255,.1),transparent);
-  filter:blur(7px);opacity:0;animation:vsLogoSpeedTrail .8s ease-in forwards;
+  content:"";position:absolute;z-index:-1;left:-105vw;top:50%;width:100vw;height:13px;
+  transform:translateY(-50%) scaleX(.04);transform-origin:right center;border-radius:100%;
+  background:linear-gradient(90deg,transparent,rgba(153,112,239,.12),rgba(202,174,255,.98),rgba(174,139,255,.35),transparent);
+  box-shadow:0 0 24px rgba(174,139,255,.55);filter:blur(6px);opacity:0;
+  animation:vsLogoSpeedTrail .8s cubic-bezier(.12,.72,.2,1) forwards;
 }
 #authLoading.vs-intro-launch .authLoadingMessage,
 #authLoading.vs-intro-launch .authLoadingProgress,
-#authLoading.vs-intro-launch .authLoadingHint{animation:vsIntroExit .32s ease-out forwards!important}
+#authLoading.vs-intro-launch .authLoadingHint{animation:vsIntroExit .24s ease-out forwards!important}
 @keyframes vsIntroLogoLaunch{
   0%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) scale(1) rotate(0)}
-  18%{opacity:1;filter:blur(0);transform:translate3d(0,0,35px) scale(1.12) rotate(-3deg)}
-  100%{opacity:0;filter:blur(13px);transform:translate3d(0,-1vh,980px) scale(4.8) rotate(11deg)}
+  10%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) scale(1.08) rotate(-4deg)}
+  24%{opacity:1;filter:blur(1px);transform:translate3d(12vw,-2vh,0) scale(.94) rotate(80deg)}
+  62%{opacity:1;filter:blur(3px);transform:translate3d(58vw,-7vh,0) scale(.72) rotate(300deg)}
+  100%{opacity:0;filter:blur(9px);transform:translate3d(112vw,-12vh,0) scale(.48) rotate(560deg)}
 }
 @keyframes vsLogoSpeedTrail{
-  0%{opacity:0;transform:translate(-50%,-50%) scaleX(.08)}
-  24%{opacity:.95}
-  100%{opacity:0;transform:translate(-50%,-50%) scaleX(1.35)}
+  0%{opacity:0;transform:translateY(-50%) scaleX(.04)}
+  18%{opacity:.98;transform:translateY(-50%) scaleX(.55)}
+  58%{opacity:.78;transform:translateY(-50%) scaleX(1)}
+  100%{opacity:0;transform:translateY(-50%) scaleX(1.08)}
 }
 @keyframes vsIntroExit{to{opacity:0;transform:translateY(-10px)}}
 @media(prefers-reduced-motion:reduce){
