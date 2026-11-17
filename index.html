@@ -5165,10 +5165,10 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   transform-origin:50% 50%;will-change:transform,opacity,filter;
 }
 #authLoading.vs-intro-launch .authLoadingBrand:after{
-  content:"";position:absolute;z-index:-1;left:-105vw;top:50%;width:100vw;height:13px;
-  transform:translateY(-50%) scaleX(.04);transform-origin:right center;border-radius:100%;
-  background:linear-gradient(90deg,transparent,rgba(153,112,239,.12),rgba(202,174,255,.98),rgba(174,139,255,.35),transparent);
-  box-shadow:0 0 24px rgba(174,139,255,.55);filter:blur(6px);opacity:0;
+  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:180%;height:180%;
+  transform:translate(-50%,-50%) scale(.25);transform-origin:center;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(202,174,255,.95) 0%,rgba(174,139,255,.48) 32%,rgba(153,112,239,.12) 58%,transparent 74%);
+  filter:blur(8px);opacity:0;
   animation:vsLogoSpeedTrail .62s cubic-bezier(.12,.82,.22,1) forwards;
 }
 #authLoading.vs-intro-launch .authLoadingMessage,
@@ -5182,10 +5182,9 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   100%{opacity:0;filter:blur(12px);transform:translate3d(0,0,1700px) scale(4.8)}
 }
 @keyframes vsLogoSpeedTrail{
-  0%{opacity:0;transform:translateY(-50%) scaleX(.04)}
-  18%{opacity:.98;transform:translateY(-50%) scaleX(.55)}
-  58%{opacity:.78;transform:translateY(-50%) scaleX(1)}
-  100%{opacity:0;transform:translateY(-50%) scaleX(1.08)}
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}
+  42%{opacity:.95;transform:translate(-50%,-50%) scale(1.1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(2.4)}
 }
 @keyframes vsIntroExit{to{opacity:0;transform:translateY(-10px)}}
 @media(prefers-reduced-motion:reduce){
