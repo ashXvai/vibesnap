@@ -2274,9 +2274,9 @@ $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailL
 const authIntroReady=new Promise(resolve=>{
  window.setTimeout(()=>{
   $("authLoading")?.classList.add("vs-intro-launch");
-  // The 10-second opening ends with a fast logo push-through before auth UI appears.
-  window.setTimeout(resolve,800);
- },9200);
+  // After the 10-second intro, let the logo and world rush past before revealing auth.
+  window.setTimeout(resolve,1250);
+ },10000);
 });
 auth.onAuthStateChanged(async user=>{
 await authIntroReady;
@@ -5161,25 +5161,52 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 #loginScreen .loginTitle .wordVibe{color:#c7a0ff!important;-webkit-text-fill-color:#c7a0ff!important}
 #loginScreen .loginTitle .wordSnap{color:#f4eaff!important;-webkit-text-fill-color:#f4eaff!important}
 #authLoading.vs-intro-launch .authLoadingBrand{
-  animation:vsIntroLogoLaunch .62s cubic-bezier(.12,.82,.22,1) forwards!important;
-  transform-origin:50% 50%;will-change:transform,opacity,filter;
+  animation:vsIntroLogoLaunch 1.25s cubic-bezier(.72,0,.18,1) forwards!important;
+  transform-origin:50% 50%;will-change:transform,opacity;
+}
+#authLoading.vs-intro-launch .authLoadingScene{
+  animation:vsWorldRush 1.25s cubic-bezier(.72,0,.18,1) forwards!important;
+  transform-origin:50% 50%;will-change:transform,filter;
+}
+#authLoading.vs-intro-launch .authLoadingScene:before{
+  opacity:.9!important;
+  background:repeating-linear-gradient(90deg,transparent 0 34px,rgba(186,157,255,.38) 35px 37px,transparent 38px 82px),
+             repeating-linear-gradient(0deg,transparent 0 58px,rgba(118,105,255,.2) 59px 61px,transparent 62px 116px)!important;
+  animation:vsWorldStreaks .42s linear infinite!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene:after{
+  animation:vsWorldPortalRush 1.25s cubic-bezier(.72,0,.18,1) forwards!important;
 }
 #authLoading.vs-intro-launch .authLoadingBrand:after{
-  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:180%;height:180%;
-  transform:translate(-50%,-50%) scale(.25);transform-origin:center;border-radius:50%;
-  background:radial-gradient(ellipse,rgba(202,174,255,.95) 0%,rgba(174,139,255,.48) 32%,rgba(153,112,239,.12) 58%,transparent 74%);
-  filter:blur(8px);opacity:0;
-  animation:vsLogoSpeedTrail .62s cubic-bezier(.12,.82,.22,1) forwards;
+  content:"";position:absolute;z-index:-1;left:-150vw;top:50%;width:150vw;height:24px;
+  transform:translateY(-50%) scaleX(.08);transform-origin:right center;border-radius:100%;
+  background:linear-gradient(90deg,transparent,rgba(151,112,239,.08),rgba(202,174,255,.98),rgba(174,139,255,.5),transparent);
+  box-shadow:0 0 34px rgba(174,139,255,.8);filter:blur(7px);opacity:0;
+  animation:vsLogoSpeedTrail 1.25s cubic-bezier(.08,.7,.16,1) forwards;
 }
+
 #authLoading.vs-intro-launch .authLoadingMessage,
 #authLoading.vs-intro-launch .authLoadingProgress,
 #authLoading.vs-intro-launch .authLoadingHint{animation:vsIntroExit .24s ease-out forwards!important}
 @keyframes vsIntroLogoLaunch{
   0%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) scale(1)}
-  12%{opacity:1;filter:blur(0);transform:translate3d(0,0,90px) scale(1.12)}
-  38%{opacity:1;filter:blur(1px);transform:translate3d(0,0,520px) scale(1.85)}
-  72%{opacity:.92;filter:blur(4px);transform:translate3d(0,0,1100px) scale(3.1)}
-  100%{opacity:0;filter:blur(12px);transform:translate3d(0,0,1700px) scale(4.8)}
+  14%{opacity:1;filter:blur(0);transform:translate3d(10vw,0,0) scale(1.04)}
+  42%{opacity:1;filter:blur(1px);transform:translate3d(42vw,0,0) scale(1.12)}
+  76%{opacity:1;filter:blur(2px);transform:translate3d(82vw,0,0) scale(1.2)}
+  100%{opacity:1;filter:blur(2px);transform:translate3d(128vw,0,0) scale(1.28)}
+}
+@keyframes vsWorldRush{
+  0%{transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+  100%{transform:translate3d(-115vw,0,0) scale(1.28);filter:blur(5px)}
+}
+@keyframes vsWorldStreaks{
+  from{background-position:0 0,0 0}
+  to{background-position:-420px 0,0 360px}
+}
+@keyframes vsWorldPortalRush{
+  0%{transform:translate(-50%,-50%) scale(1);opacity:.3}
+  55%{transform:translate(-50%,-50%) scale(1.8);opacity:.9}
+  100%{transform:translate(-50%,-50%) scale(4.2);opacity:0}
 }
 @keyframes vsLogoSpeedTrail{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}
