@@ -5759,6 +5759,21 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-constant-speed-logo">
+/* No easing pauses: keep the logo moving at one continuous speed for the full journey. */
+#authLoading.vs-intro-launch .authLoadingMark{
+  animation:vsLogoConstantTravel 5s linear forwards!important;
+}
+@keyframes vsLogoConstantTravel{
+  from{transform:translate3d(-43vw,0,0) scale(.94);filter:drop-shadow(0 0 10px rgba(167,139,250,.24))}
+  to{transform:translate3d(76vw,0,0) scale(1.12);filter:drop-shadow(0 0 28px rgba(139,156,236,.52))}
+}
+@media(prefers-reduced-motion:reduce){
+  #authLoading.vs-intro-launch .authLoadingMark{animation:none!important}
+}
+</style>
+
 </body>
 </html>
 
