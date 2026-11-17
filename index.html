@@ -5047,5 +5047,46 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+
+<style id="vibesnap-login-final-polish">
+/* Final login polish requested: clearer Vibe word, no rotating card rim/status pill, purple login action. */
+#loginScreen .loginTitle .wordVibe{
+  color:#c9a6ff!important;
+  -webkit-text-fill-color:#c9a6ff!important;
+  opacity:1!important;
+  text-shadow:0 0 18px rgba(169,119,242,.22)!important;
+  background:none!important;
+}
+#loginScreen .loginTitle .wordSnap{
+  color:#f0e7ff!important;
+  -webkit-text-fill-color:#f0e7ff!important;
+  opacity:1!important;
+  background:none!important;
+}
+#loginScreen .loginBox:before,
+#loginScreen .loginBox:after{
+  display:none!important;
+  content:none!important;
+  animation:none!important;
+  opacity:0!important;
+}
+#loginScreen .loginSignal{display:none!important}
+#loginScreen .loginBtn:not(.signupBtn){
+  color:#fff!important;
+  background:linear-gradient(110deg,#7545b5 0%,#925fd0 52%,#7545b5 100%)!important;
+  border:1px solid rgba(198,166,245,.48)!important;
+  box-shadow:0 10px 28px rgba(111,62,174,.3),inset 0 1px rgba(255,255,255,.14)!important;
+}
+#loginScreen .loginBtn:not(.signupBtn):hover{
+  background:linear-gradient(110deg,#8552c5 0%,#a16cdd 52%,#8552c5 100%)!important;
+  box-shadow:0 12px 32px rgba(125,76,190,.38),inset 0 1px rgba(255,255,255,.18)!important;
+}
+#loginScreen .loginBtn:not(.signupBtn):disabled{
+  opacity:.72!important;
+  filter:saturate(.85)!important;
+}
+</style>
+
 </body>
 </html>
