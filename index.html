@@ -5235,6 +5235,132 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-cinematic-intro-v2">
+/* A more cohesive build-up and world-travel transition. The 10-second intro and auth flow stay unchanged. */
+#authLoading .authLoadingScene{
+  animation:vsIntroSceneApproach 10s cubic-bezier(.16,.72,.28,1) both;
+  transform-origin:50% 50%;
+}
+#authLoading .introPortal{
+  animation:vsPortalBreath 3.8s cubic-bezier(.45,0,.55,1) infinite,
+             vsPortalCharge 10s ease-in-out both;
+}
+#authLoading .introOrbit{animation-duration:8s}
+#authLoading .introOrbitTwo{animation-duration:11s}
+#authLoading .introEnergy{animation-duration:3s}
+#authLoading .introBeam{animation-duration:4.8s}
+#authLoading .authLoadingMark{
+  animation:vsCoreMotion 4.2s cubic-bezier(.45,0,.55,1) .9s infinite;
+}
+#authLoading .authLoadingProgress span{
+  animation:vsIntroProgress 1.05s cubic-bezier(.4,0,.2,1) infinite;
+}
+#authLoading.vs-intro-launch{
+  background-size:340% 340%;
+  animation:vsWorldBackdropRush 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+#authLoading.vs-intro-launch:before{
+  animation:vsTunnelRing 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+  border-color:rgba(190,157,255,.55);
+  box-shadow:0 0 80px rgba(143,103,255,.42),inset 0 0 70px rgba(143,103,255,.2);
+}
+#authLoading.vs-intro-launch:after{
+  animation:vsTunnelRingOuter 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+  border-color:rgba(139,164,255,.38);
+}
+#authLoading.vs-intro-launch .authLoadingMark{animation:none!important}
+#authLoading.vs-intro-launch .authLoadingBrand{
+  animation:vsIntroLogoLaunch 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene{
+  animation:vsWorldRush 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+#authLoading.vs-intro-launch .introPortal{
+  animation:vsPortalEnter 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+#authLoading.vs-intro-launch .introOrbit,
+#authLoading.vs-intro-launch .introOrbitTwo{
+  animation:vsOrbitEnter 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+#authLoading.vs-intro-launch .introBeam,
+#authLoading.vs-intro-launch .introEnergy{
+  animation:vsBeamEnter 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+#authLoading.vs-intro-launch .introSnapCard{
+  animation:vsCardEnter 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene i{
+  animation:vsParticleEnter 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene:before{
+  opacity:1!important;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 26px,rgba(199,173,255,.5) 27px 29px,transparent 30px 70px),
+    repeating-linear-gradient(0deg,transparent 0 46px,rgba(128,151,255,.3) 47px 49px,transparent 50px 96px)!important;
+  animation:vsWorldStreaks .28s linear infinite!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene:after{
+  animation:vsWorldPortalRush 1.25s cubic-bezier(.38,.02,.92,.42) forwards!important;
+}
+@keyframes vsIntroSceneApproach{
+  0%{transform:scale(1);filter:brightness(1)}
+  55%{transform:scale(1.035);filter:brightness(1.08)}
+  100%{transform:scale(1.075);filter:brightness(1.14)}
+}
+@keyframes vsPortalCharge{
+  0%,100%{filter:brightness(1) saturate(1)}
+  65%{filter:brightness(1.22) saturate(1.2)}
+}
+@keyframes vsWorldBackdropRush{
+  0%{background-position:50% 50%;filter:brightness(1)}
+  100%{background-position:100% 50%;filter:brightness(1.5)}
+}
+@keyframes vsTunnelRing{
+  0%{transform:translate(-50%,-50%) scale(1);opacity:.35}
+  100%{transform:translate(-50%,-50%) scale(5.2);opacity:0}
+}
+@keyframes vsTunnelRingOuter{
+  0%{transform:translate(-50%,-50%) scale(1);opacity:.28}
+  100%{transform:translate(-50%,-50%) scale(3.8);opacity:0}
+}
+@keyframes vsPortalEnter{
+  0%{transform:translate(-50%,-50%) scale(1);filter:brightness(1)}
+  55%{transform:translate(-50%,-50%) scale(1.65);filter:brightness(1.8)}
+  100%{transform:translate(-50%,-50%) scale(3.8);filter:brightness(2.2);opacity:0}
+}
+@keyframes vsOrbitEnter{
+  0%{opacity:.7;filter:blur(0);scale:1}
+  100%{opacity:0;filter:blur(8px);scale:3.2}
+}
+@keyframes vsBeamEnter{
+  0%{opacity:.15;filter:blur(1px)}
+  35%{opacity:1;filter:blur(2px)}
+  100%{opacity:0;filter:blur(12px)}
+}
+@keyframes vsCardEnter{
+  0%{opacity:.8;filter:blur(0);transform:translate3d(0,0,0) scale(1)}
+  100%{opacity:0;filter:blur(9px);transform:translate3d(-24vw,0,0) scale(2.2)}
+}
+@keyframes vsParticleEnter{
+  0%{opacity:.8;filter:blur(0);transform:scale(1)}
+  100%{opacity:0;filter:blur(7px);transform:scale(8)}
+}
+@media(prefers-reduced-motion:reduce){
+  #authLoading .authLoadingScene{animation:none!important}
+  #authLoading.vs-intro-launch,
+  #authLoading.vs-intro-launch:before,
+  #authLoading.vs-intro-launch:after,
+  #authLoading.vs-intro-launch .introPortal,
+  #authLoading.vs-intro-launch .introOrbit,
+  #authLoading.vs-intro-launch .introOrbitTwo,
+  #authLoading.vs-intro-launch .introBeam,
+  #authLoading.vs-intro-launch .introEnergy,
+  #authLoading.vs-intro-launch .introSnapCard,
+  #authLoading.vs-intro-launch .authLoadingScene i{animation:none!important}
+}
+</style>
+
 </body>
 </html>
 
