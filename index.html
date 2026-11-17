@@ -5774,6 +5774,57 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-neon-hyperspeed-v2">
+/* High-velocity finish: stronger travel distance and layered neon light trails. */
+#authLoading.vs-intro-launch .authLoadingMark{
+  animation:vsNeonHyperspeed 5s linear forwards!important;
+  filter:drop-shadow(0 0 9px rgba(174,139,255,.9)) drop-shadow(0 0 24px rgba(126,91,255,.68))!important;
+}
+#authLoading.vs-intro-launch .authLoadingMark:before{
+  width:clamp(220px,30vw,460px)!important;height:5px!important;
+  left:calc(-1 * clamp(205px,29vw,445px))!important;top:50%!important;
+  background:linear-gradient(90deg,transparent 0%,rgba(101,83,255,.08) 24%,rgba(145,111,255,.42) 58%,rgba(202,177,255,.95) 94%,#fff 100%)!important;
+  box-shadow:0 0 9px rgba(150,115,255,.8),0 0 22px rgba(125,95,255,.62),0 0 42px rgba(105,132,255,.36)!important;
+  filter:blur(.4px)!important;
+  animation:vsNeonTrailPulse .22s ease-in-out infinite alternate!important;
+}
+#authLoading.vs-intro-launch .authLoadingMark:after{
+  width:clamp(160px,23vw,340px)!important;height:2px!important;
+  left:calc(-1 * clamp(145px,22vw,325px))!important;top:64%!important;
+  background:linear-gradient(90deg,transparent,rgba(107,139,255,.12) 24%,rgba(130,160,255,.86) 92%,#e7eaff)!important;
+  box-shadow:0 0 12px rgba(115,145,255,.78),0 0 30px rgba(115,145,255,.42)!important;
+  filter:blur(.7px)!important;
+  animation:vsNeonTrailPulse .16s ease-in-out infinite alternate-reverse!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene:before{
+  background:
+    radial-gradient(ellipse at 18% 52%,rgba(112,78,190,.08) 0%,transparent 36%),
+    radial-gradient(ellipse at 54% 48%,rgba(124,91,220,.16) 0%,transparent 42%),
+    radial-gradient(ellipse at 88% 50%,rgba(91,119,204,.2) 0%,transparent 46%),
+    repeating-linear-gradient(108deg,transparent 0 95px,rgba(177,155,255,.075) 97px,transparent 100px 180px)!important;
+  background-size:auto,auto,auto,240% 100%!important;
+  animation:vsHyperspeedEnvironment 1.1s linear infinite,vsWorldAtmosphere 5s ease-in-out forwards!important;
+}
+@keyframes vsNeonHyperspeed{
+  from{transform:translate3d(-55vw,0,0) scale(.92);filter:drop-shadow(0 0 10px rgba(167,139,250,.65)) drop-shadow(0 0 22px rgba(126,91,255,.4))}
+  to{transform:translate3d(118vw,0,0) scale(1.16);filter:drop-shadow(0 0 18px rgba(167,139,250,1)) drop-shadow(0 0 38px rgba(126,91,255,.82))}
+}
+@keyframes vsNeonTrailPulse{
+  from{opacity:.68;filter:brightness(.9) blur(.5px)}
+  to{opacity:1;filter:brightness(1.45) blur(1px)}
+}
+@keyframes vsHyperspeedEnvironment{
+  from{background-position:0 0,0 0,0 0,0 50%}
+  to{background-position:0 0,0 0,0 0,240% 50%}
+}
+@media(prefers-reduced-motion:reduce){
+ #authLoading.vs-intro-launch .authLoadingMark:before,
+ #authLoading.vs-intro-launch .authLoadingMark:after,
+ #authLoading.vs-intro-launch .authLoadingScene:before{animation:none!important}
+}
+</style>
+
 </body>
 </html>
 
