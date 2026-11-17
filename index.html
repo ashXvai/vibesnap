@@ -2276,7 +2276,7 @@ const authIntroReady=new Promise(resolve=>{
   $("authLoading")?.classList.add("vs-intro-launch");
   // After the 10-second intro, let the logo and world rush past before revealing auth.
   window.setTimeout(resolve,1250);
- },9200);
+ },10000);
 });
 auth.onAuthStateChanged(async user=>{
 await authIntroReady;
@@ -5184,13 +5184,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   box-shadow:0 0 34px rgba(174,139,255,.8);filter:blur(7px);opacity:0;
   animation:vsLogoSpeedTrail 1.25s cubic-bezier(.08,.7,.16,1) forwards;
 }
-#authLoading.vs-intro-launch .authLoadingBrand:after{
-  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:180%;height:180%;
-  transform:translate(-50%,-50%) scale(.25);transform-origin:center;border-radius:50%;
-  background:radial-gradient(ellipse,rgba(202,174,255,.95) 0%,rgba(174,139,255,.48) 32%,rgba(153,112,239,.12) 58%,transparent 74%);
-  filter:blur(8px);opacity:0;
-  animation:vsLogoSpeedTrail .62s cubic-bezier(.12,.82,.22,1) forwards;
-}
+
 #authLoading.vs-intro-launch .authLoadingMessage,
 #authLoading.vs-intro-launch .authLoadingProgress,
 #authLoading.vs-intro-launch .authLoadingHint{animation:vsIntroExit .24s ease-out forwards!important}
