@@ -2073,7 +2073,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 </style>
 </head>
 <body>
-<div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingScene" aria-hidden="true"><div class="introPortal"></div><div class="introOrbit introOrbitOne"></div><div class="introOrbit introOrbitTwo"></div><div class="introEnergy"></div><div class="introBeam introBeamOne"></div><div class="introBeam introBeamTwo"></div><div class="introSnapCard introSnapCardOne"><b>✦</b><span>CAPTURE</span></div><div class="introSnapCard introSnapCardTwo"><b>↗</b><span>SHARE</span></div><div class="introSnapCard introSnapCardThree"><b>♡</b><span>VIBE</span></div><div class="introSnapCard introSnapCardFour"><b>◉</b><span>CONNECT</span></div><div class="introSpark introSparkOne"></div><div class="introSpark introSparkTwo"></div><div class="introSpark introSparkThree"></div><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="authLoadingBrand"><div class="authLoadingMark">V</div><div class="authLoadingWord">Vibe<span>Snap</span></div></div><div class="authLoadingMessage">Getting everything ready</div><div class="authLoadingProgress" aria-hidden="true"><span></span></div><div class="authLoadingHint">YOUR MOMENTS. YOUR VIBE.</div></div>
+<div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingScene" aria-hidden="true"><div class="introPortal"></div><div class="introOrbit introOrbitOne"></div><div class="introOrbit introOrbitTwo"></div><div class="introEnergy"></div><div class="introBeam introBeamOne"></div><div class="introBeam introBeamTwo"></div><div class="introSnapCard introSnapCardOne"><b>✦</b><span>CAPTURE</span></div><div class="introSnapCard introSnapCardTwo"><b>↗</b><span>SHARE</span></div><div class="introSnapCard introSnapCardThree"><b>♡</b><span>VIBE</span></div><div class="introSnapCard introSnapCardFour"><b>◉</b><span>CONNECT</span></div><div class="introSpark introSparkOne"></div><div class="introSpark introSparkTwo"></div><div class="introSpark introSparkThree"></div><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="authLoadingBrand"><div class="authLoadingMark" aria-label="VibeSnap logo"><svg class="introBrandLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="authLoadingWord">Vibe<span>Snap</span></div></div><div class="authLoadingMessage">Getting everything ready</div><div class="authLoadingProgress" aria-hidden="true"><span></span></div><div class="authLoadingHint">YOUR MOMENTS. YOUR VIBE.</div></div>
 <div id="loginScreen" class="hidden"><div class="loginLiveScene" aria-hidden="true">
   <div class="loginScenePortal"></div><div class="loginSceneRing loginSceneRingA"></div><div class="loginSceneRing loginSceneRingB"></div><div class="loginSceneRing loginSceneRingC"></div>
   <div class="loginSceneBeam loginSceneBeamA"></div><div class="loginSceneBeam loginSceneBeamB"></div><div class="loginSceneBeam loginSceneBeamC"></div>
@@ -2271,7 +2271,13 @@ $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailL
 
 // Keep the animated opening visible briefly before revealing the login screen.
 // This promise is shared by auth callbacks so the intro only runs once per page load.
-const authIntroReady=new Promise(resolve=>window.setTimeout(resolve,9000));
+const authIntroReady=new Promise(resolve=>{
+ window.setTimeout(()=>{
+  $("authLoading")?.classList.add("vs-intro-launch");
+  // The 10-second opening ends with a fast logo push-through before auth UI appears.
+  window.setTimeout(resolve,800);
+ },9200);
+});
 auth.onAuthStateChanged(async user=>{
 await authIntroReady;
 $("authLoading").classList.add("hidden");
@@ -5130,6 +5136,57 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 @media(prefers-reduced-motion:reduce){
   #loginScreen .loginBtn{transition:none!important}
+}
+</style>
+
+<style id="vibesnap-logo-launch-transition">
+/* Final 800ms: the same VibeSnap glyph accelerates toward the viewer, then reveals auth. */
+#authLoading{perspective:1100px}
+#authLoading .authLoadingMark{
+  display:grid!important;place-items:center!important;
+  background:linear-gradient(145deg,rgba(153,112,239,.16),rgba(70,45,115,.08))!important;
+  color:transparent!important;
+}
+#authLoading .introBrandLogo{
+  display:block;width:100%;height:100%;overflow:visible;
+  filter:drop-shadow(0 0 22px rgba(166,124,255,.62));
+}
+#authLoading .authLoadingWord{display:flex;gap:.14em;justify-content:center;white-space:nowrap}
+#authLoading .authLoadingWord span{display:inline-block;color:#c9a6ff!important;-webkit-text-fill-color:#c9a6ff!important;background:none!important}
+#loginScreen .loginTitle .wordVibe,
+#loginScreen .loginTitle .wordSnap{
+  display:inline-block!important;visibility:visible!important;opacity:1!important;
+  color:inherit!important;-webkit-text-fill-color:currentColor!important;
+}
+#loginScreen .loginTitle .wordVibe{color:#c7a0ff!important;-webkit-text-fill-color:#c7a0ff!important}
+#loginScreen .loginTitle .wordSnap{color:#f4eaff!important;-webkit-text-fill-color:#f4eaff!important}
+#authLoading.vs-intro-launch .authLoadingBrand{
+  animation:vsIntroLogoLaunch .8s cubic-bezier(.68,0,.92,.42) forwards!important;
+  transform-origin:50% 50%;will-change:transform,opacity,filter;
+}
+#authLoading.vs-intro-launch .authLoadingBrand:after{
+  content:"";position:absolute;z-index:-1;left:50%;top:50%;width:min(78vw,760px);height:10px;
+  transform:translate(-50%,-50%) scaleX(.08);border-radius:100%;
+  background:linear-gradient(90deg,transparent,rgba(174,139,255,.1),rgba(202,174,255,.95),rgba(174,139,255,.1),transparent);
+  filter:blur(7px);opacity:0;animation:vsLogoSpeedTrail .8s ease-in forwards;
+}
+#authLoading.vs-intro-launch .authLoadingMessage,
+#authLoading.vs-intro-launch .authLoadingProgress,
+#authLoading.vs-intro-launch .authLoadingHint{animation:vsIntroExit .32s ease-out forwards!important}
+@keyframes vsIntroLogoLaunch{
+  0%{opacity:1;filter:blur(0);transform:translate3d(0,0,0) scale(1) rotate(0)}
+  18%{opacity:1;filter:blur(0);transform:translate3d(0,0,35px) scale(1.12) rotate(-3deg)}
+  100%{opacity:0;filter:blur(13px);transform:translate3d(0,-1vh,980px) scale(4.8) rotate(11deg)}
+}
+@keyframes vsLogoSpeedTrail{
+  0%{opacity:0;transform:translate(-50%,-50%) scaleX(.08)}
+  24%{opacity:.95}
+  100%{opacity:0;transform:translate(-50%,-50%) scaleX(1.35)}
+}
+@keyframes vsIntroExit{to{opacity:0;transform:translateY(-10px)}}
+@media(prefers-reduced-motion:reduce){
+  #authLoading.vs-intro-launch .authLoadingBrand{animation:vsIntroExit .25s ease-out forwards!important}
+  #authLoading.vs-intro-launch .authLoadingBrand:after{display:none!important}
 }
 </style>
 
