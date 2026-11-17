@@ -5090,3 +5090,49 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 
 </body>
 </html>
+
+
+<style id="vibesnap-login-wordmark-and-clean-background">
+/* Focus the login screen: readable full wordmark, no drifting glass cards, vivid purple actions. */
+#loginScreen .loginTitle{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:0!important;width:100%!important;white-space:nowrap!important;
+  visibility:visible!important;opacity:1!important;overflow:visible!important;
+  color:#f4eaff!important;-webkit-text-fill-color:#f4eaff!important;
+  text-shadow:0 0 22px rgba(183,139,255,.22)!important;
+}
+#loginScreen .loginTitle .wordVibe,
+#loginScreen .loginTitle .wordSnap{
+  display:inline-block!important;visibility:visible!important;opacity:1!important;
+  position:relative!important;transform:none!important;
+  font-size:inherit!important;line-height:inherit!important;
+  -webkit-text-fill-color:currentColor!important;background:none!important;
+}
+#loginScreen .loginTitle .wordVibe{color:#c7a0ff!important}
+#loginScreen .loginTitle .wordSnap{color:#f4eaff!important}
+#loginScreen .loginLiveScene .loginSceneCard,
+#loginScreen .loginSceneCardA,#loginScreen .loginSceneCardB,
+#loginScreen .loginSceneCardC,#loginScreen .loginSceneCardD{
+  display:none!important;visibility:hidden!important;animation:none!important;
+}
+#loginScreen .loginBtn{
+  isolation:isolate!important;overflow:hidden!important;
+  color:#fff!important;
+  background:linear-gradient(112deg,#54218f 0%,#8b45d1 48%,#b17af2 100%)!important;
+  border:1px solid rgba(213,183,255,.55)!important;
+  box-shadow:0 12px 30px rgba(119,61,190,.38),0 0 0 1px rgba(176,123,239,.12),inset 0 1px rgba(255,255,255,.22)!important;
+  text-shadow:0 1px 8px rgba(30,10,50,.25)!important;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
+}
+#loginScreen .loginBtn:not(:disabled):hover{
+  filter:brightness(1.13) saturate(1.12)!important;transform:translateY(-2px)!important;
+  box-shadow:0 16px 36px rgba(139,74,211,.48),0 0 24px rgba(183,139,255,.2),inset 0 1px rgba(255,255,255,.26)!important;
+}
+#loginScreen .loginBtn:not(:disabled):active{transform:translateY(0) scale(.99)!important}
+#loginScreen .loginBtn.signupBtn{
+  background:linear-gradient(112deg,#9a63d7 0%,#7134b4 54%,#54218f 100%)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #loginScreen .loginBtn{transition:none!important}
+}
+</style>
