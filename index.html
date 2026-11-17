@@ -5982,3 +5982,38 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   #authLoading.vs-intro-launch .introSpark{animation:none!important}
 }
 </style>
+
+
+<style id="vibesnap-restore-visible-snap-wordmark">
+/* Keep the complete VibeSnap wordmark visible while the V mark races across the intro. */
+#authLoading .authLoadingWord,
+#authLoading .authLoadingWord span{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  color:#f4eaff!important;
+  -webkit-text-fill-color:#f4eaff!important;
+  filter:none!important;
+}
+#authLoading .authLoadingWord span{
+  background:none!important;
+  -webkit-background-clip:border-box!important;
+  background-clip:border-box!important;
+}
+#authLoading.vs-intro-launch .authLoadingWord,
+#authLoading.vs-intro-launch .authLoadingWord span{
+  animation:none!important;
+  transform:none!important;
+  visibility:visible!important;
+  opacity:1!important;
+  filter:none!important;
+}
+#authLoading.vs-intro-launch .authLoadingBrand{
+  opacity:1!important;
+  visibility:visible!important;
+}
+#loginScreen .loginTitle .wordSnap{
+  display:inline-block!important;visibility:visible!important;opacity:1!important;
+  color:#f4eaff!important;-webkit-text-fill-color:#f4eaff!important;
+}
+</style>
