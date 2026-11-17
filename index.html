@@ -4861,5 +4861,48 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+
+<style id="vibesnap-purple-black-login-only">
+/* Purple + black login palette. Keep the existing centered orbit layout and motion. */
+#loginScreen{
+  background:radial-gradient(ellipse at 50% 48%,rgba(126,70,220,.25),transparent 39%),radial-gradient(ellipse at 50% 50%,rgba(92,48,158,.12),transparent 62%),linear-gradient(145deg,#050407 0%,#0b0712 52%,#07060b 100%)!important;
+}
+#loginScreen .loginLiveScene{background:radial-gradient(ellipse at 50% 50%,rgba(126,70,220,.18),transparent 50%)!important}
+#loginScreen .loginScenePortal{
+  background:radial-gradient(circle at 50% 50%,rgba(191,151,255,.22) 0 3%,rgba(151,99,235,.4) 12%,rgba(91,48,158,.2) 34%,transparent 70%),conic-gradient(from 20deg,transparent 0 10%,rgba(184,137,255,.9) 15%,transparent 22% 42%,rgba(139,83,220,.95) 49%,transparent 56% 77%,rgba(194,157,255,.72) 84%,transparent 91%)!important;
+  box-shadow:0 0 95px rgba(129,72,220,.38),0 0 190px rgba(105,57,188,.24),inset 0 0 65px rgba(180,135,255,.16)!important;
+}
+#loginScreen .loginSceneRingA{border-color:rgba(196,159,255,.68)!important;border-top-color:#c49bff!important}
+#loginScreen .loginSceneRingB{border-color:rgba(168,119,238,.42)!important;border-right-color:#a979f2!important}
+#loginScreen .loginSceneRingC{border-color:rgba(184,145,255,.58)!important;border-bottom-color:#d2b5ff!important}
+#loginScreen .loginSceneBeam{background:linear-gradient(90deg,transparent,rgba(180,137,255,.12),rgba(188,148,255,.9),rgba(126,75,210,.86),transparent)!important;filter:blur(1px) drop-shadow(0 0 14px rgba(174,117,255,.7))!important}
+#loginScreen .vsFxCore{background:radial-gradient(circle,#f5edff 0 1%,#c8a5ff 4%,rgba(164,111,255,.96) 12%,rgba(108,58,191,.42) 32%,transparent 70%)!important;box-shadow:0 0 35px rgba(198,165,255,.78),0 0 100px rgba(151,90,236,.68),0 0 180px rgba(107,53,184,.32)!important}
+#loginScreen .vsFxCore span{border-top-color:#d5baff!important;border-right-color:rgba(193,151,255,.95)!important;filter:drop-shadow(0 0 10px #b37cff)!important}
+#loginScreen .vsFxCore i{border-color:rgba(205,176,255,.82)!important;border-left-color:transparent!important;border-bottom-color:rgba(180,130,255,.9)!important}
+#loginScreen .vsFxArcA{border-left-color:rgba(195,158,255,.92)!important;border-bottom-color:rgba(167,112,255,.82)!important;filter:drop-shadow(0 0 10px rgba(177,128,255,.76))!important}
+#loginScreen .vsFxArcB{border-right-color:rgba(174,119,255,.9)!important;border-top-color:rgba(211,183,255,.88)!important;filter:drop-shadow(0 0 12px rgba(154,91,255,.85))!important}
+#loginScreen .vsFxLightning{background:linear-gradient(90deg,transparent,rgba(190,151,255,.9),#fff,rgba(145,91,224,.9),transparent)!important;filter:blur(.5px) drop-shadow(0 0 10px #b57cff)!important}
+#loginScreen .vsFxGrid{background-image:linear-gradient(rgba(177,130,255,.24) 1px,transparent 1px),linear-gradient(90deg,rgba(177,130,255,.2) 1px,transparent 1px)!important}
+#loginScreen .loginSceneFloor{background:radial-gradient(ellipse at center,rgba(125,70,208,.3),rgba(125,70,208,.06) 38%,transparent 72%)!important}
+#loginScreen .vsFxParticle,#loginScreen .loginSceneSpark{background:#c9a6ff!important;box-shadow:0 0 8px 2px #b98cff,0 0 18px rgba(167,111,255,.85)!important}
+#loginScreen .loginSceneCard{border:1px solid rgba(190,151,255,.42)!important;background:linear-gradient(135deg,rgba(38,24,60,.68),rgba(12,11,19,.56))!important;box-shadow:0 16px 42px rgba(0,0,0,.35),0 0 24px rgba(137,82,225,.24)!important}
+#loginScreen .loginBox{border-color:rgba(205,177,255,.46)!important;background:linear-gradient(145deg,rgba(23,17,35,.66),rgba(10,9,16,.56))!important;box-shadow:0 30px 100px rgba(0,0,0,.48),0 0 0 1px rgba(168,119,255,.12),0 0 65px rgba(133,75,216,.28),inset 0 1px rgba(255,255,255,.15)!important}
+#loginScreen .loginBox:before{background:conic-gradient(from 0deg,transparent 0 17%,rgba(184,145,255,.9) 25%,rgba(174,117,255,.95) 39%,transparent 50% 72%,rgba(139,91,218,.72) 84%,transparent 94%)!important}
+#loginScreen .loginBrand{background:linear-gradient(135deg,#c9a6ff 0%,#7846c4 100%)!important;box-shadow:0 14px 36px rgba(151,91,226,.42),0 0 38px rgba(166,117,255,.2)!important}
+#loginScreen .loginBrand svg path:first-child{fill:#d0b3ff!important}
+#loginScreen .loginBrand svg path:last-child{stroke:#21142e!important}
+#loginScreen .loginTitle .wordSnap{color:#c9a6ff!important;-webkit-text-fill-color:#c9a6ff!important}
+#loginScreen #accountUsername:focus,#loginScreen #accountPassword:focus{border-color:#b98cff!important;box-shadow:0 0 0 4px rgba(177,130,255,.14),0 0 24px rgba(166,107,255,.2)!important}
+#loginScreen #emailLogin{color:#f4eaff!important;background:linear-gradient(110deg,rgba(133,80,202,.3),rgba(72,43,107,.38))!important;border:1px solid rgba(179,128,255,.46)!important}
+#loginScreen #emailLogin:hover{background:linear-gradient(110deg,rgba(151,91,226,.44),rgba(91,53,137,.5))!important}
+#loginScreen .signupBtn{color:#fff!important;background:linear-gradient(105deg,#9d6be0 0%,#7544b8 58%,#b88bff 130%)!important;box-shadow:0 12px 30px rgba(130,78,200,.28),0 8px 25px rgba(135,75,204,.22)!important}
+#loginScreen .loginSignal{background:rgba(151,100,220,.1)!important;border-color:rgba(179,128,255,.3)!important;color:#e4d4ff!important}
+#loginScreen .loginSignal.is-ready{color:#e8d7ff!important;border-color:rgba(178,130,255,.4)!important}
+@keyframes vsFutureConsoleGlowPurple{0%,100%{box-shadow:0 34px 100px rgba(0,0,0,.62),0 0 72px rgba(122,67,202,.22),inset 0 1px rgba(255,255,255,.1)}50%{box-shadow:0 38px 110px rgba(0,0,0,.68),0 0 88px rgba(145,81,226,.32),0 0 30px rgba(130,85,205,.1),inset 0 1px rgba(255,255,255,.14)}}
+#loginScreen .loginBox{animation:vsFutureConsoleFloat 8s ease-in-out infinite,vsFutureConsoleGlowPurple 6s ease-in-out infinite!important}
+@media(prefers-reduced-motion:reduce){#loginScreen .loginBox{animation:none!important}}
+</style>
+
 </body>
 </html>
