@@ -2275,7 +2275,7 @@ const authIntroReady=new Promise(resolve=>{
  window.setTimeout(()=>{
   $("authLoading")?.classList.add("vs-intro-launch");
   // After the 10-second intro, let the logo and world rush past before revealing auth.
-  window.setTimeout(resolve,5000);
+  window.setTimeout(resolve,1400);
  },10000);
 });
 auth.onAuthStateChanged(async user=>{
@@ -5830,3 +5830,55 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 
 
 
+
+
+<style id="vibesnap-fast-launch-obscured-world">
+/* Fast logo transit; keep the environment atmospheric, with only light flashes cutting through. */
+#authLoading.vs-intro-launch .authLoadingMark{
+  animation:vsSnapFastTransit 1.4s linear forwards!important;
+  filter:drop-shadow(0 0 12px rgba(185,153,255,.98)) drop-shadow(0 0 34px rgba(126,91,255,.88))!important;
+}
+@keyframes vsSnapFastTransit{
+  from{transform:translate3d(-55vw,0,0) scale(.92)}
+  to{transform:translate3d(118vw,0,0) scale(1.18)}
+}
+#authLoading.vs-intro-launch .authLoadingScene{
+  animation:vsFastWorldPass 1.4s linear forwards!important;
+  opacity:.38!important;
+  filter:brightness(.62) saturate(.8)!important;
+}
+@keyframes vsFastWorldPass{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(-24vw,0,0) scale(1.22)}
+}
+#authLoading.vs-intro-launch .introBeam,
+#authLoading.vs-intro-launch .introSpark{
+  opacity:1!important;
+  filter:brightness(2.2) drop-shadow(0 0 12px rgba(169,135,255,.95))!important;
+  animation:vsFastLightFlash .16s steps(2,end) infinite alternate!important;
+}
+@keyframes vsFastLightFlash{
+  from{opacity:.35;filter:brightness(1.2) drop-shadow(0 0 5px rgba(145,111,255,.7))}
+  to{opacity:1;filter:brightness(2.8) drop-shadow(0 0 20px rgba(190,165,255,1))}
+}
+#authLoading.vs-intro-launch .authLoadingScene:before{
+  opacity:.72!important;
+  background:
+    radial-gradient(ellipse at 20% 48%,rgba(115,83,210,.12),transparent 34%),
+    radial-gradient(ellipse at 78% 52%,rgba(91,125,220,.16),transparent 38%),
+    repeating-linear-gradient(108deg,transparent 0 70px,rgba(188,166,255,.16) 72px,transparent 75px 135px)!important;
+  background-size:auto,auto,220% 100%!important;
+  animation:vsFastFlashStreaks .22s linear infinite!important;
+}
+@keyframes vsFastFlashStreaks{
+  from{background-position:0 0,0 0,0 50%}
+  to{background-position:0 0,0 0,220% 50%}
+}
+@media(prefers-reduced-motion:reduce){
+  #authLoading.vs-intro-launch .authLoadingMark,
+  #authLoading.vs-intro-launch .authLoadingScene,
+  #authLoading.vs-intro-launch .authLoadingScene:before,
+  #authLoading.vs-intro-launch .introBeam,
+  #authLoading.vs-intro-launch .introSpark{animation:none!important}
+}
+</style>
