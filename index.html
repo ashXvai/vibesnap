@@ -5433,6 +5433,82 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-modern-cinematic-pass">
+/* Modern cinematic treatment: volumetric light and depth, never a retro grid/tunnel overlay. */
+#authLoading .authLoadingScene:before{
+  inset:-22%!important;opacity:.5!important;
+  background:
+    radial-gradient(ellipse at 50% 50%,rgba(135,96,255,.22) 0%,rgba(95,76,210,.12) 24%,transparent 58%),
+    radial-gradient(ellipse at 22% 34%,rgba(92,126,255,.16),transparent 38%),
+    radial-gradient(ellipse at 78% 68%,rgba(183,118,255,.13),transparent 42%)!important;
+  filter:blur(34px)!important;
+  animation:vsModernNebula 8s ease-in-out infinite alternate!important;
+}
+#authLoading .authLoadingScene:after{
+  border:0!important;
+  background:radial-gradient(ellipse at center,rgba(160,125,255,.18),rgba(91,86,220,.08) 34%,transparent 68%)!important;
+  filter:blur(22px)!important;
+}
+#authLoading .introOrbit,#authLoading .introOrbitTwo{
+  border-color:rgba(190,170,255,.12)!important;
+  box-shadow:0 0 38px rgba(140,112,255,.08)!important;
+}
+#authLoading .introEnergy{opacity:.28;filter:blur(3px)}
+#authLoading.vs-intro-launch .authLoadingBrand:after{display:none!important}
+#authLoading.vs-intro-launch .authLoadingScene:before{
+  inset:-45%!important;opacity:.9!important;
+  background:
+    radial-gradient(ellipse at 48% 50%,rgba(206,187,255,.5) 0%,rgba(146,111,255,.25) 18%,transparent 52%),
+    radial-gradient(ellipse at 76% 44%,rgba(112,139,255,.25),transparent 44%)!important;
+  filter:blur(26px)!important;
+  animation:vsModernWarpCloud .72s cubic-bezier(.08,.78,.12,1) forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingScene{
+  animation:vsModernWorld .72s cubic-bezier(.08,.78,.12,1) forwards!important;
+}
+#authLoading.vs-intro-launch .authLoadingBrand{
+  animation:vsModernLogo .72s cubic-bezier(.08,.78,.12,1) forwards!important;
+}
+#authLoading.vs-intro-launch .introEnergy{opacity:0!important}
+#authLoading.vs-intro-launch .introOrbit,
+#authLoading.vs-intro-launch .introOrbitTwo{
+  animation:vsModernDepth .72s cubic-bezier(.08,.78,.12,1) forwards!important;
+}
+@keyframes vsModernNebula{
+  0%{transform:scale(.94) translate3d(-1%,1%,0);opacity:.32}
+  100%{transform:scale(1.12) translate3d(2%,-1%,0);opacity:.62}
+}
+@keyframes vsModernLogo{
+  0%{transform:translate3d(0,0,0) scale(1);filter:drop-shadow(0 0 18px rgba(164,127,255,.45))}
+  18%{transform:translate3d(18vw,0,0) scale(1.08);filter:drop-shadow(0 0 24px rgba(164,127,255,.62))}
+  52%{transform:translate3d(72vw,0,0) scale(1.26);filter:drop-shadow(0 0 34px rgba(164,127,255,.75))}
+  100%{transform:translate3d(150vw,0,0) scale(1.52);filter:drop-shadow(0 0 48px rgba(164,127,255,.8))}
+}
+@keyframes vsModernWorld{
+  0%{transform:translate3d(0,0,0) scale(1);filter:brightness(1)}
+  55%{transform:translate3d(-70vw,0,0) scale(1.22);filter:brightness(1.18)}
+  100%{transform:translate3d(-155vw,0,0) scale(1.52);filter:brightness(1.32)}
+}
+@keyframes vsModernWarpCloud{
+  0%{transform:scale(.85) translate3d(0,0,0);opacity:.32}
+  55%{transform:scale(1.55) translate3d(-8%,0,0);opacity:.95}
+  100%{transform:scale(2.8) translate3d(-20%,0,0);opacity:0}
+}
+@keyframes vsModernDepth{
+  0%{opacity:.5;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(4.5)}
+}
+@media(prefers-reduced-motion:reduce){
+ #authLoading .authLoadingScene:before{animation:none!important}
+ #authLoading.vs-intro-launch .authLoadingBrand,
+ #authLoading.vs-intro-launch .authLoadingScene,
+ #authLoading.vs-intro-launch .authLoadingScene:before,
+ #authLoading.vs-intro-launch .introOrbit,
+ #authLoading.vs-intro-launch .introOrbitTwo{animation:none!important}
+}
+</style>
+
 </body>
 </html>
 
