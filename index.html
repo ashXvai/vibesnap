@@ -2291,7 +2291,7 @@ try{sessionStorage.removeItem("vibesnap-last-conversation");}catch(_){}
 showPage("camera");
 hasInitializedAppSession=true;
 }
-else{stopPresence();stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];vsPrivacyReady=false;vsShowOnlineStatus=true;currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");stopCamera()}
+else{stopPresence();stopFriendListeners();incomingFriendRequests=[];outgoingFriendRequests=[];acceptedFriendships=[];vsPrivacyReady=false;vsShowOnlineStatus=true;currentUser=null;localEncryptionPrivateKey=null;$("loginScreen").classList.remove("hidden");$("loginScreen").classList.remove("vs-login-reveal");void $("loginScreen").offsetWidth;$("loginScreen").classList.add("vs-login-reveal");$("app").classList.add("hidden");stopCamera()}
 },async error=>{
 await authIntroReady;
 console.error("VibeSnap auth state error:",error);
@@ -5191,6 +5191,21 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 @media(prefers-reduced-motion:reduce){
   #authLoading.vs-intro-launch .authLoadingBrand{animation:vsIntroExit .25s ease-out forwards!important}
   #authLoading.vs-intro-launch .authLoadingBrand:after{display:none!important}
+}
+</style>
+
+<style id="vibesnap-sequential-login-reveal">
+/* Login is revealed only after the intro logo has completely left the screen. */
+#loginScreen.vs-login-reveal{
+  animation:vsLoginAfterLogo .72s cubic-bezier(.2,.8,.2,1) both!important;
+  transform-origin:50% 54%;
+}
+@keyframes vsLoginAfterLogo{
+  0%{opacity:0;transform:translateY(18px) scale(.985);filter:blur(8px)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  #loginScreen.vs-login-reveal{animation:none!important}
 }
 </style>
 
