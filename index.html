@@ -2275,7 +2275,7 @@ const authIntroReady=new Promise(resolve=>{
  window.setTimeout(()=>{
   $("authLoading")?.classList.add("vs-intro-launch");
   // After the 10-second intro, let the logo and world rush past before revealing auth.
-  window.setTimeout(resolve,5000);
+  window.setTimeout(resolve,2000);
  },10000);
 });
 auth.onAuthStateChanged(async user=>{
@@ -5927,6 +5927,54 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   to{background-position:0 0,0 0,260% 50%}
 }
 @media(prefers-reduced-motion:reduce){
+  #authLoading.vs-intro-launch .authLoadingMark,
+  #authLoading.vs-intro-launch .authLoadingScene,
+  #authLoading.vs-intro-launch .authLoadingScene:before,
+  #authLoading.vs-intro-launch .introBeam,
+  #authLoading.vs-intro-launch .introSpark{animation:none!important}
+}
+</style>
+
+
+<style id="vibesnap-accelerated-logo-and-world">
+/* Faster launch: both the logo and the moving world complete their travel in two seconds. */
+#authLoading.vs-intro-launch{animation:vsAcceleratedBackdrop 2s linear forwards!important}
+#authLoading.vs-intro-launch .authLoadingBrand{animation:vsAcceleratedBrand 2s linear forwards!important}
+#authLoading.vs-intro-launch .authLoadingMark{animation:vsAcceleratedLogo 2s linear forwards!important}
+#authLoading.vs-intro-launch .authLoadingScene{animation:vsAcceleratedWorld 2s linear forwards!important}
+#authLoading.vs-intro-launch .authLoadingScene:before{animation:vsAcceleratedStreaks .075s linear infinite!important}
+#authLoading.vs-intro-launch .authLoadingScene:after,
+#authLoading.vs-intro-launch .introPortal,
+#authLoading.vs-intro-launch .introOrbit,
+#authLoading.vs-intro-launch .introOrbitTwo,
+#authLoading.vs-intro-launch .introEnergy,
+#authLoading.vs-intro-launch .introSnapCard,
+#authLoading.vs-intro-launch .authLoadingScene i{animation-duration:2s!important;animation-timing-function:linear!important}
+#authLoading.vs-intro-launch .introBeam,
+#authLoading.vs-intro-launch .introSpark{animation:vsAcceleratedFlash .075s steps(2,end) infinite alternate!important}
+#authLoading.vs-intro-launch .authLoadingMark:before,
+#authLoading.vs-intro-launch .authLoadingMark:after{animation-duration:.075s!important}
+@keyframes vsAcceleratedBackdrop{to{filter:brightness(1.35)}}
+@keyframes vsAcceleratedBrand{to{transform:translate3d(0,0,0)}}
+@keyframes vsAcceleratedLogo{
+  from{transform:translate3d(-110vw,0,0) scale(.9)}
+  to{transform:translate3d(180vw,0,0) scale(1.2)}
+}
+@keyframes vsAcceleratedWorld{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(-90vw,0,0) scale(1.38)}
+}
+@keyframes vsAcceleratedStreaks{
+  from{background-position:0 0,0 0,0 50%}
+  to{background-position:0 0,0 0,520% 50%}
+}
+@keyframes vsAcceleratedFlash{
+  from{opacity:.2;filter:brightness(1.2) drop-shadow(0 0 6px rgba(145,111,255,.75))}
+  to{opacity:1;filter:brightness(3.4) drop-shadow(0 0 24px rgba(198,174,255,1))}
+}
+@media(prefers-reduced-motion:reduce){
+  #authLoading.vs-intro-launch,
+  #authLoading.vs-intro-launch .authLoadingBrand,
   #authLoading.vs-intro-launch .authLoadingMark,
   #authLoading.vs-intro-launch .authLoadingScene,
   #authLoading.vs-intro-launch .authLoadingScene:before,
