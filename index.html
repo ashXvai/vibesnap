@@ -2275,7 +2275,7 @@ const authIntroReady=new Promise(resolve=>{
  window.setTimeout(()=>{
   $("authLoading")?.classList.add("vs-intro-launch");
   // After the 10-second intro, let the logo and world rush past before revealing auth.
-  window.setTimeout(resolve,1400);
+  window.setTimeout(resolve,5000);
  },10000);
 });
 auth.onAuthStateChanged(async user=>{
@@ -5873,6 +5873,58 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 @keyframes vsFastFlashStreaks{
   from{background-position:0 0,0 0,0 50%}
   to{background-position:0 0,0 0,220% 50%}
+}
+@media(prefers-reduced-motion:reduce){
+  #authLoading.vs-intro-launch .authLoadingMark,
+  #authLoading.vs-intro-launch .authLoadingScene,
+  #authLoading.vs-intro-launch .authLoadingScene:before,
+  #authLoading.vs-intro-launch .introBeam,
+  #authLoading.vs-intro-launch .introSpark{animation:none!important}
+}
+</style>
+
+
+<style id="vibesnap-five-second-hyperspeed-correction">
+/* Keep the entire launch at five seconds, but cover much more distance at a constant high speed. */
+#authLoading.vs-intro-launch .authLoadingMark{
+  animation:vsFiveSecondHyperspeed 5s linear forwards!important;
+  filter:drop-shadow(0 0 14px rgba(190,160,255,1)) drop-shadow(0 0 38px rgba(126,91,255,.95))!important;
+}
+@keyframes vsFiveSecondHyperspeed{
+  from{transform:translate3d(-110vw,0,0) scale(.9)}
+  to{transform:translate3d(180vw,0,0) scale(1.2)}
+}
+#authLoading.vs-intro-launch .authLoadingScene{
+  animation:vsFiveSecondWorldRush 5s linear forwards!important;
+  opacity:.36!important;
+  filter:brightness(.58) saturate(.82)!important;
+}
+@keyframes vsFiveSecondWorldRush{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(-42vw,0,0) scale(1.28)}
+}
+#authLoading.vs-intro-launch .introBeam,
+#authLoading.vs-intro-launch .introSpark{
+  opacity:1!important;
+  filter:brightness(2.3) drop-shadow(0 0 14px rgba(169,135,255,1))!important;
+  animation:vsFiveSecondFlash .16s steps(2,end) infinite alternate!important;
+}
+@keyframes vsFiveSecondFlash{
+  from{opacity:.28;filter:brightness(1.15) drop-shadow(0 0 5px rgba(145,111,255,.72))}
+  to{opacity:1;filter:brightness(3) drop-shadow(0 0 22px rgba(198,174,255,1))}
+}
+#authLoading.vs-intro-launch .authLoadingScene:before{
+  opacity:.72!important;
+  background:
+    radial-gradient(ellipse at 20% 48%,rgba(115,83,210,.12),transparent 34%),
+    radial-gradient(ellipse at 78% 52%,rgba(91,125,220,.16),transparent 38%),
+    repeating-linear-gradient(108deg,transparent 0 70px,rgba(188,166,255,.16) 72px,transparent 75px 135px)!important;
+  background-size:auto,auto,260% 100%!important;
+  animation:vsFiveSecondStreaks .2s linear infinite!important;
+}
+@keyframes vsFiveSecondStreaks{
+  from{background-position:0 0,0 0,0 50%}
+  to{background-position:0 0,0 0,260% 50%}
 }
 @media(prefers-reduced-motion:reduce){
   #authLoading.vs-intro-launch .authLoadingMark,
