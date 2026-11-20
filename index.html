@@ -2275,7 +2275,7 @@ const authIntroReady=new Promise(resolve=>{
  window.setTimeout(()=>{
   $("authLoading")?.classList.add("vs-intro-launch");
   // After the 10-second intro, let the logo and world rush past before revealing auth.
-  window.setTimeout(resolve,5000);
+  window.setTimeout(resolve,2000);
  },10000);
 });
 auth.onAuthStateChanged(async user=>{
@@ -6044,5 +6044,53 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   #authLoading.vs-intro-launch .authLoadingScene:before,
   #authLoading.vs-intro-launch .introBeam,
   #authLoading.vs-intro-launch .introSpark{animation:none!important}
+}
+</style>
+
+
+<style id="vibesnap-login-input-interaction-recovery">
+/* Keep decorative login visuals behind the form and guarantee the fields accept pointer and keyboard input. */
+#loginScreen{
+  position:relative!important;
+  isolation:isolate!important;
+}
+#loginScreen .loginLiveScene{
+  z-index:0!important;
+  pointer-events:none!important;
+}
+#loginScreen .loginBox{
+  position:relative!important;
+  z-index:100!important;
+  pointer-events:auto!important;
+}
+#loginScreen .loginBox>*{
+  pointer-events:auto!important;
+}
+#loginScreen #accountUsername,
+#loginScreen #accountPassword{
+  position:relative!important;
+  z-index:101!important;
+  pointer-events:auto!important;
+  user-select:text!important;
+  -webkit-user-select:text!important;
+  touch-action:auto!important;
+  cursor:text!important;
+}
+#loginScreen .passwordField{
+  position:relative!important;
+  z-index:101!important;
+  pointer-events:auto!important;
+}
+#loginScreen .passwordToggle,
+#loginScreen #emailLogin,
+#loginScreen #emailSignup{
+  position:relative!important;
+  z-index:102!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+#authLoading.hidden{
+  display:none!important;
+  pointer-events:none!important;
 }
 </style>
