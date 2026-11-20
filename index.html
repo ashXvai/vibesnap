@@ -5826,6 +5826,57 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 </style>
 
 </body>
+
+<style id="vibesnap-transparent-login-surface">
+<!-- VIBESNAP_TRANSPARENT_LOGIN_SURFACE_V1 -->
+/* Transparent login surface; preserve readable, interactive credentials. */
+#loginScreen{background:transparent!important}
+#loginScreen .loginLiveScene{z-index:0!important;pointer-events:none!important}
+#loginScreen .loginBox{
+  position:relative!important;z-index:20!important;
+  background:transparent!important;background-color:transparent!important;
+  border:0!important;border-color:transparent!important;
+  box-shadow:none!important;backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;outline:0!important;
+}
+#loginScreen .loginBox>*{
+  position:relative!important;z-index:21!important;
+  visibility:visible!important;opacity:1!important;
+}
+#loginScreen .loginTitle,
+#loginScreen .loginTitle .wordVibe,
+#loginScreen .loginTitle .wordSnap{
+  display:inline-flex!important;visibility:visible!important;opacity:1!important;
+  color:#f4eaff!important;-webkit-text-fill-color:#f4eaff!important;
+  background:none!important;text-shadow:0 0 16px rgba(190,150,255,.55)!important;
+}
+#loginScreen .loginTitle .wordVibe{color:#c7a0ff!important;-webkit-text-fill-color:#c7a0ff!important}
+#loginScreen .loginTitle .wordSnap{color:#fff!important;-webkit-text-fill-color:#fff!important}
+#loginScreen .loginLabel{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  color:#eadcff!important;-webkit-text-fill-color:#eadcff!important;
+  text-shadow:0 1px 8px rgba(0,0,0,.8)!important;
+}
+#loginScreen #accountUsername,#loginScreen #accountPassword{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  pointer-events:auto!important;user-select:text!important;-webkit-user-select:text!important;
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  background:rgba(12,8,22,.24)!important;
+  border:1px solid rgba(215,190,255,.78)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 0 18px rgba(153,105,222,.12)!important;
+  caret-color:#fff!important;
+}
+#loginScreen #accountUsername::placeholder,#loginScreen #accountPassword::placeholder{
+  color:rgba(239,226,255,.76)!important;-webkit-text-fill-color:rgba(239,226,255,.76)!important;opacity:1!important;
+}
+#loginScreen #accountUsername:focus,#loginScreen #accountPassword:focus{
+  outline:none!important;border-color:#e2c9ff!important;
+  box-shadow:0 0 0 3px rgba(181,137,240,.24),0 0 24px rgba(166,107,255,.28)!important;
+}
+#loginScreen .passwordField{z-index:22!important;pointer-events:auto!important}
+#loginScreen .passwordToggle{z-index:23!important;pointer-events:auto!important}
+#loginScreen #emailLogin,#loginScreen #emailSignup{z-index:22!important;pointer-events:auto!important}
+</style>
 </html>
 
 
