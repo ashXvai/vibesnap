@@ -6031,6 +6031,51 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-visible-entered-credentials">
+/* High-contrast typed text: input surfaces stay distinct from the transparent panel. */
+#loginScreen .loginBox input#accountUsername,
+#loginScreen .loginBox input#accountPassword,
+#loginScreen input#accountUsername,
+#loginScreen input#accountPassword{
+  color:#241333!important;
+  -webkit-text-fill-color:#241333!important;
+  caret-color:#6c35a1!important;
+  opacity:1!important;
+  visibility:visible!important;
+  text-shadow:none!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+  background-color:#f3edf9!important;
+  background-image:none!important;
+  font-family:inherit!important;
+  font-size:16px!important;
+  font-weight:600!important;
+  line-height:normal!important;
+  letter-spacing:normal!important;
+  text-indent:0!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+#loginScreen .loginBox input#accountUsername::placeholder,
+#loginScreen .loginBox input#accountPassword::placeholder{
+  color:#766483!important;
+  -webkit-text-fill-color:#766483!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+#loginScreen .loginBox input#accountUsername:-webkit-autofill,
+#loginScreen .loginBox input#accountPassword:-webkit-autofill,
+#loginScreen .loginBox input#accountUsername:-webkit-autofill:hover,
+#loginScreen .loginBox input#accountPassword:-webkit-autofill:hover,
+#loginScreen .loginBox input#accountUsername:-webkit-autofill:focus,
+#loginScreen .loginBox input#accountPassword:-webkit-autofill:focus{
+  -webkit-text-fill-color:#241333!important;
+  caret-color:#6c35a1!important;
+  box-shadow:0 0 0 1000px #f3edf9 inset!important;
+}
+</style>
+
 </body>
 
 
