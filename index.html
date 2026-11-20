@@ -2272,9 +2272,7 @@ $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailL
 // Keep the animated opening visible briefly before revealing the login screen.
 // This promise is shared by auth callbacks so the intro only runs once per page load.
 const authIntroReady=new Promise(resolve=>{
- window.setTimeout(()=>{$("authLoading")?.classList.add("vs-intro-prelaunch");},9000);
  window.setTimeout(()=>{
-  $("authLoading")?.classList.remove("vs-intro-prelaunch");
   $("authLoading")?.classList.add("vs-intro-launch");
   // After the 10-second intro, let the logo and world rush past before revealing auth.
   window.setTimeout(resolve,2000);
@@ -6441,50 +6439,29 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 </style>
 
 
-<style id="vibesnap-prepared-intro-launch">
-/* Settle costly ambient effects before take-off, rather than during the launch frame. */
-#authLoading.vs-intro-prelaunch .authLoadingScene:before,
-#authLoading.vs-intro-prelaunch .authLoadingScene:after,
-#authLoading.vs-intro-prelaunch .introPortal,
-#authLoading.vs-intro-prelaunch .introOrbit,
-#authLoading.vs-intro-prelaunch .introOrbitTwo,
-#authLoading.vs-intro-prelaunch .introEnergy,
-#authLoading.vs-intro-prelaunch .introBeam,
-#authLoading.vs-intro-prelaunch .introSpark,
-#authLoading.vs-intro-prelaunch .introSnapCard,
-#authLoading.vs-intro-prelaunch .authLoadingScene i{
-  animation:none!important;filter:none!important;backdrop-filter:none!important;
-  opacity:0!important;transition:opacity .28s ease-out!important;
+
+
+
+<style id="vibesnap-intro-layer-preparation">
+/* Prepare the same visible intro layers ahead of the launch; no effects are hidden or shortened. */
+#authLoading .authLoadingMark,
+#authLoading .authLoadingScene,
+#authLoading .authLoadingScene:before,
+#authLoading .authLoadingScene:after,
+#authLoading .introPortal,
+#authLoading .introOrbit,
+#authLoading .introOrbitTwo,
+#authLoading .introEnergy,
+#authLoading .introBeam,
+#authLoading .introSpark,
+#authLoading .introSnapCard,
+#authLoading .authLoadingScene i{
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
 }
-#authLoading.vs-intro-prelaunch .authLoadingMark{
-  animation:none!important;transform:translate3d(0,0,0)!important;
-  filter:none!important;will-change:transform;
-}
-#authLoading.vs-intro-prelaunch .authLoadingWord span{
-  animation:none!important;background:none!important;-webkit-text-fill-color:#f4eaff!important;
-}
-#authLoading.vs-intro-launch,
-#authLoading.vs-intro-launch .authLoadingScene,
-#authLoading.vs-intro-launch .authLoadingMark{
-  backface-visibility:hidden;-webkit-backface-visibility:hidden;
-}
-#authLoading.vs-intro-launch .authLoadingScene:before,
-#authLoading.vs-intro-launch .authLoadingScene:after,
-#authLoading.vs-intro-launch .introPortal,
-#authLoading.vs-intro-launch .introOrbit,
-#authLoading.vs-intro-launch .introOrbitTwo,
-#authLoading.vs-intro-launch .introEnergy,
-#authLoading.vs-intro-launch .introBeam,
-#authLoading.vs-intro-launch .introSpark,
-#authLoading.vs-intro-launch .introSnapCard,
-#authLoading.vs-intro-launch .authLoadingScene i{
-  animation:none!important;filter:none!important;backdrop-filter:none!important;
-}
-#authLoading.vs-intro-launch .authLoadingMark{
-  animation:vsSmoothIntroMark 2s linear forwards!important;
-  transform:translate3d(0,0,0);will-change:transform;
-}
-@media(prefers-reduced-motion:reduce){#authLoading.vs-intro-prelaunch *{transition:none!important}}
+#authLoading .authLoadingMark{will-change:transform;transform:translate3d(0,0,0)}
+#authLoading .authLoadingScene{will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){#authLoading .authLoadingMark,#authLoading .authLoadingScene{will-change:auto}}
 </style>
 </body>
 </html>
