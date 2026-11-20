@@ -5944,6 +5944,93 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 @media(prefers-reduced-motion:reduce){#loginScreen .loginLiveScene{animation:none!important}}
 </style>
 
+
+<style id="vibesnap-login-mobile-input-fix">
+/* Prevent the fixed-height mobile login from clipping credentials; keep all controls above decorative layers. */
+#loginScreen{
+  height:100svh!important;min-height:100svh!important;
+  overflow-x:hidden!important;overflow-y:auto!important;
+  align-items:flex-start!important;justify-content:center!important;
+  -webkit-overflow-scrolling:touch;
+  padding:22px 16px max(24px,env(safe-area-inset-bottom))!important;
+}
+#loginScreen .loginLiveScene{
+  position:fixed!important;inset:0!important;z-index:0!important;
+  pointer-events:none!important;
+}
+#loginScreen .loginBox{
+  position:relative!important;z-index:5!important;
+  width:min(460px,100%)!important;height:auto!important;
+  min-height:0!important;max-height:none!important;
+  margin:auto!important;flex:0 0 auto!important;
+  overflow:visible!important;display:flex!important;
+  align-items:stretch!important;justify-content:center!important;
+  padding:18px 22px 26px!important;
+  pointer-events:auto!important;
+}
+#loginScreen .loginBox>*{pointer-events:auto!important}
+#loginScreen .loginBrand{
+  position:relative!important;left:auto!important;top:auto!important;
+  width:88px!important;height:88px!important;min-height:88px!important;
+  flex:0 0 88px!important;margin:0 auto 14px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:linear-gradient(145deg,#a56be9,#7040a9)!important;
+  border:1px solid rgba(226,203,255,.72)!important;
+  border-radius:27px!important;
+  box-shadow:0 0 0 5px rgba(163,113,226,.12),0 12px 34px rgba(106,57,163,.42)!important;
+  opacity:1!important;visibility:visible!important;
+}
+#loginScreen .loginCameraLogo{
+  display:block!important;width:62px!important;height:62px!important;
+  opacity:1!important;visibility:visible!important;
+  filter:drop-shadow(0 2px 5px rgba(20,10,35,.38))!important;
+}
+#loginScreen .loginTitle{
+  position:relative!important;left:auto!important;top:auto!important;
+  width:100%!important;margin:0 0 5px!important;
+  text-align:center!important;font-size:clamp(36px,9vw,46px)!important;
+  line-height:1.08!important;opacity:1!important;visibility:visible!important;
+}
+#loginScreen .loginSub:nth-child(3){
+  position:relative!important;left:auto!important;top:auto!important;
+  width:100%!important;margin:0 0 16px!important;
+  text-align:center!important;font-size:14px!important;
+}
+#loginScreen .loginLabel,
+#loginScreen #accountUsername,
+#loginScreen .passwordField,
+#loginScreen #accountPassword,
+#loginScreen #emailLogin,
+#loginScreen #emailSignup{
+  position:relative!important;z-index:8!important;
+  pointer-events:auto!important;visibility:visible!important;
+}
+#loginScreen #accountUsername,
+#loginScreen #accountPassword{
+  width:100%!important;min-width:0!important;height:54px!important;
+  user-select:text!important;-webkit-user-select:text!important;
+  touch-action:manipulation!important;
+}
+#loginScreen .passwordField{width:100%!important;display:flex!important}
+#loginScreen .passwordToggle{z-index:10!important;pointer-events:auto!important}
+#loginScreen #emailLogin,#loginScreen #emailSignup{
+  width:100%!important;min-height:52px!important;touch-action:manipulation!important;
+}
+@media(max-height:720px){
+  #loginScreen{justify-content:flex-start!important;padding-top:12px!important}
+  #loginScreen .loginBox{padding-top:8px!important;padding-bottom:18px!important}
+  #loginScreen .loginBrand{width:72px!important;height:72px!important;min-height:72px!important;flex-basis:72px!important;margin-bottom:9px!important}
+  #loginScreen .loginCameraLogo{width:52px!important;height:52px!important}
+  #loginScreen .loginTitle{font-size:36px!important}
+  #loginScreen .loginSub:nth-child(3){margin-bottom:10px!important}
+  #loginScreen .loginLabel{margin-top:8px!important}
+  #loginScreen #emailLogin,#loginScreen #emailSignup{margin-top:10px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #loginScreen .loginBrand,#loginScreen .loginCameraLogo{animation:none!important}
+}
+</style>
+
 </body>
 
 
