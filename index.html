@@ -6217,14 +6217,6 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
-</body>
-
-
-</html>
-
-
-
-
 
 <style id="vibesnap-fast-launch-obscured-world">
 /* Fast logo transit; keep the environment atmospheric, with only light flashes cutting through. */
@@ -6277,7 +6269,6 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
-
 <style id="vibesnap-five-second-hyperspeed-correction">
 /* Keep the entire launch at five seconds, but cover much more distance at a constant high speed. */
 #authLoading.vs-intro-launch .authLoadingMark{
@@ -6329,7 +6320,6 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
-
 <style id="vibesnap-accelerated-logo-and-world">
 /* Faster launch: both the logo and the moving world complete their travel in two seconds. */
 #authLoading.vs-intro-launch{animation:vsAcceleratedBackdrop 2s linear forwards!important}
@@ -6377,7 +6367,6 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
-
 <style id="vibesnap-restore-visible-snap-wordmark">
 /* Keep the complete VibeSnap wordmark visible while the V mark races across the intro. */
 #authLoading .authLoadingWord,
@@ -6411,3 +6400,43 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   color:#f4eaff!important;-webkit-text-fill-color:#f4eaff!important;
 }
 </style>
+
+<style id="vibesnap-smooth-motion-and-intro-handoff">
+/* One consistent, GPU-friendly launch: the mark and world travel together for two seconds. */
+#authLoading.vs-intro-launch{animation:vsSmoothIntroBackdrop 2s linear forwards!important;will-change:background-position}
+#authLoading.vs-intro-launch .authLoadingBrand{animation:none!important;transform:none!important;filter:none!important;will-change:auto!important}
+#authLoading.vs-intro-launch .authLoadingMark{animation:vsSmoothIntroMark 2s linear forwards!important;will-change:transform;filter:drop-shadow(0 0 12px rgba(185,153,255,.82))!important}
+#authLoading.vs-intro-launch .authLoadingScene{animation:vsSmoothIntroWorld 2s linear forwards!important;will-change:transform,opacity;filter:none!important}
+#authLoading.vs-intro-launch .authLoadingScene:before{animation:vsSmoothIntroStreaks 2s linear forwards!important;opacity:.66!important;filter:none!important}
+#authLoading.vs-intro-launch .authLoadingScene:after,
+#authLoading.vs-intro-launch .introPortal,#authLoading.vs-intro-launch .introOrbit,
+#authLoading.vs-intro-launch .introOrbitTwo,#authLoading.vs-intro-launch .introEnergy,
+#authLoading.vs-intro-launch .introSnapCard,#authLoading.vs-intro-launch .authLoadingScene i{
+  animation:none!important;filter:none!important;transition:opacity .24s ease-out!important;
+}
+#authLoading.vs-intro-launch .introBeam,#authLoading.vs-intro-launch .introSpark{
+  animation:vsSmoothIntroFlash .24s ease-in-out infinite alternate!important;filter:none!important;
+}
+#authLoading.vs-intro-launch .authLoadingMessage,#authLoading.vs-intro-launch .authLoadingProgress,
+#authLoading.vs-intro-launch .authLoadingHint{animation:vsSmoothIntroCopyExit .22s ease-out forwards!important;filter:none!important}
+@keyframes vsSmoothIntroMark{from{transform:translate3d(-110vw,0,0) scale(.9)}to{transform:translate3d(180vw,0,0) scale(1.2)}}
+@keyframes vsSmoothIntroWorld{from{transform:translate3d(0,0,0) scale(1);opacity:.9}to{transform:translate3d(-42vw,0,0) scale(1.2);opacity:.3}}
+@keyframes vsSmoothIntroBackdrop{from{background-position:0 0}to{background-position:100% 50%}}
+@keyframes vsSmoothIntroStreaks{from{background-position:0 0,0 0,0 50%}to{background-position:0 0,0 0,260% 50%}}
+@keyframes vsSmoothIntroFlash{from{opacity:.32}to{opacity:.9}}
+@keyframes vsSmoothIntroCopyExit{to{opacity:0;transform:translate3d(0,-8px,0)}}
+/* Replace the expensive blur-filter reveal with a light opacity/position handoff. */
+#loginScreen.vs-login-reveal{animation:vsSmoothLoginReveal .46s cubic-bezier(.2,.75,.25,1) both!important;will-change:opacity,transform;filter:none!important}
+@keyframes vsSmoothLoginReveal{from{opacity:0;transform:translate3d(0,12px,0) scale(.99)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+#app button,#loginScreen button{transition:transform .18s cubic-bezier(.2,.7,.2,1),background-color .2s ease,border-color .2s ease,box-shadow .2s ease,color .2s ease!important}
+#app button:active,#loginScreen button:active{transition-duration:.1s!important}
+@media(prefers-reduced-motion:reduce){
+  #authLoading.vs-intro-launch,#authLoading.vs-intro-launch *,
+  #loginScreen.vs-login-reveal,#app button,#loginScreen button{
+    animation:none!important;transition:none!important;will-change:auto!important;
+  }
+}
+</style>
+
+</body>
+</html>
