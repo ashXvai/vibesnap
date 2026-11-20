@@ -6190,6 +6190,33 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-clean-login-logo-halo">
+/* Replace the busy rotating/dotted logo rings with a restrained, stationary halo. */
+#loginScreen:not(.hidden) .loginBrand{
+  isolation:isolate!important;
+  overflow:visible!important;
+  transform:none!important;
+  animation:none!important;
+  filter:none!important;
+  box-shadow:
+    0 10px 28px rgba(100,54,155,.34),
+    0 0 0 1px rgba(224,199,255,.34),
+    0 0 26px rgba(166,112,239,.24)!important;
+}
+#loginScreen:not(.hidden) .loginBrand::before,
+#loginScreen:not(.hidden) .loginBrand::after{
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+}
+#loginScreen:not(.hidden) .loginCameraLogo{
+  transform:none!important;
+  animation:none!important;
+  filter:drop-shadow(0 2px 5px rgba(30,12,48,.22))!important;
+}
+</style>
+
 </body>
 
 
