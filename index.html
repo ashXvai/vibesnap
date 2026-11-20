@@ -2275,7 +2275,7 @@ const authIntroReady=new Promise(resolve=>{
  window.setTimeout(()=>{
   $("authLoading")?.classList.add("vs-intro-launch");
   // After the 10-second intro, let the logo and world rush past before revealing auth.
-  window.setTimeout(resolve,2000);
+  window.setTimeout(resolve,5000);
  },10000);
 });
 auth.onAuthStateChanged(async user=>{
@@ -6015,5 +6015,34 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 #loginScreen .loginTitle .wordSnap{
   display:inline-block!important;visibility:visible!important;opacity:1!important;
   color:#f4eaff!important;-webkit-text-fill-color:#f4eaff!important;
+}
+</style>
+
+
+<style id="vibesnap-five-second-high-speed-final">
+/* Preserve a full five-second launch while keeping the logo and world moving quickly throughout. */
+#authLoading.vs-intro-launch{animation:vsAcceleratedBackdrop 5s linear forwards!important}
+#authLoading.vs-intro-launch .authLoadingBrand{animation:vsAcceleratedBrand 5s linear forwards!important}
+#authLoading.vs-intro-launch .authLoadingMark{animation:vsFiveSecondFastLogo 5s linear forwards!important}
+#authLoading.vs-intro-launch .authLoadingScene{animation:vsFiveSecondFastWorld 5s linear forwards!important}
+#authLoading.vs-intro-launch .authLoadingScene:before{animation:vsAcceleratedStreaks .075s linear infinite!important}
+#authLoading.vs-intro-launch .introBeam,
+#authLoading.vs-intro-launch .introSpark{animation:vsAcceleratedFlash .075s steps(2,end) infinite alternate!important}
+@keyframes vsFiveSecondFastLogo{
+  from{transform:translate3d(-180vw,0,0) scale(.88)}
+  to{transform:translate3d(260vw,0,0) scale(1.22)}
+}
+@keyframes vsFiveSecondFastWorld{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(-135vw,0,0) scale(1.5)}
+}
+@media(prefers-reduced-motion:reduce){
+  #authLoading.vs-intro-launch,
+  #authLoading.vs-intro-launch .authLoadingBrand,
+  #authLoading.vs-intro-launch .authLoadingMark,
+  #authLoading.vs-intro-launch .authLoadingScene,
+  #authLoading.vs-intro-launch .authLoadingScene:before,
+  #authLoading.vs-intro-launch .introBeam,
+  #authLoading.vs-intro-launch .introSpark{animation:none!important}
 }
 </style>
