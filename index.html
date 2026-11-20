@@ -2489,7 +2489,7 @@ else{empty.style.display=matches.length?"none":"flex";empty.querySelector("b").t
 }
 
 // Friend requests and accepted friendships are stored separately from public profiles.
-let incomingFriendRequests=[],outgoingFriendRequests=[],acceptedFriendships=[],friendRequestUnsubscribers=[];
+let incomingFriendRequests=[],outgoingFriendRequests=[],acceptedFriendships=[],friendRequestUnsubscribers=[],blockedUserIds=[];
 function getRelationshipState(uid){
 if(!currentUser||!uid||uid===currentUser.uid)return "none";
 if(blockedUserIds.includes(uid))return "blocked";
@@ -6073,6 +6073,120 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   -webkit-text-fill-color:#241333!important;
   caret-color:#6c35a1!important;
   box-shadow:0 0 0 1000px #f3edf9 inset!important;
+}
+</style>
+
+
+<style id="vibesnap-final-login-screen-composition">
+/* The hidden state must win over all desktop login display rules. */
+#loginScreen.hidden{display:none!important}
+#loginScreen:not(.hidden){
+  display:flex!important;position:fixed!important;inset:0!important;
+  width:100%!important;height:100vh!important;height:100svh!important;
+  min-height:100vh!important;min-height:100svh!important;
+  align-items:center!important;justify-content:center!important;
+  overflow-x:hidden!important;overflow-y:auto!important;
+  padding:28px 18px!important;gap:0!important;
+  background:
+    radial-gradient(ellipse at 50% 48%,rgba(128,68,207,.23),transparent 35%),
+    radial-gradient(ellipse at 50% 100%,rgba(72,36,120,.24),transparent 55%),
+    linear-gradient(145deg,#080711 0%,#130d20 52%,#080711 100%)!important;
+  isolation:isolate!important;z-index:1000!important;
+}
+#loginScreen:not(.hidden) .loginLiveScene{
+  position:fixed!important;inset:0!important;z-index:0!important;
+  display:block!important;width:100%!important;height:100%!important;
+  min-height:100%!important;opacity:1!important;pointer-events:none!important;
+  overflow:hidden!important;
+}
+#loginScreen:not(.hidden) .loginLiveScene:before,
+#loginScreen:not(.hidden) .loginLiveScene:after{content:none!important;display:none!important}
+#loginScreen:not(.hidden) .loginScenePortal{
+  left:50%!important;top:50%!important;width:min(42vw,520px)!important;height:min(42vw,520px)!important;
+  transform:translate(-50%,-50%)!important;opacity:.88!important;
+}
+#loginScreen:not(.hidden) .loginSceneRing{
+  left:50%!important;top:50%!important;opacity:.8!important;
+}
+#loginScreen:not(.hidden) .loginSceneCard,
+#loginScreen:not(.hidden) .loginSceneFloor,
+#loginScreen:not(.hidden) .vsFxGrid,
+#loginScreen:not(.hidden) .vsFxScan{display:none!important}
+#loginScreen:not(.hidden) .loginBox{
+  position:relative!important;z-index:2!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:stretch!important;justify-content:center!important;
+  width:min(450px,100%)!important;max-width:450px!important;
+  min-height:0!important;height:auto!important;margin:0 auto!important;
+  padding:22px 14px 26px!important;gap:0!important;
+  border:0!important;border-radius:0!important;
+  background:transparent!important;background-color:transparent!important;
+  box-shadow:none!important;backdrop-filter:none!important;
+  overflow:visible!important;text-align:left!important;
+  pointer-events:auto!important;
+}
+#loginScreen:not(.hidden) .loginBrand{
+  width:88px!important;height:88px!important;min-height:88px!important;
+  margin:0 auto 14px!important;flex:none!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:26px!important;
+  background:linear-gradient(145deg,#a66ae5,#7040a9)!important;
+  border:1px solid rgba(226,203,255,.72)!important;
+  box-shadow:0 0 0 5px rgba(163,113,226,.12),0 12px 34px rgba(106,57,163,.42)!important;
+}
+#loginScreen:not(.hidden) .loginCameraLogo{display:block!important;width:64px!important;height:64px!important;opacity:1!important;visibility:visible!important}
+#loginScreen:not(.hidden) .loginTitle{
+  display:flex!important;justify-content:center!important;width:100%!important;
+  margin:0!important;text-align:center!important;
+  font-size:clamp(38px,4vw,54px)!important;line-height:1.05!important;
+  letter-spacing:-2px!important;
+}
+#loginScreen:not(.hidden) .loginTitle + .loginSub{
+  display:block!important;width:100%!important;margin:7px 0 24px!important;
+  text-align:center!important;color:#d8c9eb!important;font-size:14px!important;
+}
+#loginScreen:not(.hidden) .loginLabel{
+  display:block!important;width:100%!important;margin:0 0 8px!important;
+  color:#e7d9f8!important;font-size:11px!important;letter-spacing:.12em!important;
+}
+#loginScreen:not(.hidden) #accountUsername,
+#loginScreen:not(.hidden) #accountPassword{
+  width:100%!important;height:58px!important;min-height:58px!important;
+  margin:0 0 16px!important;padding:0 18px!important;
+  border-radius:15px!important;border:1px solid rgba(193,153,245,.85)!important;
+  background:#f3edf9!important;color:#241333!important;
+  -webkit-text-fill-color:#241333!important;caret-color:#6c35a1!important;
+  font-size:16px!important;font-weight:600!important;opacity:1!important;
+}
+#loginScreen:not(.hidden) #accountUsername::placeholder,
+#loginScreen:not(.hidden) #accountPassword::placeholder{
+  color:#766483!important;-webkit-text-fill-color:#766483!important;opacity:1!important;
+}
+#loginScreen:not(.hidden) .passwordField{display:flex!important;width:100%!important;margin:0 0 16px!important;position:relative!important}
+#loginScreen:not(.hidden) .passwordField #accountPassword{margin:0!important;padding-right:54px!important}
+#loginScreen:not(.hidden) .passwordToggle{z-index:5!important;color:#9c65d1!important;pointer-events:auto!important}
+#loginScreen:not(.hidden) .loginBtn{
+  width:100%!important;min-height:58px!important;height:58px!important;
+  margin:0 0 12px!important;border-radius:16px!important;
+  font-size:16px!important;font-weight:850!important;
+}
+#loginScreen:not(.hidden) #emailLogin{
+  background:rgba(113,67,164,.58)!important;color:#fff!important;
+  border:1px solid rgba(195,155,255,.78)!important;
+}
+#loginScreen:not(.hidden) #emailSignup{
+  background:linear-gradient(110deg,#9856dc,#6929a8)!important;color:#fff!important;
+}
+#loginScreen:not(.hidden) .loginSub:last-child{
+  margin:0!important;text-align:left!important;color:#d8c9eb!important;
+  font-size:14px!important;line-height:1.55!important;
+}
+@media(max-width:520px){
+  #loginScreen:not(.hidden){padding:18px 16px!important}
+  #loginScreen:not(.hidden) .loginBox{padding:16px 2px 22px!important}
+  #loginScreen:not(.hidden) .loginBrand{width:78px!important;height:78px!important}
+  #loginScreen:not(.hidden) .loginCameraLogo{width:56px!important;height:56px!important}
+  #loginScreen:not(.hidden) .loginTitle{font-size:40px!important}
 }
 </style>
 
