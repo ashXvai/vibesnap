@@ -6597,7 +6597,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   will-change:opacity;
 }
 #loginScreen.vs-login-reveal .vs-hyperspace-transition{
-  animation:vsReferenceHyperspaceTravel 3.35s linear both!important;
+  animation:vsReferenceHyperspaceTravel 1.45s linear both!important;
 }
 #loginScreen .vs-hyperspace-transition:before,
 #loginScreen .vs-hyperspace-transition:after{
@@ -6624,7 +6624,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   transform:scale(.28);
   filter:blur(.25px);
   transform-origin:50% 50%;
-  animation:vsHyperspaceStarTravel 3.05s cubic-bezier(.12,.62,.2,1) both;
+  animation:vsHyperspaceStarTravel 1.28s linear both;
 }
 #loginScreen .vs-hyperspace-transition:after{
   inset:0;
@@ -6634,7 +6634,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   opacity:0;
   transform:scale(.45);
   mix-blend-mode:screen;
-  animation:vsHyperspaceArrivalFlash .48s 2.87s ease-out both;
+  animation:vsHyperspaceArrivalFlash .34s 1.12s ease-out both;
 }
 @keyframes vsReferenceHyperspaceTravel{
   0%{opacity:0}
@@ -6649,7 +6649,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   48%{opacity:1;transform:scale(1.02);filter:blur(.45px)}
   76%{opacity:1;transform:scale(1.62);filter:blur(1px)}
   91%{opacity:1;transform:scale(2.05);filter:blur(1.8px)}
-  100%{opacity:0;transform:scale(2.32);filter:blur(3px)}
+  100%{opacity:0;transform:scale(3.15);filter:blur(2.2px)}
 }
 @keyframes vsHyperspaceArrivalFlash{
   0%{opacity:0;transform:scale(.45)}
@@ -6659,7 +6659,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 /* The login controls emerge only after the forward-travel phase, as the arrival flash passes. */
 #loginScreen.vs-login-reveal .loginBox{
-  animation:vsReferenceLoginCard .72s 2.78s cubic-bezier(.16,1,.3,1) both!important;
+  animation:vsReferenceLoginCard .58s 1.08s cubic-bezier(.16,1,.3,1) both!important;
 }
 @keyframes vsReferenceLoginCard{
   from{opacity:0;transform:translate3d(0,20px,0) scale(.975)}
