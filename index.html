@@ -2074,7 +2074,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 </head>
 <body>
 <div id="vibeNotice" role="status" aria-live="polite"></div><div id="authLoading" role="status" aria-live="polite"><div class="authLoadingScene" aria-hidden="true"><div class="introPortal"></div><div class="introOrbit introOrbitOne"></div><div class="introOrbit introOrbitTwo"></div><div class="introEnergy"></div><div class="introBeam introBeamOne"></div><div class="introBeam introBeamTwo"></div><div class="introSnapCard introSnapCardOne"><b>✦</b><span>CAPTURE</span></div><div class="introSnapCard introSnapCardTwo"><b>↗</b><span>SHARE</span></div><div class="introSnapCard introSnapCardThree"><b>♡</b><span>VIBE</span></div><div class="introSnapCard introSnapCardFour"><b>◉</b><span>CONNECT</span></div><div class="introSpark introSparkOne"></div><div class="introSpark introSparkTwo"></div><div class="introSpark introSparkThree"></div><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="authLoadingBrand"><div class="authLoadingMark" aria-label="VibeSnap logo"><svg class="introBrandLogo" viewBox="0 0 100 100" role="img" aria-label="VibeSnap logo"><path d="M50 8 86 29v42L50 92 14 71V29Z" fill="#a78bfa"/><path d="m31 32 19 36 19-36" stroke="#171522" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="authLoadingWord">Vibe<span>Snap</span></div></div><div class="authLoadingMessage">Getting everything ready</div><div class="authLoadingProgress" aria-hidden="true"><span></span></div><div class="authLoadingHint">YOUR MOMENTS. YOUR VIBE.</div></div>
-<div id="loginScreen" class="hidden"><div class="loginLiveScene" aria-hidden="true">
+<div id="loginScreen" class="hidden"><div class="vs-hyperspace-transition" aria-hidden="true"></div><div class="loginLiveScene" aria-hidden="true">
   <div class="loginScenePortal"></div><div class="loginSceneRing loginSceneRingA"></div><div class="loginSceneRing loginSceneRingB"></div><div class="loginSceneRing loginSceneRingC"></div>
   <div class="loginSceneBeam loginSceneBeamA"></div><div class="loginSceneBeam loginSceneBeamB"></div><div class="loginSceneBeam loginSceneBeamC"></div>
   <div class="loginSceneCard loginSceneCardA"><b>✦</b><span>CAPTURE</span></div><div class="loginSceneCard loginSceneCardB"><b>↗</b><span>SHARE</span></div><div class="loginSceneCard loginSceneCardC"><b>♡</b><span>VIBE</span></div><div class="loginSceneCard loginSceneCardD"><b>◉</b><span>CONNECT</span></div>
@@ -6575,6 +6575,79 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   #loginScreen.vs-login-reveal,#loginScreen.vs-login-reveal *{
     animation:none!important;transition:none!important;filter:none!important;will-change:auto!important
   }
+}
+</style>
+
+
+<style id="vibesnap-reference-hyperspace-login-entry">
+/* Full-screen login entrance inspired by the supplied radial hyperspace reference.
+   This runs only when the login screen is revealed; the separate logo intro is untouched. */
+#loginScreen .vs-hyperspace-transition{
+  position:fixed!important;
+  inset:-42vmax!important;
+  z-index:50!important;
+  display:block!important;
+  pointer-events:none!important;
+  opacity:0;
+  transform:scale(.08);
+  transform-origin:50% 50%;
+  background:
+    radial-gradient(circle at 50% 50%,#020716 0 2.2%,rgba(4,15,39,.96) 3.4%,rgba(7,25,61,.7) 6.5%,transparent 19%),
+    repeating-conic-gradient(from -1.2deg at 50% 50%,
+      rgba(245,251,255,.96) 0deg .34deg,
+      rgba(140,202,255,.86) .42deg .72deg,
+      transparent .88deg 2.55deg),
+    repeating-conic-gradient(from .55deg at 50% 50%,
+      transparent 0deg 1.8deg,
+      rgba(214,239,255,.42) 1.92deg 2.05deg,
+      transparent 2.18deg 3.6deg),
+    radial-gradient(ellipse at 50% 50%,#174b91 0%,#091b3c 48%,#030817 100%)!important;
+  background-blend-mode:normal,screen,screen,normal!important;
+  filter:drop-shadow(0 0 2px rgba(155,210,255,.42));
+  will-change:transform,opacity;
+}
+#loginScreen.vs-login-reveal .vs-hyperspace-transition{
+  animation:vsReferenceHyperspaceBurst 1.55s cubic-bezier(.12,.72,.16,1) both!important;
+}
+#loginScreen .vs-hyperspace-transition:before,
+#loginScreen .vs-hyperspace-transition:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+#loginScreen .vs-hyperspace-transition:before{
+  background:
+    radial-gradient(circle at 50% 50%,transparent 0 2%,rgba(4,12,31,.12) 3%,transparent 9%),
+    repeating-conic-gradient(from .3deg at 50% 50%,
+      transparent 0deg 2.1deg,
+      rgba(255,255,255,.72) 2.18deg 2.28deg,
+      transparent 2.38deg 4.1deg);
+  opacity:.76;
+}
+#loginScreen .vs-hyperspace-transition:after{
+  background:
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.98) 0%,rgba(180,222,255,.72) 1.2%,rgba(82,153,255,.24) 4.5%,transparent 13%),
+    radial-gradient(ellipse at 50% 50%,transparent 35%,rgba(3,8,22,.2) 100%);
+  mix-blend-mode:screen;
+}
+@keyframes vsReferenceHyperspaceBurst{
+  0%{opacity:0;transform:scale(.08)}
+  12%{opacity:1;transform:scale(.28)}
+  66%{opacity:1;transform:scale(1.05)}
+  100%{opacity:0;transform:scale(1.82)}
+}
+/* Let the login card emerge as the starburst passes, without delaying access to controls. */
+#loginScreen.vs-login-reveal .loginBox{
+  animation:vsReferenceLoginCard .72s .34s cubic-bezier(.16,1,.3,1) both!important;
+}
+@keyframes vsReferenceLoginCard{
+  from{opacity:0;transform:translate3d(0,20px,0) scale(.975)}
+  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+  #loginScreen .vs-hyperspace-transition{display:none!important;animation:none!important}
+  #loginScreen.vs-login-reveal .loginBox{animation:none!important}
 }
 </style>
 
