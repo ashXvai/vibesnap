@@ -6464,127 +6464,93 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 @media(prefers-reduced-motion:reduce){#authLoading .authLoadingMark,#authLoading .authLoadingScene{will-change:auto}}
 </style>
 
-<style id="vibesnap-hyperspace-arrival-v1">
-/* Unified hyperspace arrival: distant VibeSnap mark accelerates toward the viewer.
-   This overrides only the intro launch and the login reveal; auth/app logic is untouched. */
-#authLoading{perspective:900px;transform-style:preserve-3d}
+<style id="vibesnap-modern-hyperspace-arrival">
+/* Modern, restrained arrival: depth and light, without grids, laser lines or spinning portal graphics. */
+#authLoading{perspective:1100px}
+#authLoading:before,#authLoading:after{display:none!important}
+#authLoading .authLoadingScene:before{
+  inset:0!important;opacity:1!important;
+  background:
+    radial-gradient(ellipse at 50% 48%,rgba(129,91,255,.25),transparent 38%),
+    radial-gradient(ellipse at 18% 22%,rgba(88,117,255,.12),transparent 34%),
+    radial-gradient(ellipse at 82% 78%,rgba(155,91,255,.12),transparent 36%)!important;
+  animation:none!important;
+}
+#authLoading .authLoadingScene:after,
+#authLoading .introPortal,
+#authLoading .introOrbit,
+#authLoading .introOrbitTwo,
+#authLoading .introEnergy,
+#authLoading .introBeam,
+#authLoading .introBeamTwo,
+#authLoading .introSnapCard{display:none!important;animation:none!important}
+#authLoading .authLoadingScene i{
+  opacity:.38!important;width:3px!important;height:3px!important;
+  box-shadow:0 0 10px 2px rgba(190,177,255,.35)!important;
+}
 #authLoading.vs-intro-launch{
-  animation:vsHyperspaceBackdropV1 2s ease-in forwards!important;
-  background-size:220% 220%!important;
+  animation:vsModernBackdrop 2s ease-out forwards!important;
+  background:
+    radial-gradient(ellipse at 50% 48%,#342064 0%,#17132f 48%,#090914 100%)!important;
 }
 #authLoading.vs-intro-launch .authLoadingBrand{
-  position:relative!important;
-  z-index:5!important;
-  opacity:1!important;
-  visibility:visible!important;
+  z-index:5!important;opacity:1!important;visibility:visible!important;
   transform-origin:50% 50%!important;
-  animation:vsHyperspaceApproachV1 2s cubic-bezier(.18,.72,.16,1) forwards!important;
+  animation:vsModernApproach 2s cubic-bezier(.16,.72,.18,1) forwards!important;
+  filter:drop-shadow(0 12px 36px rgba(126,91,255,.28))!important;
   will-change:transform,opacity;
-  filter:drop-shadow(0 0 18px rgba(170,137,255,.55));
 }
-#authLoading.vs-intro-launch .authLoadingMark{
-  animation:none!important;
-  transform:none!important;
-}
+#authLoading.vs-intro-launch .authLoadingMark,
 #authLoading.vs-intro-launch .authLoadingWord,
 #authLoading.vs-intro-launch .authLoadingWord span{
-  animation:none!important;
-  transform:none!important;
+  animation:none!important;transform:none!important;
 }
+#authLoading.vs-intro-launch .authLoadingMark{
+  box-shadow:0 18px 60px rgba(92,78,225,.42),0 0 0 1px rgba(255,255,255,.38) inset!important;
+}
+#authLoading.vs-intro-launch .authLoadingMark:before,
+#authLoading.vs-intro-launch .authLoadingMark:after{display:none!important;animation:none!important}
 #authLoading.vs-intro-launch .authLoadingScene{
-  animation:vsHyperspaceWorldV1 2s cubic-bezier(.18,.72,.16,1) forwards!important;
-  opacity:1!important;
-  will-change:transform,opacity;
-  filter:none!important;
+  animation:vsModernAtmosphere 2s ease-out forwards!important;
+  filter:none!important;will-change:transform,opacity;
 }
 #authLoading.vs-intro-launch .authLoadingScene:before{
-  opacity:1!important;
-  background:
-    radial-gradient(ellipse at 50% 50%,rgba(165,117,255,.32),transparent 36%),
-    repeating-linear-gradient(102deg,transparent 0 38px,rgba(185,151,255,.62) 39px 41px,transparent 43px 95px),
-    repeating-linear-gradient(78deg,transparent 0 72px,rgba(87,165,255,.42) 73px 75px,transparent 77px 145px),
-    linear-gradient(90deg,rgba(7,5,18,.15),rgba(70,45,130,.18),rgba(7,5,18,.15))!important;
-  background-size:100% 100%,220% 100%,260% 100%,100% 100%!important;
-  animation:vsHyperspaceStreaksV1 2s linear forwards!important;
-  will-change:background-position,opacity;
-}
-#authLoading.vs-intro-launch .authLoadingScene:after{
-  animation:vsHyperspacePortalV1 2s cubic-bezier(.18,.72,.16,1) forwards!important;
-}
-#authLoading.vs-intro-launch .introPortal{
-  animation:vsHyperspacePortalCoreV1 2s cubic-bezier(.18,.72,.16,1) forwards!important;
-}
-#authLoading.vs-intro-launch .introOrbit,
-#authLoading.vs-intro-launch .introOrbitTwo{
-  animation:vsHyperspaceOrbitV1 2s ease-in forwards!important;
-}
-#authLoading.vs-intro-launch .introBeam,
-#authLoading.vs-intro-launch .introEnergy,
-#authLoading.vs-intro-launch .introSpark{
-  animation:vsHyperspaceFlashV1 .22s ease-in-out infinite alternate!important;
-  filter:drop-shadow(0 0 12px rgba(160,139,255,.85))!important;
-}
-#authLoading.vs-intro-launch .introSnapCard,
-#authLoading.vs-intro-launch .authLoadingScene i{
-  animation:vsHyperspaceParticlesV1 1.5s ease-in forwards!important;
+  animation:vsModernGlow 2s ease-out forwards!important;
 }
 #authLoading.vs-intro-launch .authLoadingMessage,
 #authLoading.vs-intro-launch .authLoadingProgress,
 #authLoading.vs-intro-launch .authLoadingHint{
-  animation:vsHyperspaceCopyV1 .28s ease-out forwards!important;
+  animation:vsModernCopyExit .24s ease-out forwards!important;
 }
-@keyframes vsHyperspaceApproachV1{
-  0%{opacity:.9;transform:translate3d(0,0,-850px) scale(.055);filter:blur(1px) brightness(.8)}
-  18%{opacity:1;transform:translate3d(0,0,-560px) scale(.12);filter:blur(.5px) brightness(1)}
-  48%{opacity:1;transform:translate3d(0,0,-220px) scale(.42);filter:blur(.2px) brightness(1.2)}
-  76%{opacity:1;transform:translate3d(0,0,120px) scale(2.8);filter:blur(0) brightness(1.35)}
-  91%{opacity:.95;transform:translate3d(0,0,360px) scale(11);filter:blur(1px) brightness(1.7)}
-  100%{opacity:0;transform:translate3d(0,0,620px) scale(25);filter:blur(4px) brightness(2)}
+@keyframes vsModernApproach{
+  0%{opacity:.12;transform:translate3d(0,0,-900px) scale(.12);filter:blur(5px) brightness(.72)}
+  38%{opacity:.9;transform:translate3d(0,0,-260px) scale(.62);filter:blur(1.5px) brightness(1)}
+  76%{opacity:1;transform:translate3d(0,0,45px) scale(1.12);filter:blur(0) brightness(1.12)}
+  91%{opacity:1;transform:translate3d(0,0,0) scale(1.02);filter:blur(0) brightness(1.05)}
+  100%{opacity:0;transform:translate3d(0,0,0) scale(1.08);filter:blur(1px) brightness(1.15)}
 }
-@keyframes vsHyperspaceWorldV1{
-  0%{transform:scale(1);opacity:.95}
-  45%{transform:scale(1.12);opacity:1}
-  78%{transform:scale(1.55);opacity:.75}
-  100%{transform:scale(2.25);opacity:0}
+@keyframes vsModernBackdrop{
+  0%{filter:brightness(.82) saturate(.9)}
+  72%{filter:brightness(1.08) saturate(1.08)}
+  100%{filter:brightness(1.22) saturate(1.12)}
 }
-@keyframes vsHyperspaceBackdropV1{
-  0%{filter:brightness(1) saturate(1)}
-  72%{filter:brightness(1.18) saturate(1.25)}
-  100%{filter:brightness(1.8) saturate(1.5)}
+@keyframes vsModernAtmosphere{
+  0%{transform:scale(1);opacity:.75}
+  75%{transform:scale(1.08);opacity:1}
+  100%{transform:scale(1.16);opacity:.72}
 }
-@keyframes vsHyperspaceStreaksV1{
-  0%{background-position:50% 50%,0 50%,0 50%,50% 50%;opacity:.18}
-  45%{background-position:50% 50%,-460px 50%,620px 50%,50% 50%;opacity:.7}
-  100%{background-position:50% 50%,-1500px 50%,1900px 50%,50% 50%;opacity:0}
+@keyframes vsModernGlow{
+  0%{opacity:.18;transform:scale(.9)}
+  70%{opacity:1;transform:scale(1.08)}
+  100%{opacity:.5;transform:scale(1.18)}
 }
-@keyframes vsHyperspacePortalV1{
-  0%{transform:translate(-50%,-50%) scale(.5);opacity:.18}
-  55%{transform:translate(-50%,-50%) scale(1.8);opacity:.8}
-  100%{transform:translate(-50%,-50%) scale(5.8);opacity:0}
-}
-@keyframes vsHyperspacePortalCoreV1{
-  0%{transform:translate(-50%,-50%) scale(.65);filter:brightness(1)}
-  65%{transform:translate(-50%,-50%) scale(1.8);filter:brightness(1.7)}
-  100%{transform:translate(-50%,-50%) scale(4.5);filter:brightness(2.2);opacity:0}
-}
-@keyframes vsHyperspaceOrbitV1{
-  0%{opacity:.7;transform:scale(1);filter:blur(0)}
-  100%{opacity:0;transform:scale(3.8);filter:blur(5px)}
-}
-@keyframes vsHyperspaceFlashV1{from{opacity:.25}to{opacity:1}}
-@keyframes vsHyperspaceParticlesV1{
-  0%{opacity:.75;transform:scale(1)}
-  100%{opacity:0;transform:scale(5)}
-}
-@keyframes vsHyperspaceCopyV1{to{opacity:0;transform:translateY(-8px)}}
-
-/* The login composition lands out of the tunnel, with the form becoming usable immediately. */
+@keyframes vsModernCopyExit{to{opacity:0;transform:translateY(-6px)}}
 #loginScreen.vs-login-reveal{
-  animation:vsHyperspaceLoginWorldV1 .72s cubic-bezier(.16,1,.3,1) both!important;
-  will-change:opacity,transform;
+  animation:vsModernLoginReveal .62s cubic-bezier(.16,1,.3,1) both!important;
+  filter:none!important;will-change:opacity,transform;
 }
 #loginScreen.vs-login-reveal .loginBox{
-  animation:vsHyperspaceLoginCardV1 .78s .04s cubic-bezier(.16,1,.3,1) both!important;
+  animation:vsModernLoginCard .68s .05s cubic-bezier(.16,1,.3,1) both!important;
   will-change:opacity,transform;
 }
 #loginScreen.vs-login-reveal .loginBrand,
@@ -6595,24 +6561,20 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 #loginScreen.vs-login-reveal #accountPassword,
 #loginScreen.vs-login-reveal .passwordField,
 #loginScreen.vs-login-reveal #emailLogin,
-#loginScreen.vs-login-reveal #emailSignup{
-  animation:none!important;
+#loginScreen.vs-login-reveal #emailSignup{animation:none!important}
+@keyframes vsModernLoginReveal{
+  from{opacity:0;transform:scale(1.025);filter:brightness(1.12)}
+  to{opacity:1;transform:scale(1);filter:brightness(1)}
 }
-@keyframes vsHyperspaceLoginWorldV1{
-  0%{opacity:0;filter:brightness(1.8)}
-  55%{opacity:1;filter:brightness(1.25)}
-  100%{opacity:1;filter:brightness(1)}
-}
-@keyframes vsHyperspaceLoginCardV1{
-  0%{opacity:0;transform:translate3d(0,24px,0) scale(.88);filter:blur(2px)}
-  72%{opacity:1;transform:translate3d(0,-2px,0) scale(1.015);filter:blur(0)}
-  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+@keyframes vsModernLoginCard{
+  from{opacity:0;transform:translate3d(0,16px,0) scale(.975);filter:blur(1px)}
+  to{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
 }
 @media(prefers-reduced-motion:reduce){
-  #authLoading.vs-intro-launch,
-  #authLoading.vs-intro-launch *,
-  #loginScreen.vs-login-reveal,
-  #loginScreen.vs-login-reveal *{animation:none!important;transition:none!important;filter:none!important;will-change:auto!important}
+  #authLoading.vs-intro-launch,#authLoading.vs-intro-launch *,
+  #loginScreen.vs-login-reveal,#loginScreen.vs-login-reveal *{
+    animation:none!important;transition:none!important;filter:none!important;will-change:auto!important
+  }
 }
 </style>
 
