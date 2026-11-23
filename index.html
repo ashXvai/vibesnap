@@ -6580,66 +6580,86 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 
 
 <style id="vibesnap-reference-hyperspace-login-entry">
-/* Full-screen login entrance inspired by the supplied radial hyperspace reference.
-   This runs only when the login screen is revealed; the separate logo intro is untouched. */
+/* Continuous forward hyperspace travel, followed by a brief terminal flash.
+   This is attached only to the login reveal; the logo intro remains independent. */
 #loginScreen .vs-hyperspace-transition{
   position:fixed!important;
-  inset:-42vmax!important;
+  inset:0!important;
   z-index:50!important;
   display:block!important;
+  overflow:hidden!important;
   pointer-events:none!important;
   opacity:0;
-  transform:scale(.08);
+  transform:translateZ(0);
   transform-origin:50% 50%;
   background:
-    radial-gradient(circle at 50% 50%,#020716 0 2.2%,rgba(4,15,39,.96) 3.4%,rgba(7,25,61,.7) 6.5%,transparent 19%),
-    repeating-conic-gradient(from -1.2deg at 50% 50%,
-      rgba(245,251,255,.96) 0deg .34deg,
-      rgba(140,202,255,.86) .42deg .72deg,
-      transparent .88deg 2.55deg),
-    repeating-conic-gradient(from .55deg at 50% 50%,
-      transparent 0deg 1.8deg,
-      rgba(214,239,255,.42) 1.92deg 2.05deg,
-      transparent 2.18deg 3.6deg),
-    radial-gradient(ellipse at 50% 50%,#174b91 0%,#091b3c 48%,#030817 100%)!important;
-  background-blend-mode:normal,screen,screen,normal!important;
-  filter:drop-shadow(0 0 2px rgba(155,210,255,.42));
-  will-change:transform,opacity;
+    radial-gradient(ellipse at 50% 50%,#06142d 0%,#030b1c 48%,#01040d 100%)!important;
+  will-change:opacity;
 }
 #loginScreen.vs-login-reveal .vs-hyperspace-transition{
-  animation:vsReferenceHyperspaceBurst 1.55s cubic-bezier(.12,.72,.16,1) both!important;
+  animation:vsReferenceHyperspaceTravel 3.35s linear both!important;
 }
 #loginScreen .vs-hyperspace-transition:before,
 #loginScreen .vs-hyperspace-transition:after{
   content:"";
   position:absolute;
-  inset:0;
+  inset:-12%;
   pointer-events:none;
 }
 #loginScreen .vs-hyperspace-transition:before{
   background:
-    radial-gradient(circle at 50% 50%,transparent 0 2%,rgba(4,12,31,.12) 3%,transparent 9%),
-    repeating-conic-gradient(from .3deg at 50% 50%,
-      transparent 0deg 2.1deg,
-      rgba(255,255,255,.72) 2.18deg 2.28deg,
-      transparent 2.38deg 4.1deg);
-  opacity:.76;
+    radial-gradient(circle at 50% 50%,rgba(1,5,15,.98) 0 1.1%,rgba(5,18,43,.78) 2.5%,transparent 12%),
+    repeating-conic-gradient(from -1deg at 50% 50%,
+      transparent 0deg .55deg,
+      rgba(239,248,255,.96) .62deg .72deg,
+      rgba(119,188,255,.88) .76deg .91deg,
+      transparent 1deg 2.15deg),
+    repeating-conic-gradient(from .2deg at 50% 50%,
+      transparent 0deg 1.8deg,
+      rgba(180,219,255,.54) 1.88deg 1.98deg,
+      transparent 2.08deg 3.2deg),
+    radial-gradient(ellipse at 50% 50%,#174b91 0%,#091b3c 50%,#020716 100%);
+  background-blend-mode:normal,screen,screen,normal;
+  opacity:0;
+  transform:scale(.28);
+  filter:blur(.25px);
+  transform-origin:50% 50%;
+  animation:vsHyperspaceStarTravel 3.05s cubic-bezier(.12,.62,.2,1) both;
 }
 #loginScreen .vs-hyperspace-transition:after{
+  inset:0;
   background:
-    radial-gradient(circle at 50% 50%,rgba(255,255,255,.98) 0%,rgba(180,222,255,.72) 1.2%,rgba(82,153,255,.24) 4.5%,transparent 13%),
-    radial-gradient(ellipse at 50% 50%,transparent 35%,rgba(3,8,22,.2) 100%);
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,1) 0%,rgba(208,235,255,.96) 2%,rgba(112,181,255,.64) 8%,rgba(74,130,255,.2) 20%,transparent 48%),
+    radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(1,5,15,.42) 100%);
+  opacity:0;
+  transform:scale(.45);
   mix-blend-mode:screen;
+  animation:vsHyperspaceArrivalFlash .48s 2.87s ease-out both;
 }
-@keyframes vsReferenceHyperspaceBurst{
-  0%{opacity:0;transform:scale(.08)}
-  12%{opacity:1;transform:scale(.28)}
-  66%{opacity:1;transform:scale(1.05)}
-  100%{opacity:0;transform:scale(1.82)}
+@keyframes vsReferenceHyperspaceTravel{
+  0%{opacity:0}
+  7%{opacity:1}
+  76%{opacity:1}
+  88%{opacity:1}
+  100%{opacity:0}
 }
-/* Let the login card emerge as the starburst passes, without delaying access to controls. */
+@keyframes vsHyperspaceStarTravel{
+  0%{opacity:.28;transform:scale(.28);filter:blur(.1px)}
+  18%{opacity:.78;transform:scale(.58);filter:blur(.2px)}
+  48%{opacity:1;transform:scale(1.02);filter:blur(.45px)}
+  76%{opacity:1;transform:scale(1.62);filter:blur(1px)}
+  91%{opacity:1;transform:scale(2.05);filter:blur(1.8px)}
+  100%{opacity:0;transform:scale(2.32);filter:blur(3px)}
+}
+@keyframes vsHyperspaceArrivalFlash{
+  0%{opacity:0;transform:scale(.45)}
+  22%{opacity:.98;transform:scale(.82)}
+  62%{opacity:.82;transform:scale(1.2)}
+  100%{opacity:0;transform:scale(1.65)}
+}
+/* The login controls emerge only after the forward-travel phase, as the arrival flash passes. */
 #loginScreen.vs-login-reveal .loginBox{
-  animation:vsReferenceLoginCard .72s .34s cubic-bezier(.16,1,.3,1) both!important;
+  animation:vsReferenceLoginCard .72s 2.78s cubic-bezier(.16,1,.3,1) both!important;
 }
 @keyframes vsReferenceLoginCard{
   from{opacity:0;transform:translate3d(0,20px,0) scale(.975)}
