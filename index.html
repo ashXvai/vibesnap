@@ -6671,5 +6671,109 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 }
 </style>
 
+
+<style id="vibesnap-real-hyperspace">
+/* Replace the fake expanding-gradient zoom with actual perspective star motion. */
+#loginScreen .vs-hyperspace-transition:before{display:none!important}
+#loginScreen .vs-hyperspace-transition:after{
+  animation:vsRealHyperspaceFlash .42s 1.92s ease-out both!important;
+}
+#loginScreen.vs-login-reveal .vs-hyperspace-transition{
+  animation:vsRealHyperspaceFade 2.42s linear both!important;
+  background:radial-gradient(ellipse at 50% 50%,#07152a 0%,#020817 58%,#01030a 100%)!important;
+}
+#loginScreen .vs-hyperspace-canvas{
+  position:absolute;inset:0;width:100%;height:100%;display:block;
+}
+#loginScreen.vs-login-reveal .loginBox{
+  animation:vsReferenceLoginCard .58s 2.02s cubic-bezier(.16,1,.3,1) both!important;
+}
+@keyframes vsRealHyperspaceFade{
+  0%,86%{opacity:1}100%{opacity:0}
+}
+@keyframes vsRealHyperspaceFlash{
+  0%{opacity:0;transform:scale(.25)}
+  30%{opacity:1;transform:scale(.9)}
+  100%{opacity:0;transform:scale(1.7)}
+}
+@media(prefers-reduced-motion:reduce){
+  #loginScreen .vs-hyperspace-canvas{display:none!important}
+}
+</style>
+<script id="vibesnap-perspective-starfield">
+(()=>{
+  const screen=document.getElementById('loginScreen');
+  const layer=screen&&screen.querySelector('.vs-hyperspace-transition');
+  if(!screen||!layer||layer.dataset.perspectiveReady)return;
+  layer.dataset.perspectiveReady='1';
+  const canvas=document.createElement('canvas');
+  canvas.className='vs-hyperspace-canvas';
+  canvas.setAttribute('aria-hidden','true');
+  layer.appendChild(canvas);
+  const ctx=canvas.getContext('2d',{alpha:true});
+  if(!ctx)return;
+  let width=0,height=0,dpr=1,raf=0,started=0,last=0,active=false,stars=[];
+  const duration=2420;
+  const random=(a,b)=>a+Math.random()*(b-a);
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    width=window.innerWidth;height=window.innerHeight;
+    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+    canvas.style.width=width+'px';canvas.style.height=height+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function makeStar(initial){
+    return {x:random(-1,1),y:random(-1,1),z:initial?random(.12,1.25):random(1.05,1.5),px:0,py:0,seen:false,hue:random(195,215),size:random(.45,1.45)};
+  }
+  function reset(){stars=Array.from({length:Math.min(260,Math.max(150,Math.round(width*height/5200)))},()=>makeStar(true));}
+  function draw(now){
+    if(!active)return;
+    if(!started)started=now;
+    const elapsed=now-started;
+    const dt=Math.min((now-last||16.7)/1000,.04);last=now;
+    const progress=Math.min(elapsed/duration,1);
+    const acceleration=.55+Math.pow(progress,1.7)*5.6;
+    ctx.clearRect(0,0,width,height);
+    const cx=width*.5,cy=height*.5,focal=Math.min(width,height)*.47;
+    for(const s of stars){
+      const z0=s.z;
+      s.z-=dt*acceleration;
+      if(s.z<=.055){Object.assign(s,makeStar(false));continue;}
+      const x=cx+(s.x/s.z)*focal;
+      const y=cy+(s.y/s.z)*focal;
+      if(!Number.isFinite(x+y)||Math.abs(x)>width*2.2||Math.abs(y)>height*2.2){Object.assign(s,makeStar(false));continue;}
+      if(s.seen){
+        const dx=x-s.px,dy=y-s.py;
+        const streak=Math.min(1,Math.hypot(dx,dy)/Math.max(1,focal*.035));
+        const alpha=Math.min(.98,.24+streak*.72)*(1-progress*.12);
+        ctx.beginPath();ctx.moveTo(s.px,s.py);ctx.lineTo(x,y);
+        ctx.strokeStyle='hsla('+s.hue+',95%, '+(86+streak*10)+'%,'+alpha+')';
+        ctx.lineWidth=s.size*(.65+streak*1.8);
+        ctx.shadowBlur=streak*9;ctx.shadowColor='rgba(142,198,255,.9)';ctx.stroke();
+      }else{s.seen=true;}
+      s.px=x;s.py=y;
+      if(z0>.08&&s.z<.42){
+        ctx.beginPath();ctx.arc(x,y,s.size*.65,0,Math.PI*2);
+        ctx.fillStyle='rgba(235,247,255,.9)';ctx.fill();
+      }
+    }
+    ctx.shadowBlur=0;
+    if(elapsed<duration)raf=requestAnimationFrame(draw);
+    else{active=false;ctx.clearRect(0,0,width,height);}
+  }
+  function start(){
+    cancelAnimationFrame(raf);resize();reset();started=0;last=0;active=true;
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)raf=requestAnimationFrame(draw);
+  }
+  const observer=new MutationObserver(()=>{
+    if(screen.classList.contains('vs-login-reveal'))start();
+    else{active=false;cancelAnimationFrame(raf);ctx.clearRect(0,0,width,height);}
+  });
+  observer.observe(screen,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('resize',()=>{if(active){resize();reset();}});
+  if(screen.classList.contains('vs-login-reveal'))start();
+})();
+</script>
+
 </body>
 </html>
