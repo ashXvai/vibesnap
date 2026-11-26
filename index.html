@@ -6665,3 +6665,20 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
 
 </body>
 </html>
+
+
+<style id="vibesnap-stationary-intro-logo">
+/* Keep the VibeSnap logo anchored during the opening; the surrounding optical scene animates independently. */
+#authLoading.vs-intro-launch .authLoadingMark{
+  animation:none!important;
+  transform:translate3d(0,0,0) scale(1)!important;
+  filter:drop-shadow(0 0 12px rgba(185,153,255,.55))!important;
+  will-change:auto!important;
+}
+#authLoading.vs-intro-launch .authLoadingMark:before,
+#authLoading.vs-intro-launch .authLoadingMark:after{
+  display:none!important;
+  animation:none!important;
+  opacity:0!important;
+}
+</style>
