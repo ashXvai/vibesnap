@@ -6616,7 +6616,7 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
     const elapsed=now-started;
     const dt=Math.min((now-last||16.7)/1000,.04);last=now;
     const progress=Math.min(elapsed/duration,1);
-    const acceleration=5.5+Math.pow(progress,1.15)*27.5;
+    const acceleration=4.8+Math.pow(progress,1.15)*23.5;
     ctx.clearRect(0,0,width,height);
     const cx=width*.5,cy=height*.5,focal=Math.min(width,height)*.47;
     for(const s of stars){
