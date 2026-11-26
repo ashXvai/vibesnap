@@ -2269,14 +2269,10 @@ passwordToggle.addEventListener("click",()=>{const show=passwordInput.type==="pa
 $("accountPassword").addEventListener("keydown",e=>{if(e.key==="Enter")$("emailLogin").click()});
 
 
-// Keep the animated opening visible briefly before revealing the login screen.
-// This promise is shared by auth callbacks so the intro only runs once per page load.
+// Keep the original 10-second opening intact, then move directly into
+// the login hyperspace transition. No separate logo-travel launch phase.
 const authIntroReady=new Promise(resolve=>{
- window.setTimeout(()=>{
-  $("authLoading")?.classList.add("vs-intro-launch");
-  // After the 10-second intro, let the logo and world rush past before revealing auth.
-  window.setTimeout(resolve,2000);
- },10000);
+ window.setTimeout(resolve,10000);
 });
 auth.onAuthStateChanged(async user=>{
 await authIntroReady;
