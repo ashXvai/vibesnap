@@ -6674,6 +6674,30 @@ window.VibeSnapBridge=Object.freeze({get currentUser(){return currentUser},get s
   opacity:0!important;
 }
 </style>
+
+<style id="vibesnap-login-no-page-scroll">
+/* The login experience is a fixed full-screen scene, not a scrollable page. */
+html:has(#loginScreen:not(.hidden)),
+body:has(#loginScreen:not(.hidden)){
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+#loginScreen:not(.hidden){
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  overflow-x:hidden!important;
+  overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:pan-x!important;
+}
+#loginScreen:not(.hidden) .loginBox{
+  max-height:100%!important;
+}
+</style>
+
 </body>
 </html>
 
