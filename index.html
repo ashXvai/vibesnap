@@ -6706,7 +6706,31 @@ body:has(#loginScreen:not(.hidden)){
 }
 </style>
 
-\n<style id="vibesnap-password-toggle-and-post-login">\n/* Make the password visibility action unmistakable and reliably clickable. */\n#loginScreen .passwordField{position:relative!important;display:block!important}\n#loginScreen .passwordToggle{position:absolute!important;right:8px!important;top:50%!important;z-index:30!important;width:54px!important;height:38px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 8px!important;border:1px solid rgba(126,102,220,.24)!important;border-radius:10px!important;background:rgba(125,104,215,.10)!important;color:#e8ddff!important;font-size:12px!important;font-weight:800!important;letter-spacing:.02em!important;cursor:pointer!important;pointer-events:auto!important}\n#loginScreen .passwordToggle:hover{background:rgba(151,125,255,.22)!important}\n#loginScreen .passwordField #accountPassword{padding-right:72px!important}\n#vsPostLoginTransition{position:fixed;inset:0;z-index:100000;display:grid;place-content:center;justify-items:center;gap:15px;overflow:hidden;pointer-events:none;opacity:0;visibility:hidden;background:radial-gradient(circle at 50% 50%,#172b55 0%,#080f25 46%,#020510 100%)}\n#vsPostLoginTransition:before{content:"";position:absolute;inset:-45%;background:repeating-conic-gradient(from 0deg at 50% 50%,transparent 0deg 2.3deg,rgba(167,207,255,.75) 2.38deg 2.48deg,transparent 2.6deg 5deg);opacity:0;transform:scale(.18);}\n#vsPostLoginTransition:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.95),rgba(121,183,255,.28) 12%,transparent 48%);opacity:0}\n#vsPostLoginTransition.active{visibility:visible;opacity:1;animation:vsPostLoginFade 1.65s ease-in-out both}\n#vsPostLoginTransition.active:before{animation:vsPostLoginStars 1.65s cubic-bezier(.2,.7,.25,1) both}\n#vsPostLoginTransition.active:after{animation:vsPostLoginFlash 1.65s ease-out both}\n.vsPostLoginCore{position:relative;z-index:1;width:66px;height:66px;border-radius:21px;background:linear-gradient(135deg,#a78bfa,#4b9cff);box-shadow:0 0 45px rgba(126,147,255,.8),0 0 100px rgba(116,93,255,.45);animation:vsPostLoginCore .85s cubic-bezier(.16,1,.3,1) both}\n.vsPostLoginWord{position:relative;z-index:1;color:#fff;font-size:clamp(34px,6vw,48px);font-weight:950;letter-spacing:-2px;animation:vsPostLoginText .8s .12s both}\n.vsPostLoginWord span{color:#9dcfff}\n.vsPostLoginCaption{position:relative;z-index:1;color:#dceaff;font-size:10px;font-weight:800;letter-spacing:.28em;animation:vsPostLoginText .7s .25s both}\n@keyframes vsPostLoginFade{0%{opacity:0}12%,78%{opacity:1}100%{opacity:0}}\n@keyframes vsPostLoginStars{0%{opacity:0;transform:scale(.18)}20%{opacity:.9}100%{opacity:0;transform:scale(1.65)}}\n@keyframes vsPostLoginFlash{0%,100%{opacity:0}35%{opacity:.9}65%{opacity:.35}}\n@keyframes vsPostLoginCore{from{opacity:0;transform:scale(.45) rotate(-12deg);filter:blur(8px)}to{opacity:1;transform:scale(1) rotate(0);filter:blur(0)}}\n@keyframes vsPostLoginText{from{opacity:0;transform:translateY(12px);filter:blur(5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}\n@media(prefers-reduced-motion:reduce){#vsPostLoginTransition{display:none!important}}\n</style>\n</body>
+
+<style id="vibesnap-password-toggle-and-post-login">
+/* Make the password visibility action unmistakable and reliably clickable. */
+#loginScreen .passwordField{position:relative!important;display:block!important}
+#loginScreen .passwordToggle{position:absolute!important;right:8px!important;top:50%!important;z-index:30!important;width:54px!important;height:38px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 8px!important;border:1px solid rgba(126,102,220,.24)!important;border-radius:10px!important;background:rgba(125,104,215,.10)!important;color:#e8ddff!important;font-size:12px!important;font-weight:800!important;letter-spacing:.02em!important;cursor:pointer!important;pointer-events:auto!important}
+#loginScreen .passwordToggle:hover{background:rgba(151,125,255,.22)!important}
+#loginScreen .passwordField #accountPassword{padding-right:72px!important}
+#vsPostLoginTransition{position:fixed;inset:0;z-index:100000;display:grid;place-content:center;justify-items:center;gap:15px;overflow:hidden;pointer-events:none;opacity:0;visibility:hidden;background:radial-gradient(circle at 50% 50%,#172b55 0%,#080f25 46%,#020510 100%)}
+#vsPostLoginTransition:before{content:"";position:absolute;inset:-45%;background:repeating-conic-gradient(from 0deg at 50% 50%,transparent 0deg 2.3deg,rgba(167,207,255,.75) 2.38deg 2.48deg,transparent 2.6deg 5deg);opacity:0;transform:scale(.18)}
+#vsPostLoginTransition:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.95),rgba(121,183,255,.28) 12%,transparent 48%);opacity:0}
+#vsPostLoginTransition.active{visibility:visible;opacity:1;animation:vsPostLoginFade 1.65s ease-in-out both}
+#vsPostLoginTransition.active:before{animation:vsPostLoginStars 1.65s cubic-bezier(.2,.7,.25,1) both}
+#vsPostLoginTransition.active:after{animation:vsPostLoginFlash 1.65s ease-out both}
+.vsPostLoginCore{position:relative;z-index:1;width:66px;height:66px;border-radius:21px;background:linear-gradient(135deg,#a78bfa,#4b9cff);box-shadow:0 0 45px rgba(126,147,255,.8),0 0 100px rgba(116,93,255,.45);animation:vsPostLoginCore .85s cubic-bezier(.16,1,.3,1) both}
+.vsPostLoginWord{position:relative;z-index:1;color:#fff;font-size:clamp(34px,6vw,48px);font-weight:950;letter-spacing:-2px;animation:vsPostLoginText .8s .12s both}
+.vsPostLoginWord span{color:#9dcfff}
+.vsPostLoginCaption{position:relative;z-index:1;color:#dceaff;font-size:10px;font-weight:800;letter-spacing:.28em;animation:vsPostLoginText .7s .25s both}
+@keyframes vsPostLoginFade{0%{opacity:0}12%,78%{opacity:1}100%{opacity:0}}
+@keyframes vsPostLoginStars{0%{opacity:0;transform:scale(.18)}20%{opacity:.9}100%{opacity:0;transform:scale(1.65)}}
+@keyframes vsPostLoginFlash{0%,100%{opacity:0}35%{opacity:.9}65%{opacity:.35}}
+@keyframes vsPostLoginCore{from{opacity:0;transform:scale(.45) rotate(-12deg);filter:blur(8px)}to{opacity:1;transform:scale(1) rotate(0);filter:blur(0)}}
+@keyframes vsPostLoginText{from{opacity:0;transform:translateY(12px);filter:blur(5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@media(prefers-reduced-motion:reduce){#vsPostLoginTransition{display:none!important}}
+</style>
+</body>
 </html>
 
 
